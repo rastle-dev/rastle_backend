@@ -7,7 +7,8 @@ build/
 
 ### config file
 
-./src/main/resources/application.yml
+src/main/resources/application.yml
+.gitmessage.txt
 
 ### STS ###
 .apt_generated
