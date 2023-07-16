@@ -8,6 +8,7 @@ build/
 ### config file
 
 src/main/resources/application.yml
+src/main/resources/server.yml
 .gitmessage.txt
 
 ### STS ###
