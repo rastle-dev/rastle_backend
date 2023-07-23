@@ -22,11 +22,10 @@ public class MemberBase {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    protected Authority authority;
-
-    @Enumerated(EnumType.STRING)
     @Column(name = "user_login_type")
     private UserLoginType userLoginType;
 
+    @Enumerated(EnumType.STRING)
+    protected Authority authority;
 
 }
