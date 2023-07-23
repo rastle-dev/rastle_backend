@@ -10,6 +10,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import rastle.dev.rastle_backend.domain.Market.model.MarketProduct;
 import rastle.dev.rastle_backend.domain.Product.model.ProductBase;
 
 @Entity
@@ -34,5 +35,5 @@ public class CartProduct {
 
     @ManyToOne
     @JoinColumn(name = "product_id")
-    private ProductBase product;
+    private MarketProduct product;
 }

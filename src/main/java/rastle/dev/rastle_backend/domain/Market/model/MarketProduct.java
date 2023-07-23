@@ -1,14 +1,12 @@
 package rastle.dev.rastle_backend.domain.Market.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.Product.model.ProductBase;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -19,6 +17,6 @@ public class MarketProduct extends ProductBase {
     @JoinColumn(name = "market_id")
     private Market market;
 
-    @OneToMany(mappedBy = "marketProduct", fetch = FetchType.LAZY)
-    private Color color;
+    @OneToMany(mappedBy = "marketProduct", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Color> colors = new ArrayList<>();
 }

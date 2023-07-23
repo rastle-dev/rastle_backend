@@ -1,15 +1,10 @@
 package rastle.dev.rastle_backend.domain.Event.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.Product.model.ProductBase;
@@ -18,7 +13,7 @@ import rastle.dev.rastle_backend.domain.Product.model.ProductBase;
 @Getter
 @NoArgsConstructor
 @Table(name = "event", catalog = "rastle_db")
-public class Event extends ProductBase {
+public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_id")
@@ -32,6 +27,6 @@ public class Event extends ProductBase {
     @Column(name = "event_end_date")
     private LocalDateTime eventEndDate;
 
-    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
-    private EventProduct eventProduct;
+    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<EventProduct> eventProducts = new ArrayList<>();
 }

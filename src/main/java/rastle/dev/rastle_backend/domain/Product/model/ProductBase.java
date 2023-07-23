@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.Cart.model.CartProduct;
 import rastle.dev.rastle_backend.domain.Orders.model.OrderProduct;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @AllArgsConstructor
@@ -29,11 +32,11 @@ public class ProductBase {
     @Column(name = "sub_thumbnail_image")
     private String subThumbnailImage;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
-    private OrderProduct orderProduct;
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<OrderProduct> orderProducts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
-    private CartProduct cartProduct;
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<CartProduct> cartProduct = new ArrayList<>();
 
     @OneToOne
     @JoinColumn(name = "main_image_id")

@@ -1,15 +1,10 @@
 package rastle.dev.rastle_backend.domain.Market.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,6 +26,6 @@ public class Market {
     @Column(name = "sale_end_time")
     private LocalDateTime saleEndTime;
 
-    @OneToMany(mappedBy = "market", fetch = FetchType.LAZY)
-    private MarketProduct marketProduct;
+    @OneToMany(mappedBy = "market", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<MarketProduct> marketProducts = new ArrayList<>();
 }
