@@ -35,5 +35,5 @@ public class CartProduct {
 
     @ManyToOne
     @JoinColumn(name = "product_id")
-    private MarketProduct product;
+    private ProductBase product;
 }

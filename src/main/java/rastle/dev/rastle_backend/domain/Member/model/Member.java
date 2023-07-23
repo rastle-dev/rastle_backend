@@ -1,6 +1,7 @@
 package rastle.dev.rastle_backend.domain.Member.model;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.Cart.model.Cart;
@@ -31,4 +32,10 @@ public class Member extends MemberBase {
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Orders> orders = new ArrayList<>();
+    @Builder
+    public Member(String email, String password, UserLoginType userLoginType, Authority authority, String userName, String phoneNumber) {
+        super(email, password, userLoginType, authority);
+        this.userName = userName;
+        this.phoneNumber = phoneNumber;
+    }
 }

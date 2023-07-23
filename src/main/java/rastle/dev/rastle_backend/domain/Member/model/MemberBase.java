@@ -28,4 +28,10 @@ public class MemberBase {
     @Enumerated(EnumType.STRING)
     protected Authority authority;
 
+    public MemberBase(String email, String password, UserLoginType userLoginType, Authority authority) {
+        this.email = email;
+        this.password = password;
+        this.userLoginType = userLoginType;
+        this.authority = authority;
+    }
 }

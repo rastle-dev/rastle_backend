@@ -45,4 +45,7 @@ public class ProductBase {
     @OneToOne
     @JoinColumn(name = "detail_image_id")
     private ProductImage detailImage;
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<CartProduct> cartProducts = new ArrayList<>();
 }
