@@ -3,10 +3,11 @@ package rastle.dev.rastle_backend;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.data.jdbc.repository.config.EnableJdbcAuditing;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-@EnableJdbcAuditing
+@EnableJpaAuditing
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
+//@SpringBootApplication
 public class RastleBackendApplication {
 
     public static void main(String[] args) {

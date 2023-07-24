@@ -1,0 +1,93 @@
+name: CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  issues: write
+  checks: write
+  pull-requests: write
+  actions: write
+
+jobs:
+  deploy_was1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: was1 무중단 배포
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.WAS1_HOST }}
+          username: ubuntu
+          key: ${{ secrets.WAS1_PEM_KEY }}
+          port: 22
+          script: |
+            sudo docker pull ${{ secrets.DOCKER_REPO }}/rastle_backend 
+            bash deploy.sh
+  deploy_was2:
+    needs: deploy_was1
+    runs-on: ubuntu-latest
+    steps:
+      - name: was2 무중단 배포
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.WAS2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.WAS2_PEM_KEY }}
+          port: 22
+          script: |
+            sudo docker pull ${{ secrets.DOCKER_REPO }}/rastle_backend 
+            bash deploy.sh
+  deploy_was3:
+    needs: deploy_was2
+    runs-on: ubuntu-latest
+    steps:
+      - name: was3 무중단 배포
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.WAS3_HOST }}
+          username: ubuntu
+          key: ${{ secrets.WAS3_PEM_KEY }}
+          port: 22
+          script: |
+            sudo docker pull ${{ secrets.DOCKER_REPO }}/rastle_backend 
+            bash deploy.sh
+  deploy_web1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: was1 nginx 무중단 배포
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.WEB_HOST }}
+          username: ubuntu
+          key: ${{ secrets.WEB_PEM_KEY }}
+          port: 22
+          script: |
+            bash deploy_was1.sh
+  deploy_web2:
+    needs: deploy_web1
+    runs-on: ubuntu-latest
+    steps:
+      - name: was2 nginx 무중단 배포
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.WEB_HOST }}
+          username: ubuntu
+          key: ${{ secrets.WEB_PEM_KEY }}
+          port: 22
+          script: |
+            bash deploy_was2.sh
+  deploy_web3:
+    needs: deploy_web2
+    runs-on: ubuntu-latest
+    steps:
+      - name: was2 nginx 무중단 배포
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.WEB_HOST }}
+          username: ubuntu
+          key: ${{ secrets.WEB_PEM_KEY }}
+          port: 22
+          script: |
+            bash deploy_was3.sh
