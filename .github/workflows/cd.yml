@@ -54,7 +54,6 @@ jobs:
             sudo docker pull ${{ secrets.DOCKER_REPO }}/rastle_backend 
             bash deploy.sh
   deploy_web1:
-    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: was1 nginx 무중단 배포
