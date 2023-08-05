@@ -1,5 +1,6 @@
 package rastle.dev.rastle_backend.domain.Member.dto;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -10,7 +11,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import rastle.dev.rastle_backend.domain.Member.model.Authority;
 import rastle.dev.rastle_backend.domain.Member.model.Member;
 import rastle.dev.rastle_backend.domain.Member.model.UserLoginType;
@@ -54,6 +54,22 @@ public class MemberDTO {
                     .phoneNumber(phoneNumber)
                     .userName(username)
                     .build();
+        }
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Schema(description = "로그인 요청 DTO")
+    public static class LoginDto {
+        @Schema(description = "이메일")
+        private String email;
+        @Schema(description = "비밀번호")
+        private String password;
+
+        public UsernamePasswordAuthenticationToken toAuthentication() {
+            return new UsernamePasswordAuthenticationToken(email, password);
         }
     }
 }
