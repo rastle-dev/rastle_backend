@@ -72,4 +72,26 @@ public class MemberDTO {
             return new UsernamePasswordAuthenticationToken(email, password);
         }
     }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Schema(description = "이메일 인증 요청 DTO")
+    public static class EmailCertificationDto {
+        @Schema(description = "인증할 이메일")
+        private String email;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Schema(description = "이메일 인증 번호 확인 요청 DTO")
+    public static class EmailCertificationCheckDto {
+        @Schema(description = "인증할 이메일")
+        private String email;
+        @Schema(description = "인증 번호")
+        private String ePw;
+    }
 }
