@@ -39,13 +39,6 @@ public class MemberAuthService {
      */
     @Transactional
     public SignUpDto signUp(SignUpDto signUpDto) {
-        // 회원가입 요청 DTO의 이메일이 이미 존재하는지 확인
-        // 이걸 따로 빼는게 좋을까?
-        Optional<Member> existingMemberOptional = memberRepository.findByEmail(signUpDto.getEmail());
-        if (existingMemberOptional.isPresent()) {
-            throw new IllegalArgumentException("Email is already registered.");
-        }
-
         signUpDto.encode(passwordEncoder);
         Member entity = signUpDto.toEntity();
         memberRepository.save(entity);
@@ -64,6 +57,12 @@ public class MemberAuthService {
         return memberRepository.findByEmail(email).isPresent();
     }
 
+    /**
+     * 로그인
+     * 
+     * @param loginDto
+     * @return accessToken
+     */
     @Transactional
     public String login(LoginDto loginDto) {
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = loginDto.toAuthentication();
