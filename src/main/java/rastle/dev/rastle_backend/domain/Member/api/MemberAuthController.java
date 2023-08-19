@@ -13,6 +13,7 @@ import rastle.dev.rastle_backend.domain.Member.application.MemberAuthService;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.EmailCertificationCheckDto;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.EmailCertificationDto;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.LoginDto;
+import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.PasswordResetRequestDto;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.SignUpDto;
 
 import org.springframework.http.ResponseEntity;
@@ -74,6 +75,17 @@ public class MemberAuthController {
                                 .ok(emailCertificationService.checkEmailCertification(
                                                 emailCertificationCheckDto.getEmail(),
                                                 emailCertificationCheckDto.getEPw()));
+        }
+
+        @Operation(summary = "비밀번호 초기화", description = "비밀번호 초기화 API입니다.")
+        @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "비밀번호 초기화 성공"),
+                        @ApiResponse(responseCode = "400", description = "비밀번호 초기화 실패") })
+        @PostMapping(value = "/resetPassword")
+        public ResponseEntity<?> resetPassword(@RequestBody PasswordResetRequestDto passwordResetRequestDto)
+                        throws Exception {
+                return ResponseEntity
+                                .ok(emailCertificationService
+                                                .sendPasswordResetMessage(passwordResetRequestDto.getEmail()));
         }
 
 }

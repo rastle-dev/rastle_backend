@@ -34,4 +34,8 @@ public class MemberBase {
         this.userLoginType = userLoginType;
         this.authority = authority;
     }
+
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
+    }
 }

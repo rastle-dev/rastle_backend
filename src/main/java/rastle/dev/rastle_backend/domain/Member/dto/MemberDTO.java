@@ -94,4 +94,14 @@ public class MemberDTO {
         @Schema(description = "인증 번호")
         private String ePw;
     }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Schema(description = "비밀번호 초기화 요청 DTO")
+    public static class PasswordResetRequestDto {
+        @Schema(description = "비밀번호 초기화 요청 이메일")
+        private String email;
+    }
 }

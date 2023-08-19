@@ -1,12 +1,15 @@
 package rastle.dev.rastle_backend.domain.Member.application;
 
-import java.util.Random;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -14,8 +17,11 @@ import org.thymeleaf.context.Context;
 import jakarta.mail.Message;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import rastle.dev.rastle_backend.domain.Member.model.Member;
+import rastle.dev.rastle_backend.domain.Member.repository.MemberRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +30,8 @@ public class EmailCertificationService {
     private final JavaMailSender emailSender;
     private final TemplateEngine templateEngine;
     private final RedisTemplate<String, String> redisTemplate;
+    private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public static final long EMAIL_CERTIFICATION_TIME = 1000 * 60 * 5; // 하루
     // 인증 번호
@@ -36,7 +44,7 @@ public class EmailCertificationService {
      * @throws Exception 발송 실패 예외
      */
     public String sendConfirmMessage(String to) throws Exception {
-        ePw = createKey();
+        ePw = RandomStringUtils.randomNumeric(6);
         MimeMessage mimeMessage = emailSender.createMimeMessage();
         try {
             mimeMessage.addRecipients(Message.RecipientType.TO, to);
@@ -84,19 +92,42 @@ public class EmailCertificationService {
     }
 
     /**
-     * 이메일 인증 번호 생성
+     * 비밀번호 초기화 메일 발송
      * 
-     * @return 인증번호
+     * @param to
+     * @return
+     * @throws Exception
      */
-    public String createKey() {
-        StringBuilder key = new StringBuilder();
-        Random random = new Random();
+    @Transactional
+    public String sendPasswordResetMessage(String to) throws Exception {
+        Optional<Member> memberOptional = memberRepository.findByEmail(to);
+        Member member = memberOptional.orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
-        for (int i = 0; i < 6; i++) {
-            key.append((random.nextInt(10)));
+        String temporaryPassword = RandomStringUtils.randomAlphanumeric(12);
+        String encodedPassword = passwordEncoder.encode(temporaryPassword);
+
+        member.updatePassword(encodedPassword);
+
+        MimeMessage mimeMessage = emailSender.createMimeMessage();
+        try {
+            mimeMessage.addRecipients(Message.RecipientType.TO, to);
+            mimeMessage.setSubject("rastle_ 비밀번호 초기화");
+            mimeMessage.setFrom(new InternetAddress("rastle.fashion@gmail.com",
+                    "rastle_admin"));
+
+            Context context = new Context();
+            context.setVariable("password", temporaryPassword);
+            String emailContent = templateEngine.process("password", context);
+            mimeMessage.setText(emailContent, "utf-8", "html");
+
+            emailSender.send(mimeMessage);
+            log.info("new Password" + temporaryPassword);
+
+        } catch (MailException es) {
+            throw new IllegalArgumentException(es.getMessage());
         }
 
-        return key.toString();
+        return temporaryPassword;
     }
 
 }
