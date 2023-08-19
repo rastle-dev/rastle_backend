@@ -35,7 +35,7 @@ public class EmailCertificationService {
      * @param to 수신자 이메일
      * @throws Exception 발송 실패 예외
      */
-    public String sendSimpleMessage(String to) throws Exception {
+    public String sendConfirmMessage(String to) throws Exception {
         ePw = createKey();
         MimeMessage mimeMessage = emailSender.createMimeMessage();
         try {
@@ -49,9 +49,13 @@ public class EmailCertificationService {
             mimeMessage.setText(emailContent, "utf-8", "html");
 
             emailSender.send(mimeMessage);
+
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            valueOperations.set(to, ePw);
-            redisTemplate.expire(to, EMAIL_CERTIFICATION_TIME, TimeUnit.MILLISECONDS);
+            valueOperations.set(to + "_ePw", ePw);
+            redisTemplate.expire(to + "_ePw", EMAIL_CERTIFICATION_TIME, TimeUnit.MILLISECONDS);
+
+            // valueOperations.set(to, ePw);
+            // redisTemplate.expire(to, EMAIL_CERTIFICATION_TIME, TimeUnit.MILLISECONDS);
         } catch (MailException es) {
             throw new IllegalArgumentException(es.getMessage());
         }
