@@ -32,10 +32,16 @@ public class Member extends MemberBase {
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Orders> orders = new ArrayList<>();
+
     @Builder
-    public Member(String email, String password, UserLoginType userLoginType, Authority authority, String userName, String phoneNumber) {
+    public Member(String email, String password, UserLoginType userLoginType, Authority authority, String userName,
+            String phoneNumber) {
         super(email, password, userLoginType, authority);
         this.userName = userName;
         this.phoneNumber = phoneNumber;
+    }
+
+    public void updatePassword(String newPassword) {
+        super.updatePassword(newPassword);
     }
 }
