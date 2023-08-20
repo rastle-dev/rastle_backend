@@ -10,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -20,7 +19,7 @@ import java.util.Map;
 @Setter
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class UserPrincipal implements OAuth2User, UserDetails, OidcUser {
+public class UserPrincipal implements UserDetails, OidcUser {
     private final String userId;
     private final String password;
     private final UserLoginType loginType;
@@ -47,7 +46,6 @@ public class UserPrincipal implements OAuth2User, UserDetails, OidcUser {
     public String getUsername() {
         return userId;
     }
-
 
     @Override
     public boolean isAccountNonExpired() {
@@ -90,8 +88,7 @@ public class UserPrincipal implements OAuth2User, UserDetails, OidcUser {
                 member.getPassword(),
                 member.getUserLoginType(),
                 member.getAuthority(),
-                Collections.singletonList(new SimpleGrantedAuthority(member.getAuthority().toString()))
-        );
+                Collections.singletonList(new SimpleGrantedAuthority(member.getAuthority().toString())));
 
     }
 
