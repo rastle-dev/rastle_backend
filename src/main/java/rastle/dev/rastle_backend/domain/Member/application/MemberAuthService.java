@@ -1,6 +1,5 @@
 package rastle.dev.rastle_backend.domain.Member.application;
 
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.data.redis.core.RedisTemplate;
