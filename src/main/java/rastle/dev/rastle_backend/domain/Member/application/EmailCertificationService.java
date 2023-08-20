@@ -59,11 +59,9 @@ public class EmailCertificationService {
             emailSender.send(mimeMessage);
 
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-            valueOperations.set(to + "_ePw", ePw);
-            redisTemplate.expire(to + "_ePw", EMAIL_CERTIFICATION_TIME, TimeUnit.MILLISECONDS);
 
-            // valueOperations.set(to, ePw);
-            // redisTemplate.expire(to, EMAIL_CERTIFICATION_TIME, TimeUnit.MILLISECONDS);
+             valueOperations.set(to, ePw);
+             redisTemplate.expire(to, EMAIL_CERTIFICATION_TIME, TimeUnit.MILLISECONDS);
         } catch (MailException es) {
             throw new IllegalArgumentException(es.getMessage());
         }
@@ -75,17 +73,18 @@ public class EmailCertificationService {
      * 이메일 인증 번호 확인
      * 
      * @param email 이메일
-     * @param ePw   인증 번호
+     * @param code   인증 번호
      * @return 인증 번호 일치 여부
      */
-    public boolean checkEmailCertification(String email, String ePw) {
+    public boolean checkEmailCertification(String email, String code) {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         String value = valueOperations.get(email);
         log.info(value);
+        log.info(code);
         if (value == null) {
             return false;
         }
-        if (value.equals(ePw)) {
+        if (value.equals(code)) {
             return true;
         }
         return false;

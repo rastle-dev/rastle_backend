@@ -74,7 +74,7 @@ public class MemberAuthController {
                 return ResponseEntity
                                 .ok(emailCertificationService.checkEmailCertification(
                                                 emailCertificationCheckDto.getEmail(),
-                                                emailCertificationCheckDto.getEPw()));
+                                                emailCertificationCheckDto.getCode()));
         }
 
         @Operation(summary = "비밀번호 초기화", description = "비밀번호 초기화 API입니다.")

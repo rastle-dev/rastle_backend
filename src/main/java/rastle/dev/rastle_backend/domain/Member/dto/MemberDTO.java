@@ -92,7 +92,7 @@ public class MemberDTO {
         @Schema(description = "인증할 이메일")
         private String email;
         @Schema(description = "인증 번호")
-        private String ePw;
+        private String code;
     }
 
     @Builder
