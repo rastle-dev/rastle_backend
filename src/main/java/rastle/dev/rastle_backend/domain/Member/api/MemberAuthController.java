@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import rastle.dev.rastle_backend.domain.Member.application.EmailCertificationService;
 import rastle.dev.rastle_backend.domain.Member.application.MemberAuthService;
@@ -50,8 +51,8 @@ public class MemberAuthController {
         @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "로그인 성공"),
                         @ApiResponse(responseCode = "400", description = "로그인 실패") })
         @PostMapping(value = "/login")
-        public ResponseEntity<?> login(@RequestBody LoginDto loginDto) {
-                return ResponseEntity.ok(memberAuthService.login(loginDto));
+        public ResponseEntity<?> login(@RequestBody LoginDto loginDto, HttpServletResponse response) {
+                return memberAuthService.login(loginDto, response);
         }
 
         @Operation(summary = "이메일 인증", description = "이메일 인증 API입니다.")
