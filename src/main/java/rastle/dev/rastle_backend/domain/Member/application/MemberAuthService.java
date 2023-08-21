@@ -10,10 +10,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +53,17 @@ public class MemberAuthService {
     }
 
     /**
+     * 이메일 중복 확인
+     * 
+     * @param email 이메일
+     * @return 이메일 중복 여부
+     */
+    @Transactional
+    public boolean isEmailDuplicated(String email) {
+        return memberRepository.findByEmail(email).isPresent();
+    }
+
+    /**
      * 로그인
      * 
      * @param loginDto
@@ -73,6 +86,7 @@ public class MemberAuthService {
         // 리프레시 토큰을 HttpOnly 쿠키에 저장
         Cookie cookie = new Cookie("refreshToken", tokenInfoDTO.getRefreshToken());
         cookie.setHttpOnly(true);
+        cookie.setSecure(true);
         response.addCookie(cookie);
 
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -82,13 +96,29 @@ public class MemberAuthService {
     }
 
     /**
-     * 이메일 중복 확인
+     * 로그아웃
      * 
-     * @param email 이메일
-     * @return 이메일 중복 여부
+     * @param request  HttpServletRequest
+     * @param response HttpServletResponse
+     * @return 로그아웃 성공 여부
      */
     @Transactional
-    public boolean isEmailExists(String email) {
-        return memberRepository.findByEmail(email).isPresent();
+    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
+        // 현재 사용자의 인증 정보를 가져옴
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        // Redis에서 리프레시 토큰 삭제
+        redisTemplate.delete(username);
+
+        // 클라이언트 측 쿠키 삭제
+        Cookie cookie = new Cookie("refreshToken", null);
+        cookie.setMaxAge(0);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+
+        response.addCookie(cookie);
+
+        return new ResponseEntity<>("Logout Successful", HttpStatus.OK);
     }
 }
