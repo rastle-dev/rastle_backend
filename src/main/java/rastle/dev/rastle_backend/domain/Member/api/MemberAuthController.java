@@ -18,7 +18,6 @@ import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.EmailCertificationD
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.LoginDto;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.PasswordResetRequestDto;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.SignUpDto;
-import rastle.dev.rastle_backend.domain.Token.dto.TokenDTO;
 import rastle.dev.rastle_backend.domain.Token.dto.TokenDTO.TokenInfoDTO;
 
 import org.springframework.http.HttpStatus;
@@ -110,8 +109,8 @@ public class MemberAuthController {
         @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "토큰 재발급 성공"),
                         @ApiResponse(responseCode = "400", description = "토큰 재발급 실패") })
         @PostMapping(value = "/refreshAccessToken")
-        public ResponseEntity<TokenInfoDTO> refreshAccessToken(@RequestBody TokenInfoDTO tokenInfoDTO) {
-                return ResponseEntity.ok(memberAuthService.refreshAccessToken(tokenInfoDTO.getRefreshToken()));
+        public ResponseEntity<TokenInfoDTO> refreshAccessToken(HttpServletRequest request) {
+                return ResponseEntity.ok(memberAuthService.refreshAccessToken(request));
         }
 
 }

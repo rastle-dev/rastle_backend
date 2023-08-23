@@ -3,6 +3,8 @@ package rastle.dev.rastle_backend.global.jwt;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,6 +15,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import rastle.dev.rastle_backend.domain.Token.dto.TokenDTO;
+import rastle.dev.rastle_backend.global.security.CustomUserDetailsService;
 
 import java.security.Key;
 import java.util.Arrays;
@@ -26,11 +29,14 @@ import static rastle.dev.rastle_backend.global.common.constants.JwtConstants.*;
 @Slf4j
 public class JwtTokenProvider {
     private final Key key;
+    private final CustomUserDetailsService customUserDetailsService;
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String jwtSecret) {
+    public JwtTokenProvider(@Value("${jwt.secret}") String jwtSecret,
+            CustomUserDetailsService customUserDetailsService) {
 
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
+        this.customUserDetailsService = customUserDetailsService;
     }
 
     public TokenDTO.TokenInfoDTO generateTokenDto(Authentication authentication) {
@@ -102,6 +108,22 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
+    public Authentication getAuthenticationFromRefreshToken(String refreshToken) {
+        Claims claims = parseClaims(refreshToken);
+        String username = claims.getSubject();
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
+
+    public String getRefreshTokenFromRequest(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        return Arrays.stream(cookies)
+                .filter(cookie -> "refreshToken".equals(cookie.getName()))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElseThrow(() -> new RuntimeException("리프레시 토큰이 없습니다."));
+    }
+
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
@@ -119,7 +141,7 @@ public class JwtTokenProvider {
         return false;
     }
 
-    public Claims parseClaims(String accessToken) {
+    private Claims parseClaims(String accessToken) {
         try {
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
         } catch (ExpiredJwtException e) {

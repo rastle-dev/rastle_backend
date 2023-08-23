@@ -12,12 +12,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -42,7 +40,6 @@ public class MemberAuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String, String> redisTemplate;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final UserDetailsService userDetailsService;
 
     /**
      * 회원가입
@@ -130,25 +127,22 @@ public class MemberAuthService {
     }
 
     /**
-     * 토큰 재발급
+     * 액세스 토큰 재발급
      * 
-     * @param refreshToken
-     * @return 토큰 재발급 DTO
+     * @param request
+     * @return 토큰 정보 DTO
      */
-    @Transactional
-    public TokenInfoDTO refreshAccessToken(String refreshToken) {
-        Claims claims = jwtTokenProvider.parseClaims(refreshToken);
-        String username = claims.getSubject();
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, "",
-                userDetails.getAuthorities());
+    public TokenInfoDTO refreshAccessToken(HttpServletRequest request) {
+        String refreshToken = jwtTokenProvider.getRefreshTokenFromRequest(request);
+        Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(refreshToken);
         String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
 
         return TokenInfoDTO.builder()
                 .grantType(BEARER_TYPE)
                 .accessToken(newAccessToken)
                 .accessTokenExpiresIn(new Date().getTime() + ACCESS_TOKEN_EXPIRE_TIME)
-                .refreshToken(refreshToken) // 기존 리프레시 토큰을 그대로 사용
+                .refreshToken(refreshToken)
                 .build();
     }
+
 }
