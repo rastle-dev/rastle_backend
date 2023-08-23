@@ -1,5 +1,6 @@
 package rastle.dev.rastle_backend.domain.Member.application;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.data.redis.core.RedisTemplate;
@@ -11,9 +12,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,6 +31,8 @@ import rastle.dev.rastle_backend.domain.Token.dto.TokenDTO.TokenInfoDTO;
 import rastle.dev.rastle_backend.global.jwt.JwtTokenProvider;
 
 import static rastle.dev.rastle_backend.global.common.constants.JwtConstants.REFRESH_TOKEN_EXPIRE_TIME;
+import static rastle.dev.rastle_backend.global.common.constants.JwtConstants.ACCESS_TOKEN_EXPIRE_TIME;
+import static rastle.dev.rastle_backend.global.common.constants.JwtConstants.BEARER_TYPE;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +42,7 @@ public class MemberAuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String, String> redisTemplate;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final UserDetailsService userDetailsService;
 
     /**
      * 회원가입
@@ -120,5 +127,28 @@ public class MemberAuthService {
         response.addCookie(cookie);
 
         return new ResponseEntity<>("Logout Successful", HttpStatus.OK);
+    }
+
+    /**
+     * 토큰 재발급
+     * 
+     * @param refreshToken
+     * @return 토큰 재발급 DTO
+     */
+    @Transactional
+    public TokenInfoDTO refreshAccessToken(String refreshToken) {
+        Claims claims = jwtTokenProvider.parseClaims(refreshToken);
+        String username = claims.getSubject();
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, "",
+                userDetails.getAuthorities());
+        String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
+
+        return TokenInfoDTO.builder()
+                .grantType(BEARER_TYPE)
+                .accessToken(newAccessToken)
+                .accessTokenExpiresIn(new Date().getTime() + ACCESS_TOKEN_EXPIRE_TIME)
+                .refreshToken(refreshToken) // 기존 리프레시 토큰을 그대로 사용
+                .build();
     }
 }

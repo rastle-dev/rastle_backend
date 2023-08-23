@@ -27,15 +27,15 @@ import static rastle.dev.rastle_backend.global.common.constants.JwtConstants.BEA
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
 
-
     private final RedisTemplate<String, String> redisTemplate;
 
     private final ObjectMapper mapper;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
 
-        log.info(request.getMethod()+" "+ request.getRequestURI());
+        log.info(request.getMethod() + " " + request.getRequestURI());
 
         try {
             // 1. request Header에서 토큰 꺼냄, 여기서 HTTP ONLY 쿠키에서 읽어오게 변경 가능
@@ -64,14 +64,14 @@ public class JwtFilter extends OncePerRequestFilter {
             response.setContentType("application/json");
             response.setCharacterEncoding("utf-8");
             response.setStatus(response.SC_UNAUTHORIZED);
-            response.setHeader("Access-Control-Allow-Origin", "https://www.ouruliga.com");
+            response.setHeader("Access-Control-Allow-Origin", "https://www.rastledev.site");
             try {
                 response.getWriter().write(result);
             } catch (IOException exception) {
                 e.printStackTrace();
             }
 
-        }  catch (Exception e) {
+        } catch (Exception e) {
             log.info(e.getMessage());
             log.info(e.getClass().getName());
             e.printStackTrace();
@@ -79,7 +79,7 @@ public class JwtFilter extends OncePerRequestFilter {
             response.setContentType("application/json");
             response.setCharacterEncoding("utf-8");
             response.setStatus(response.SC_INTERNAL_SERVER_ERROR);
-            response.setHeader("Access-Control-Allow-Origin", "https://www.ouruliga.com");
+            response.setHeader("Access-Control-Allow-Origin", "https://www.rastledev.site");
             try {
                 response.getWriter().write(result);
             } catch (IOException exception) {
@@ -96,6 +96,5 @@ public class JwtFilter extends OncePerRequestFilter {
         }
         return null;
     }
-
 
 }
