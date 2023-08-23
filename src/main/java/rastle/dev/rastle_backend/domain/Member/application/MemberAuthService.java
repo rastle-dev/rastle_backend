@@ -1,10 +1,8 @@
 package rastle.dev.rastle_backend.domain.Member.application;
 
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +26,6 @@ import rastle.dev.rastle_backend.domain.Member.repository.MemberRepository;
 import rastle.dev.rastle_backend.domain.Token.dto.TokenDTO.TokenInfoDTO;
 import rastle.dev.rastle_backend.global.jwt.JwtTokenProvider;
 
-import static rastle.dev.rastle_backend.global.common.constants.JwtConstants.REFRESH_TOKEN_EXPIRE_TIME;
 import static rastle.dev.rastle_backend.global.common.constants.JwtConstants.ACCESS_TOKEN_EXPIRE_TIME;
 import static rastle.dev.rastle_backend.global.common.constants.JwtConstants.BEARER_TYPE;
 
@@ -75,28 +72,23 @@ public class MemberAuthService {
      */
     @Transactional
     public ResponseEntity<String> login(LoginDto loginDto, HttpServletResponse response) {
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = loginDto.toAuthentication();
+        Authentication authentication = authenticate(loginDto);
+        TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authentication, response);
 
-        Authentication authenticate = authenticationManagerBuilder.getObject()
-                .authenticate(usernamePasswordAuthenticationToken);
-
-        TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authenticate);
-
-        // 리프레시 토큰을 Redis에 저장
-        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-        valueOperations.set(authenticate.getName(), tokenInfoDTO.getRefreshToken());
-        redisTemplate.expire(authenticate.getName(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
-
-        // 리프레시 토큰을 HttpOnly 쿠키에 저장
-        Cookie cookie = new Cookie("refreshToken", tokenInfoDTO.getRefreshToken());
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        response.addCookie(cookie);
-
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("Authorization", "Bearer " + tokenInfoDTO.getAccessToken());
+        HttpHeaders responseHeaders = createAuthorizationHeader(tokenInfoDTO.getAccessToken());
 
         return new ResponseEntity<>("Login Successful", responseHeaders, HttpStatus.OK);
+    }
+
+    private Authentication authenticate(LoginDto loginDto) {
+        UsernamePasswordAuthenticationToken token = loginDto.toAuthentication();
+        return authenticationManagerBuilder.getObject().authenticate(token);
+    }
+
+    private HttpHeaders createAuthorizationHeader(String accessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + accessToken);
+        return headers;
     }
 
     /**
@@ -108,22 +100,27 @@ public class MemberAuthService {
      */
     @Transactional
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
-        // 현재 사용자의 인증 정보를 가져옴
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+        String username = getCurrentUsername();
+        deleteRefreshTokenFromRedis(username);
+        deleteCookie(response);
 
-        // Redis에서 리프레시 토큰 삭제
+        return new ResponseEntity<>("Logout Successful", HttpStatus.OK);
+    }
+
+    private String getCurrentUsername() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
+
+    private void deleteRefreshTokenFromRedis(String username) {
         redisTemplate.delete(username);
+    }
 
-        // 클라이언트 측 쿠키 삭제
+    private void deleteCookie(HttpServletResponse response) {
         Cookie cookie = new Cookie("refreshToken", null);
         cookie.setMaxAge(0);
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
-
         response.addCookie(cookie);
-
-        return new ResponseEntity<>("Logout Successful", HttpStatus.OK);
     }
 
     /**
@@ -141,7 +138,6 @@ public class MemberAuthService {
                 .grantType(BEARER_TYPE)
                 .accessToken(newAccessToken)
                 .accessTokenExpiresIn(new Date().getTime() + ACCESS_TOKEN_EXPIRE_TIME)
-                .refreshToken(refreshToken)
                 .build();
     }
 
