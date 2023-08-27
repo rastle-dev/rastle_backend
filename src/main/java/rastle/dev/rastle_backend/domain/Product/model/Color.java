@@ -1,4 +1,4 @@
-package rastle.dev.rastle_backend.domain.Market.model;
+package rastle.dev.rastle_backend.domain.Product.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -25,4 +25,9 @@ public class Color {
 
     @OneToMany(mappedBy = "color", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Size> sizes = new ArrayList<>();
+
+    public Color(String name, MarketProduct marketProduct) {
+        this.name = name;
+        this.marketProduct = marketProduct;
+    }
 }

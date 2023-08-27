@@ -76,7 +76,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(HttpMethod.OPTIONS, "**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/env_profile").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/env_profile").permitAll()
                         .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
                         .requestMatchers("/actuator/**").authenticated()
                         .requestMatchers("/oauth2/**").permitAll()
@@ -85,6 +85,7 @@ public class SecurityConfig {
                         .requestMatchers("/member/**").hasRole("USER")
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/v1/api-docs/**").permitAll()
+                        .requestMatchers("/product/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/rest-docs").permitAll()
                 );
 

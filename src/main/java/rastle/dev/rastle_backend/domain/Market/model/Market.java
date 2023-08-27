@@ -7,6 +7,7 @@ import java.util.List;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import rastle.dev.rastle_backend.domain.Product.model.MarketProduct;
 
 @Entity
 @Getter
