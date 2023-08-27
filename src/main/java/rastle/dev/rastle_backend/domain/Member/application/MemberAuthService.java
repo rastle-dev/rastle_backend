@@ -75,9 +75,12 @@ public class MemberAuthService {
         Authentication authentication = authenticate(loginDto);
         TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authentication, response);
 
-        HttpHeaders responseHeaders = createAuthorizationHeader(tokenInfoDTO.getAccessToken());
-
-        return new ResponseEntity<>("Login Successful", responseHeaders, HttpStatus.OK);
+        if (jwtTokenProvider.validateToken(tokenInfoDTO.getAccessToken())) {
+            HttpHeaders responseHeaders = createAuthorizationHeader(tokenInfoDTO.getAccessToken());
+            return new ResponseEntity<>("로그인 성공", responseHeaders, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED);
+        }
     }
 
     private Authentication authenticate(LoginDto loginDto) {
@@ -101,10 +104,15 @@ public class MemberAuthService {
     @Transactional
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
         String username = getCurrentUsername();
-        deleteRefreshTokenFromRedis(username);
-        deleteCookie(response);
 
-        return new ResponseEntity<>("Logout Successful", HttpStatus.OK);
+        String refreshToken = jwtTokenProvider.getRefreshTokenFromRequest(request);
+        if (jwtTokenProvider.validateToken(refreshToken)) {
+            deleteRefreshTokenFromRedis(username);
+            deleteCookie(response);
+            return new ResponseEntity<>("로그아웃 성공", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED);
+        }
     }
 
     private String getCurrentUsername() {
@@ -131,14 +139,18 @@ public class MemberAuthService {
      */
     public TokenInfoDTO refreshAccessToken(HttpServletRequest request) {
         String refreshToken = jwtTokenProvider.getRefreshTokenFromRequest(request);
-        Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(refreshToken);
-        String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
 
-        return TokenInfoDTO.builder()
-                .grantType(BEARER_TYPE)
-                .accessToken(newAccessToken)
-                .accessTokenExpiresIn(new Date().getTime() + ACCESS_TOKEN_EXPIRE_TIME)
-                .build();
+        if (jwtTokenProvider.validateToken(refreshToken)) {
+            Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(refreshToken);
+            String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
+            return TokenInfoDTO.builder()
+                    .grantType(BEARER_TYPE)
+                    .accessToken(newAccessToken)
+                    .accessTokenExpiresIn(new Date().getTime() + ACCESS_TOKEN_EXPIRE_TIME)
+                    .build();
+        } else {
+            throw new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다.");
+        }
     }
 
 }

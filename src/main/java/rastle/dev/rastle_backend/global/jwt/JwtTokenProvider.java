@@ -97,11 +97,15 @@ public class JwtTokenProvider {
 
     // 액세스 토큰으로부터 인증 객체 생성
     public Authentication getAuthentication(String accessToken) {
-        Claims claims = parseClaims(accessToken);
-        validateClaims(claims);
-        Collection<? extends GrantedAuthority> authorities = extractAuthorities(claims);
-        UserDetails principal = new User(claims.getSubject(), "", authorities);
-        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+        if (validateToken(accessToken)) {
+            Claims claims = parseClaims(accessToken);
+            validateClaims(claims);
+            Collection<? extends GrantedAuthority> authorities = extractAuthorities(claims);
+            UserDetails principal = new User(claims.getSubject(), "", authorities);
+            return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+        } else {
+            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+        }
     }
 
     // 토큰 유효성 검사
@@ -165,18 +169,24 @@ public class JwtTokenProvider {
 
     // 리프레시 토큰으로부터 인증 객체 생성
     public Authentication getAuthenticationFromRefreshToken(String refreshToken) {
-        Claims claims = parseClaims(refreshToken);
-        String userId = claims.getSubject();
-        log.info(userId);
-        UserDetails userDetails = customUserDetailsService.loadUserById(userId);
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        if (validateToken(refreshToken)) {
+            Claims claims = parseClaims(refreshToken);
+            String userId = claims.getSubject();
+            UserDetails userDetails = customUserDetailsService.loadUserById(userId);
+            return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        } else {
+            throw new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다.");
+        }
     }
 
     // 액세스 토큰 발급
     public String generateAccessToken(Authentication authentication) {
         String authorities = getAuthorities(authentication);
         long now = (new Date()).getTime();
-        return buildToken(authentication.getName(), authorities, now + ACCESS_TOKEN_EXPIRE_TIME);
+        String accessToken = buildToken(authentication.getName(), authorities, now + ACCESS_TOKEN_EXPIRE_TIME);
+
+        storeRefreshTokenInRedis(authentication.getName(), accessToken);
+        return accessToken;
     }
 
 }
