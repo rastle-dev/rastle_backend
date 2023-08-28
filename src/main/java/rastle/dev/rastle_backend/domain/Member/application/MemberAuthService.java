@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.LoginDto;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.SignUpDto;
 import rastle.dev.rastle_backend.domain.Member.model.Member;
@@ -30,6 +31,7 @@ import static rastle.dev.rastle_backend.global.common.constants.JwtConstants.ACC
 import static rastle.dev.rastle_backend.global.common.constants.JwtConstants.BEARER_TYPE;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class MemberAuthService {
     private final MemberRepository memberRepository;
@@ -74,13 +76,8 @@ public class MemberAuthService {
     public ResponseEntity<String> login(LoginDto loginDto, HttpServletResponse response) {
         Authentication authentication = authenticate(loginDto);
         TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authentication, response);
-
-        if (jwtTokenProvider.validateToken(tokenInfoDTO.getAccessToken())) {
-            HttpHeaders responseHeaders = createAuthorizationHeader(tokenInfoDTO.getAccessToken());
-            return new ResponseEntity<>("로그인 성공", responseHeaders, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED);
-        }
+        HttpHeaders responseHeaders = createAuthorizationHeader(tokenInfoDTO.getAccessToken());
+        return new ResponseEntity<>("로그인 성공", responseHeaders, HttpStatus.OK);
     }
 
     private Authentication authenticate(LoginDto loginDto) {
@@ -104,15 +101,9 @@ public class MemberAuthService {
     @Transactional
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
         String username = getCurrentUsername();
-
-        String refreshToken = jwtTokenProvider.getRefreshTokenFromRequest(request);
-        if (jwtTokenProvider.validateToken(refreshToken)) {
-            deleteRefreshTokenFromRedis(username);
-            deleteCookie(response);
-            return new ResponseEntity<>("로그아웃 성공", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED);
-        }
+        deleteRefreshTokenFromRedis(username);
+        deleteCookie(response);
+        return new ResponseEntity<>("로그아웃 성공", HttpStatus.OK);
     }
 
     private String getCurrentUsername() {
@@ -138,19 +129,18 @@ public class MemberAuthService {
      * @return 토큰 정보 DTO
      */
     public TokenInfoDTO refreshAccessToken(HttpServletRequest request) {
-        String refreshToken = jwtTokenProvider.getRefreshTokenFromRequest(request);
-
-        if (jwtTokenProvider.validateToken(refreshToken)) {
-            Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(refreshToken);
-            String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
-            return TokenInfoDTO.builder()
-                    .grantType(BEARER_TYPE)
-                    .accessToken(newAccessToken)
-                    .accessTokenExpiresIn(new Date().getTime() + ACCESS_TOKEN_EXPIRE_TIME)
-                    .build();
-        } else {
-            throw new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다.");
+        if (request == null) {
+            throw new IllegalArgumentException("HttpServletRequest cannot be null");
         }
+
+        String refreshToken = jwtTokenProvider.getRefreshTokenFromRequest(request);
+        Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(refreshToken);
+        String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
+        return TokenInfoDTO.builder()
+                .grantType(BEARER_TYPE)
+                .accessToken(newAccessToken)
+                .accessTokenExpiresIn(new Date().getTime() + ACCESS_TOKEN_EXPIRE_TIME)
+                .build();
     }
 
 }

@@ -66,6 +66,7 @@ public class JwtTokenProvider {
         log.info(authentication.getName()); // 유저 id
         String accessToken = buildToken(authentication.getName(), authorities, now + ACCESS_TOKEN_EXPIRE_TIME);
         String refreshToken = buildToken(authentication.getName(), null, now + REFRESH_TOKEN_EXPIRE_TIME);
+
         storeRefreshTokenInRedis(authentication.getName(), refreshToken);
         storeRefreshTokenInCookie(response, refreshToken);
 
