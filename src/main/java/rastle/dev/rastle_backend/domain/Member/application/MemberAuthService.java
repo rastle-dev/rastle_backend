@@ -1,15 +1,22 @@
 package rastle.dev.rastle_backend.domain.Member.application;
 
-import java.util.concurrent.TimeUnit;
+import java.util.Date;
 
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.LoginDto;
@@ -19,7 +26,8 @@ import rastle.dev.rastle_backend.domain.Member.repository.MemberRepository;
 import rastle.dev.rastle_backend.domain.Token.dto.TokenDTO.TokenInfoDTO;
 import rastle.dev.rastle_backend.global.jwt.JwtTokenProvider;
 
-import static rastle.dev.rastle_backend.global.common.constants.JwtConstants.REFRESH_TOKEN_EXPIRE_TIME;
+import static rastle.dev.rastle_backend.global.common.constants.JwtConstants.ACCESS_TOKEN_EXPIRE_TIME;
+import static rastle.dev.rastle_backend.global.common.constants.JwtConstants.BEARER_TYPE;
 
 @Service
 @RequiredArgsConstructor
@@ -52,7 +60,7 @@ public class MemberAuthService {
      * @return 이메일 중복 여부
      */
     @Transactional
-    public boolean isEmailExists(String email) {
+    public boolean isEmailDuplicated(String email) {
         return memberRepository.findByEmail(email).isPresent();
     }
 
@@ -60,21 +68,89 @@ public class MemberAuthService {
      * 로그인
      * 
      * @param loginDto
-     * @return accessToken
+     * @return 로그인 성공 여부
      */
     @Transactional
-    public String login(LoginDto loginDto) {
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = loginDto.toAuthentication();
+    public ResponseEntity<String> login(LoginDto loginDto, HttpServletResponse response) {
+        Authentication authentication = authenticate(loginDto);
+        TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authentication, response);
 
-        Authentication authenticate = authenticationManagerBuilder.getObject()
-                .authenticate(usernamePasswordAuthenticationToken);
-
-        TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authenticate);
-
-        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-        valueOperations.set(authenticate.getName(), tokenInfoDTO.getRefreshToken());
-        redisTemplate.expire(authenticate.getName(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
-
-        return tokenInfoDTO.getAccessToken();
+        if (jwtTokenProvider.validateToken(tokenInfoDTO.getAccessToken())) {
+            HttpHeaders responseHeaders = createAuthorizationHeader(tokenInfoDTO.getAccessToken());
+            return new ResponseEntity<>("로그인 성공", responseHeaders, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED);
+        }
     }
+
+    private Authentication authenticate(LoginDto loginDto) {
+        UsernamePasswordAuthenticationToken token = loginDto.toAuthentication();
+        return authenticationManagerBuilder.getObject().authenticate(token);
+    }
+
+    private HttpHeaders createAuthorizationHeader(String accessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + accessToken);
+        return headers;
+    }
+
+    /**
+     * 로그아웃
+     * 
+     * @param request  HttpServletRequest
+     * @param response HttpServletResponse
+     * @return 로그아웃 성공 여부
+     */
+    @Transactional
+    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
+        String username = getCurrentUsername();
+
+        String refreshToken = jwtTokenProvider.getRefreshTokenFromRequest(request);
+        if (jwtTokenProvider.validateToken(refreshToken)) {
+            deleteRefreshTokenFromRedis(username);
+            deleteCookie(response);
+            return new ResponseEntity<>("로그아웃 성공", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    private String getCurrentUsername() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
+
+    private void deleteRefreshTokenFromRedis(String username) {
+        redisTemplate.delete(username);
+    }
+
+    private void deleteCookie(HttpServletResponse response) {
+        Cookie cookie = new Cookie("refreshToken", null);
+        cookie.setMaxAge(0);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        response.addCookie(cookie);
+    }
+
+    /**
+     * 액세스 토큰 재발급
+     * 
+     * @param request
+     * @return 토큰 정보 DTO
+     */
+    public TokenInfoDTO refreshAccessToken(HttpServletRequest request) {
+        String refreshToken = jwtTokenProvider.getRefreshTokenFromRequest(request);
+
+        if (jwtTokenProvider.validateToken(refreshToken)) {
+            Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(refreshToken);
+            String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
+            return TokenInfoDTO.builder()
+                    .grantType(BEARER_TYPE)
+                    .accessToken(newAccessToken)
+                    .accessTokenExpiresIn(new Date().getTime() + ACCESS_TOKEN_EXPIRE_TIME)
+                    .build();
+        } else {
+            throw new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다.");
+        }
+    }
+
 }

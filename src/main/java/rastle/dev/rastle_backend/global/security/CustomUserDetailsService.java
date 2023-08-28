@@ -27,4 +27,14 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
     }
 
+    public UserDetails loadUserById(String userIdString) {
+        Long userId = Long.parseLong(userIdString);
+        Optional<Member> byId = memberRepository.findById(userId);
+        if (byId.isPresent()) {
+            return UserPrincipal.create(byId.get());
+        } else {
+            throw new UsernameNotFoundException(userId + " -> 데이터베이스에서 찾을 수 없습니다.");
+        }
+    }
+
 }

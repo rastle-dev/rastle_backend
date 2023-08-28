@@ -7,6 +7,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import rastle.dev.rastle_backend.domain.Member.application.EmailCertificationService;
 import rastle.dev.rastle_backend.domain.Member.application.MemberAuthService;
@@ -15,7 +18,9 @@ import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.EmailCertificationD
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.LoginDto;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.PasswordResetRequestDto;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.SignUpDto;
+import rastle.dev.rastle_backend.domain.Token.dto.TokenDTO.TokenInfoDTO;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,24 +39,36 @@ public class MemberAuthController {
         @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "회원가입 성공"),
                         @ApiResponse(responseCode = "400", description = "회원가입 실패") })
         @PostMapping(value = "/signup")
-        public ResponseEntity<?> signUp(@RequestBody SignUpDto signUpDto) {
+        public ResponseEntity<?> signUp(@Valid @RequestBody SignUpDto signUpDto) {
                 return ResponseEntity.ok(memberAuthService.signUp(signUpDto));
         }
 
         @Operation(summary = "이메일 중복 확인", description = "이메일 중복 확인 API입니다.")
         @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "이메일 중복 확인 성공"),
                         @ApiResponse(responseCode = "400", description = "이메일 중복 확인 실패") })
-        @GetMapping(value = "/emailCheck/{email}")
-        public ResponseEntity<Boolean> checkEmailExists(@PathVariable String email) {
-                return ResponseEntity.ok(memberAuthService.isEmailExists(email));
+        @GetMapping(value = "/checkEmail/{email}")
+        public ResponseEntity<?> checkEmailExists(@PathVariable String email) {
+                boolean isDuplicated = memberAuthService.isEmailDuplicated(email);
+                if (isDuplicated) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("이메일이 이미 사용 중입니다.");
+                }
+                return ResponseEntity.status(HttpStatus.OK).body("이메일을 사용할 수 있습니다.");
         }
 
         @Operation(summary = "로그인", description = "로그인 API입니다.")
         @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "로그인 성공"),
                         @ApiResponse(responseCode = "400", description = "로그인 실패") })
         @PostMapping(value = "/login")
-        public ResponseEntity<?> login(@RequestBody LoginDto loginDto) {
-                return ResponseEntity.ok(memberAuthService.login(loginDto));
+        public ResponseEntity<?> login(@RequestBody LoginDto loginDto, HttpServletResponse response) {
+                return memberAuthService.login(loginDto, response);
+        }
+
+        @Operation(summary = "로그아웃", description = "로그아웃 API입니다.")
+        @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "로그아웃 성공"),
+                        @ApiResponse(responseCode = "400", description = "로그아웃 실패") })
+        @PostMapping("/logout")
+        public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
+                return memberAuthService.logout(request, response);
         }
 
         @Operation(summary = "이메일 인증", description = "이메일 인증 API입니다.")
@@ -86,6 +103,14 @@ public class MemberAuthController {
                 return ResponseEntity
                                 .ok(emailCertificationService
                                                 .sendPasswordResetMessage(passwordResetRequestDto.getEmail()));
+        }
+
+        @Operation(summary = "액세스 토큰 재발급", description = "액세스 토큰 재발급 API입니다.")
+        @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "토큰 재발급 성공"),
+                        @ApiResponse(responseCode = "400", description = "토큰 재발급 실패") })
+        @PostMapping(value = "/refreshAccessToken")
+        public ResponseEntity<TokenInfoDTO> refreshAccessToken(HttpServletRequest request) {
+                return ResponseEntity.ok(memberAuthService.refreshAccessToken(request));
         }
 
 }
