@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.Product.model.MarketProduct;
@@ -29,4 +30,10 @@ public class Market {
 
     @OneToMany(mappedBy = "market", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<MarketProduct> marketProducts = new ArrayList<>();
+    @Builder
+    public Market(String name, LocalDateTime saleStartTime, LocalDateTime saleEndTime) {
+        this.name = name;
+        this.saleStartTime = saleStartTime;
+        this.saleEndTime = saleEndTime;
+    }
 }
