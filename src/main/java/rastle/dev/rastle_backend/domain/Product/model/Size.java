@@ -1,4 +1,4 @@
-package rastle.dev.rastle_backend.domain.Cart.model;
+package rastle.dev.rastle_backend.domain.Product.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,30 +10,28 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import rastle.dev.rastle_backend.domain.Market.model.MarketProduct;
-import rastle.dev.rastle_backend.domain.Product.model.ProductBase;
+import rastle.dev.rastle_backend.domain.Product.model.Color;
 
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "cart_product", catalog = "rastle_db")
-public class CartProduct {
+@Table(name = "size", catalog = "rastle_db")
+public class Size {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cart_product_id")
+    @Column(name = "size_id")
     private Long id;
 
-    private String color;
-
-    private String size;
-
+    private String name;
     private int count;
 
     @ManyToOne
-    @JoinColumn(name = "cart_id")
-    private Cart cart;
+    @JoinColumn(name = "color_id")
+    private Color color;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private ProductBase product;
+    public Size(String name, int count, Color color) {
+        this.name = name;
+        this.count = count;
+        this.color = color;
+    }
 }
