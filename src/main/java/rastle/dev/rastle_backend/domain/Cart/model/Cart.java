@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.Member.model.Member;
+import rastle.dev.rastle_backend.domain.Product.model.CartProduct;
 
 import java.util.ArrayList;
 import java.util.List;

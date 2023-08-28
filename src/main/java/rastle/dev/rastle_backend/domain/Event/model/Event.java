@@ -5,9 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import rastle.dev.rastle_backend.domain.Product.model.ProductBase;
+import rastle.dev.rastle_backend.domain.Product.model.EventProduct;
 
 @Entity
 @Getter
@@ -29,4 +30,10 @@ public class Event {
 
     @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<EventProduct> eventProducts = new ArrayList<>();
+    @Builder
+    public Event(String name, LocalDateTime eventStartDate, LocalDateTime eventEndDate) {
+        this.name = name;
+        this.eventStartDate = eventStartDate;
+        this.eventEndDate = eventEndDate;
+    }
 }
