@@ -71,7 +71,7 @@ public class MemberAuthController {
                 return memberAuthService.logout(request, response);
         }
 
-        @Operation(summary = "이메일 인증", description = "이메일 인증 API입니다.")
+        @Operation(summary = "이메일 인증 메일 전송", description = "이메일 인증 API입니다.")
         @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "이메일 인증 성공"),
                         @ApiResponse(responseCode = "400", description = "이메일 인증 실패") })
         @PostMapping(value = "/emailCertification")
@@ -94,7 +94,7 @@ public class MemberAuthController {
                                                 emailCertificationCheckDto.getCode()));
         }
 
-        @Operation(summary = "비밀번호 초기화", description = "비밀번호 초기화 API입니다.")
+        @Operation(summary = "비밀번호 초기화 메일 전송", description = "비밀번호 초기화 API입니다.")
         @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "비밀번호 초기화 성공"),
                         @ApiResponse(responseCode = "400", description = "비밀번호 초기화 실패") })
         @PostMapping(value = "/resetPassword")
