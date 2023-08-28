@@ -36,7 +36,6 @@ public class JwtFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         log.info(request.getMethod() + " " + request.getRequestURI());
-
         try {
             // 1. request Header에서 토큰 꺼냄, 여기서 HTTP ONLY 쿠키에서 읽어오게 변경 가능
             String jwt = resolveToken(request);
@@ -92,7 +91,9 @@ public class JwtFilter extends OncePerRequestFilter {
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
-            return bearerToken.substring(7);
+            String actualToken = bearerToken.substring(7);
+            log.info("Extracted Token: " + actualToken);
+            return actualToken;
         }
         return null;
     }
