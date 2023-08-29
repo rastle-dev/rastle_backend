@@ -24,6 +24,7 @@ public class ProductBase {
     private String name;
 
     private int price;
+    private int discount;
     @Column(name = "is_event_product")
     private boolean isEventProduct;
 
@@ -32,6 +33,8 @@ public class ProductBase {
 
     @Column(name = "sub_thumbnail_image")
     private String subThumbnailImage;
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Color> colors = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<OrderProduct> orderProducts = new ArrayList<>();

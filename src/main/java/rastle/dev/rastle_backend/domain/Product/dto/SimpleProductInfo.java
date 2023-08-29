@@ -24,4 +24,6 @@ public class SimpleProductInfo {
     String subThumbnail;
     @Schema(description = "이벤트 상품 여부")
     boolean isEvent;
+    @Schema(description = "할인율")
+    int discount;
 }
