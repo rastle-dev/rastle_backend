@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @EnableJpaAuditing
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
-//@SpringBootApplication
 public class RastleBackendApplication {
 
     public static void main(String[] args) {

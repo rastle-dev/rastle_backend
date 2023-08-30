@@ -30,5 +30,13 @@ public class ProductDTO {
         List<String> detailImages;
     }
 
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SampleDto {
+        String test;
+    }
+
+
 
 }
