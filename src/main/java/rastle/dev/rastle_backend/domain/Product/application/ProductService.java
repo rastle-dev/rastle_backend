@@ -15,14 +15,12 @@ import rastle.dev.rastle_backend.domain.Event.repository.EventRepository;
 import rastle.dev.rastle_backend.domain.Market.model.Market;
 import rastle.dev.rastle_backend.domain.Market.repository.MarketRepository;
 import rastle.dev.rastle_backend.domain.Product.dto.ColorInfo;
-import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO;
 import rastle.dev.rastle_backend.domain.Product.model.*;
 import rastle.dev.rastle_backend.domain.Product.repository.*;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductCreateRequest;
 import rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo;
 import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
 import rastle.dev.rastle_backend.global.error.exception.S3ImageUploadException;
-import rastle.dev.rastle_backend.global.response.ServerResponse;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -95,33 +93,65 @@ public class ProductService {
     }
 
     @Transactional
-    public String uploadProductImages(Long id, MultipartFile mainThumbnail, MultipartFile subThumbnail, List<MultipartFile> mainImages, List<MultipartFile> detailImages) {
+    public String uploadMainThumbnail(Long id, MultipartFile mainThumbnail) {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         String mainThumbnailUrl = uploadImageToS3(mainThumbnail);
-        String subThumbnailUrl = uploadImageToS3(subThumbnail);
         productBase.setMainThumbnailImage(mainThumbnailUrl);
+
+
+        return "SAVED_MAIN_THUMBNAIL";
+    }
+
+
+    @Transactional
+    public String uploadSubThumbnail(Long id, MultipartFile subThumbnail) {
+        ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        String subThumbnailUrl = uploadImageToS3(subThumbnail);
         productBase.setSubThumbnailImage(subThumbnailUrl);
 
+
+        return "SAVED_SUB_THUMBNAIL";
+    }
+
+
+    @Transactional
+    public String uploadMainImages(Long id, List<MultipartFile> mainImages) {
+        ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+
         ProductImage mainImage = new ProductImage();
-        ProductImage detailImage = new ProductImage();
-        productImageRepository.saveAll(List.of(mainImage, detailImage));
+        productImageRepository.save(mainImage);
 
         productBase.setMainImage(mainImage);
-        productBase.setDetailImage(detailImage);
 
         List<Image> images = new ArrayList<>();
         for (MultipartFile mainImageFiles : mainImages) {
             Image newImage = new Image(uploadImageToS3(mainImageFiles), mainImage);
             images.add(newImage);
         }
-        for (MultipartFile detailImageFiles : detailImages) {
-            Image newImage = new Image(uploadImageToS3(detailImageFiles), detailImage);
+        imageRepository.saveAll(images);
+
+        return "SAVED_MAIN_IMAGES";
+    }
+
+    @Transactional
+    public String uploadDetailImages(Long id, List<MultipartFile> detailImages) {
+        ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+
+        ProductImage detailImage = new ProductImage();
+        productImageRepository.save(detailImage);
+
+        productBase.setDetailImage(detailImage);
+
+        List<Image> images = new ArrayList<>();
+        for (MultipartFile mainImageFiles : detailImages) {
+            Image newImage = new Image(uploadImageToS3(mainImageFiles), detailImage);
             images.add(newImage);
         }
         imageRepository.saveAll(images);
 
-        return "SAVED";
+        return "SAVED_DETAIL_IMAGES";
     }
+
 
     private String uploadImageToS3(MultipartFile file) {
         String fileName = file.getOriginalFilename();
