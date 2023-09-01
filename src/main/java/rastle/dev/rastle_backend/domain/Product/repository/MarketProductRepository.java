@@ -18,7 +18,8 @@ public interface MarketProductRepository extends JpaRepository<MarketProduct, Lo
                     "mp.price, " +
                     "mp.mainThumbnailImage, " +
                     "mp.subThumbnailImage, " +
-                    "mp.isEventProduct) " +
+                    "mp.isEventProduct, " +
+                    "mp.discount) " +
                     "from MarketProduct mp " +
                     "join Market m on m.id = mp.market.id " +
                     "where m.saleStartTime <= :currentTime " +
@@ -32,7 +33,8 @@ public interface MarketProductRepository extends JpaRepository<MarketProduct, Lo
                     "mp.price, " +
                     "mp.mainThumbnailImage, " +
                     "mp.subThumbnailImage, " +
-                    "mp.isEventProduct) " +
+                    "mp.isEventProduct, " +
+                    "mp.discount) " +
                     "from MarketProduct mp " +
                     "join Market m on m.id = mp.market.id " +
                     "where m.saleEndTime <= :currentTime "

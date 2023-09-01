@@ -27,4 +27,9 @@ public class Image {
     @ManyToOne
     @JoinColumn(name = "product_image_id")
     private ProductImage productImage;
+
+    public Image(String imageUrl, ProductImage productImage) {
+        this.imageUrl = imageUrl;
+        this.productImage = productImage;
+    }
 }

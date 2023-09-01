@@ -12,5 +12,11 @@ public class EventDTO {
         String name;
         String startDate;
         String endDate;
+        String startHour;
+        String startMinute;
+        String startSecond;
+        String endHour;
+        String endMinute;
+        String endSecond;
     }
 }

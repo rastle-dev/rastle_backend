@@ -22,8 +22,8 @@ public class EventProduct extends ProductBase {
     @JoinColumn(name = "event_id")
     private Event event;
     @Builder
-    public EventProduct(String name, int price, boolean isEventProduct, String mainThumbnailImage, String subThumbnailImage, Event event) {
-        super(name, price, isEventProduct, mainThumbnailImage, subThumbnailImage);
+    public EventProduct(String name, int price, boolean isEventProduct, String mainThumbnailImage, String subThumbnailImage, Event event, int discount) {
+        super(name, price, isEventProduct, mainThumbnailImage, subThumbnailImage, discount);
         this.event = event;
     }
 }

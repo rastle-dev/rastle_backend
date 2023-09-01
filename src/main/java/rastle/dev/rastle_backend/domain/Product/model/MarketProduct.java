@@ -21,13 +21,9 @@ public class MarketProduct extends ProductBase {
     @JoinColumn(name = "market_id")
     private Market market;
 
-
-
-    @OneToMany(mappedBy = "marketProduct", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<Color> colors = new ArrayList<>();
     @Builder
-    public MarketProduct(String name, int price, boolean isEventProduct, String mainThumbnailImage, String subThumbnailImage, Market market) {
-        super(name, price, isEventProduct, mainThumbnailImage, subThumbnailImage);
+    public MarketProduct(String name, int price, boolean isEventProduct, String mainThumbnailImage, String subThumbnailImage, Market market, int discount) {
+        super(name, price, isEventProduct, mainThumbnailImage, subThumbnailImage, discount);
         this.market = market;
     }
 }

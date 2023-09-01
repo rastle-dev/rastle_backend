@@ -24,8 +24,8 @@ public class MarketService {
     public String createMarket(MarketCreateRequest createRequest) {
         Market newMarket = Market.builder()
                 .name(createRequest.getName())
-                .saleStartTime(TimeUtil.convertStringToLocalDateTime(createRequest.getStartDate(), 0, 0))
-                .saleEndTime(TimeUtil.convertStringToLocalDateTime(createRequest.getEndDate(), 23, 59))
+                .saleStartTime(TimeUtil.convertStringToLocalDateTime(createRequest.getStartDate(),createRequest.getStartHour(), createRequest.getStartMinute(), createRequest.getStartSecond()))
+                .saleEndTime(TimeUtil.convertStringToLocalDateTime(createRequest.getEndDate(), createRequest.getEndHour(), createRequest.getEndMinute(), createRequest.getEndSecond()))
                 .build();
         marketRepository.save(newMarket);
         return "CREATED";

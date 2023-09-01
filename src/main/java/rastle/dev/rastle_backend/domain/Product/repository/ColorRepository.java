@@ -9,13 +9,13 @@ import rastle.dev.rastle_backend.domain.Product.model.Color;
 import java.util.List;
 
 public interface ColorRepository extends JpaRepository<Color, Long> {
-    List<Color> findColorsByMarketProductId(Long id);
+    List<Color> findColorsByProductId(Long id);
 
     @Query(
             "select new rastle.dev.rastle_backend.domain.Product.dto.ColorInfo(c.name, s.name, s.count) " +
                     "from Color c " +
                     "JOIN Size s on s.color.id = c.id " +
-                    "WHERE c.marketProduct.id = :id"
+                    "WHERE c.product.id = :id"
     )
     List<ColorInfo> findColorInfoByProductId(@Param("id") Long id);
 }

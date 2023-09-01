@@ -13,11 +13,21 @@ public class ProductDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    @Schema(description = "상품 생성 요청 dto")
     public static class ProductCreateRequest {
+        @Schema(description = "상품 이름")
         String name;
+        @Schema(description = "가격")
         int price;
-        String mainThumbnail;
-        String subThumbnail;
+        @Schema(description = "할인률")
+        int discount;
+        @Schema(description = "이벤트 인지 마켓인지")
+        boolean eventCategory;
+        @Schema(description = "이벤트 혹은 마켓아이디")
+        Long categoryId;
+        @Schema(description = "제품 색상, 사이즈 정세")
+        List<ColorInfo> colorAndSizes;
+
 
     }
 
@@ -25,10 +35,34 @@ public class ProductDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
+    @Schema(description = "상품 상세 이미지 dto")
     public static class ProductImages {
+        @Schema(description = "상품 메인 이미지 리스트")
         List<String> mainImages;
+        @Schema(description = "상품 상세 이미지 리스트")
         List<String> detailImages;
     }
 
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @Schema(description = "상품 생성 결과")
+    public static class ProductCreateResult {
+        @Schema(description = "상품 아이디")
+        Long id;
+        @Schema(description = "상품 이름")
+        String name;
+        @Schema(description = "상품 가격")
+        int price;
+        @Schema(description = "상품 할인률")
+        int discount;
+        @Schema(description = "이벤트 상품 여부")
+        boolean isEvent;
+        @Schema(description = "이벤트 상품이면 이벤트 아이디, 마켓 상품이면 마켓 아이디")
+        Long categoryId;
+        @Schema(description = "색상 & 사이즈 정보")
+        List<ColorInfo> colorAndSizes;
+    }
 
 }

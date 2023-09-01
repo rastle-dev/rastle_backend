@@ -5,7 +5,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import rastle.dev.rastle_backend.domain.Product.dto.ProductDetail;
 import rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo;
 import rastle.dev.rastle_backend.domain.Product.model.ProductBase;
 
@@ -22,7 +21,8 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
                 "pb.price, " +
                 "pb.mainThumbnailImage, " +
                 "pb.subThumbnailImage," +
-                "pb.isEventProduct) " +
+                "pb.isEventProduct, " +
+                "pb.discount) " +
                 "from ProductBase pb"
     )
     Page<SimpleProductInfo> getProductInfos(Pageable pageable);
@@ -33,7 +33,8 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
                     "pb.price, " +
                     "pb.mainThumbnailImage, " +
                     "pb.subThumbnailImage," +
-                    "pb.isEventProduct) " +
+                    "pb.isEventProduct, " +
+                    "pb.discount) " +
                     "from ProductBase pb " +
                     "where pb.id = :id"
     )

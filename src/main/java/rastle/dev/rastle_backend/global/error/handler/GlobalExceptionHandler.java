@@ -12,10 +12,10 @@ import org.springframework.web.context.request.WebRequest;
 import rastle.dev.rastle_backend.global.error.exception.InvalidRequestException;
 import rastle.dev.rastle_backend.global.error.exception.NotAuthorizedException;
 import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
+import rastle.dev.rastle_backend.global.error.exception.S3ImageUploadException;
 import rastle.dev.rastle_backend.global.error.response.ErrorResponse;
 
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.HttpStatus.*;
 
 @Slf4j
 @RestControllerAdvice
@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
     ) {
         log.warn(ex.getMessage());
         return new ResponseEntity<>(ErrorResponse.builder()
-                .errorCode(404L)
+                .errorCode(409L)
                 .message(ex.getMessage())
                 .build()
                 , NOT_FOUND);
@@ -78,8 +78,21 @@ public class GlobalExceptionHandler {
                 ErrorResponse.builder()
                         .errorCode(409L)
                         .message(builder.toString()).build(),
-                HttpStatus.CONFLICT
+                CONFLICT
         );
 
+    }
+
+    @ExceptionHandler(S3ImageUploadException.class)
+    protected final ResponseEntity<ErrorResponse> handleS3ImageException(
+            S3ImageUploadException ex, WebRequest request
+    ) {
+        log.warn(ex.getMessage());
+        return new ResponseEntity<>(ErrorResponse.builder()
+                .errorCode(409L)
+                .message(ex.getMessage())
+                .build(),
+                CONFLICT
+        );
     }
 }

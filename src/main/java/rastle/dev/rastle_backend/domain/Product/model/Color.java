@@ -21,13 +21,13 @@ public class Color {
 
     @ManyToOne
     @JoinColumn(name = "product_id")
-    private MarketProduct marketProduct;
+    private ProductBase product;
 
     @OneToMany(mappedBy = "color", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Size> sizes = new ArrayList<>();
 
-    public Color(String name, MarketProduct marketProduct) {
+    public Color(String name, ProductBase productBase) {
         this.name = name;
-        this.marketProduct = marketProduct;
+        this.product = productBase;
     }
 }

@@ -24,6 +24,7 @@ public class ProductBase {
     private String name;
 
     private int price;
+    private int discount;
     @Column(name = "is_event_product")
     private boolean isEventProduct;
 
@@ -32,6 +33,8 @@ public class ProductBase {
 
     @Column(name = "sub_thumbnail_image")
     private String subThumbnailImage;
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Color> colors = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<OrderProduct> orderProducts = new ArrayList<>();
@@ -50,11 +53,28 @@ public class ProductBase {
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<CartProduct> cartProducts = new ArrayList<>();
 
-    public ProductBase(String name, int price, boolean isEventProduct, String mainThumbnailImage, String subThumbnailImage) {
+    public ProductBase(String name, int price, boolean isEventProduct, String mainThumbnailImage, String subThumbnailImage, int discount) {
         this.name = name;
         this.price = price;
         this.isEventProduct = isEventProduct;
         this.mainThumbnailImage = mainThumbnailImage;
         this.subThumbnailImage = subThumbnailImage;
+        this.discount = discount;
+    }
+
+    public void setMainThumbnailImage(String mainThumbnailImage) {
+        this.mainThumbnailImage = mainThumbnailImage;
+    }
+
+    public void setSubThumbnailImage(String subThumbnailImage) {
+        this.subThumbnailImage = subThumbnailImage;
+    }
+
+    public void setMainImage(ProductImage mainImage) {
+        this.mainImage = mainImage;
+    }
+
+    public void setDetailImage(ProductImage detailImage) {
+        this.detailImage = detailImage;
     }
 }
