@@ -16,8 +16,11 @@ public class ProductDTO {
     public static class ProductCreateRequest {
         String name;
         int price;
-        String mainThumbnail;
-        String subThumbnail;
+        int discount;
+        boolean eventCategory;
+        Long categoryId;
+        List<ColorInfo> colorAndSizes;
+
 
     }
 
@@ -26,6 +29,7 @@ public class ProductDTO {
     @AllArgsConstructor
     @Builder
     public static class ProductImages {
+
         List<String> mainImages;
         List<String> detailImages;
     }
@@ -33,10 +37,16 @@ public class ProductDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class SampleDto {
-        String test;
+    @Builder
+    public static class ProductCreateResult {
+        Long id;
+        String name;
+        int price;
+        int discount;
+        boolean isEvent;
+        Long categoryId;
+        List<ColorInfo> colorAndSizes;
     }
-
 
 
 }

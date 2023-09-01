@@ -53,11 +53,28 @@ public class ProductBase {
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<CartProduct> cartProducts = new ArrayList<>();
 
-    public ProductBase(String name, int price, boolean isEventProduct, String mainThumbnailImage, String subThumbnailImage) {
+    public ProductBase(String name, int price, boolean isEventProduct, String mainThumbnailImage, String subThumbnailImage, int discount) {
         this.name = name;
         this.price = price;
         this.isEventProduct = isEventProduct;
         this.mainThumbnailImage = mainThumbnailImage;
         this.subThumbnailImage = subThumbnailImage;
+        this.discount = discount;
+    }
+
+    public void setMainThumbnailImage(String mainThumbnailImage) {
+        this.mainThumbnailImage = mainThumbnailImage;
+    }
+
+    public void setSubThumbnailImage(String subThumbnailImage) {
+        this.subThumbnailImage = subThumbnailImage;
+    }
+
+    public void setMainImage(ProductImage mainImage) {
+        this.mainImage = mainImage;
+    }
+
+    public void setDetailImage(ProductImage detailImage) {
+        this.detailImage = detailImage;
     }
 }
