@@ -52,34 +52,22 @@ public class ProductService {
         List<Size> sizeToSave = new ArrayList<>();
         if (createRequest.isEventCategory()) {
             Event event = eventRepository.findById(createRequest.getCategoryId()).orElseThrow(NotFoundByIdException::new);
-            EventProduct eventProduct = EventProduct.builder()
-                    .name(createRequest.getName())
-                    .price(createRequest.getPrice())
-                    .isEventProduct(true)
-                    .discount(createRequest.getDiscount())
-                    .event(event)
-                    .build();
+            EventProduct eventProduct = createRequest.toEventProduct(event);
             saved = eventProductRepository.save(eventProduct);
         } else {
             Market market = marketRepository.findById(createRequest.getCategoryId()).orElseThrow(NotFoundByIdException::new);
-            MarketProduct marketProduct = MarketProduct.builder()
-                    .name(createRequest.getName())
-                    .price(createRequest.getPrice())
-                    .isEventProduct(false)
-                    .discount(createRequest.getDiscount())
-                    .market(market)
-                    .build();
+            MarketProduct marketProduct = createRequest.toMarketProduct(market);
             saved = marketProductRepository.save(marketProduct);
         }
-        for (ColorInfo colorAndSize : createRequest.getColorAndSizes()) {
-            Color color = colorToSave.getOrDefault(colorAndSize.getColor(), new Color(colorAndSize.getColor(), saved));
-            sizeToSave.add(new Size(colorAndSize.getSize(), colorAndSize.getCount(), color));
-            colorToSave.put(colorAndSize.getColor(), color);
-
-        }
+        setColorAndSize(createRequest.getColorAndSizes(), colorToSave, sizeToSave, saved);
         colorRepository.saveAll(colorToSave.values());
         sizeRepository.saveAll(sizeToSave);
 
+        return toCreateResult(saved, createRequest);
+
+    }
+
+    private ProductCreateResult toCreateResult(ProductBase saved, ProductCreateRequest createRequest) {
         return ProductCreateResult.builder()
                 .id(saved.getId())
                 .name(saved.getName())
@@ -90,6 +78,14 @@ public class ProductService {
                 .discount(saved.getDiscount())
                 .build();
 
+    }
+
+    private void setColorAndSize(List<ColorInfo> colorInfos, HashMap<String, Color> colorToSave, List<Size> sizeToSave, ProductBase saved) {
+        for (ColorInfo colorAndSize : colorInfos) {
+            Color color = colorToSave.getOrDefault(colorAndSize.getColor(), new Color(colorAndSize.getColor(), saved));
+            sizeToSave.add(new Size(colorAndSize.getSize(), colorAndSize.getCount(), color));
+            colorToSave.put(colorAndSize.getColor(), color);
+        }
     }
 
     @Transactional
@@ -123,11 +119,7 @@ public class ProductService {
 
         productBase.setMainImage(mainImage);
 
-        List<Image> images = new ArrayList<>();
-        for (MultipartFile mainImageFiles : mainImages) {
-            Image newImage = new Image(uploadImageToS3(mainImageFiles), mainImage);
-            images.add(newImage);
-        }
+        List<Image> images = uploadAndGetImageList(mainImages, mainImage);
         imageRepository.saveAll(images);
 
         return "SAVED_MAIN_IMAGES";
@@ -142,14 +134,19 @@ public class ProductService {
 
         productBase.setDetailImage(detailImage);
 
-        List<Image> images = new ArrayList<>();
-        for (MultipartFile mainImageFiles : detailImages) {
-            Image newImage = new Image(uploadImageToS3(mainImageFiles), detailImage);
-            images.add(newImage);
-        }
+        List<Image> images = uploadAndGetImageList(detailImages, detailImage);
         imageRepository.saveAll(images);
 
         return "SAVED_DETAIL_IMAGES";
+    }
+
+    private List<Image> uploadAndGetImageList(List<MultipartFile> images, ProductImage image) {
+        List<Image> toReturn = new ArrayList<>();
+        for (MultipartFile mainImageFile : images) {
+            Image newImage = new Image(uploadImageToS3(mainImageFile), image);
+            toReturn.add(newImage);
+        }
+        return toReturn;
     }
 
 
