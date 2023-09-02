@@ -5,6 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import rastle.dev.rastle_backend.domain.Event.model.Event;
+import rastle.dev.rastle_backend.domain.Market.model.Market;
+import rastle.dev.rastle_backend.domain.Product.model.EventProduct;
+import rastle.dev.rastle_backend.domain.Product.model.MarketProduct;
 
 import java.util.List;
 
@@ -27,6 +31,26 @@ public class ProductDTO {
         Long categoryId;
         @Schema(description = "제품 색상, 사이즈 정세")
         List<ColorInfo> colorAndSizes;
+
+        public EventProduct toEventProduct(Event event) {
+            return EventProduct.builder()
+                    .name(name)
+                    .price(price)
+                    .isEventProduct(true)
+                    .discount(discount)
+                    .event(event)
+                    .build();
+        }
+
+        public MarketProduct toMarketProduct(Market market) {
+            return MarketProduct.builder()
+                    .name(name)
+                    .price(price)
+                    .isEventProduct(false)
+                    .discount(discount)
+                    .market(market)
+                    .build();
+        }
 
 
     }
