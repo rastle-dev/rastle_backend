@@ -23,33 +23,37 @@ import rastle.dev.rastle_backend.global.oauth2.OAuth2UserInfoFactory;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
-    private final MemberRepository memberRepository;
+        private final MemberRepository memberRepository;
 
-    @Transactional
-    @Override
-    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
-        OAuth2User oAuth2User = delegate.loadUser(userRequest);
+        @Transactional
+        @Override
+        public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+                OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
+                OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
-        UserLoginType loginType = UserLoginType
-                .valueOfLabel(userRequest.getClientRegistration().getRegistrationId().toUpperCase());
-        String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
-                .getUserInfoEndpoint().getUserNameAttributeName();
-        OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(loginType.getType(),
-                oAuth2User.getAttributes());
-        Member member = memberRepository.findByEmail(userInfo.getEmail())
-                .orElseGet(() -> createUser(userInfo, loginType));
-        return UserPrincipal.create(member, oAuth2User.getAttributes());
-    }
+                UserLoginType loginType = UserLoginType
+                                .valueOfLabel(userRequest.getClientRegistration().getRegistrationId().toUpperCase());
+                String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
+                                .getUserInfoEndpoint().getUserNameAttributeName();
+                OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(loginType.getType(),
+                                oAuth2User.getAttributes());
 
-    private Member createUser(OAuth2UserInfo memberInfo, UserLoginType loginType) {
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        String encode = passwordEncoder.encode(memberInfo.getEmail());
-        return Member.builder().email(memberInfo.getEmail())
-                .userName(memberInfo.getName())
-                .password(encode)
-                .userLoginType(loginType)
-                .authority(Authority.ROLE_USER)
-                .build();
-    }
+                Member member = memberRepository.findByEmail(userInfo.getEmail())
+                                .orElseGet(() -> createUser(userInfo, loginType));
+
+                return UserPrincipal.create(member, oAuth2User.getAttributes());
+        }
+
+        private Member createUser(OAuth2UserInfo memberInfo, UserLoginType loginType) {
+                PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                String encode = passwordEncoder.encode(memberInfo.getEmail());
+                Member member = Member.builder().email(memberInfo.getEmail())
+                                .userName(memberInfo.getName())
+                                .password(encode)
+                                .userLoginType(loginType)
+                                .authority(Authority.ROLE_USER)
+                                .build();
+
+                return memberRepository.save(member);
+        }
 }

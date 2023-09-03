@@ -28,14 +28,14 @@ public class CustomLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler im
 
     @Override
     @Transactional
-    public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
+            throws IOException, ServletException {
         log.info("로그아웃 호출됐음");
-        setDefaultTargetUrl("https://rastle_dev.site/auth/logout-redirect");
+        setDefaultTargetUrl("https://rastledev.site/auth/logout-redirect");
         String token = request.getHeader("Authorization").split(" ")[1];
         log.info("token = " + token);
         Authentication auth = jwtTokenProvider.getAuthentication(token);
         User principal = (User) auth.getPrincipal();
-
 
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         if (valueOperations.get(principal.getUsername()) == null) {

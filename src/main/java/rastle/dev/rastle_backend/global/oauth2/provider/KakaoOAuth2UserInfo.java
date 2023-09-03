@@ -10,7 +10,6 @@ public class KakaoOAuth2UserInfo extends OAuth2UserInfo {
         super(attributes);
     }
 
-
     @Override
     public String getId() {
         return attributes.get("id").toString();
@@ -18,25 +17,24 @@ public class KakaoOAuth2UserInfo extends OAuth2UserInfo {
 
     @Override
     public String getName() {
-        Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
-
-        if (properties == null) {
-            return null;
+        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+        if (kakaoAccount != null) {
+            Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
+            if (profile != null) {
+                return (String) profile.get("nickname");
+            }
         }
-
-        return (String) properties.get("nickname");
+        return null;
     }
 
     @Override
     public String getEmail() {
-        Map<String, Object> properties = (Map<String, Object>) attributes.get("kakao_account");
-
-        if (properties == null) {
-            return null;
+        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+        if (kakaoAccount != null) {
+            return (String) kakaoAccount.get("email");
         }
-        return (String) properties.get("email");
+        return null;
     }
-
 
     @Override
     public String getProvider() {
