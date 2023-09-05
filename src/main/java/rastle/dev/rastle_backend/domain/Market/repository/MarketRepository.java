@@ -11,8 +11,8 @@ import java.util.List;
 
 public interface MarketRepository extends JpaRepository<Market, Long> {
     @Query(
-            "select new rastle.dev.rastle_backend.domain.Market.dto.MarketInfo(m.id, m.name, m.saleStartTime, m.saleEndTime)" +
-                    "from Market m where m.saleStartTime <= :currentTime and :currentTime <= m.saleEndTime"
+            "select new rastle.dev.rastle_backend.domain.Market.dto.MarketInfo(m.id, m.name, m.saleStartTime)" +
+                    "from Market m where m.saleStartTime <= :currentTime"
     )
     List<MarketInfo> getCurrentMarkets(@Param("currentTime") LocalDateTime currentTime);
 }

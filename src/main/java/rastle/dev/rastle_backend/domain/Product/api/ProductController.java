@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import rastle.dev.rastle_backend.domain.Product.application.ProductService;
 import rastle.dev.rastle_backend.domain.Product.dto.ColorInfo;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductCreateRequest;
+import rastle.dev.rastle_backend.domain.Product.dto.ProductImageInfo;
 import rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo;
 import rastle.dev.rastle_backend.global.common.annotation.GetExecutionTime;
 import rastle.dev.rastle_backend.global.error.response.ErrorResponse;
@@ -47,7 +48,7 @@ public class ProductController {
 
     @Operation(summary = "상품 메인 썸네일 이미지 등록 API", description = "상품 메인 썸네일 이미지 등록 API 입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "생성 성공시"),
+            @ApiResponse(responseCode = "200", description = "생성 성공시", content = @Content(schema = @Schema(implementation = ProductImageInfo.class))),
             @ApiResponse(responseCode = "401", description = "토큰 만료시", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "409", description = "클라이언트에서 잘못된 데이터 전송시", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "503", description = "서버 내부에서 핸들링되지 않은 예외 발생시", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
@@ -63,7 +64,7 @@ public class ProductController {
 
     @Operation(summary = "상품 서브 썸네일 이미지 등록 API", description = "상품 서브 썸네일 이미지 등록 API 입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "생성 성공시"),
+            @ApiResponse(responseCode = "200", description = "생성 성공시", content = @Content(schema = @Schema(implementation = ProductImageInfo.class))),
             @ApiResponse(responseCode = "401", description = "토큰 만료시", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "409", description = "클라이언트에서 잘못된 데이터 전송시", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "503", description = "서버 내부에서 핸들링되지 않은 예외 발생시", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
@@ -78,7 +79,7 @@ public class ProductController {
 
     @Operation(summary = "상품 메인 이미지들 등록 API", description = "상품 메인 이미지들 등록 API 입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "생성 성공시"),
+            @ApiResponse(responseCode = "200", description = "생성 성공시", content = @Content(schema = @Schema(implementation = ProductImageInfo.class))),
             @ApiResponse(responseCode = "401", description = "토큰 만료시", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "409", description = "클라이언트에서 잘못된 데이터 전송시", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "503", description = "서버 내부에서 핸들링되지 않은 예외 발생시", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
@@ -93,7 +94,7 @@ public class ProductController {
 
     @Operation(summary = "상품 상세 이미지들 등록 API", description = "상품 상세 이미지들 등록 API 입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "생성 성공시"),
+            @ApiResponse(responseCode = "200", description = "생성 성공시", content = @Content(schema = @Schema(implementation = ProductImageInfo.class))),
             @ApiResponse(responseCode = "401", description = "토큰 만료시", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "409", description = "클라이언트에서 잘못된 데이터 전송시", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "503", description = "서버 내부에서 핸들링되지 않은 예외 발생시", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))

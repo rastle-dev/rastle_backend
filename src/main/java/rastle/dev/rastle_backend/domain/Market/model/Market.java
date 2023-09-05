@@ -25,15 +25,12 @@ public class Market {
     @Column(name = "sale_start_time")
     private LocalDateTime saleStartTime;
 
-    @Column(name = "sale_end_time")
-    private LocalDateTime saleEndTime;
 
     @OneToMany(mappedBy = "market", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<MarketProduct> marketProducts = new ArrayList<>();
     @Builder
-    public Market(String name, LocalDateTime saleStartTime, LocalDateTime saleEndTime) {
+    public Market(String name, LocalDateTime saleStartTime) {
         this.name = name;
         this.saleStartTime = saleStartTime;
-        this.saleEndTime = saleEndTime;
     }
 }

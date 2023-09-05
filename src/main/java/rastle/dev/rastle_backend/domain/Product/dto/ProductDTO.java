@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import rastle.dev.rastle_backend.domain.Category.model.Category;
 import rastle.dev.rastle_backend.domain.Event.model.Event;
 import rastle.dev.rastle_backend.domain.Market.model.Market;
 import rastle.dev.rastle_backend.domain.Product.model.EventProduct;
@@ -28,24 +29,28 @@ public class ProductDTO {
         @Schema(description = "이벤트 인지 마켓인지")
         boolean eventCategory;
         @Schema(description = "이벤트 혹은 마켓아이디")
+        Long marketId;
+        @Schema(description = "카테고리 아이디")
         Long categoryId;
         @Schema(description = "제품 색상, 사이즈 정세")
         List<ColorInfo> colorAndSizes;
 
-        public EventProduct toEventProduct(Event event) {
+        public EventProduct toEventProduct(Event event, Category category) {
             return EventProduct.builder()
                     .name(name)
                     .price(price)
+                    .category(category)
                     .isEventProduct(true)
                     .discount(discount)
                     .event(event)
                     .build();
         }
 
-        public MarketProduct toMarketProduct(Market market) {
+        public MarketProduct toMarketProduct(Market market, Category category) {
             return MarketProduct.builder()
                     .name(name)
                     .price(price)
+                    .category(category)
                     .isEventProduct(false)
                     .discount(discount)
                     .market(market)

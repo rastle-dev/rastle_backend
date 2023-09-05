@@ -22,8 +22,7 @@ public interface MarketProductRepository extends JpaRepository<MarketProduct, Lo
                     "mp.discount) " +
                     "from MarketProduct mp " +
                     "join Market m on m.id = mp.market.id " +
-                    "where m.saleStartTime <= :currentTime " +
-                    "and :currentTime <= m.saleEndTime"
+                    "where m.saleStartTime <= :currentTime "
     )
     Page<SimpleProductInfo> getCurrentMarketProducts(@Param("currentTime") LocalDateTime currentTime, Pageable pageable);
     @Query(
@@ -36,8 +35,7 @@ public interface MarketProductRepository extends JpaRepository<MarketProduct, Lo
                     "mp.isEventProduct, " +
                     "mp.discount) " +
                     "from MarketProduct mp " +
-                    "join Market m on m.id = mp.market.id " +
-                    "where m.saleEndTime <= :currentTime "
+                    "join Market m on m.id = mp.market.id "
     )
     Page<SimpleProductInfo> getPastMarketProducts(@Param("currentTime") LocalDateTime currentTime, Pageable pageable);
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import rastle.dev.rastle_backend.domain.Category.model.Category;
 import rastle.dev.rastle_backend.domain.Orders.model.OrderProduct;
 
 import java.util.ArrayList;
@@ -53,13 +54,17 @@ public class ProductBase {
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<CartProduct> cartProducts = new ArrayList<>();
 
-    public ProductBase(String name, int price, boolean isEventProduct, String mainThumbnailImage, String subThumbnailImage, int discount) {
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+    public ProductBase(String name, int price, boolean isEventProduct, String mainThumbnailImage, String subThumbnailImage, int discount, Category category) {
         this.name = name;
         this.price = price;
         this.isEventProduct = isEventProduct;
         this.mainThumbnailImage = mainThumbnailImage;
         this.subThumbnailImage = subThumbnailImage;
         this.discount = discount;
+        this.category = category;
     }
 
     public void setMainThumbnailImage(String mainThumbnailImage) {

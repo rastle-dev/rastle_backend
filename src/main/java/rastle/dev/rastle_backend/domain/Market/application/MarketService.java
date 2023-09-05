@@ -25,7 +25,6 @@ public class MarketService {
         Market newMarket = Market.builder()
                 .name(createRequest.getName())
                 .saleStartTime(TimeUtil.convertStringToLocalDateTime(createRequest.getStartDate(),createRequest.getStartHour(), createRequest.getStartMinute(), createRequest.getStartSecond()))
-                .saleEndTime(TimeUtil.convertStringToLocalDateTime(createRequest.getEndDate(), createRequest.getEndHour(), createRequest.getEndMinute(), createRequest.getEndSecond()))
                 .build();
         marketRepository.save(newMarket);
         return "CREATED";
