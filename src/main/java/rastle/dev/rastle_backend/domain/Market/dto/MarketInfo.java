@@ -15,5 +15,4 @@ public class MarketInfo {
     Long id;
     String name;
     LocalDateTime startDate;
-    LocalDateTime endDate;
 }

@@ -10,21 +10,26 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import rastle.dev.rastle_backend.domain.Category.model.Category;
+import rastle.dev.rastle_backend.domain.Category.repository.CategoryRepository;
 import rastle.dev.rastle_backend.domain.Event.model.Event;
 import rastle.dev.rastle_backend.domain.Event.repository.EventRepository;
 import rastle.dev.rastle_backend.domain.Market.model.Market;
 import rastle.dev.rastle_backend.domain.Market.repository.MarketRepository;
 import rastle.dev.rastle_backend.domain.Product.dto.ColorInfo;
+import rastle.dev.rastle_backend.domain.Product.dto.ProductImageInfo;
 import rastle.dev.rastle_backend.domain.Product.model.*;
 import rastle.dev.rastle_backend.domain.Product.repository.*;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductCreateRequest;
 import rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo;
+import rastle.dev.rastle_backend.global.component.S3Component;
 import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
 import rastle.dev.rastle_backend.global.error.exception.S3ImageUploadException;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.*;
 
@@ -41,22 +46,22 @@ public class ProductService {
     private final SizeRepository sizeRepository;
     private final ProductImageRepository productImageRepository;
     private final ImageRepository imageRepository;
-    private final AmazonS3 amazonS3;
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucket;
+    private final CategoryRepository categoryRepository;
+    private final S3Component s3Component;
 
     @Transactional
     public ProductCreateResult createProduct(ProductCreateRequest createRequest) {
         ProductBase saved;
         HashMap<String, Color> colorToSave = new HashMap<>();
         List<Size> sizeToSave = new ArrayList<>();
+        Category category = categoryRepository.findById(createRequest.getCategoryId()).orElseThrow(NotFoundByIdException::new);
         if (createRequest.isEventCategory()) {
-            Event event = eventRepository.findById(createRequest.getCategoryId()).orElseThrow(NotFoundByIdException::new);
-            EventProduct eventProduct = createRequest.toEventProduct(event);
+            Event event = eventRepository.findById(createRequest.getMarketId()).orElseThrow(NotFoundByIdException::new);
+            EventProduct eventProduct = createRequest.toEventProduct(event, category);
             saved = eventProductRepository.save(eventProduct);
         } else {
-            Market market = marketRepository.findById(createRequest.getCategoryId()).orElseThrow(NotFoundByIdException::new);
-            MarketProduct marketProduct = createRequest.toMarketProduct(market);
+            Market market = marketRepository.findById(createRequest.getMarketId()).orElseThrow(NotFoundByIdException::new);
+            MarketProduct marketProduct = createRequest.toMarketProduct(market, category);
             saved = marketProductRepository.save(marketProduct);
         }
         setColorAndSize(createRequest.getColorAndSizes(), colorToSave, sizeToSave, saved);
@@ -88,30 +93,37 @@ public class ProductService {
         }
     }
 
+
     @Transactional
-    public String uploadMainThumbnail(Long id, MultipartFile mainThumbnail) {
+    public ProductImageInfo uploadMainThumbnail(Long id, MultipartFile mainThumbnail) {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        String mainThumbnailUrl = uploadImageToS3(mainThumbnail);
+        String mainThumbnailUrl = s3Component.uploadSingleImageToS3(mainThumbnail);
         productBase.setMainThumbnailImage(mainThumbnailUrl);
 
 
-        return "SAVED_MAIN_THUMBNAIL";
+        return ProductImageInfo.builder()
+                .productBaseId(productBase.getId())
+                .imageUrls(List.of(mainThumbnailUrl))
+                .build();
     }
 
 
     @Transactional
-    public String uploadSubThumbnail(Long id, MultipartFile subThumbnail) {
+    public ProductImageInfo uploadSubThumbnail(Long id, MultipartFile subThumbnail) {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        String subThumbnailUrl = uploadImageToS3(subThumbnail);
+        String subThumbnailUrl = s3Component.uploadSingleImageToS3(subThumbnail);
         productBase.setSubThumbnailImage(subThumbnailUrl);
 
 
-        return "SAVED_SUB_THUMBNAIL";
+        return ProductImageInfo.builder()
+                .productBaseId(productBase.getId())
+                .imageUrls(List.of(subThumbnailUrl))
+                .build();
     }
 
 
     @Transactional
-    public String uploadMainImages(Long id, List<MultipartFile> mainImages) {
+    public ProductImageInfo uploadMainImages(Long id, List<MultipartFile> mainImages) {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
 
         ProductImage mainImage = new ProductImage();
@@ -119,14 +131,18 @@ public class ProductService {
 
         productBase.setMainImage(mainImage);
 
-        List<Image> images = uploadAndGetImageList(mainImages, mainImage);
+        List<Image> images = s3Component.uploadAndGetImageList(mainImages, mainImage);
         imageRepository.saveAll(images);
 
-        return "SAVED_MAIN_IMAGES";
+
+        return ProductImageInfo.builder()
+                .productBaseId(productBase.getId())
+                .imageUrls(images.stream().map(Image::getImageUrl).collect(Collectors.toList()))
+                .build();
     }
 
     @Transactional
-    public String uploadDetailImages(Long id, List<MultipartFile> detailImages) {
+    public ProductImageInfo uploadDetailImages(Long id, List<MultipartFile> detailImages) {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
 
         ProductImage detailImage = new ProductImage();
@@ -134,36 +150,16 @@ public class ProductService {
 
         productBase.setDetailImage(detailImage);
 
-        List<Image> images = uploadAndGetImageList(detailImages, detailImage);
+        List<Image> images = s3Component.uploadAndGetImageList(detailImages, detailImage);
         imageRepository.saveAll(images);
 
-        return "SAVED_DETAIL_IMAGES";
-    }
-
-    private List<Image> uploadAndGetImageList(List<MultipartFile> images, ProductImage image) {
-        List<Image> toReturn = new ArrayList<>();
-        for (MultipartFile mainImageFile : images) {
-            Image newImage = new Image(uploadImageToS3(mainImageFile), image);
-            toReturn.add(newImage);
-        }
-        return toReturn;
+        return ProductImageInfo.builder()
+                .productBaseId(productBase.getId())
+                .imageUrls(images.stream().map(Image::getImageUrl).collect(Collectors.toList()))
+                .build();
     }
 
 
-    private String uploadImageToS3(MultipartFile file) {
-        String fileName = file.getOriginalFilename();
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(file.getSize());
-        metadata.setContentType(file.getContentType());
-        try {
-
-            amazonS3.putObject(bucket, fileName, file.getInputStream(), metadata);
-        } catch (IOException e) {
-            log.info("Exception during uploading image to S3");
-            throw new S3ImageUploadException();
-        }
-        return amazonS3.getUrl(bucket, fileName).toString();
-    }
 
     @Transactional(readOnly = true)
     public Page<SimpleProductInfo> getProductInfos(Pageable pageable) {

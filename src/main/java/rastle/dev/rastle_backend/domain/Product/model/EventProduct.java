@@ -7,6 +7,7 @@ import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import rastle.dev.rastle_backend.domain.Category.model.Category;
 import rastle.dev.rastle_backend.domain.Event.model.Event;
 import rastle.dev.rastle_backend.domain.Orders.model.OrderProduct;
 import rastle.dev.rastle_backend.domain.Product.model.ProductBase;
@@ -22,8 +23,8 @@ public class EventProduct extends ProductBase {
     @JoinColumn(name = "event_id")
     private Event event;
     @Builder
-    public EventProduct(String name, int price, boolean isEventProduct, String mainThumbnailImage, String subThumbnailImage, Event event, int discount) {
-        super(name, price, isEventProduct, mainThumbnailImage, subThumbnailImage, discount);
+    public EventProduct(String name, int price, boolean isEventProduct, String mainThumbnailImage, String subThumbnailImage, Event event, int discount, Category category) {
+        super(name, price, isEventProduct, mainThumbnailImage, subThumbnailImage, discount, category);
         this.event = event;
     }
 }
