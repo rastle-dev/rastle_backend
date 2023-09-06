@@ -1,7 +1,5 @@
 package rastle.dev.rastle_backend.domain.Member.application;
 
-import java.util.Date;
-
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,7 +17,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.LoginDto;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.SignUpDto;
 import rastle.dev.rastle_backend.domain.Member.model.Member;
@@ -27,11 +24,7 @@ import rastle.dev.rastle_backend.domain.Member.repository.MemberRepository;
 import rastle.dev.rastle_backend.domain.Token.dto.TokenDTO.TokenInfoDTO;
 import rastle.dev.rastle_backend.global.jwt.JwtTokenProvider;
 
-import static rastle.dev.rastle_backend.global.common.constants.JwtConstants.ACCESS_TOKEN_EXPIRE_TIME;
-import static rastle.dev.rastle_backend.global.common.constants.JwtConstants.BEARER_TYPE;
-
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class MemberAuthService {
     private final MemberRepository memberRepository;
@@ -126,9 +119,9 @@ public class MemberAuthService {
      * 액세스 토큰 재발급
      * 
      * @param request
-     * @return 토큰 정보 DTO
+     * @return 액세스 토큰 재발급 성공 여부
      */
-    public TokenInfoDTO refreshAccessToken(HttpServletRequest request) {
+    public ResponseEntity<String> refreshAccessToken(HttpServletRequest request) {
         if (request == null) {
             throw new IllegalArgumentException("HttpServletRequest cannot be null");
         }
@@ -136,11 +129,9 @@ public class MemberAuthService {
         String refreshToken = jwtTokenProvider.getRefreshTokenFromRequest(request);
         Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(refreshToken);
         String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
-        return TokenInfoDTO.builder()
-                .grantType(BEARER_TYPE)
-                .accessToken(newAccessToken)
-                .accessTokenExpiresIn(new Date().getTime() + ACCESS_TOKEN_EXPIRE_TIME)
-                .build();
+
+        HttpHeaders responseHeaders = createAuthorizationHeader(newAccessToken);
+        return new ResponseEntity<>("액세스 토큰 재발급 성공", responseHeaders, HttpStatus.OK);
     }
 
 }
