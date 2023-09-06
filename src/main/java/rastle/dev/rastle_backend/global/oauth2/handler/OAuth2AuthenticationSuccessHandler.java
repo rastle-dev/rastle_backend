@@ -13,7 +13,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-import rastle.dev.rastle_backend.domain.Token.dto.TokenDTO.TokenInfoDTO;
 import rastle.dev.rastle_backend.global.jwt.JwtTokenProvider;
 import rastle.dev.rastle_backend.global.oauth2.OAuth2UserInfo;
 import rastle.dev.rastle_backend.global.oauth2.OAuth2UserInfoFactory;
@@ -70,13 +69,13 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String targetUrl = getTargetUrlFromCookie(request);
         Map<String, Object> queryParams = new HashMap<>();
 
-        TokenInfoDTO tokenDto = jwtTokenProvider.generateTokenDto(authentication, response);
+        jwtTokenProvider.generateTokenDto(authentication, response);
 
         queryParams.put("created", true);
         queryParams.put("email", oAuth2UserInfo.getEmail());
         queryParams.put("userName", URLEncoder.encode(oAuth2UserInfo.getName(), StandardCharsets.UTF_8));
         queryParams.put("loginType", oAuth2UserInfo.getProvider());
-        queryParams.put("accessToken", tokenDto.getAccessToken());
+        // queryParams.put("accessToken", tokenDto.getAccessToken());
 
         return buildUriComponents(targetUrl, queryParams).toUriString();
     }
@@ -86,9 +85,9 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String targetUrl = getTargetUrlFromCookie(request);
         Map<String, Object> queryParams = new HashMap<>();
 
-        TokenInfoDTO tokenDto = jwtTokenProvider.generateTokenDto(authentication, response);
+        jwtTokenProvider.generateTokenDto(authentication, response);
 
-        queryParams.put("accessToken", tokenDto.getAccessToken());
+        // queryParams.put("accessToken", tokenDto.getAccessToken());
         queryParams.put("created", false);
 
         return buildUriComponents(targetUrl, queryParams).toUriString();

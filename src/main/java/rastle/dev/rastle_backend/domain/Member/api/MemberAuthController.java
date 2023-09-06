@@ -121,10 +121,15 @@ public class MemberAuthController {
         @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "토큰 재발급 성공"),
                         @ApiResponse(responseCode = "400", description = "토큰 재발급 실패") })
         @PostMapping(value = "/refreshAccessToken")
-        public ResponseEntity<ServerResponse<TokenInfoDTO>> refreshAccessToken(HttpServletRequest request) {
-                TokenInfoDTO tokenInfoDTO = memberAuthService.refreshAccessToken(request);
-                ServerResponse<TokenInfoDTO> serverResponse = new ServerResponse<>(tokenInfoDTO);
-                return ResponseEntity.ok(serverResponse);
+        public ResponseEntity<ServerResponse<String>> refreshAccessToken(HttpServletRequest request) {
+                try {
+                        ResponseEntity<String> result = memberAuthService.refreshAccessToken(request);
+                        ServerResponse<String> serverResponse = new ServerResponse<>(result.getBody());
+                        return new ResponseEntity<>(serverResponse, result.getHeaders(), result.getStatusCode());
+                } catch (Exception e) {
+                        ServerResponse<String> serverResponse = new ServerResponse<>("토큰 재발급 실패");
+                        return new ResponseEntity<>(serverResponse, HttpStatus.BAD_REQUEST);
+                }
         }
 
 }
