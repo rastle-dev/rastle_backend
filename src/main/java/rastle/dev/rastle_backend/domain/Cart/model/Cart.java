@@ -1,6 +1,7 @@
 package rastle.dev.rastle_backend.domain.Cart.model;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.Member.model.Member;
@@ -25,4 +26,9 @@ public class Cart {
 
     @OneToMany(mappedBy = "cart", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<CartProduct> cartProducts = new ArrayList<>();
+
+    @Builder
+    public Cart(Member member) {
+        this.member = member;
+    }
 }
