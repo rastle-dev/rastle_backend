@@ -17,8 +17,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.LoginDto;
-import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.SignUpDto;
+import rastle.dev.rastle_backend.domain.Cart.model.Cart;
+import rastle.dev.rastle_backend.domain.Cart.repository.CartRepository;
+import rastle.dev.rastle_backend.domain.Member.dto.MemberAuthDTO.LoginDto;
+import rastle.dev.rastle_backend.domain.Member.dto.MemberAuthDTO.SignUpDto;
 import rastle.dev.rastle_backend.domain.Member.model.Member;
 import rastle.dev.rastle_backend.domain.Member.repository.MemberRepository;
 import rastle.dev.rastle_backend.domain.Token.dto.TokenDTO.TokenInfoDTO;
@@ -28,6 +30,7 @@ import rastle.dev.rastle_backend.global.jwt.JwtTokenProvider;
 @RequiredArgsConstructor
 public class MemberAuthService {
     private final MemberRepository memberRepository;
+    private final CartRepository cartRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String, String> redisTemplate;
@@ -44,6 +47,8 @@ public class MemberAuthService {
         signUpDto.encode(passwordEncoder);
         Member entity = signUpDto.toEntity();
         memberRepository.save(entity);
+        Cart build = Cart.builder().member(entity).build();
+        cartRepository.save(build);
 
         return signUpDto;
     }

@@ -13,12 +13,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import rastle.dev.rastle_backend.domain.Member.application.EmailCertificationService;
 import rastle.dev.rastle_backend.domain.Member.application.MemberAuthService;
-import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.EmailCertificationCheckDto;
-import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.EmailCertificationDto;
-import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.LoginDto;
-import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.PasswordResetRequestDto;
-import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.SignUpDto;
-import rastle.dev.rastle_backend.domain.Token.dto.TokenDTO.TokenInfoDTO;
+import rastle.dev.rastle_backend.domain.Member.dto.MemberAuthDTO.EmailCertificationCheckDto;
+import rastle.dev.rastle_backend.domain.Member.dto.MemberAuthDTO.EmailCertificationDto;
+import rastle.dev.rastle_backend.domain.Member.dto.MemberAuthDTO.LoginDto;
+import rastle.dev.rastle_backend.domain.Member.dto.MemberAuthDTO.PasswordResetRequestDto;
+import rastle.dev.rastle_backend.domain.Member.dto.MemberAuthDTO.SignUpDto;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
 
 import org.springframework.http.HttpHeaders;

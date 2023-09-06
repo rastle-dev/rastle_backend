@@ -11,6 +11,9 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+
+import rastle.dev.rastle_backend.domain.Cart.model.Cart;
+import rastle.dev.rastle_backend.domain.Cart.repository.CartRepository;
 import rastle.dev.rastle_backend.domain.Member.model.Authority;
 import rastle.dev.rastle_backend.domain.Member.model.Member;
 import rastle.dev.rastle_backend.domain.Member.model.UserLoginType;
@@ -22,19 +25,19 @@ import rastle.dev.rastle_backend.global.oauth2.OAuth2UserInfoFactory;
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
-
         private final MemberRepository memberRepository;
+        private final CartRepository cartRepository;
 
         @Transactional
         @Override
-        public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        public OAuth2User loadUser(OAuth2UserRequest userRequest)
+                        throws OAuth2AuthenticationException {
                 OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
                 OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
                 UserLoginType loginType = UserLoginType
                                 .valueOfLabel(userRequest.getClientRegistration().getRegistrationId().toUpperCase());
-                String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
-                                .getUserInfoEndpoint().getUserNameAttributeName();
+
                 OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(loginType.getType(),
                                 oAuth2User.getAttributes());
 
@@ -47,13 +50,15 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         private Member createUser(OAuth2UserInfo memberInfo, UserLoginType loginType) {
                 PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
                 String encode = passwordEncoder.encode(memberInfo.getEmail());
-                Member member = Member.builder().email(memberInfo.getEmail())
+                Member member = Member.builder()
+                                .email(memberInfo.getEmail())
                                 .userName(memberInfo.getName())
                                 .password(encode)
                                 .userLoginType(loginType)
                                 .authority(Authority.ROLE_USER)
                                 .build();
-
+                Cart build = Cart.builder().member(member).build();
+                cartRepository.save(build);
                 return memberRepository.save(member);
         }
 }
