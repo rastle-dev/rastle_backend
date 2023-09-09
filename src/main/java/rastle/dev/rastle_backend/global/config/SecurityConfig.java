@@ -52,9 +52,10 @@ public class SecurityConfig {
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                 // CSRF 설정 Disable
                 http
+                                .cors().configurationSource(corsConfigurationSource())
+                                .and()
                                 .httpBasic().disable()
-                                .csrf().disable()
-                                .cors().configurationSource(corsConfigurationSource());
+                                .csrf().disable();
 
                 // exception handling 할때 우리가 만든 클래스 추가
                 http
@@ -121,13 +122,14 @@ public class SecurityConfig {
         public CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration configuration = new CorsConfiguration();
 
-                configuration.setAllowedOriginPatterns(
+                configuration.setAllowedOrigins(
                                 Arrays.asList("http://localhost:3000", "https://localhost:3000"));
                 configuration.setAllowedMethods(
-                                Arrays.asList("HEAD", "POST", "GET", "DELETE", "PUT", "OPTIONS", "PATCH", "PUT"));
-                configuration.setAllowedHeaders(List.of("*"));
+                                Arrays.asList("HEAD", "POST", "GET", "DELETE", "PUT", "OPTIONS", "PATCH"));
+                configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+                configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
                 configuration.setAllowCredentials(true);
-                configuration.setExposedHeaders(List.of("*"));
+                configuration.setMaxAge(3600L);
 
                 UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
                 source.registerCorsConfiguration("/**", configuration);
