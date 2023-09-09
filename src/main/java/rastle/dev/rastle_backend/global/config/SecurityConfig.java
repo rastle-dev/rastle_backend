@@ -126,8 +126,8 @@ public class SecurityConfig {
                                 Arrays.asList("http://localhost:3000", "https://localhost:3000"));
                 configuration.setAllowedMethods(
                                 Arrays.asList("HEAD", "POST", "GET", "DELETE", "PUT", "OPTIONS", "PATCH"));
-                configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
-                configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
+                configuration.addAllowedHeader(("*"));
+                configuration.addExposedHeader("Authorization");
                 configuration.setAllowCredentials(true);
                 configuration.setMaxAge(3600L);
 
