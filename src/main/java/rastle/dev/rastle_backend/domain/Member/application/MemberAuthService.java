@@ -19,6 +19,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import rastle.dev.rastle_backend.domain.Cart.model.Cart;
 import rastle.dev.rastle_backend.domain.Cart.repository.CartRepository;
+// import rastle.dev.rastle_backend.domain.Member.dto.MemberAuthDTO.AdminSignUpDto;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberAuthDTO.LoginDto;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberAuthDTO.SignUpDto;
 import rastle.dev.rastle_backend.domain.Member.model.Member;
@@ -52,6 +53,21 @@ public class MemberAuthService {
 
         return signUpDto;
     }
+
+    // /**
+    // * 관리자 회원가입
+    // *
+    // * @param signUpDto 관리자 회원가입 요청 DTO
+    // * @return 관리자 회원가입 요청 DTO
+    // */
+    // @Transactional
+    // public AdminSignUpDto adminSignUp(AdminSignUpDto adminSignUpDto) {
+    // adminSignUpDto.encode(passwordEncoder);
+    // Member entity = adminSignUpDto.toEntity();
+    // memberRepository.save(entity);
+
+    // return adminSignUpDto;
+    // }
 
     /**
      * 이메일 중복 확인

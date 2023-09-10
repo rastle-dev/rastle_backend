@@ -59,6 +59,36 @@ public class MemberAuthDTO {
         }
     }
 
+    // @Builder
+    // @AllArgsConstructor
+    // @NoArgsConstructor
+    // @Getter
+    // @Schema(description = "관리자 회원가입 요청 DTO")
+    // public static class AdminSignUpDto {
+    // @Schema(description = "아이디")
+    // private String email;
+
+    // @Schema(description = "비밀번호")
+    // private String password;
+
+    // @Schema(description = "이름")
+    // @NotBlank(message = "이름을 입력해주세요.")
+    // private String username;
+
+    // public void encode(PasswordEncoder passwordEncoder) {
+    // this.password = passwordEncoder.encode(this.password);
+    // }
+
+    // public Member toEntity() {
+    // return Member.builder()
+    // .email(email)
+    // .password(password)
+    // .authority(Authority.ROLE_ADMIN)
+    // .userName(username)
+    // .build();
+    // }
+    // }
+
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor

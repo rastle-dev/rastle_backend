@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import rastle.dev.rastle_backend.domain.Member.application.EmailCertificationService;
 import rastle.dev.rastle_backend.domain.Member.application.MemberAuthService;
+// import rastle.dev.rastle_backend.domain.Member.dto.MemberAuthDTO.AdminSignUpDto;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberAuthDTO.EmailCertificationCheckDto;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberAuthDTO.EmailCertificationDto;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberAuthDTO.LoginDto;
@@ -36,7 +37,7 @@ public class MemberAuthController {
         private final MemberAuthService memberAuthService;
         private final EmailCertificationService emailCertificationService;
 
-        @Operation(summary = "회원가입", description = "멤버 회원가입 API입니다.")
+        @Operation(summary = "회원가입", description = "사용자 회원가입 API입니다.")
         @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "회원가입 성공"),
                         @ApiResponse(responseCode = "400", description = "회원가입 실패") })
         @PostMapping(value = "/signup")
@@ -45,6 +46,19 @@ public class MemberAuthController {
                 ServerResponse<SignUpDto> response = new ServerResponse<>(signUpDto);
                 return ResponseEntity.ok(response);
         }
+
+        // @Operation(summary = "관리자 회원가입", description = "관리자 회원가입 API입니다.")
+        // @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "관리자
+        // 회원가입 성공"),
+        // @ApiResponse(responseCode = "400", description = "관리자 회원가입 실패") })
+        // @PostMapping(value = "/adminSignup")
+        // public ResponseEntity<ServerResponse<AdminSignUpDto>> adminSignUp(
+        // @Valid @RequestBody AdminSignUpDto adminSignUpDto) {
+        // memberAuthService.adminSignUp(adminSignUpDto);
+        // ServerResponse<AdminSignUpDto> response = new
+        // ServerResponse<>(adminSignUpDto);
+        // return ResponseEntity.ok(response);
+        // }
 
         @Operation(summary = "이메일 중복 확인", description = "이메일 중복 확인 API입니다.")
         @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "이메일 중복 확인 성공"),

@@ -88,6 +88,7 @@ public class SecurityConfig {
                                                 .requestMatchers("/product/**").permitAll()
                                                 .requestMatchers("/market/**").permitAll()
                                                 .requestMatchers("/event/**").permitAll()
+                                                .requestMatchers("/admin").hasRole("ADMIN")
                                                 .requestMatchers(HttpMethod.GET, "/rest-docs").permitAll());
 
                 http
