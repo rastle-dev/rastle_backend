@@ -37,7 +37,7 @@ public class MemberBase {
     protected Authority authority;
 
     @CreatedDate
-    @Column(updatable = false)
+    @Column(name = "created_date", updatable = false)
     private LocalDateTime createdDate;
 
     public MemberBase(String email, String password, UserLoginType userLoginType, Authority authority) {
