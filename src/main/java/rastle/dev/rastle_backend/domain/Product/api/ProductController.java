@@ -1,6 +1,7 @@
 package rastle.dev.rastle_backend.domain.Product.api;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -56,7 +57,8 @@ public class ProductController {
     @GetExecutionTime
     @PostMapping("/{id}/mainThumbnail")
     public ResponseEntity<ServerResponse<?>> uploadMainThumbnail(@PathVariable("id") Long id,
-                                                                @RequestParam("mainThumbnail") MultipartFile mainThumbnail) {
+                                                                 @Parameter(description = "등록할 이미지 파일")
+                                                                 @RequestParam("mainThumbnail") MultipartFile mainThumbnail) {
         return ResponseEntity.ok(new ServerResponse<>(productService.uploadMainThumbnail(id, mainThumbnail)));
 
     }
@@ -87,7 +89,8 @@ public class ProductController {
     @GetExecutionTime
     @PostMapping("/{id}/mainImages")
     public ResponseEntity<ServerResponse<?>> uploadMainImages(@PathVariable("id") Long id,
-                                                                @RequestParam("mainImages") List<MultipartFile> mainImages) {
+                                                              @Parameter(description = "등록할 상품 이미지들")
+                                                              @RequestParam("mainImages") List<MultipartFile> mainImages) {
         return ResponseEntity.ok(new ServerResponse<>(productService.uploadMainImages(id, mainImages)));
 
     }
@@ -102,7 +105,8 @@ public class ProductController {
     @GetExecutionTime
     @PostMapping("/{id}/detailImages")
     public ResponseEntity<ServerResponse<?>> uploadDetailImages(@PathVariable("id") Long id,
-                                                              @RequestParam("detailImages") List<MultipartFile> detailImages) {
+                                                                @Parameter(description = "등록할 상품 이미지들")
+                                                                @RequestParam("detailImages") List<MultipartFile> detailImages) {
         return ResponseEntity.ok(new ServerResponse<>(productService.uploadDetailImages(id, detailImages)));
 
     }

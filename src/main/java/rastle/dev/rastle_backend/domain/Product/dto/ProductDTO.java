@@ -20,19 +20,19 @@ public class ProductDTO {
     @AllArgsConstructor
     @Schema(description = "상품 생성 요청 dto")
     public static class ProductCreateRequest {
-        @Schema(description = "상품 이름")
+        @Schema(description = "상품 이름", defaultValue = "멋있는 자켓")
         String name;
-        @Schema(description = "가격")
+        @Schema(description = "가격", defaultValue = "100000")
         int price;
-        @Schema(description = "할인률")
+        @Schema(description = "할인률", defaultValue = "10")
         int discount;
-        @Schema(description = "이벤트 인지 마켓인지")
+        @Schema(description = "이벤트 인지 마켓인지", defaultValue = "10")
         boolean eventCategory;
-        @Schema(description = "이벤트 혹은 마켓아이디")
+        @Schema(description = "이벤트 혹은 마켓아이디", defaultValue = "1")
         Long marketId;
-        @Schema(description = "카테고리 아이디")
+        @Schema(description = "카테고리 아이디", defaultValue = "2")
         Long categoryId;
-        @Schema(description = "제품 색상, 사이즈 정세")
+        @Schema(description = "제품 색상, 사이즈 정세", defaultValue = "list of colorinfo")
         List<ColorInfo> colorAndSizes;
 
         public EventProduct toEventProduct(Event event, Category category) {
