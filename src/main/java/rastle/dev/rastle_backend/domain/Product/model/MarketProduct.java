@@ -23,8 +23,8 @@ public class MarketProduct extends ProductBase {
     private Market market;
 
     @Builder
-    public MarketProduct(String name, int price, boolean isEventProduct, String mainThumbnailImage, String subThumbnailImage, Market market, int discount, Category category) {
-        super(name, price, isEventProduct, mainThumbnailImage, subThumbnailImage, discount, category);
+    public MarketProduct(String name, int price, boolean isEventProduct, String mainThumbnailImage, String subThumbnailImage, Market market, int discount, Category category, Long displayOrder) {
+        super(name, price, isEventProduct, mainThumbnailImage, subThumbnailImage, discount, category, displayOrder);
         this.market = market;
     }
 }

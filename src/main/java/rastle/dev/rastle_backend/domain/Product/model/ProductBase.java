@@ -21,7 +21,8 @@ public class ProductBase {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
     private Long id;
-
+    @Column(name = "display_order")
+    private Long displayOrder;
     private String name;
 
     private int price;
@@ -57,7 +58,7 @@ public class ProductBase {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
-    public ProductBase(String name, int price, boolean isEventProduct, String mainThumbnailImage, String subThumbnailImage, int discount, Category category) {
+    public ProductBase(String name, int price, boolean isEventProduct, String mainThumbnailImage, String subThumbnailImage, int discount, Category category, Long displayOrder) {
         this.name = name;
         this.price = price;
         this.isEventProduct = isEventProduct;
@@ -65,6 +66,7 @@ public class ProductBase {
         this.subThumbnailImage = subThumbnailImage;
         this.discount = discount;
         this.category = category;
+        this.displayOrder = displayOrder;
     }
 
     public void setMainThumbnailImage(String mainThumbnailImage) {

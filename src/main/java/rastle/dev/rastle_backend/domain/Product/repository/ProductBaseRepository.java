@@ -22,7 +22,8 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
                 "pb.mainThumbnailImage, " +
                 "pb.subThumbnailImage," +
                 "pb.isEventProduct, " +
-                "pb.discount) " +
+                "pb.discount, " +
+                "pb.displayOrder) " +
                 "from ProductBase pb"
     )
     Page<SimpleProductInfo> getProductInfos(Pageable pageable);
@@ -34,7 +35,8 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
                     "pb.mainThumbnailImage, " +
                     "pb.subThumbnailImage," +
                     "pb.isEventProduct, " +
-                    "pb.discount) " +
+                    "pb.discount, " +
+                    "pb.displayOrder) " +
                     "from ProductBase pb " +
                     "where pb.id = :id"
     )
