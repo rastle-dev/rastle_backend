@@ -20,16 +20,7 @@ public class EventService {
     private final EventRepository eventRepository;
 
 
-    @Transactional
-    public String createEvent(EventCreateRequest createRequest) {
-        Event newEvent = Event.builder()
-                .name(createRequest.getName())
-                .eventStartDate(TimeUtil.convertStringToLocalDateTime(createRequest.getStartDate(), createRequest.getStartHour(), createRequest.getStartMinute(), createRequest.getStartSecond()))
-                .eventEndDate(TimeUtil.convertStringToLocalDateTime(createRequest.getEndDate(), createRequest.getEndHour(), createRequest.getEndMinute(), createRequest.getEndSecond()))
-                .build();
-        eventRepository.save(newEvent);
-        return "CREATED";
-    }
+
 
     @Transactional(readOnly = true)
     public Page<EventInfo> getEventInfo(Pageable pageable) {

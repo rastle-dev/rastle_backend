@@ -20,16 +20,6 @@ public class MarketService {
     private final MarketRepository marketRepository;
 
 
-    @Transactional
-    public String createMarket(MarketCreateRequest createRequest) {
-        Market newMarket = Market.builder()
-                .name(createRequest.getName())
-                .saleStartTime(TimeUtil.convertStringToLocalDateTime(createRequest.getStartDate(),createRequest.getStartHour(), createRequest.getStartMinute(), createRequest.getStartSecond()))
-                .build();
-        marketRepository.save(newMarket);
-        return "CREATED";
-    }
-
     @Transactional(readOnly = true)
     public List<MarketInfo> getCurrentMarkets() {
         LocalDateTime current = LocalDateTime.now();
