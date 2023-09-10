@@ -156,6 +156,10 @@ public class JwtTokenProvider {
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         response.addCookie(cookie);
+
+        // SameSite=None 설정 추가
+        String cookieHeader = String.format("%s; %s", cookie.toString(), "SameSite=None");
+        response.addHeader("Set-Cookie", cookieHeader);
     }
 
     // 리프레시 토큰 반환
