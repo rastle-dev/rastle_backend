@@ -24,7 +24,6 @@ import rastle.dev.rastle_backend.global.oauth2.repository.OAuth2AuthorizationReq
 import rastle.dev.rastle_backend.global.security.CustomLogoutSuccessHandler;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
