@@ -34,6 +34,8 @@ public class ProductDTO {
         Long categoryId;
         @Schema(description = "제품 색상, 사이즈 정세", defaultValue = "list of colorinfo")
         List<ColorInfo> colorAndSizes;
+        @Schema(description = "상품 보여질 순서", defaultValue = "1000")
+        Long displayOrder;
 
         public EventProduct toEventProduct(Event event, Category category) {
             return EventProduct.builder()
@@ -42,6 +44,7 @@ public class ProductDTO {
                     .category(category)
                     .isEventProduct(true)
                     .discount(discount)
+                    .displayOrder(displayOrder)
                     .event(event)
                     .build();
         }
@@ -54,6 +57,7 @@ public class ProductDTO {
                     .isEventProduct(false)
                     .discount(discount)
                     .market(market)
+                    .displayOrder(displayOrder)
                     .build();
         }
 
@@ -78,20 +82,22 @@ public class ProductDTO {
     @Builder
     @Schema(description = "상품 생성 결과")
     public static class ProductCreateResult {
-        @Schema(description = "상품 아이디")
+        @Schema(description = "상품 아이디", defaultValue = "1")
         Long id;
-        @Schema(description = "상품 이름")
+        @Schema(description = "상품 이름", defaultValue = "멋있는 자켓")
         String name;
-        @Schema(description = "상품 가격")
+        @Schema(description = "상품 가격", defaultValue = "100000")
         int price;
-        @Schema(description = "상품 할인률")
+        @Schema(description = "상품 할인률", defaultValue = "10")
         int discount;
-        @Schema(description = "이벤트 상품 여부")
+        @Schema(description = "이벤트 상품 여부", defaultValue = "false")
         boolean isEvent;
-        @Schema(description = "이벤트 상품이면 이벤트 아이디, 마켓 상품이면 마켓 아이디")
+        @Schema(description = "이벤트 상품이면 이벤트 아이디, 마켓 상품이면 마켓 아이디", defaultValue = "2")
         Long categoryId;
-        @Schema(description = "색상 & 사이즈 정보")
+        @Schema(description = "색상 & 사이즈 정보", defaultValue = "상품 색상 & 사이즈 정보")
         List<ColorInfo> colorAndSizes;
+        @Schema(description = "상품 보여질 순서", defaultValue = "100")
+        Long displayOrder;
     }
 
 }

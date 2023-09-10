@@ -16,7 +16,8 @@ public interface EventProductRepository extends JpaRepository<EventProduct, Long
                     "ep.mainThumbnailImage, " +
                     "ep.subThumbnailImage, " +
                     "ep.isEventProduct, " +
-                    "ep.discount) " +
+                    "ep.discount, " +
+                    "ep.displayOrder) " +
                     "from EventProduct ep"
     )
     Page<SimpleProductInfo> getEventProducts(Pageable pageable);
