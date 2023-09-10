@@ -23,6 +23,7 @@ import rastle.dev.rastle_backend.global.response.ServerResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,6 +33,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
+@CrossOrigin(origins = { "http://localhost:8080", "https://localhost:8080" }, maxAge = 6000, exposedHeaders = {
+                "Authorization" })
 public class MemberAuthController {
         private final MemberAuthService memberAuthService;
         private final EmailCertificationService emailCertificationService;
