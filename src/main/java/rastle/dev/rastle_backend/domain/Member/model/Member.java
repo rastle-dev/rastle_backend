@@ -18,8 +18,18 @@ import java.util.List;
 public class Member extends MemberBase {
     @Column(name = "user_name")
     private String userName;
+
     @Column(name = "phone_number")
     private String phoneNumber;
+
+    @Column(name = "zip_code")
+    private String zipCode;
+
+    @Column(name = "road_address")
+    private String roadAddress;
+
+    @Column(name = "detail_address")
+    private String detailAddress;
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Coupon> coupons = new ArrayList<>();
@@ -43,5 +53,17 @@ public class Member extends MemberBase {
 
     public void updatePassword(String newPassword) {
         super.updatePassword(newPassword);
+    }
+
+    public void updateZipcode(String newZipcode) {
+        this.zipCode = newZipcode;
+    }
+
+    public void updateRoadAddress(String newRoadAddress) {
+        this.roadAddress = newRoadAddress;
+    }
+
+    public void updateDetailAddress(String newDetailAddress) {
+        this.detailAddress = newDetailAddress;
     }
 }
