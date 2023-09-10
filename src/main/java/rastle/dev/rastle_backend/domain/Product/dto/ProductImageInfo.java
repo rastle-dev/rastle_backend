@@ -14,8 +14,8 @@ import java.util.List;
 @Builder
 @Schema(description = "상품 이미지 추가시 리턴 데이터")
 public class ProductImageInfo {
-    @Schema(description = "상품 아이디")
+    @Schema(description = "상품 아이디", defaultValue = "0")
     Long productBaseId;
-    @Schema(description = "추가된 이미지 url 리스트")
+    @Schema(description = "추가된 이미지 url 리스트", defaultValue = "list of image urls")
     List<String> imageUrls;
 }

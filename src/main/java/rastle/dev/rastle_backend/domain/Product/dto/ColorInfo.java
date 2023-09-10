@@ -12,10 +12,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @Schema(description = "상품 색상, 사이즈 정보")
 public class ColorInfo {
-    @Schema(description = "색상 정보")
+    @Schema(description = "색상 정보", defaultValue = "R")
     String color;
-    @Schema(description = "사이즈 정보")
+    @Schema(description = "사이즈 정보", defaultValue = "M")
     String size;
-    @Schema(description = "수량 정보")
+    @Schema(description = "수량 정보", defaultValue = "10")
     int count;
 }
