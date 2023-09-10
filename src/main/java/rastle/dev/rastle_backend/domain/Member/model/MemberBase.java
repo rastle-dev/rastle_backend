@@ -1,5 +1,10 @@
 package rastle.dev.rastle_backend.domain.Member.model;
 
+import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +14,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "member_base", catalog = "rastle_db")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class MemberBase {
@@ -17,8 +23,10 @@ public class MemberBase {
     @Column(name = "member_id")
     private Long id;
 
+    @Column(name = "email")
     private String email;
 
+    @Column(name = "password")
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -27,6 +35,10 @@ public class MemberBase {
 
     @Enumerated(EnumType.STRING)
     protected Authority authority;
+
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime createdDate;
 
     public MemberBase(String email, String password, UserLoginType userLoginType, Authority authority) {
         this.email = email;
