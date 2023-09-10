@@ -135,14 +135,12 @@ public class MemberAuthController {
                         @ApiResponse(responseCode = "400", description = "토큰 재발급 실패") })
         @PostMapping(value = "/refreshAccessToken")
         public ResponseEntity<ServerResponse<String>> refreshAccessToken(HttpServletRequest request) {
-                try {
-                        ResponseEntity<String> result = memberAuthService.refreshAccessToken(request);
-                        ServerResponse<String> serverResponse = new ServerResponse<>(result.getBody());
-                        return new ResponseEntity<>(serverResponse, result.getHeaders(), result.getStatusCode());
-                } catch (Exception e) {
-                        ServerResponse<String> serverResponse = new ServerResponse<>("토큰 재발급 실패");
-                        return new ResponseEntity<>(serverResponse, HttpStatus.BAD_REQUEST);
+                if (request == null) {
+                        throw new IllegalArgumentException("HttpServletRequest cannot be null");
                 }
+                ResponseEntity<String> result = memberAuthService.refreshAccessToken(request);
+                ServerResponse<String> serverResponse = new ServerResponse<>(result.getBody());
+                return new ResponseEntity<>(serverResponse, result.getHeaders(), result.getStatusCode());
         }
 
 }

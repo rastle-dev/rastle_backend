@@ -143,10 +143,6 @@ public class MemberAuthService {
      * @return 액세스 토큰 재발급 성공 여부
      */
     public ResponseEntity<String> refreshAccessToken(HttpServletRequest request) {
-        if (request == null) {
-            throw new IllegalArgumentException("HttpServletRequest cannot be null");
-        }
-
         String refreshToken = jwtTokenProvider.getRefreshTokenFromRequest(request);
         Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(refreshToken);
         String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
