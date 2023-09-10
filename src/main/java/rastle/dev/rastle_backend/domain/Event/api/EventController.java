@@ -18,11 +18,7 @@ import rastle.dev.rastle_backend.global.response.ServerResponse;
 public class EventController {
     private final EventService eventService;
 
-    @Operation(summary = "이벤트 생성 API", description = "이벤트 생성 API입니다")
-    @PostMapping("")
-    public ResponseEntity<ServerResponse<?>> tempAddMarket(@RequestBody EventCreateRequest createRequest) {
-        return ResponseEntity.ok(new ServerResponse<>(eventService.createEvent(createRequest)));
-    }
+
 
     @Operation(summary = "이벤트 조회 API", description = "이벤트 조회 API 입니다")
     @GetMapping("")

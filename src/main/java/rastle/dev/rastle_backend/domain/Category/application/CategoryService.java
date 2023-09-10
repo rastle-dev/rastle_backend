@@ -21,30 +21,8 @@ import java.util.List;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final S3Component s3Component;
 
-    @Transactional
-    public CategoryInfo createCategory(CategoryCreateRequest createRequest) {
-        Category saved = categoryRepository.save(createRequest.toEntity());
 
-        return CategoryInfo.builder()
-                .id(saved.getId())
-                .name(saved.getName())
-                .build();
-    }
-
-    @Transactional
-    public CategoryInfo uploadImages(Long id, List<MultipartFile> images) {
-        Category category = categoryRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        String imageUrls = s3Component.uploadImagesAndGetString(images);
-        category.setImageUrls(imageUrls);
-
-        return CategoryInfo.builder()
-                .id(category.getId())
-                .name(category.getName())
-                .imageUrls(category.getImageUrls())
-                .build();
-    }
 
     @Transactional(readOnly = true)
     public List<CategoryInfo> getCategories() {
