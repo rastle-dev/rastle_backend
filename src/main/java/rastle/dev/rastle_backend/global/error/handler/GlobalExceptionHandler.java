@@ -1,6 +1,7 @@
 package rastle.dev.rastle_backend.global.error.handler;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -19,68 +20,79 @@ import static org.springframework.http.HttpStatus.*;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-        @ExceptionHandler(NotFoundByIdException.class)
-        protected final ResponseEntity<ErrorResponse> handleNotFoundByIdException(
-                        NotFoundByIdException ex, WebRequest request) {
-                log.warn(ex.getMessage());
-                return new ResponseEntity<>(ErrorResponse.builder()
-                                .errorCode(409L)
-                                .message(ex.getMessage())
-                                .build(), NOT_FOUND);
+    @ExceptionHandler(NotFoundByIdException.class)
+    protected final ResponseEntity<ErrorResponse> handleNotFoundByIdException(
+            NotFoundByIdException ex, WebRequest request
+    ) {
+        log.warn(ex.getMessage());
+        return new ResponseEntity<>(ErrorResponse.builder()
+                .errorCode(409L)
+                .message(ex.getMessage())
+                .build()
+                , NOT_FOUND);
+    }
+
+    @ExceptionHandler(NotAuthorizedException.class)
+    protected final ResponseEntity<ErrorResponse> handleNotAuthorizedException(
+            NotAuthorizedException ex, WebRequest request
+    ) {
+        log.warn(ex.getMessage());
+        return new ResponseEntity<>(ErrorResponse.builder()
+                .errorCode(401L)
+                .message(ex.getMessage())
+                .build()
+                , UNAUTHORIZED);
+    }
+
+
+    @ExceptionHandler(InvalidRequestException.class)
+    protected final ResponseEntity<ErrorResponse> handleInvalidRequestException(
+            InvalidRequestException ex, WebRequest request
+    ) {
+        log.warn(ex.getMessage());
+        return new ResponseEntity<>(ErrorResponse.builder()
+                .errorCode(409L)
+                .message(ex.getMessage())
+                .build()
+                , UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    protected final ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
+            MethodArgumentNotValidException ex, WebRequest request
+    ) {
+        log.warn(ex.getLocalizedMessage());
+        BindingResult bindingResult = ex.getBindingResult();
+        StringBuilder builder = new StringBuilder();
+        for (FieldError fieldError : bindingResult.getFieldErrors()) {
+            builder.append("[");
+            builder.append(fieldError.getField());
+            builder.append("](은)는 ");
+            builder.append(fieldError.getDefaultMessage());
+            builder.append(" 입력된 값: [");
+            builder.append(fieldError.getRejectedValue());
+            builder.append("]");
         }
 
-        @ExceptionHandler(NotAuthorizedException.class)
-        protected final ResponseEntity<ErrorResponse> handleNotAuthorizedException(
-                        NotAuthorizedException ex, WebRequest request) {
-                log.warn(ex.getMessage());
-                return new ResponseEntity<>(ErrorResponse.builder()
-                                .errorCode(401L)
-                                .message(ex.getMessage())
-                                .build(), UNAUTHORIZED);
-        }
+        return new ResponseEntity<>(
+                ErrorResponse.builder()
+                        .errorCode(409L)
+                        .message(builder.toString()).build(),
+                CONFLICT
+        );
 
-        @ExceptionHandler(InvalidRequestException.class)
-        protected final ResponseEntity<ErrorResponse> handleInvalidRequestException(
-                        InvalidRequestException ex, WebRequest request) {
-                log.warn(ex.getMessage());
-                return new ResponseEntity<>(ErrorResponse.builder()
-                                .errorCode(409L)
-                                .message(ex.getMessage())
-                                .build(), UNAUTHORIZED);
-        }
+    }
 
-        @ExceptionHandler(MethodArgumentNotValidException.class)
-        protected final ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
-                        MethodArgumentNotValidException ex, WebRequest request) {
-                log.warn(ex.getLocalizedMessage());
-                BindingResult bindingResult = ex.getBindingResult();
-                StringBuilder builder = new StringBuilder();
-                for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                        builder.append("[");
-                        builder.append(fieldError.getField());
-                        builder.append("](은)는 ");
-                        builder.append(fieldError.getDefaultMessage());
-                        builder.append(" 입력된 값: [");
-                        builder.append(fieldError.getRejectedValue());
-                        builder.append("]");
-                }
-
-                return new ResponseEntity<>(
-                                ErrorResponse.builder()
-                                                .errorCode(409L)
-                                                .message(builder.toString()).build(),
-                                CONFLICT);
-
-        }
-
-        @ExceptionHandler(S3ImageUploadException.class)
-        protected final ResponseEntity<ErrorResponse> handleS3ImageException(
-                        S3ImageUploadException ex, WebRequest request) {
-                log.warn(ex.getMessage());
-                return new ResponseEntity<>(ErrorResponse.builder()
-                                .errorCode(409L)
-                                .message(ex.getMessage())
-                                .build(),
-                                CONFLICT);
-        }
+    @ExceptionHandler(S3ImageUploadException.class)
+    protected final ResponseEntity<ErrorResponse> handleS3ImageException(
+            S3ImageUploadException ex, WebRequest request
+    ) {
+        log.warn(ex.getMessage());
+        return new ResponseEntity<>(ErrorResponse.builder()
+                .errorCode(409L)
+                .message(ex.getMessage())
+                .build(),
+                CONFLICT
+        );
+    }
 }
