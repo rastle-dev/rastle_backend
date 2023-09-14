@@ -21,7 +21,7 @@ import rastle.dev.rastle_backend.domain.Product.dto.ProductImageInfo;
 import rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo;
 import rastle.dev.rastle_backend.global.common.annotation.GetExecutionTime;
 import rastle.dev.rastle_backend.global.error.response.ErrorResponse;
-import rastle.dev.rastle_backend.global.response.CustomApiResponses;
+import rastle.dev.rastle_backend.global.response.FailApiResponses;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
 
 import java.io.IOException;
@@ -35,17 +35,8 @@ public class AdminController {
         private final AdminService adminService;
 
         @Operation(summary = "상품 생성 API", description = "상품 생성 API 입니다.")
-        // @ApiResponses(value = {
-        // @ApiResponse(responseCode = "200", description = "생성 성공시", content =
-        // @Content(schema = @Schema(implementation = SimpleProductInfo.class))),
-        // @ApiResponse(responseCode = "401", description = "토큰 만료시", content =
-        // @Content(schema = @Schema(implementation = ErrorResponse.class))),
-        // @ApiResponse(responseCode = "409", description = "클라이언트에서 잘못된 데이터 전송시",
-        // content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-        // @ApiResponse(responseCode = "503", description = "서버 내부에서 핸들링되지 않은 예외 발생시",
-        // content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-        // })
-        @CustomApiResponses(implementation = SimpleProductInfo.class)
+        @ApiResponse(responseCode = "200", description = "생성 성공시", content = @Content(schema = @Schema(implementation = SimpleProductInfo.class)))
+        @FailApiResponses
         @GetExecutionTime
         @PostMapping("/product")
         public ResponseEntity<ServerResponse<?>> createProduct(
