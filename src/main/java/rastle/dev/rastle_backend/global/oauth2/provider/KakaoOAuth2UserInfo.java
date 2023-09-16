@@ -6,34 +6,25 @@ import rastle.dev.rastle_backend.global.oauth2.OAuth2UserInfo;
 import java.util.Map;
 
 public class KakaoOAuth2UserInfo extends OAuth2UserInfo {
+
     public KakaoOAuth2UserInfo(Map<String, Object> attributes) {
         super(attributes);
     }
 
     @Override
     public String getId() {
-        return attributes.get("id").toString();
+        Object id = attributes.get("id");
+        return id != null ? id.toString() : null;
     }
 
     @Override
     public String getName() {
-        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
-        if (kakaoAccount != null) {
-            Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
-            if (profile != null) {
-                return (String) profile.get("nickname");
-            }
-        }
-        return null;
+        return safelyGetNestedString("kakao_account", "profile", "nickname");
     }
 
     @Override
     public String getEmail() {
-        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
-        if (kakaoAccount != null) {
-            return (String) kakaoAccount.get("email");
-        }
-        return null;
+        return safelyGetNestedString("kakao_account", "email");
     }
 
     @Override
@@ -41,4 +32,21 @@ public class KakaoOAuth2UserInfo extends OAuth2UserInfo {
         return UserLoginType.KAKAO.toString();
     }
 
+    private String safelyGetNestedString(String... keys) {
+        Object current = attributes;
+
+        for (String key : keys) {
+            if (current instanceof Map map) {
+                current = map.get(key);
+            } else {
+                return null;
+            }
+        }
+
+        if (current instanceof String strValue) {
+            return strValue;
+        }
+
+        return null;
+    }
 }

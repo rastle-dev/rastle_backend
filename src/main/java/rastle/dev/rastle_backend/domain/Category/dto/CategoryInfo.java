@@ -2,8 +2,6 @@ package rastle.dev.rastle_backend.domain.Category.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,5 +14,4 @@ public class CategoryInfo {
     String name;
     @Schema(description = "카테고리 이미지들", defaultValue = "https://aws.~~~, https://aws.~~~, https://aws.~~~")
     String imageUrls;
-
 }

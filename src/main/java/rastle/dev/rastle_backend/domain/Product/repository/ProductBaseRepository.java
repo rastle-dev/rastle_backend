@@ -8,42 +8,30 @@ import org.springframework.data.repository.query.Param;
 import rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo;
 import rastle.dev.rastle_backend.domain.Product.model.ProductBase;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
 public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> {
 
-    @Query(
-        "select new rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo(" +
-                "pb.id, " +
-                "pb.name, " +
-                "pb.price, " +
-                "pb.mainThumbnailImage, " +
-                "pb.subThumbnailImage," +
-                "pb.isEventProduct, " +
-                "pb.discount, " +
-                "pb.displayOrder) " +
-                "from ProductBase pb"
-    )
+    @Query("select new rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo(" +
+            "pb.id, " +
+            "pb.name, " +
+            "pb.price, " +
+            "pb.mainThumbnailImage, " +
+            "pb.subThumbnailImage," +
+            "pb.isEventProduct, " +
+            "pb.discount, " +
+            "pb.displayOrder) " +
+            "from ProductBase pb")
     Page<SimpleProductInfo> getProductInfos(Pageable pageable);
-    @Query(
-            "select new rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo(" +
-                    "pb.id, " +
-                    "pb.name, " +
-                    "pb.price, " +
-                    "pb.mainThumbnailImage, " +
-                    "pb.subThumbnailImage," +
-                    "pb.isEventProduct, " +
-                    "pb.discount, " +
-                    "pb.displayOrder) " +
-                    "from ProductBase pb " +
-                    "where pb.id = :id"
-    )
+
+    @Query("select new rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo(" +
+            "pb.id, " +
+            "pb.name, " +
+            "pb.price, " +
+            "pb.mainThumbnailImage, " +
+            "pb.subThumbnailImage," +
+            "pb.isEventProduct, " +
+            "pb.discount, " +
+            "pb.displayOrder) " +
+            "from ProductBase pb " +
+            "where pb.id = :id")
     SimpleProductInfo getProductInfoById(@Param("id") Long id);
-
-
-
-
-
 }

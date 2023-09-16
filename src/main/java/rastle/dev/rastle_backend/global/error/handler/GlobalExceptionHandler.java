@@ -49,6 +49,16 @@ public class GlobalExceptionHandler {
                                 .build(), UNAUTHORIZED);
         }
 
+        @ExceptionHandler(IllegalArgumentException.class)
+        protected final ResponseEntity<ErrorResponse> handleIllegalArgumentException(
+                        IllegalArgumentException ex, WebRequest request) {
+                log.warn(ex.getMessage());
+                return new ResponseEntity<>(ErrorResponse.builder()
+                                .errorCode(400L)
+                                .message(ex.getMessage())
+                                .build(), BAD_REQUEST);
+        }
+
         @ExceptionHandler(MethodArgumentNotValidException.class)
         protected final ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
                         MethodArgumentNotValidException ex, WebRequest request) {
