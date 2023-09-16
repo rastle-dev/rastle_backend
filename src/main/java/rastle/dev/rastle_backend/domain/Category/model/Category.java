@@ -22,7 +22,7 @@ public class Category {
 
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<ProductBase> categoryProducts = new ArrayList<>();
-
+    @Column(name = "image_urls")
     private String imageUrls;
     @Builder
     public Category(String name, String imageUrls) {
