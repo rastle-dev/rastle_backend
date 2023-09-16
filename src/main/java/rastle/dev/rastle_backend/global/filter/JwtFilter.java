@@ -18,7 +18,6 @@ import rastle.dev.rastle_backend.global.error.response.ErrorResponse;
 import rastle.dev.rastle_backend.global.jwt.JwtTokenProvider;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import static rastle.dev.rastle_backend.global.common.constants.JwtConstants.AUTHORIZATION_HEADER;
 import static rastle.dev.rastle_backend.global.common.constants.JwtConstants.BEARER_PREFIX;
@@ -51,19 +50,19 @@ public class JwtFilter extends OncePerRequestFilter {
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                     }
                 } else {
-                    log.info("만료된 엑세스 토큰이다");
+                    log.error("만료된 엑세스 토큰이다");
                     throw new ExpireAccessTokenException();
                 }
             }
 
             filterChain.doFilter(request, response);
         } catch (ExpireAccessTokenException e) {
-            log.info(e.getMessage());
-            log.info(e.getClass().getName());
+            log.error(e.getMessage());
+            log.error(e.getClass().getName());
             String result = mapper.writeValueAsString(new ErrorResponse(401L, e.getMessage()));
             response.setContentType("application/json");
             response.setCharacterEncoding("utf-8");
-            response.setStatus(response.SC_UNAUTHORIZED);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
             try {
                 response.getWriter().write(result);
@@ -72,13 +71,13 @@ public class JwtFilter extends OncePerRequestFilter {
             }
 
         } catch (Exception e) {
-            log.info(e.getMessage());
-            log.info(e.getClass().getName());
+            log.error(e.getMessage());
+            log.error(e.getClass().getName());
             e.printStackTrace();
             String result = mapper.writeValueAsString(new ErrorResponse(500L, e.getMessage()));
             response.setContentType("application/json");
             response.setCharacterEncoding("utf-8");
-            response.setStatus(response.SC_INTERNAL_SERVER_ERROR);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
             try {
                 response.getWriter().write(result);
@@ -86,7 +85,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 e.printStackTrace();
             }
         }
-
     }
 
     private String resolveToken(HttpServletRequest request) {
@@ -98,5 +96,4 @@ public class JwtFilter extends OncePerRequestFilter {
         }
         return null;
     }
-
 }

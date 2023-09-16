@@ -10,11 +10,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import rastle.dev.rastle_backend.domain.Product.model.Color;
 
 @Entity
 @Getter
-
 @NoArgsConstructor
 @Table(name = "size", catalog = "rastle_db")
 public class Size {

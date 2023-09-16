@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class AdminService {
-
     private final CategoryRepository categoryRepository;
     private final EventRepository eventRepository;
     private final EventProductRepository eventProductRepository;
@@ -44,30 +43,37 @@ public class AdminService {
     private final ProductImageRepository productImageRepository;
     private final ImageRepository imageRepository;
 
+    // ==============================================================================================================
+    // 상품 관련 서비스
+    // ==============================================================================================================
     @Transactional
     public ProductDTO.ProductCreateResult createProduct(ProductDTO.ProductCreateRequest createRequest) {
         ProductBase saved;
         HashMap<String, Color> colorToSave = new HashMap<>();
         List<Size> sizeToSave = new ArrayList<>();
-        Category category = categoryRepository.findById(createRequest.getCategoryId()).orElseThrow(NotFoundByIdException::new);
+        Category category = categoryRepository.findById(createRequest.getCategoryId())
+                .orElseThrow(NotFoundByIdException::new);
+
         if (createRequest.isEventCategory()) {
             Event event = eventRepository.findById(createRequest.getMarketId()).orElseThrow(NotFoundByIdException::new);
             EventProduct eventProduct = createRequest.toEventProduct(event, category);
             saved = eventProductRepository.save(eventProduct);
         } else {
-            Market market = marketRepository.findById(createRequest.getMarketId()).orElseThrow(NotFoundByIdException::new);
+            Market market = marketRepository.findById(createRequest.getMarketId())
+                    .orElseThrow(NotFoundByIdException::new);
             MarketProduct marketProduct = createRequest.toMarketProduct(market, category);
             saved = marketProductRepository.save(marketProduct);
         }
+
         setColorAndSize(createRequest.getColorAndSizes(), colorToSave, sizeToSave, saved);
         colorRepository.saveAll(colorToSave.values());
         sizeRepository.saveAll(sizeToSave);
 
         return toCreateResult(saved, createRequest);
-
     }
 
-    private ProductDTO.ProductCreateResult toCreateResult(ProductBase saved, ProductDTO.ProductCreateRequest createRequest) {
+    private ProductDTO.ProductCreateResult toCreateResult(ProductBase saved,
+            ProductDTO.ProductCreateRequest createRequest) {
         return ProductDTO.ProductCreateResult.builder()
                 .id(saved.getId())
                 .name(saved.getName())
@@ -77,10 +83,10 @@ public class AdminService {
                 .price(saved.getPrice())
                 .discount(saved.getDiscount())
                 .build();
-
     }
 
-    private void setColorAndSize(List<ColorInfo> colorInfos, HashMap<String, Color> colorToSave, List<Size> sizeToSave, ProductBase saved) {
+    private void setColorAndSize(List<ColorInfo> colorInfos, HashMap<String, Color> colorToSave, List<Size> sizeToSave,
+            ProductBase saved) {
         for (ColorInfo colorAndSize : colorInfos) {
             Color color = colorToSave.getOrDefault(colorAndSize.getColor(), new Color(colorAndSize.getColor(), saved));
             sizeToSave.add(new Size(colorAndSize.getSize(), colorAndSize.getCount(), color));
@@ -94,13 +100,11 @@ public class AdminService {
         String mainThumbnailUrl = s3Component.uploadSingleImageToS3(mainThumbnail);
         productBase.setMainThumbnailImage(mainThumbnailUrl);
 
-
         return ProductImageInfo.builder()
                 .productBaseId(productBase.getId())
                 .imageUrls(List.of(mainThumbnailUrl))
                 .build();
     }
-
 
     @Transactional
     public ProductImageInfo uploadSubThumbnail(Long id, MultipartFile subThumbnail) {
@@ -108,13 +112,11 @@ public class AdminService {
         String subThumbnailUrl = s3Component.uploadSingleImageToS3(subThumbnail);
         productBase.setSubThumbnailImage(subThumbnailUrl);
 
-
         return ProductImageInfo.builder()
                 .productBaseId(productBase.getId())
                 .imageUrls(List.of(subThumbnailUrl))
                 .build();
     }
-
 
     @Transactional
     public ProductImageInfo uploadMainImages(Long id, List<MultipartFile> mainImages) {
@@ -127,7 +129,6 @@ public class AdminService {
 
         List<Image> images = s3Component.uploadAndGetImageList(mainImages, mainImage);
         imageRepository.saveAll(images);
-
 
         return ProductImageInfo.builder()
                 .productBaseId(productBase.getId())
@@ -153,16 +154,23 @@ public class AdminService {
                 .build();
     }
 
+    // ==============================================================================================================
+    // 마켓 관련 서비스
+    // ==============================================================================================================
     @Transactional
     public String createMarket(MarketDTO.MarketCreateRequest createRequest) {
         Market newMarket = Market.builder()
                 .name(createRequest.getName())
-                .saleStartTime(TimeUtil.convertStringToLocalDateTime(createRequest.getStartDate(),createRequest.getStartHour(), createRequest.getStartMinute(), createRequest.getStartSecond()))
+                .saleStartTime(TimeUtil.convertStringToLocalDateTime(createRequest.getStartDate(),
+                        createRequest.getStartHour(), createRequest.getStartMinute(), createRequest.getStartSecond()))
                 .build();
         marketRepository.save(newMarket);
         return "CREATED";
     }
 
+    // ==============================================================================================================
+    // 카테고리 관련 서비스
+    // ==============================================================================================================
     @Transactional
     public CategoryInfo createCategory(CategoryDto.CategoryCreateRequest createRequest) {
         Category saved = categoryRepository.save(createRequest.toEntity());
@@ -186,12 +194,17 @@ public class AdminService {
                 .build();
     }
 
+    // ==============================================================================================================
+    // 이벤트 관련 서비스
+    // ==============================================================================================================
     @Transactional
     public String createEvent(EventDTO.EventCreateRequest createRequest) {
         Event newEvent = Event.builder()
                 .name(createRequest.getName())
-                .eventStartDate(TimeUtil.convertStringToLocalDateTime(createRequest.getStartDate(), createRequest.getStartHour(), createRequest.getStartMinute(), createRequest.getStartSecond()))
-                .eventEndDate(TimeUtil.convertStringToLocalDateTime(createRequest.getEndDate(), createRequest.getEndHour(), createRequest.getEndMinute(), createRequest.getEndSecond()))
+                .eventStartDate(TimeUtil.convertStringToLocalDateTime(createRequest.getStartDate(),
+                        createRequest.getStartHour(), createRequest.getStartMinute(), createRequest.getStartSecond()))
+                .eventEndDate(TimeUtil.convertStringToLocalDateTime(createRequest.getEndDate(),
+                        createRequest.getEndHour(), createRequest.getEndMinute(), createRequest.getEndSecond()))
                 .build();
         eventRepository.save(newEvent);
         return "CREATED";

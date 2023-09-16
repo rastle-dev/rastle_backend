@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import rastle.dev.rastle_backend.domain.Token.dto.TokenDTO.TokenInfoDTO;
+import rastle.dev.rastle_backend.global.error.exception.InvalidRequestException;
 import rastle.dev.rastle_backend.global.security.CustomUserDetailsService;
 
 import java.security.Key;
@@ -106,7 +107,7 @@ public class JwtTokenProvider {
             UserDetails principal = new User(claims.getSubject(), "", authorities);
             return new UsernamePasswordAuthenticationToken(principal, "", authorities);
         } else {
-            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+            throw new InvalidRequestException("유효하지 않은 토큰입니다.");
         }
     }
 
@@ -169,7 +170,7 @@ public class JwtTokenProvider {
                 .filter(cookie -> "refreshToken".equals(cookie.getName()))
                 .findFirst()
                 .map(Cookie::getValue)
-                .orElseThrow(() -> new IllegalArgumentException("리프레시 토큰이 없습니다."));
+                .orElseThrow(() -> new InvalidRequestException("리프레시 토큰이 없습니다."));
     }
 
     // 리프레시 토큰으로부터 인증 객체 생성
@@ -180,7 +181,7 @@ public class JwtTokenProvider {
             UserDetails userDetails = customUserDetailsService.loadUserById(userId);
             return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
         } else {
-            throw new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다.");
+            throw new InvalidRequestException("유효하지 않은 리프레시 토큰입니다.");
         }
     }
 

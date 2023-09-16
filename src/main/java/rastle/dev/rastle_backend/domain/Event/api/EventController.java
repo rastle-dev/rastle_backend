@@ -7,8 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rastle.dev.rastle_backend.domain.Event.application.EventService;
-import rastle.dev.rastle_backend.domain.Event.dto.EventDTO;
-import rastle.dev.rastle_backend.domain.Event.dto.EventDTO.EventCreateRequest;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
 
 @Tag(name = "이벤트 관련 API", description = "이벤트 관련 API 입니다.")
@@ -17,8 +15,6 @@ import rastle.dev.rastle_backend.global.response.ServerResponse;
 @RequestMapping("/event")
 public class EventController {
     private final EventService eventService;
-
-
 
     @Operation(summary = "이벤트 조회 API", description = "이벤트 조회 API 입니다")
     @GetMapping("")

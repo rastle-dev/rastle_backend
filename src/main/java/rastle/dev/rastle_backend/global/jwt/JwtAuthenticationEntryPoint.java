@@ -23,9 +23,10 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     private final ObjectMapper objectMapper;
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
-        log.info(String.valueOf(authException.getClass()));
-        log.info(authException.getMessage());
+    public void commence(HttpServletRequest request, HttpServletResponse response,
+            AuthenticationException authException) throws IOException {
+        log.error(String.valueOf(authException.getClass()));
+        log.error(authException.getMessage());
         sendResponse(response, authException);
     }
 
@@ -33,23 +34,19 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         String result = "서버 에러가 발생했습니다";
         if (authException instanceof BadCredentialsException) {
             result = objectMapper.writeValueAsString(new ErrorResponse(409L, "잘못된 이메일, 비밀번호 입니다."));
-            response.setStatus(response.SC_CONFLICT);
+            response.setStatus(HttpServletResponse.SC_CONFLICT);
         } else if (authException instanceof InternalAuthenticationServiceException) {
             result = objectMapper.writeValueAsString(new ErrorResponse(404L,
                     "존재하지 않는 멤버입니다."));
-            response.setStatus(response.SC_NOT_FOUND);
-        } else if (authException instanceof InsufficientAuthenticationException){
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        } else if (authException instanceof InsufficientAuthenticationException) {
             result = objectMapper.writeValueAsString(new ErrorResponse(503L, "서버 내부 오류가 발생하였습니다"));
-            response.setStatus(response.SC_SERVICE_UNAVAILABLE);
+            response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
         }
-
-
-
 
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");
-        response.setHeader("Access-Control-Allow-Origin","http://localhost:3000");
+        response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
         response.getWriter().write(result);
-
     }
 }

@@ -9,10 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.Category.model.Category;
 import rastle.dev.rastle_backend.domain.Event.model.Event;
-import rastle.dev.rastle_backend.domain.Orders.model.OrderProduct;
-import rastle.dev.rastle_backend.domain.Product.model.ProductBase;
-
-import java.util.List;
 
 @Entity
 @Getter
@@ -22,8 +18,10 @@ public class EventProduct extends ProductBase {
     @ManyToOne
     @JoinColumn(name = "event_id")
     private Event event;
+
     @Builder
-    public EventProduct(String name, int price, boolean isEventProduct, String mainThumbnailImage, String subThumbnailImage, Event event, int discount, Category category, Long displayOrder) {
+    public EventProduct(String name, int price, boolean isEventProduct, String mainThumbnailImage,
+            String subThumbnailImage, Event event, int discount, Category category, Long displayOrder) {
         super(name, price, isEventProduct, mainThumbnailImage, subThumbnailImage, discount, category, displayOrder);
         this.event = event;
     }

@@ -3,7 +3,6 @@ package rastle.dev.rastle_backend.global.config;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
@@ -21,21 +20,18 @@ import org.springframework.transaction.PlatformTransactionManager;
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
 @Configuration
-@EnableJpaRepositories( basePackages =  {DatabaseConfig.RDS_DOMAIN_REPO})
-@MapperScan(
-        value = {DatabaseConfig.RDS_DOMAIN_MAPPER}
-)
+@EnableJpaRepositories(basePackages = { DatabaseConfig.RDS_DOMAIN_REPO })
+@MapperScan(value = { DatabaseConfig.RDS_DOMAIN_MAPPER })
 @RequiredArgsConstructor
-@Slf4j
 public class DatabaseConfig {
     static final String RDS_DOMAIN_REPO = "rastle.dev.rastle_backend.domain.*.repository";
     static final String RDS_DOMAIN_MAPPER = "rastle.dev.rastle_backend.domain.*.mapper";
 
-
     private final DatabaseProperty databaseProperty;
 
-    public DataSource routingDataProperty(String url){
+    public DataSource routingDataProperty(String url) {
         HikariDataSource hikariDataSource = new HikariDataSource();
         hikariDataSource.setJdbcUrl(databaseProperty.getUrl());
         hikariDataSource.setDriverClassName(databaseProperty.getDriverClassName());
@@ -45,18 +41,16 @@ public class DatabaseConfig {
         return hikariDataSource;
     }
 
-
     @Bean
-    public DataSource routingDataSource(){
+    public DataSource routingDataSource() {
         ReplicationRoutingDataSource replicationRoutingDataSource = new ReplicationRoutingDataSource();
         DataSource master = routingDataProperty(databaseProperty.getUrl());
 
-
-        Map<Object,Object> dataSourceMap = new LinkedHashMap<>();
-        dataSourceMap.put("master",master);
+        Map<Object, Object> dataSourceMap = new LinkedHashMap<>();
+        dataSourceMap.put("master", master);
 
         databaseProperty.getSlaveList().forEach(slave -> {
-            dataSourceMap.put(slave.getName() , routingDataProperty(slave.getUrl()));
+            dataSourceMap.put(slave.getName(), routingDataProperty(slave.getUrl()));
         });
 
         replicationRoutingDataSource.setTargetDataSources(dataSourceMap);
@@ -70,26 +64,25 @@ public class DatabaseConfig {
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(){
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactoryBean.setDataSource(dataSource());
         entityManagerFactoryBean.setPackagesToScan("rastle.dev.rastle_backend");
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         entityManagerFactoryBean.setJpaVendorAdapter(vendorAdapter);
 
-
         return entityManagerFactoryBean;
     }
 
     @Bean
-    public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory){
+    public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
         JpaTransactionManager tm = new JpaTransactionManager();
         tm.setEntityManagerFactory(entityManagerFactory);
         return tm;
     }
 
     @Bean
-    public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception{
+    public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception {
         SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
         sessionFactory.setDataSource(dataSource);
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
