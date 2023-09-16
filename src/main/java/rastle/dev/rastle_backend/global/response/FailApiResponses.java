@@ -16,9 +16,9 @@ import rastle.dev.rastle_backend.global.error.response.ErrorResponse;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @ApiResponses(value = {
-                @ApiResponse(responseCode = "401", description = "토큰 만료시", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-                @ApiResponse(responseCode = "409", description = "클라이언트에서 잘못된 데이터 전송시", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-                @ApiResponse(responseCode = "503", description = "서버 내부에서 핸들링되지 않은 예외 발생시", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+        @ApiResponse(responseCode = "401", description = "토큰 만료", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "409", description = "클라이언트에서 잘못된 데이터 전송", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "503", description = "서버 내부에서 핸들링되지 않은 예외 발생", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 })
 public @interface FailApiResponses {
 

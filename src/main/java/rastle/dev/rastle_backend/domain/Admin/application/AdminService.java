@@ -1,6 +1,9 @@
 package rastle.dev.rastle_backend.domain.Admin.application;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,7 +36,9 @@ import rastle.dev.rastle_backend.global.util.TimeUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -222,41 +227,54 @@ public class AdminService {
     // ==============================================================================================================
     // 멤버 관련 서비스
     // ==============================================================================================================
-    public List<MemberInfoDto> getAllMembers() {
-        List<Member> members = memberRepository.findAll();
+    @Transactional
+    public Page<MemberInfoDto> getAllMembers(Pageable pageable) {
+        Page<Member> members = memberRepository.findAllUsers(pageable);
+        return members.map(this::convertMemberToMemberInfoDto);
+    }
 
-        return members.stream().map(member -> {
-            List<OrderDetail> allOrderDetails = new ArrayList<>();
-            List<Orders> orders = orderRepository.findByMemberId(member.getId());
+    @Transactional
+    public MemberInfoDto getMemberByEmail(String email) {
+        Optional<Member> memberOptional = memberRepository.findByEmail(email);
 
-            if (!orders.isEmpty()) {
-                for (Orders order : orders) {
-                    List<OrderProductDetail> orderProductDetails = order.getOrderProduct().stream().map(op -> {
-                        return OrderProductDetail.builder()
-                                .color(op.getColor())
-                                .size(op.getSize())
-                                .count(op.getCount())
-                                .productName(op.getProduct().getName())
-                                .build();
-                    }).collect(Collectors.toList());
+        if (memberOptional.isPresent()) {
+            Member member = memberOptional.orElseThrow(NotFoundByIdException::new);
+            return convertMemberToMemberInfoDto(member);
+        } else {
+            return null;
+        }
+    }
 
-                    allOrderDetails.add(OrderDetail.builder()
-                            .orderId(order.getId())
-                            .orderProducts(orderProductDetails)
-                            .build());
-                }
-            }
+    private MemberInfoDto convertMemberToMemberInfoDto(Member member) {
+        List<OrderDetail> allOrderDetails = convertOrdersToOrderDetails(orderRepository.findByMemberId(member.getId()));
+        return MemberInfoDto.builder()
+                .email(member.getEmail())
+                .userLoginType(member.getUserLoginType())
+                .userName(member.getUserName())
+                .phoneNumber(member.getPhoneNumber())
+                .address(String.format("%s %s %s", member.getZipCode(), member.getRoadAddress(),
+                        member.getDetailAddress()))
+                .createdDate(member.getCreatedDate())
+                .allOrderDetails(allOrderDetails)
+                .build();
+    }
 
-            return MemberInfoDto.builder()
-                    .email(member.getEmail())
-                    .userLoginType(member.getUserLoginType())
-                    .userName(member.getUserName())
-                    .phoneNumber(member.getPhoneNumber())
-                    .address(String.format("%s %s %s", member.getZipCode(), member.getRoadAddress(),
-                            member.getDetailAddress()))
-                    .createdDate(member.getCreatedDate())
-                    .allOrderDetails(allOrderDetails)
-                    .build();
+    private List<OrderDetail> convertOrdersToOrderDetails(List<Orders> orders) {
+        return orders.stream().flatMap(order -> {
+            List<OrderProductDetail> orderProductDetails = order.getOrderProduct().stream().map(op -> {
+                return OrderProductDetail.builder()
+                        .color(op.getColor())
+                        .size(op.getSize())
+                        .count(op.getCount())
+                        .productName(op.getProduct().getName())
+                        .build();
+            }).collect(Collectors.toList());
+
+            return Stream.of(OrderDetail.builder()
+                    .orderId(order.getId())
+                    .orderProducts(orderProductDetails)
+                    .build());
         }).collect(Collectors.toList());
     }
+
 }
