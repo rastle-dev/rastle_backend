@@ -20,3 +20,10 @@ Authorization: {{auth_token}}
 }
 
 > {% client.global.set("auth_token", response.headers.valueOf("Authorization")); %}
+
+
+
+### 로그인한 멤버 정보 조회
+GET http://localhost:8080/member
+Content-Type: application/json
+Authorization: {{auth_token}}
