@@ -1,6 +1,11 @@
 package rastle.dev.rastle_backend.domain.Member.dto;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,8 +18,8 @@ public class MemberDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     @Getter
-    @Schema(description = "멤버 정보 조회 요청 DTO")
-    public static class MemberInfoDto {
+    @Schema(description = "로그인한 멤버 정보 조회 요청 DTO")
+    public static class LoginMemberInfoDto {
         @Schema(description = "이메일")
         private String email;
         @Schema(description = "이름")
@@ -34,6 +39,39 @@ public class MemberDTO {
     @Schema(description = "비밀번호 변경 요청 DTO")
     public static class PasswordDto {
         @Schema(description = "새로운 비밀번호")
+        @Size(min = 8, max = 16, message = "비밀번호는 8자 이상 16자 이하로 입력해주세요.")
+        @Pattern(regexp = ".*[^a-zA-Z0-9].*", message = "비밀번호에는 최소 하나의 특수 문자를 포함해야 합니다.")
         private String newPassword;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Schema(description = "전체 멤버 정보 조회 요청 DTO")
+    public static class MemberInfoDto {
+        private String email;
+        private UserLoginType userLoginType;
+        private String userName;
+        private String phoneNumber;
+        private String address;
+        private LocalDateTime createdDate;
+        private List<OrderDetail> allOrderDetails;
+
+        @Getter
+        @Builder
+        public static class OrderDetail {
+            private Long orderId;
+            private List<OrderProductDetail> orderProducts;
+        }
+
+        @Getter
+        @Builder
+        public static class OrderProductDetail {
+            private String color;
+            private String size;
+            private int count;
+            private String productName;
+        }
     }
 }

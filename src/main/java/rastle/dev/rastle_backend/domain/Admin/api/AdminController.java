@@ -15,6 +15,7 @@ import rastle.dev.rastle_backend.domain.Category.dto.CategoryDto;
 import rastle.dev.rastle_backend.domain.Category.dto.CategoryInfo;
 import rastle.dev.rastle_backend.domain.Event.dto.EventDTO.EventCreateRequest;
 import rastle.dev.rastle_backend.domain.Market.dto.MarketDTO.MarketCreateRequest;
+import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.MemberInfoDto;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductImageInfo;
 import rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo;
@@ -126,5 +127,16 @@ public class AdminController {
         @PostMapping("/market")
         public ResponseEntity<ServerResponse<?>> tempAddMarket(@RequestBody MarketCreateRequest createRequest) {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.createMarket(createRequest)));
+        }
+
+        // ==============================================================================================================
+        // 멤버 관련 API
+        // ==============================================================================================================
+        @Operation(summary = "멤버 전체 조회 API", description = "홈페이지에 가입된 멤버 전체를 조회합니다.")
+        @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = MemberInfoDto.class)))
+        @FailApiResponses
+        @GetMapping("/member")
+        public ResponseEntity<ServerResponse<?>> getAllMembers() {
+                return ResponseEntity.ok(new ServerResponse<>(adminService.getAllMembers()));
         }
 }

@@ -14,6 +14,13 @@ import rastle.dev.rastle_backend.domain.Event.repository.EventRepository;
 import rastle.dev.rastle_backend.domain.Market.dto.MarketDTO;
 import rastle.dev.rastle_backend.domain.Market.model.Market;
 import rastle.dev.rastle_backend.domain.Market.repository.MarketRepository;
+import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.MemberInfoDto;
+import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.MemberInfoDto.OrderDetail;
+import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.MemberInfoDto.OrderProductDetail;
+import rastle.dev.rastle_backend.domain.Member.model.Member;
+import rastle.dev.rastle_backend.domain.Member.repository.MemberRepository;
+import rastle.dev.rastle_backend.domain.Orders.model.Orders;
+import rastle.dev.rastle_backend.domain.Orders.repository.OrderRepository;
 import rastle.dev.rastle_backend.domain.Product.dto.ColorInfo;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductImageInfo;
@@ -42,6 +49,8 @@ public class AdminService {
     private final S3Component s3Component;
     private final ProductImageRepository productImageRepository;
     private final ImageRepository imageRepository;
+    private final MemberRepository memberRepository;
+    private final OrderRepository orderRepository;
 
     // ==============================================================================================================
     // 상품 관련 서비스
@@ -208,5 +217,46 @@ public class AdminService {
                 .build();
         eventRepository.save(newEvent);
         return "CREATED";
+    }
+
+    // ==============================================================================================================
+    // 멤버 관련 서비스
+    // ==============================================================================================================
+    public List<MemberInfoDto> getAllMembers() {
+        List<Member> members = memberRepository.findAll();
+
+        return members.stream().map(member -> {
+            List<OrderDetail> allOrderDetails = new ArrayList<>();
+            List<Orders> orders = orderRepository.findByMemberId(member.getId());
+
+            if (!orders.isEmpty()) {
+                for (Orders order : orders) {
+                    List<OrderProductDetail> orderProductDetails = order.getOrderProduct().stream().map(op -> {
+                        return OrderProductDetail.builder()
+                                .color(op.getColor())
+                                .size(op.getSize())
+                                .count(op.getCount())
+                                .productName(op.getProduct().getName())
+                                .build();
+                    }).collect(Collectors.toList());
+
+                    allOrderDetails.add(OrderDetail.builder()
+                            .orderId(order.getId())
+                            .orderProducts(orderProductDetails)
+                            .build());
+                }
+            }
+
+            return MemberInfoDto.builder()
+                    .email(member.getEmail())
+                    .userLoginType(member.getUserLoginType())
+                    .userName(member.getUserName())
+                    .phoneNumber(member.getPhoneNumber())
+                    .address(String.format("%s %s %s", member.getZipCode(), member.getRoadAddress(),
+                            member.getDetailAddress()))
+                    .createdDate(member.getCreatedDate())
+                    .allOrderDetails(allOrderDetails)
+                    .build();
+        }).collect(Collectors.toList());
     }
 }

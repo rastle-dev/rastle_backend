@@ -15,7 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import rastle.dev.rastle_backend.domain.Member.application.MemberService;
-import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.MemberInfoDto;
+import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.LoginMemberInfoDto;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.PasswordDto;
 import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
@@ -32,14 +32,14 @@ public class MemberController {
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "사용자 정보 조회 성공"),
             @ApiResponse(responseCode = "400", description = "사용자 정보 조회 실패") })
     @GetMapping(value = "")
-    public ResponseEntity<ServerResponse<MemberInfoDto>> getLoginMemberInfo() {
+    public ResponseEntity<ServerResponse<LoginMemberInfoDto>> getLoginMemberInfo() {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         try {
-            MemberInfoDto memberInfo = memberService.getLoginMemberInfo(currentMemberId);
-            ServerResponse<MemberInfoDto> serverResponse = new ServerResponse<>(memberInfo);
+            LoginMemberInfoDto memberInfo = memberService.getLoginMemberInfo(currentMemberId);
+            ServerResponse<LoginMemberInfoDto> serverResponse = new ServerResponse<>(memberInfo);
             return new ResponseEntity<>(serverResponse, HttpStatus.OK);
         } catch (NotFoundByIdException e) {
-            ServerResponse<MemberInfoDto> serverResponse = new ServerResponse<>(null);
+            ServerResponse<LoginMemberInfoDto> serverResponse = new ServerResponse<>(null);
             return new ResponseEntity<>(serverResponse, HttpStatus.BAD_REQUEST);
         }
     }

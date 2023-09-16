@@ -32,6 +32,7 @@ public class MemberAuthDTO {
         @Schema(description = "비밀번호")
         @NotBlank(message = "비밀번호를 입력해주세요.")
         @Size(min = 8, max = 16, message = "비밀번호는 8자 이상 16자 이하로 입력해주세요.")
+        @Pattern(regexp = ".*[^a-zA-Z0-9].*", message = "비밀번호에는 최소 하나의 특수 문자를 포함해야 합니다.")
         private String password;
 
         @Schema(description = "이름")
