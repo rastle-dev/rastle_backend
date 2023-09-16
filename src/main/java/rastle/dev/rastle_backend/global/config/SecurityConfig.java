@@ -82,13 +82,13 @@ public class SecurityConfig {
                                                 .requestMatchers("/login/**").permitAll()
                                                 .requestMatchers("/auth/**").permitAll()
                                                 .requestMatchers("/category/**").permitAll()
-                                                .requestMatchers("/member/**").hasRole("USER")
+                                                .requestMatchers("/member/**").hasAnyRole("USER", "ADMIN")
                                                 .requestMatchers("/swagger-ui/**").permitAll()
                                                 .requestMatchers("/v1/api-docs/**").permitAll()
                                                 .requestMatchers("/product/**").permitAll()
                                                 .requestMatchers("/market/**").permitAll()
                                                 .requestMatchers("/event/**").permitAll()
-                                                .requestMatchers("/admin").hasRole("ADMIN")
+                                                .requestMatchers("/admin/**").hasRole("ADMIN")
                                                 .requestMatchers(HttpMethod.GET, "/rest-docs").permitAll());
 
                 http

@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,6 +21,7 @@ import rastle.dev.rastle_backend.domain.Member.dto.MemberAuthDTO.EmailCertificat
 import rastle.dev.rastle_backend.domain.Member.dto.MemberAuthDTO.LoginDto;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberAuthDTO.PasswordResetRequestDto;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberAuthDTO.SignUpDto;
+import rastle.dev.rastle_backend.global.response.FailApiResponses;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
 
 import org.springframework.http.HttpHeaders;
@@ -29,7 +32,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@Tag(name = "사용자 인증 API", description = "사용자 인증 관련 API입니다.")
+@Tag(name = "회원 인증", description = "회원 인증 관련 API입니다.")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
@@ -37,9 +40,9 @@ public class MemberAuthController {
         private final MemberAuthService memberAuthService;
         private final EmailCertificationService emailCertificationService;
 
-        @Operation(summary = "회원가입", description = "사용자 회원가입 API입니다.")
-        @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "회원가입 성공"),
-                        @ApiResponse(responseCode = "400", description = "회원가입 실패") })
+        @Operation(summary = "회원가입", description = "신규 회원을 가입합니다.")
+        @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(schema = @Schema(implementation = SignUpDto.class)))
+        @FailApiResponses
         @PostMapping(value = "/signup")
         public ResponseEntity<ServerResponse<SignUpDto>> signUp(@Valid @RequestBody SignUpDto signUpDto) {
                 memberAuthService.signUp(signUpDto);
@@ -60,21 +63,26 @@ public class MemberAuthController {
         // return ResponseEntity.ok(response);
         // }
 
-        @Operation(summary = "이메일 중복 확인", description = "이메일 중복 확인 API입니다.")
-        @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "이메일 중복 확인 성공"),
-                        @ApiResponse(responseCode = "400", description = "이메일 중복 확인 실패") })
+        @Operation(summary = "이메일 중복 확인", description = "중복된 이메일이 있는지 확인합니다.")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "이메일 사용 가능"),
+                        @ApiResponse(responseCode = "409", description = "이미 사용 중인 이메일")
+        })
         @GetMapping(value = "/checkEmail/{email}")
         public ResponseEntity<ServerResponse<?>> checkEmailExists(@PathVariable String email) {
                 boolean isDuplicated = memberAuthService.isEmailDuplicated(email);
+
+                HttpStatus status = isDuplicated ? HttpStatus.CONFLICT : HttpStatus.OK;
+
                 String message = isDuplicated ? "이메일이 이미 사용 중입니다." : "이메일을 사용할 수 있습니다.";
                 ServerResponse<String> response = new ServerResponse<>(message);
-                HttpStatus status = isDuplicated ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+
                 return ResponseEntity.status(status).body(response);
         }
 
-        @Operation(summary = "로그인", description = "로그인 API입니다.")
-        @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "로그인 성공"),
-                        @ApiResponse(responseCode = "400", description = "로그인 실패") })
+        @Operation(summary = "로그인", description = "회원 로그인을 처리합니다.")
+        @ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(schema = @Schema(implementation = LoginDto.class)))
+        @FailApiResponses
         @PostMapping(value = "/login")
         public ResponseEntity<ServerResponse<String>> login(@RequestBody LoginDto loginDto,
                         HttpServletResponse response) {
@@ -84,9 +92,9 @@ public class MemberAuthController {
                 return ResponseEntity.status(loginResponse.getStatusCode()).headers(headers).body(serverResponse);
         }
 
-        @Operation(summary = "로그아웃", description = "로그아웃 API입니다.")
-        @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "로그아웃 성공"),
-                        @ApiResponse(responseCode = "400", description = "로그아웃 실패") })
+        @Operation(summary = "로그아웃", description = "회원 로그아웃을 처리합니다.")
+        @ApiResponse(responseCode = "200", description = "로그아웃 성공")
+        @FailApiResponses
         @PostMapping("/logout")
         public ResponseEntity<ServerResponse<String>> logout(HttpServletRequest request, HttpServletResponse response) {
                 ResponseEntity<String> logoutResponse = memberAuthService.logout(request, response);
@@ -95,9 +103,9 @@ public class MemberAuthController {
                 return ResponseEntity.status(logoutResponse.getStatusCode()).headers(headers).body(serverResponse);
         }
 
-        @Operation(summary = "이메일 인증 메일 전송", description = "이메일 인증 API입니다.")
-        @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "이메일 인증 성공"),
-                        @ApiResponse(responseCode = "400", description = "이메일 인증 실패") })
+        @Operation(summary = "이메일 인증 메일 전송", description = "유효한 이메일인지 확인할 인증 메일을 전송합니다.")
+        @ApiResponse(responseCode = "200", description = "이메일 인증 성공")
+        @FailApiResponses
         @PostMapping(value = "/emailCertification")
         public ResponseEntity<ServerResponse<String>> emailCertification(
                         @RequestBody EmailCertificationDto emailCertificationDto) throws Exception {
@@ -106,9 +114,9 @@ public class MemberAuthController {
                 return ResponseEntity.ok(serverResponse);
         }
 
-        @Operation(summary = "이메일 인증 번호 확인", description = "이메일 인증 번호 확인 API입니다.")
-        @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "이메일 인증 번호 확인 성공"),
-                        @ApiResponse(responseCode = "400", description = "이메일 인증 번호 확인 실패") })
+        @Operation(summary = "이메일 인증 번호 확인", description = "이메일 인증 번호를 확인합니다.")
+        @ApiResponse(responseCode = "200", description = "이메일 인증 번호 확인 성공")
+        @FailApiResponses
         @PostMapping(value = "/emailCertificationCheck")
         public ResponseEntity<ServerResponse<Boolean>> emailCertificationCheck(
                         @RequestBody EmailCertificationCheckDto emailCertificationCheckDto) throws Exception {
@@ -118,9 +126,9 @@ public class MemberAuthController {
                 return ResponseEntity.ok(serverResponse);
         }
 
-        @Operation(summary = "비밀번호 초기화 메일 전송", description = "비밀번호 초기화 API입니다.")
-        @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "비밀번호 초기화 성공"),
-                        @ApiResponse(responseCode = "400", description = "비밀번호 초기화 실패") })
+        @Operation(summary = "비밀번호 초기화 메일 전송", description = "비밀번호 초기화 메일을 발송합니다.")
+        @ApiResponse(responseCode = "200", description = "비밀번호 초기화 성공")
+        @FailApiResponses
         @PostMapping(value = "/resetPassword")
         public ResponseEntity<ServerResponse<String>> resetPassword(
                         @RequestBody PasswordResetRequestDto passwordResetRequestDto) throws Exception {
@@ -130,17 +138,13 @@ public class MemberAuthController {
                 return ResponseEntity.ok(serverResponse);
         }
 
-        @Operation(summary = "액세스 토큰 재발급", description = "액세스 토큰 재발급 API입니다.")
-        @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "토큰 재발급 성공"),
-                        @ApiResponse(responseCode = "400", description = "토큰 재발급 실패") })
+        @Operation(summary = "액세스 토큰 재발급", description = "액세스 토큰을 재발급합니다.")
+        @ApiResponse(responseCode = "200", description = "토큰 재발급 성공")
+        @FailApiResponses
         @PostMapping(value = "/refreshAccessToken")
         public ResponseEntity<ServerResponse<String>> refreshAccessToken(HttpServletRequest request) {
-                if (request == null) {
-                        throw new IllegalArgumentException("HttpServletRequest cannot be null");
-                }
                 ResponseEntity<String> result = memberAuthService.refreshAccessToken(request);
                 ServerResponse<String> serverResponse = new ServerResponse<>(result.getBody());
                 return new ResponseEntity<>(serverResponse, result.getHeaders(), result.getStatusCode());
         }
-
 }

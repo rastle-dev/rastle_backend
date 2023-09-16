@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.MemberInfoDto;
+import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.LoginMemberInfoDto;
 import rastle.dev.rastle_backend.domain.Member.model.Member;
 import rastle.dev.rastle_backend.domain.Member.repository.MemberRepository;
 import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
@@ -23,7 +23,7 @@ public class MemberService {
      * @return 로그인한 멤버 정보
      */
     @Transactional
-    public MemberInfoDto getLoginMemberInfo(Long memberId) {
+    public LoginMemberInfoDto getLoginMemberInfo(Long memberId) {
         return memberRepository.findMemberInfoById(memberId).orElseThrow(NotFoundByIdException::new);
     }
 
