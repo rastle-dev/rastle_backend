@@ -22,6 +22,9 @@ public class Event {
 
     private String name;
 
+    @Column(name = "image_urls")
+    private String imageUrls;
+
     @Column(name = "event_start_date")
     private LocalDateTime eventStartDate;
 
@@ -31,9 +34,14 @@ public class Event {
     @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<EventProduct> eventProducts = new ArrayList<>();
     @Builder
-    public Event(String name, LocalDateTime eventStartDate, LocalDateTime eventEndDate) {
+    public Event(String name, LocalDateTime eventStartDate, LocalDateTime eventEndDate, String imageUrls) {
         this.name = name;
         this.eventStartDate = eventStartDate;
         this.eventEndDate = eventEndDate;
+        this.imageUrls = imageUrls;
+    }
+
+    public void setImageUrls(String imageUrls) {
+        this.imageUrls = imageUrls;
     }
 }
