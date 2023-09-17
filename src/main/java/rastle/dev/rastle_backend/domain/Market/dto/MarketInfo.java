@@ -20,4 +20,6 @@ public class MarketInfo {
     String name;
     @Schema(description = "마켓 시작 날짜", defaultValue = "2023-01-12T12:00:00")
     LocalDateTime startDate;
+    @Schema(description = "마켓 이미지들", defaultValue = "https://aws.~~~, https://aws.~~~, https://aws.~~~")
+    String imageUrls;
 }

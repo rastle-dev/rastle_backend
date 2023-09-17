@@ -12,9 +12,11 @@ import rastle.dev.rastle_backend.domain.Category.dto.CategoryInfo;
 import rastle.dev.rastle_backend.domain.Category.model.Category;
 import rastle.dev.rastle_backend.domain.Category.repository.CategoryRepository;
 import rastle.dev.rastle_backend.domain.Event.dto.EventDTO;
+import rastle.dev.rastle_backend.domain.Event.dto.EventInfo;
 import rastle.dev.rastle_backend.domain.Event.model.Event;
 import rastle.dev.rastle_backend.domain.Event.repository.EventRepository;
 import rastle.dev.rastle_backend.domain.Market.dto.MarketDTO;
+import rastle.dev.rastle_backend.domain.Market.dto.MarketInfo;
 import rastle.dev.rastle_backend.domain.Market.model.Market;
 import rastle.dev.rastle_backend.domain.Market.repository.MarketRepository;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.MemberInfoDto;
@@ -182,6 +184,20 @@ public class AdminService {
         return "CREATED";
     }
 
+    @Transactional
+    public MarketInfo uploadMarketImages(Long id, List<MultipartFile> images) {
+        Market market =  marketRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        String imageUrls = s3Component.uploadImagesAndGetString(images);
+        market.setImageUrls(imageUrls);
+
+        return MarketInfo.builder()
+                .id(market.getId())
+                .startDate(market.getSaleStartTime())
+                .name(market.getName())
+                .imageUrls(market.getImageUrls())
+                .build();
+    }
+
     // ==============================================================================================================
     // 카테고리 관련 서비스
     // ==============================================================================================================
@@ -195,18 +211,7 @@ public class AdminService {
                 .build();
     }
 
-    @Transactional
-    public CategoryInfo uploadImages(Long id, List<MultipartFile> images) {
-        Category category = categoryRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        String imageUrls = s3Component.uploadImagesAndGetString(images);
-        category.setImageUrls(imageUrls);
 
-        return CategoryInfo.builder()
-                .id(category.getId())
-                .name(category.getName())
-                .imageUrls(category.getImageUrls())
-                .build();
-    }
 
     // ==============================================================================================================
     // 이벤트 관련 서비스
@@ -222,6 +227,21 @@ public class AdminService {
                 .build();
         eventRepository.save(newEvent);
         return "CREATED";
+    }
+
+    @Transactional
+    public EventInfo uploadEventImages(Long id, List<MultipartFile> images) {
+        Event event =  eventRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        String imageUrls = s3Component.uploadImagesAndGetString(images);
+        event.setImageUrls(imageUrls);
+
+        return EventInfo.builder()
+                .id(event.getId())
+                .startDate(event.getEventStartDate())
+                .endDate(event.getEventEndDate())
+                .name(event.getName())
+                .imageUrls(event.getImageUrls())
+                .build();
     }
 
     // ==============================================================================================================

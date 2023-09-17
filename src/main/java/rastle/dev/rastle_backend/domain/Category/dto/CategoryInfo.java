@@ -12,6 +12,5 @@ public class CategoryInfo {
     Long id;
     @Schema(description = "카테고리 이름", defaultValue = "바지")
     String name;
-    @Schema(description = "카테고리 이미지들", defaultValue = "https://aws.~~~, https://aws.~~~, https://aws.~~~")
-    String imageUrls;
+
 }

@@ -12,6 +12,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "e.id, " +
             "e.name, " +
             "e.eventStartDate, " +
-            "e.eventEndDate) from Event e")
+            "e.eventEndDate, " +
+            "e.imageUrls) from Event e")
     Page<EventInfo> getEventInfo(Pageable pageable);
 }

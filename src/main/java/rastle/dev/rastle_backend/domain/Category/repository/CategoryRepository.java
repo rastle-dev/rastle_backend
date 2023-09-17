@@ -11,8 +11,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     @Query(
             "select new rastle.dev.rastle_backend.domain.Category.dto.CategoryInfo(" +
                     "c.id, " +
-                    "c.name, " +
-                    "c.imageUrls" +
+                    "c.name "+
                     ") from Category c"
     )
     List<CategoryInfo> getCategoryInfos();

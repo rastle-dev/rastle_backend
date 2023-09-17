@@ -25,12 +25,20 @@ public class Market {
     @Column(name = "sale_start_time")
     private LocalDateTime saleStartTime;
 
+    @Column(name = "image_urls")
+    private String imageUrls;
+
 
     @OneToMany(mappedBy = "market", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<MarketProduct> marketProducts = new ArrayList<>();
     @Builder
-    public Market(String name, LocalDateTime saleStartTime) {
+    public Market(String name, LocalDateTime saleStartTime, String imageUrls) {
         this.name = name;
         this.saleStartTime = saleStartTime;
+        this.imageUrls = imageUrls;
+    }
+
+    public void setImageUrls(String imageUrls) {
+        this.imageUrls = imageUrls;
     }
 }

@@ -16,7 +16,9 @@ import rastle.dev.rastle_backend.domain.Admin.application.AdminService;
 import rastle.dev.rastle_backend.domain.Category.dto.CategoryDto;
 import rastle.dev.rastle_backend.domain.Category.dto.CategoryInfo;
 import rastle.dev.rastle_backend.domain.Event.dto.EventDTO.EventCreateRequest;
+import rastle.dev.rastle_backend.domain.Event.dto.EventInfo;
 import rastle.dev.rastle_backend.domain.Market.dto.MarketDTO.MarketCreateRequest;
+import rastle.dev.rastle_backend.domain.Market.dto.MarketInfo;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.MemberInfoDto;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductImageInfo;
@@ -100,14 +102,6 @@ public class AdminController {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.createCategory(createRequest)));
         }
 
-        @Operation(summary = "카테고리 이미지 추가 API", description = "카테고리 이미지 추가 API입니다")
-        @ApiResponse(responseCode = "200", description = "추가 성공", content = @Content(schema = @Schema(implementation = CategoryInfo.class)))
-        @FailApiResponses
-        @PostMapping("/category/{id}/images")
-        public ResponseEntity<ServerResponse<?>> addImagesToCategory(@PathVariable("id") Long id,
-                        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "등록할 카테고리 이미지들") @RequestParam("images") List<MultipartFile> images) {
-                return ResponseEntity.ok(new ServerResponse<>(adminService.uploadImages(id, images)));
-        }
 
         // ==============================================================================================================
         // 이벤트 관련 API
@@ -120,6 +114,15 @@ public class AdminController {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.createEvent(createRequest)));
         }
 
+        @Operation(summary = "이벤트 이미지 추가 API", description = "이벤트 이미지 추가 API입니다")
+        @ApiResponse(responseCode = "200", description = "추가 성공", content = @Content(schema = @Schema(implementation = EventInfo.class)))
+        @FailApiResponses
+        @PostMapping("/event/{id}/images")
+        public ResponseEntity<ServerResponse<?>> addImagesToEvent(@PathVariable("id") Long id,
+                                                                   @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "등록할 이벤트 이미지들") @RequestParam("images") List<MultipartFile> images) {
+                return ResponseEntity.ok(new ServerResponse<>(adminService.uploadEventImages(id, images)));
+        }
+
         // ==============================================================================================================
         // 마켓 관련 API
         // ==============================================================================================================
@@ -129,6 +132,15 @@ public class AdminController {
         @PostMapping("/market")
         public ResponseEntity<ServerResponse<?>> tempAddMarket(@RequestBody MarketCreateRequest createRequest) {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.createMarket(createRequest)));
+        }
+
+        @Operation(summary = "마켓 이미지 추가 API", description = "마켓 이미지 추가 API입니다")
+        @ApiResponse(responseCode = "200", description = "추가 성공", content = @Content(schema = @Schema(implementation = MarketInfo.class)))
+        @FailApiResponses
+        @PostMapping("/market/{id}/images")
+        public ResponseEntity<ServerResponse<?>> addImagesToMarket(@PathVariable("id") Long id,
+                                                                     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "등록할 마켓 이미지들") @RequestParam("images") List<MultipartFile> images) {
+                return ResponseEntity.ok(new ServerResponse<>(adminService.uploadMarketImages(id, images)));
         }
 
         // ==============================================================================================================
