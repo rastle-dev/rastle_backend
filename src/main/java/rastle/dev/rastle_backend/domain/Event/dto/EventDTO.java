@@ -28,5 +28,7 @@ public class EventDTO {
         String endMinute;
         @Schema(description = "이벤트 종료 초", defaultValue = "59")
         String endSecond;
+        @Schema(description = "이벤트 설명", defaultValue = "이벤트 설명입니다")
+        String description;
     }
 }

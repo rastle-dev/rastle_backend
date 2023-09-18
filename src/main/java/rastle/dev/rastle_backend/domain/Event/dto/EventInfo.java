@@ -23,4 +23,6 @@ public class EventInfo {
     LocalDateTime endDate;
     @Schema(description = "이벤트 이미지들", defaultValue = "https://aws.~~~, https://aws.~~~, https://aws.~~~")
     String imageUrls;
+    @Schema(description = "이벤트 설명", defaultValue = "이벤트 설명입니다")
+    String description;
 }

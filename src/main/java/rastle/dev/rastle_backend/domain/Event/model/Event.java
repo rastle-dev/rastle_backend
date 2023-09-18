@@ -19,17 +19,15 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_id")
     private Long id;
-
     private String name;
-
     @Column(name = "image_urls")
     private String imageUrls;
-
     @Column(name = "event_start_date")
     private LocalDateTime eventStartDate;
-
     @Column(name = "event_end_date")
     private LocalDateTime eventEndDate;
+    private String description;
+
 
     @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<EventProduct> eventProducts = new ArrayList<>();
