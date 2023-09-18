@@ -22,11 +22,7 @@ public class MarketDTO {
         String startMinute;
         @Schema(description = "마켓 시작 초", defaultValue = "0")
         String startSecond;
-        @Schema(description = "마켓 종료 시간", defaultValue = "23")
-        String endHour;
-        @Schema(description = "마켓 종료 분", defaultValue = "59")
-        String endMinute;
-        @Schema(description = "마켓 종료 초", defaultValue = "59")
-        String endSecond;
+        @Schema(description = "마켓 설명", defaultValue = "마켓 설명입니다")
+        String description;
     }
 }

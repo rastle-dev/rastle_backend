@@ -19,14 +19,12 @@ public class Market {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "market_id")
     private Long id;
-
     private String name;
-
     @Column(name = "sale_start_time")
     private LocalDateTime saleStartTime;
-
     @Column(name = "image_urls")
     private String imageUrls;
+    private String description;
 
 
     @OneToMany(mappedBy = "market", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
