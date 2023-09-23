@@ -31,12 +31,14 @@ public class Event {
 
     @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<EventProduct> eventProducts = new ArrayList<>();
+
     @Builder
-    public Event(String name, LocalDateTime eventStartDate, LocalDateTime eventEndDate, String imageUrls) {
+    public Event(String name, LocalDateTime eventStartDate, LocalDateTime eventEndDate, String imageUrls, String description) {
         this.name = name;
         this.eventStartDate = eventStartDate;
         this.eventEndDate = eventEndDate;
         this.imageUrls = imageUrls;
+        this.description = description;
     }
 
     public void setImageUrls(String imageUrls) {
