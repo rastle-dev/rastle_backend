@@ -119,28 +119,78 @@ Content-Type: application/json
 Authorization: {{auth_token}}
 
 {
-
+  "name": "상품10",
+  "price": 100000,
+  "discount": 10,
+  "eventCategory": true,
+  "marketId": 2,
+  "categoryId": 7,
+  "colorAndSizes": [
+    {
+      "color": "blue",
+      "size": "M",
+      "count": 1
+    },
+    {
+      "color": "blue",
+      "size":"L",
+      "count": 1
+    }
+  ],
+  "displayOrder": 1000
 }
 
+
 ### 상품 메인 썸네일 이미지 등록
-POST http://localhost:8080/admin/product/{{id}}/mainThumbnail
-Content-Type: multipart/form-data
+POST http://localhost:8080/admin/product/16/mainThumbnail
+Content-Type: multipart/form-data; boundary=WebAppBoundary
 Authorization: {{auth_token}}
+
+--WebAppBoundary
+Content-Disposition: form-data; name="mainThumbnail"; filename="thumbnail9.png"
+
+< img/market5.png
+--WebAppBoundary--
 
 
 ### 상품 서브 썸네일 이미지 등록
-POST http://localhost:8080/admin/product/{{id}}/subThumbnail
-Content-Type: multipart/form-data
+POST http://localhost:8080/admin/product/16/subThumbnail
+Content-Type: multipart/form-data; boundary=WebAppBoundary
 Authorization: {{auth_token}}
 
+--WebAppBoundary
+Content-Disposition: form-data; name="subThumbnail"; filename="thumbnail10.png"
+
+< img/thumbnail6.png
+--WebAppBoundary--
 
 ### 상품 메인 이미지 등록
-POST http://localhost:8080/admin/product/{{id}}/mainImages
-Content-Type: multipart/form-data
+POST http://localhost:8080/admin/product/16/mainImages
+Content-Type: multipart/form-data; boundary=WebAppBoundary
 Authorization: {{auth_token}}
+
+--WebAppBoundary
+Content-Disposition: form-data; name="mainImages"; filename="thumbnail3.png"
+
+< img/thumbnail3.png
+--WebAppBoundary--
+Content-Disposition: form-data; name="mainImages"; filename="thumbnail4.png"
+
+< img/thumbnail4.png
+--WebAppBoundary--
 
 
 ### 상품 상세 이미지 등록
-POST http://localhost:8080/admin/product/{{id}}/detailImages
-Content-Type: multipart/form-data
+POST http://localhost:8080/admin/product/16/detailImages
+Content-Type: multipart/form-data; boundary=WebAppBoundary
 Authorization: {{auth_token}}
+
+--WebAppBoundary
+Content-Disposition: form-data; name="detailImages"; filename="thumbnail2.png"
+
+< img/thumbnail2.png
+--WebAppBoundary--
+Content-Disposition: form-data; name="detailImages"; filename="thumbnail1.png"
+
+< img/thumbnail1.png
+--WebAppBoundary--

@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import rastle.dev.rastle_backend.domain.Event.dto.EventInfo;
 import rastle.dev.rastle_backend.domain.Product.model.EventProduct;
 
 @Entity
@@ -44,4 +45,16 @@ public class Event {
     public void setImageUrls(String imageUrls) {
         this.imageUrls = imageUrls;
     }
+
+    public EventInfo toEventInfo() {
+        return EventInfo.builder()
+                .id(this.id)
+                .imageUrls(imageUrls)
+                .name(name)
+                .description(description)
+                .startDate(getEventStartDate())
+                .endDate(getEventEndDate())
+                .build();
+    }
+
 }
