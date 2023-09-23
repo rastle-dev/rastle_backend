@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import rastle.dev.rastle_backend.domain.Market.dto.MarketInfo;
 import rastle.dev.rastle_backend.domain.Product.model.MarketProduct;
 
 @Entity
@@ -39,5 +40,15 @@ public class Market {
 
     public void setImageUrls(String imageUrls) {
         this.imageUrls = imageUrls;
+    }
+
+    public MarketInfo toMarketInfo() {
+        return MarketInfo.builder()
+                .id(id)
+                .startDate(saleStartTime)
+                .description(description)
+                .name(name)
+                .imageUrls(imageUrls)
+                .build();
     }
 }

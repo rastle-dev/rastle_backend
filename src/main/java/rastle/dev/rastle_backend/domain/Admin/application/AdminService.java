@@ -98,6 +98,7 @@ public class AdminService {
                 .colorAndSizes(createRequest.getColorAndSizes())
                 .price(saved.getPrice())
                 .discount(saved.getDiscount())
+                .displayOrder(saved.getDisplayOrder())
                 .build();
     }
 
@@ -174,7 +175,7 @@ public class AdminService {
     // 마켓 관련 서비스
     // ==============================================================================================================
     @Transactional
-    public String createMarket(MarketDTO.MarketCreateRequest createRequest) {
+    public MarketInfo createMarket(MarketDTO.MarketCreateRequest createRequest) {
         Market newMarket = Market.builder()
                 .name(createRequest.getName())
                 .saleStartTime(TimeUtil.convertStringToLocalDateTime(createRequest.getStartDate(),
@@ -182,7 +183,7 @@ public class AdminService {
                 .description(createRequest.getDescription())
                 .build();
         marketRepository.save(newMarket);
-        return "CREATED";
+        return newMarket.toMarketInfo();
     }
 
     @Transactional
@@ -219,7 +220,7 @@ public class AdminService {
     // 이벤트 관련 서비스
     // ==============================================================================================================
     @Transactional
-    public String createEvent(EventDTO.EventCreateRequest createRequest) {
+    public EventInfo createEvent(EventDTO.EventCreateRequest createRequest) {
         Event newEvent = Event.builder()
                 .name(createRequest.getName())
                 .eventStartDate(TimeUtil.convertStringToLocalDateTime(createRequest.getStartDate(),
@@ -229,7 +230,7 @@ public class AdminService {
                 .description(createRequest.getDescription())
                 .build();
         eventRepository.save(newEvent);
-        return "CREATED";
+        return newEvent.toEventInfo();
     }
 
     @Transactional
