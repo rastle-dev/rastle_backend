@@ -30,10 +30,11 @@ public class Market {
     @OneToMany(mappedBy = "market", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<MarketProduct> marketProducts = new ArrayList<>();
     @Builder
-    public Market(String name, LocalDateTime saleStartTime, String imageUrls) {
+    public Market(String name, LocalDateTime saleStartTime, String imageUrls, String description) {
         this.name = name;
         this.saleStartTime = saleStartTime;
         this.imageUrls = imageUrls;
+        this.description = description;
     }
 
     public void setImageUrls(String imageUrls) {

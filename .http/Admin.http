@@ -18,3 +18,129 @@ Authorization: {{auth_token}}
   "name": "관리자 카테고리"
 }
 
+
+### 마켓 생성
+POST http://localhost:8080/admin/market
+Content-Type: application/json
+Authorization: {{auth_token}}
+
+{
+  "name": "쓰레기 값 마켓",
+  "startDate": "2023-09-20",
+  "startHour": "12",
+  "startMinute": "0",
+  "startSecond": "0",
+  "description": "테스트용 쓰레기값 마켓"
+}
+
+### 마켓 이미지 추가
+POST http://localhost:8080/admin/market/4/images
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+Authorization: {{auth_token}}
+
+--WebAppBoundary
+Content-Disposition: form-data; name="images"; filename="market1.png"
+
+< img/market1.png
+--WebAppBoundary--
+Content-Disposition: form-data; name="images"; filename="market2.png"
+
+< img/market2.png
+--WebAppBoundary--
+
+Content-Disposition: form-data; name="images"; filename="market3.png"
+
+< img/market3.png
+--WebAppBoundary--
+
+Content-Disposition: form-data; name="images"; filename="market4.png"
+
+< img/market4.png
+--WebAppBoundary--
+
+Content-Disposition: form-data; name="images"; filename="market5.png"
+
+< img/market5.png
+--WebAppBoundary--
+#Content-Disposition: form-data; name="images"; filename="market6.png"
+#
+#< img/market6.png
+#--WebAppBoundary--
+#
+#Content-Disposition: form-data; name="images"; filename="market6.png"
+#
+#< img/market6.png
+#--WebAppBoundary--
+#
+#Content-Disposition: form-data; name="images"; filename="market7.png"
+#
+#< img/market7.png
+#--WebAppBoundary--
+
+
+### 이벤트 생성
+POST http://localhost:8080/admin/event
+Content-Type: application/json
+Authorization: {{auth_token}}
+
+{
+  "name": "쓰레기값 이벤트",
+  "startDate": "2023-09-20",
+  "startHour": "12",
+  "startMinute": "0",
+  "startSecond": "0",
+  "endDate": "2023-10-01",
+  "endHour": "12",
+  "endMinute": "0",
+  "endSecond": "0",
+  "description": "테스트용 쓰레기값 이벤트"
+}
+
+### 이벤트 이미지 추가
+POST http://localhost:8080/admin/event/2/images
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+Authorization: {{auth_token}}
+
+--WebAppBoundary
+Content-Disposition: form-data; name="images"; filename="event1.png"
+
+< img/event1.png
+--WebAppBoundary--
+Content-Disposition: form-data; name="images"; filename="event2.png"
+
+< img/event2.png
+--WebAppBoundary--
+
+
+
+### 상품 등록
+POST http://localhost:8080/admin/product
+Content-Type: application/json
+Authorization: {{auth_token}}
+
+{
+
+}
+
+### 상품 메인 썸네일 이미지 등록
+POST http://localhost:8080/admin/product/{{id}}/mainThumbnail
+Content-Type: multipart/form-data
+Authorization: {{auth_token}}
+
+
+### 상품 서브 썸네일 이미지 등록
+POST http://localhost:8080/admin/product/{{id}}/subThumbnail
+Content-Type: multipart/form-data
+Authorization: {{auth_token}}
+
+
+### 상품 메인 이미지 등록
+POST http://localhost:8080/admin/product/{{id}}/mainImages
+Content-Type: multipart/form-data
+Authorization: {{auth_token}}
+
+
+### 상품 상세 이미지 등록
+POST http://localhost:8080/admin/product/{{id}}/detailImages
+Content-Type: multipart/form-data
+Authorization: {{auth_token}}

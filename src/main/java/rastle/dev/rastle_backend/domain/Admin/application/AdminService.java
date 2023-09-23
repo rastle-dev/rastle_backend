@@ -179,6 +179,7 @@ public class AdminService {
                 .name(createRequest.getName())
                 .saleStartTime(TimeUtil.convertStringToLocalDateTime(createRequest.getStartDate(),
                         createRequest.getStartHour(), createRequest.getStartMinute(), createRequest.getStartSecond()))
+                .description(createRequest.getDescription())
                 .build();
         marketRepository.save(newMarket);
         return "CREATED";
@@ -195,6 +196,7 @@ public class AdminService {
                 .startDate(market.getSaleStartTime())
                 .name(market.getName())
                 .imageUrls(market.getImageUrls())
+                .description(market.getDescription())
                 .build();
     }
 
@@ -224,6 +226,7 @@ public class AdminService {
                         createRequest.getStartHour(), createRequest.getStartMinute(), createRequest.getStartSecond()))
                 .eventEndDate(TimeUtil.convertStringToLocalDateTime(createRequest.getEndDate(),
                         createRequest.getEndHour(), createRequest.getEndMinute(), createRequest.getEndSecond()))
+                .description(createRequest.getDescription())
                 .build();
         eventRepository.save(newEvent);
         return "CREATED";
@@ -241,6 +244,7 @@ public class AdminService {
                 .endDate(event.getEventEndDate())
                 .name(event.getName())
                 .imageUrls(event.getImageUrls())
+                .description(event.getDescription())
                 .build();
     }
 

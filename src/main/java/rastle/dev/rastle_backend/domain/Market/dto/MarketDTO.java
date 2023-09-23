@@ -14,8 +14,6 @@ public class MarketDTO {
         String name;
         @Schema(description = "마켓 시작일", defaultValue = "2023-08-23")
         String startDate;
-        @Schema(description = "마켓 종료일", defaultValue = "2023-09-23")
-        String endDate;
         @Schema(description = "마켓 시작 시간", defaultValue = "12")
         String startHour;
         @Schema(description = "마켓 시작 분", defaultValue = "0")
