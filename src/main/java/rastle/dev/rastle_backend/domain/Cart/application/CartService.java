@@ -5,13 +5,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import rastle.dev.rastle_backend.domain.Cart.dto.CartDTO.CartItemInfoDto;
 import rastle.dev.rastle_backend.domain.Cart.dto.CartDTO.CreateCartItemDto;
 import rastle.dev.rastle_backend.domain.Cart.model.Cart;
+import rastle.dev.rastle_backend.domain.Cart.repository.CartProductRepository;
 import rastle.dev.rastle_backend.domain.Cart.repository.CartRepository;
 import rastle.dev.rastle_backend.domain.Member.model.Member;
 import rastle.dev.rastle_backend.domain.Member.repository.MemberRepository;
@@ -23,9 +23,9 @@ import rastle.dev.rastle_backend.global.util.SecurityUtil;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class CartService {
     private final CartRepository cartRepository;
+    private final CartProductRepository cartProductRepository;
     private final ProductBaseRepository productBaseRepository;
     private final MemberRepository memberRepository;
 
@@ -47,8 +47,6 @@ public class CartService {
                     .member(member)
                     .build();
         });
-
-        log.info(createCartItemDto.getProductId().toString());
         ProductBase product = productBaseRepository.findById(createCartItemDto.getProductId())
                 .orElseThrow(() -> new NotFoundByIdException());
 
@@ -61,6 +59,7 @@ public class CartService {
             // 장바구니에 이미 해당 상품이 있는 경우, 수량 업데이트
             CartProduct cartProduct = existingCartProduct.get();
             cartProduct.updateCount(createCartItemDto.getCount());
+            cartProductRepository.save(cartProduct);
         } else {
             // 장바구니에 해당 상품이 없는 경우, 새로운 CartProduct 생성
             CartProduct cartProduct = CartProduct.builder()
@@ -70,7 +69,8 @@ public class CartService {
                     .cart(cart)
                     .product(product)
                     .build();
-            cart.getCartProducts().add(cartProduct);
+            // cart.getCartProducts().add(cartProduct);
+            cartProductRepository.save(cartProduct);
         }
 
         cartRepository.save(cart);
@@ -81,6 +81,7 @@ public class CartService {
      * 
      * @return List<CartItemInfoDto>
      */
+    @Transactional
     public List<CartItemInfoDto> getCartItems() {
         Long memberId = SecurityUtil.getCurrentMemberId();
 
@@ -113,8 +114,11 @@ public class CartService {
         Long memberId = SecurityUtil.getCurrentMemberId();
 
         Cart cart = cartRepository.findByMemberId(memberId).orElseThrow(() -> new NotFoundByIdException());
+
         cart.getCartProducts().clear();
         cartRepository.save(cart);
+
+        cartProductRepository.deleteAllByCart(cart);
     }
 
     /**
@@ -136,5 +140,7 @@ public class CartService {
 
         cart.getCartProducts().removeAll(cartProductsToRemove);
         cartRepository.save(cart);
+
+        cartProductRepository.deleteAll(cartProductsToRemove);
     }
 }
