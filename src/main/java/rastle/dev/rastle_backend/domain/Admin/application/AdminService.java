@@ -188,7 +188,7 @@ public class AdminService {
 
     @Transactional
     public MarketInfo uploadMarketImages(Long id, List<MultipartFile> images) {
-        Market market =  marketRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        Market market = marketRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         String imageUrls = s3Component.uploadImagesAndGetString(images);
         market.setImageUrls(imageUrls);
 
@@ -214,8 +214,6 @@ public class AdminService {
                 .build();
     }
 
-
-
     // ==============================================================================================================
     // 이벤트 관련 서비스
     // ==============================================================================================================
@@ -235,7 +233,7 @@ public class AdminService {
 
     @Transactional
     public EventInfo uploadEventImages(Long id, List<MultipartFile> images) {
-        Event event =  eventRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        Event event = eventRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         String imageUrls = s3Component.uploadImagesAndGetString(images);
         event.setImageUrls(imageUrls);
 
