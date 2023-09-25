@@ -21,6 +21,7 @@ import rastle.dev.rastle_backend.domain.Market.dto.MarketDTO.MarketCreateRequest
 import rastle.dev.rastle_backend.domain.Market.dto.MarketInfo;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.MemberInfoDto;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO;
+import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductUpdateRequest;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductImageInfo;
 import rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo;
 import rastle.dev.rastle_backend.global.common.annotation.GetExecutionTime;
@@ -90,6 +91,24 @@ public class AdminController {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.uploadDetailImages(id, detailImages)));
         }
 
+        @Operation(summary = "상품 정보 업데이트 API", description = "상품 정보 업데이트 API 입니다.")
+        @ApiResponse(responseCode = "200", description = "업데이트 성공", content = @Content(schema = @Schema(implementation = SimpleProductInfo.class)))
+        @FailApiResponses
+        @GetExecutionTime
+        @PatchMapping("/product/{id}")
+        public ResponseEntity<ServerResponse<?>> updateProductInfo(@PathVariable("id") Long id,
+                                                                   @RequestBody ProductUpdateRequest productUpdateRequest) {
+                return ResponseEntity.ok(new ServerResponse<>(adminService.updateProductInfo(id, productUpdateRequest)));
+        }
+
+        @Operation(summary = "상품 삭제 API", description = "상품 삭제 API 입니다.")
+        @FailApiResponses
+        @GetExecutionTime
+        @DeleteMapping("/product/{id}")
+        public ResponseEntity<ServerResponse<?>> deleteProduct(@PathVariable("id") Long id) {
+                return ResponseEntity.ok(new ServerResponse<>(adminService.deleteProduct(id)));
+        }
+
         // ==============================================================================================================
         // 카테고리 관련 API
         // ==============================================================================================================
@@ -102,6 +121,12 @@ public class AdminController {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.createCategory(createRequest)));
         }
 
+        @Operation(summary = "카테고리 삭제 API", description = "카테고리 삭제 API 입니다")
+        @FailApiResponses
+        @DeleteMapping("/category/{id}")
+        public ResponseEntity<ServerResponse<?>> deleteCategory(@PathVariable("id") Long id) {
+                return ResponseEntity.ok(new ServerResponse<>(adminService.deleteCategory(id)));
+        }
 
         // ==============================================================================================================
         // 이벤트 관련 API

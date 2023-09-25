@@ -18,6 +18,57 @@ public class ProductDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    @Schema(description = "상품 업데이트 요청 dto")
+    public static class ProductUpdateRequest {
+        @Schema(description = "상품 이름", defaultValue = "멋있는 자켓")
+        String name;
+        @Schema(description = "가격", defaultValue = "100000")
+        int price;
+        @Schema(description = "할인률", defaultValue = "10")
+        int discount;
+        @Schema(description = "이벤트 인지 세트상품인지", defaultValue = "10")
+        boolean eventCategory;
+        @Schema(description = "이벤트 혹은 세트아이디", defaultValue = "1")
+        Long marketId;
+        @Schema(description = "카테고리 아이디", defaultValue = "2")
+        Long categoryId;
+        @Schema(description = "제품 색상, 사이즈 정세", defaultValue = "list of colorinfo")
+        List<ColorInfo> colorAndSizes;
+        @Schema(description = "상품 보여질 순서", defaultValue = "1000")
+        Long displayOrder;
+        @Schema(description = "상품 보여질지 여부", defaultValue = "true")
+        boolean visible;
+    }
+
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Schema(description = "상품 업데이트 결과 dto")
+    public static class ProductUpdateResult {
+        @Schema(description = "상품 이름", defaultValue = "멋있는 자켓")
+        String name;
+        @Schema(description = "가격", defaultValue = "100000")
+        int price;
+        @Schema(description = "할인률", defaultValue = "10")
+        int discount;
+        @Schema(description = "이벤트 인지 세트상품인지", defaultValue = "10")
+        boolean eventCategory;
+        @Schema(description = "이벤트 혹은 세트아이디", defaultValue = "1")
+        Long marketId;
+        @Schema(description = "카테고리 아이디", defaultValue = "2")
+        Long categoryId;
+        @Schema(description = "제품 색상, 사이즈 정세", defaultValue = "list of colorinfo")
+        List<ColorInfo> colorAndSizes;
+        @Schema(description = "상품 보여질 순서", defaultValue = "1000")
+        Long displayOrder;
+        @Schema(description = "상품 보여질지 여부", defaultValue = "true")
+        boolean visible;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     @Schema(description = "상품 생성 요청 dto")
     public static class ProductCreateRequest {
         @Schema(description = "상품 이름", defaultValue = "멋있는 자켓")
@@ -26,9 +77,9 @@ public class ProductDTO {
         int price;
         @Schema(description = "할인률", defaultValue = "10")
         int discount;
-        @Schema(description = "이벤트 인지 마켓인지", defaultValue = "10")
+        @Schema(description = "이벤트 인지 세트 상품인지", defaultValue = "10")
         boolean eventCategory;
-        @Schema(description = "이벤트 혹은 마켓아이디", defaultValue = "1")
+        @Schema(description = "이벤트 혹은 세트아이디", defaultValue = "1")
         Long marketId;
         @Schema(description = "카테고리 아이디", defaultValue = "2")
         Long categoryId;

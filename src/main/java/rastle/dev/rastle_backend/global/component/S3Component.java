@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import rastle.dev.rastle_backend.domain.Admin.exception.InvalidImageUrlException;
 import rastle.dev.rastle_backend.domain.Product.model.Image;
 import rastle.dev.rastle_backend.domain.Product.model.ProductImage;
 import rastle.dev.rastle_backend.global.error.exception.S3ImageUploadException;
@@ -20,6 +21,20 @@ public class S3Component {
     private final AmazonS3 amazonS3;
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
+
+    static final String IMAGE_PREFIX = "https://rastle-dev.s3.ap-northeast-2.amazonaws.com/";
+
+    public void deleteImageByUrl(String imageUrl) {
+
+        amazonS3.deleteObject(bucket, getFileName(imageUrl));
+    }
+
+    private String getFileName(String url) {
+        if (!url.contains(IMAGE_PREFIX)) {
+            throw new InvalidImageUrlException();
+        }
+        return url.substring(IMAGE_PREFIX.length());
+    }
 
     public List<Image> uploadAndGetImageList(List<MultipartFile> images, ProductImage image) {
         List<Image> toReturn = new ArrayList<>();

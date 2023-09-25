@@ -28,6 +28,8 @@ import rastle.dev.rastle_backend.domain.Orders.model.Orders;
 import rastle.dev.rastle_backend.domain.Orders.repository.OrderRepository;
 import rastle.dev.rastle_backend.domain.Product.dto.ColorInfo;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO;
+import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductUpdateRequest;
+import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductUpdateResult;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductImageInfo;
 import rastle.dev.rastle_backend.domain.Product.model.*;
 import rastle.dev.rastle_backend.domain.Product.repository.*;
@@ -171,6 +173,16 @@ public class AdminService {
                 .build();
     }
 
+    @Transactional
+    public ProductUpdateResult updateProductInfo(Long id, ProductUpdateRequest updateRequest) {
+        return null;
+    }
+
+    @Transactional
+    public String deleteProduct(Long id) {
+        return null;
+    }
+
     // ==============================================================================================================
     // 마켓 관련 서비스
     // ==============================================================================================================
@@ -214,6 +226,10 @@ public class AdminService {
                 .build();
     }
 
+    @Transactional
+    public String deleteCategory(Long id) {
+        return null;
+    }
 
 
     // ==============================================================================================================
