@@ -28,4 +28,6 @@ public class SimpleProductInfo {
     int discount;
     @Schema(description = "상품 보여질 순서", defaultValue = "100")
     Long displayOrder;
+    @Schema(description = "상품 보여질지 여부", defaultValue = "true")
+    boolean visible;
 }

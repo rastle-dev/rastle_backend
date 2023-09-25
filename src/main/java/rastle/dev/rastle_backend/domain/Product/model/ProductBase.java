@@ -43,7 +43,7 @@ public class ProductBase {
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<CartProduct> cartProduct = new ArrayList<>();
-
+    private boolean visible;
     @OneToOne
     @JoinColumn(name = "main_image_id")
     private ProductImage mainImage;
@@ -58,7 +58,7 @@ public class ProductBase {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
-    public ProductBase(String name, int price, boolean isEventProduct, String mainThumbnailImage, String subThumbnailImage, int discount, Category category, Long displayOrder) {
+    public ProductBase(String name, int price, boolean isEventProduct, String mainThumbnailImage, String subThumbnailImage, int discount, Category category, Long displayOrder, boolean visible) {
         this.name = name;
         this.price = price;
         this.isEventProduct = isEventProduct;
@@ -67,6 +67,7 @@ public class ProductBase {
         this.discount = discount;
         this.category = category;
         this.displayOrder = displayOrder;
+        this.visible = visible;
     }
 
     public void setMainThumbnailImage(String mainThumbnailImage) {

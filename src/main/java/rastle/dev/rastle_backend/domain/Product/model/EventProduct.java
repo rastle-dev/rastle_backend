@@ -21,8 +21,8 @@ public class EventProduct extends ProductBase {
 
     @Builder
     public EventProduct(String name, int price, boolean isEventProduct, String mainThumbnailImage,
-            String subThumbnailImage, Event event, int discount, Category category, Long displayOrder) {
-        super(name, price, isEventProduct, mainThumbnailImage, subThumbnailImage, discount, category, displayOrder);
+            String subThumbnailImage, Event event, int discount, Category category, Long displayOrder, boolean visible) {
+        super(name, price, isEventProduct, mainThumbnailImage, subThumbnailImage, discount, category, displayOrder, visible);
         this.event = event;
     }
 }

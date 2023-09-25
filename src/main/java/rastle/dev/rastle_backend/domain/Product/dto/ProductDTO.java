@@ -36,6 +36,8 @@ public class ProductDTO {
         List<ColorInfo> colorAndSizes;
         @Schema(description = "상품 보여질 순서", defaultValue = "1000")
         Long displayOrder;
+        @Schema(description = "상품 보여질지 여부", defaultValue = "true")
+        boolean visible;
 
         public EventProduct toEventProduct(Event event, Category category) {
             return EventProduct.builder()
@@ -46,6 +48,7 @@ public class ProductDTO {
                     .discount(discount)
                     .displayOrder(displayOrder)
                     .event(event)
+                    .visible(visible)
                     .build();
         }
 
@@ -58,9 +61,9 @@ public class ProductDTO {
                     .discount(discount)
                     .market(market)
                     .displayOrder(displayOrder)
+                    .visible(visible)
                     .build();
         }
-
 
     }
 
@@ -98,6 +101,8 @@ public class ProductDTO {
         List<ColorInfo> colorAndSizes;
         @Schema(description = "상품 보여질 순서", defaultValue = "100")
         Long displayOrder;
+        @Schema(description = "상품 보여질지 여부", defaultValue = "true")
+        boolean visible;
     }
 
 }
