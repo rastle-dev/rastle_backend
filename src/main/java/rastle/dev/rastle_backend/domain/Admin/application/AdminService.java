@@ -7,18 +7,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import rastle.dev.rastle_backend.domain.Category.dto.CategoryDto;
+import rastle.dev.rastle_backend.domain.Bundle.dto.BundleDTO.BundleCreateRequest;
+import rastle.dev.rastle_backend.domain.Category.dto.CategoryDto.CategoryCreateRequest;
+import rastle.dev.rastle_backend.domain.Category.dto.CategoryDto.CategoryUpdateRequest;
 import rastle.dev.rastle_backend.domain.Category.dto.CategoryInfo;
 import rastle.dev.rastle_backend.domain.Category.model.Category;
 import rastle.dev.rastle_backend.domain.Category.repository.CategoryRepository;
-import rastle.dev.rastle_backend.domain.Event.dto.EventDTO;
+import rastle.dev.rastle_backend.domain.Event.dto.EventDTO.EventCreateRequest;
 import rastle.dev.rastle_backend.domain.Event.dto.EventInfo;
 import rastle.dev.rastle_backend.domain.Event.model.Event;
 import rastle.dev.rastle_backend.domain.Event.repository.EventRepository;
-import rastle.dev.rastle_backend.domain.Market.dto.MarketDTO;
-import rastle.dev.rastle_backend.domain.Market.dto.MarketInfo;
-import rastle.dev.rastle_backend.domain.Market.model.Market;
-import rastle.dev.rastle_backend.domain.Market.repository.MarketRepository;
+import rastle.dev.rastle_backend.domain.Bundle.dto.BundleInfo;
+import rastle.dev.rastle_backend.domain.Bundle.model.Bundle;
+import rastle.dev.rastle_backend.domain.Bundle.repository.BundleRepository;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.MemberInfoDto;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.MemberInfoDto.OrderDetail;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.MemberInfoDto.OrderProductDetail;
@@ -28,6 +29,7 @@ import rastle.dev.rastle_backend.domain.Orders.model.Orders;
 import rastle.dev.rastle_backend.domain.Orders.repository.OrderRepository;
 import rastle.dev.rastle_backend.domain.Product.dto.ColorInfo;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO;
+import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductCreateResult;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductUpdateRequest;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductUpdateResult;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductImageInfo;
@@ -50,8 +52,8 @@ public class AdminService {
     private final CategoryRepository categoryRepository;
     private final EventRepository eventRepository;
     private final EventProductRepository eventProductRepository;
-    private final MarketRepository marketRepository;
-    private final MarketProductRepository marketProductRepository;
+    private final BundleRepository bundleRepository;
+    private final BundleProductRepository bundleProductRepository;
     private final ColorRepository colorRepository;
     private final SizeRepository sizeRepository;
     private final ProductBaseRepository productBaseRepository;
@@ -65,7 +67,7 @@ public class AdminService {
     // 상품 관련 서비스
     // ==============================================================================================================
     @Transactional
-    public ProductDTO.ProductCreateResult createProduct(ProductDTO.ProductCreateRequest createRequest) {
+    public ProductCreateResult createProduct(ProductDTO.ProductCreateRequest createRequest) {
         ProductBase saved;
         HashMap<String, Color> colorToSave = new HashMap<>();
         List<Size> sizeToSave = new ArrayList<>();
@@ -77,10 +79,10 @@ public class AdminService {
             EventProduct eventProduct = createRequest.toEventProduct(event, category);
             saved = eventProductRepository.save(eventProduct);
         } else {
-            Market market = marketRepository.findById(createRequest.getMarketId())
+            Bundle bundle = bundleRepository.findById(createRequest.getMarketId())
                     .orElseThrow(NotFoundByIdException::new);
-            MarketProduct marketProduct = createRequest.toMarketProduct(market, category);
-            saved = marketProductRepository.save(marketProduct);
+            BundleProduct bundleProduct = createRequest.toBundleProduct(bundle, category);
+            saved = bundleProductRepository.save(bundleProduct);
         }
 
         setColorAndSize(createRequest.getColorAndSizes(), colorToSave, sizeToSave, saved);
@@ -90,9 +92,9 @@ public class AdminService {
         return toCreateResult(saved, createRequest);
     }
 
-    private ProductDTO.ProductCreateResult toCreateResult(ProductBase saved,
+    private ProductCreateResult toCreateResult(ProductBase saved,
             ProductDTO.ProductCreateRequest createRequest) {
-        return ProductDTO.ProductCreateResult.builder()
+        return ProductCreateResult.builder()
                 .id(saved.getId())
                 .name(saved.getName())
                 .isEvent(saved.isEventProduct())
@@ -101,6 +103,7 @@ public class AdminService {
                 .price(saved.getPrice())
                 .discount(saved.getDiscount())
                 .displayOrder(saved.getDisplayOrder())
+                .visible(saved.isVisible())
                 .build();
     }
 
@@ -187,29 +190,30 @@ public class AdminService {
     // 마켓 관련 서비스
     // ==============================================================================================================
     @Transactional
-    public MarketInfo createMarket(MarketDTO.MarketCreateRequest createRequest) {
-        Market newMarket = Market.builder()
+    public BundleInfo createBundle(BundleCreateRequest createRequest) {
+        Bundle newBundle = Bundle.builder()
                 .name(createRequest.getName())
                 .saleStartTime(TimeUtil.convertStringToLocalDateTime(createRequest.getStartDate(),
                         createRequest.getStartHour(), createRequest.getStartMinute(), createRequest.getStartSecond()))
                 .description(createRequest.getDescription())
+                .visible(createRequest.isVisible())
                 .build();
-        marketRepository.save(newMarket);
-        return newMarket.toMarketInfo();
+        bundleRepository.save(newBundle);
+        return newBundle.toBundleInfo();
     }
 
     @Transactional
-    public MarketInfo uploadMarketImages(Long id, List<MultipartFile> images) {
-        Market market =  marketRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+    public BundleInfo uploadBundleImages(Long id, List<MultipartFile> images) {
+        Bundle bundle =  bundleRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         String imageUrls = s3Component.uploadImagesAndGetString(images);
-        market.setImageUrls(imageUrls);
+        bundle.setImageUrls(imageUrls);
 
-        return MarketInfo.builder()
-                .id(market.getId())
-                .startDate(market.getSaleStartTime())
-                .name(market.getName())
-                .imageUrls(market.getImageUrls())
-                .description(market.getDescription())
+        return BundleInfo.builder()
+                .id(bundle.getId())
+                .saleStartTime(bundle.getSaleStartTime())
+                .name(bundle.getName())
+                .imageUrls(bundle.getImageUrls())
+                .description(bundle.getDescription())
                 .build();
     }
 
@@ -217,7 +221,7 @@ public class AdminService {
     // 카테고리 관련 서비스
     // ==============================================================================================================
     @Transactional
-    public CategoryInfo createCategory(CategoryDto.CategoryCreateRequest createRequest) {
+    public CategoryInfo createCategory(CategoryCreateRequest createRequest) {
         Category saved = categoryRepository.save(createRequest.toEntity());
 
         return CategoryInfo.builder()
@@ -225,6 +229,12 @@ public class AdminService {
                 .name(saved.getName())
                 .build();
     }
+
+    @Transactional
+    public CategoryInfo updateCategory(Long id, CategoryUpdateRequest categoryUpdateRequest) {
+        return null;
+    }
+
 
     @Transactional
     public String deleteCategory(Long id) {
@@ -236,7 +246,7 @@ public class AdminService {
     // 이벤트 관련 서비스
     // ==============================================================================================================
     @Transactional
-    public EventInfo createEvent(EventDTO.EventCreateRequest createRequest) {
+    public EventInfo createEvent(EventCreateRequest createRequest) {
         Event newEvent = Event.builder()
                 .name(createRequest.getName())
                 .eventStartDate(TimeUtil.convertStringToLocalDateTime(createRequest.getStartDate(),
@@ -244,6 +254,7 @@ public class AdminService {
                 .eventEndDate(TimeUtil.convertStringToLocalDateTime(createRequest.getEndDate(),
                         createRequest.getEndHour(), createRequest.getEndMinute(), createRequest.getEndSecond()))
                 .description(createRequest.getDescription())
+                .visible(createRequest.isVisible())
                 .build();
         eventRepository.save(newEvent);
         return newEvent.toEventInfo();
@@ -262,6 +273,7 @@ public class AdminService {
                 .name(event.getName())
                 .imageUrls(event.getImageUrls())
                 .description(event.getDescription())
+                .visible(event.isVisible())
                 .build();
     }
 

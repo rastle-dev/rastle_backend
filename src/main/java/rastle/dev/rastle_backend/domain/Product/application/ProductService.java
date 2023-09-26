@@ -19,7 +19,7 @@ import static rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.*;
 public class ProductService {
     private final ProductBaseRepository productBaseRepository;
     private final ColorRepository colorRepository;
-    private final MarketProductRepository marketProductRepository;
+    private final BundleProductRepository bundleProductRepository;
     private final EventProductRepository eventProductRepository;
     private final ImageRepository imageRepository;
 
@@ -50,12 +50,12 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public Page<SimpleProductInfo> getCurrentMarketProducts(Pageable pageable) {
-        return marketProductRepository.getCurrentMarketProducts(LocalDateTime.now(), pageable);
+        return bundleProductRepository.getBundleProducts(LocalDateTime.now(), pageable);
     }
 
     @Transactional(readOnly = true)
     public Page<SimpleProductInfo> getPastMarketProducts(Pageable pageable) {
-        return marketProductRepository.getPastMarketProducts(LocalDateTime.now(), pageable);
+        return bundleProductRepository.getPastMarketProducts(LocalDateTime.now(), pageable);
 
     }
 

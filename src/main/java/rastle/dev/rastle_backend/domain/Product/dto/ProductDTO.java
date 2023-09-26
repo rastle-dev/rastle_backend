@@ -5,11 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import rastle.dev.rastle_backend.domain.Bundle.model.Bundle;
 import rastle.dev.rastle_backend.domain.Category.model.Category;
 import rastle.dev.rastle_backend.domain.Event.model.Event;
-import rastle.dev.rastle_backend.domain.Market.model.Market;
+import rastle.dev.rastle_backend.domain.Product.model.BundleProduct;
 import rastle.dev.rastle_backend.domain.Product.model.EventProduct;
-import rastle.dev.rastle_backend.domain.Product.model.MarketProduct;
 
 import java.util.List;
 
@@ -103,14 +103,14 @@ public class ProductDTO {
                     .build();
         }
 
-        public MarketProduct toMarketProduct(Market market, Category category) {
-            return MarketProduct.builder()
+        public BundleProduct toBundleProduct(Bundle bundle, Category category) {
+            return BundleProduct.builder()
                     .name(name)
                     .price(price)
                     .category(category)
                     .isEventProduct(false)
                     .discount(discount)
-                    .market(market)
+                    .bundle(bundle)
                     .displayOrder(displayOrder)
                     .visible(visible)
                     .build();

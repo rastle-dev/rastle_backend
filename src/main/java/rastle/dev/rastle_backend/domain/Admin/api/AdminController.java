@@ -14,11 +14,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 import rastle.dev.rastle_backend.domain.Admin.application.AdminService;
 import rastle.dev.rastle_backend.domain.Category.dto.CategoryDto;
+import rastle.dev.rastle_backend.domain.Category.dto.CategoryDto.CategoryCreateRequest;
+import rastle.dev.rastle_backend.domain.Category.dto.CategoryDto.CategoryUpdateRequest;
 import rastle.dev.rastle_backend.domain.Category.dto.CategoryInfo;
 import rastle.dev.rastle_backend.domain.Event.dto.EventDTO.EventCreateRequest;
 import rastle.dev.rastle_backend.domain.Event.dto.EventInfo;
-import rastle.dev.rastle_backend.domain.Market.dto.MarketDTO.MarketCreateRequest;
-import rastle.dev.rastle_backend.domain.Market.dto.MarketInfo;
+import rastle.dev.rastle_backend.domain.Bundle.dto.BundleDTO.BundleCreateRequest;
+import rastle.dev.rastle_backend.domain.Bundle.dto.BundleInfo;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.MemberInfoDto;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductUpdateRequest;
@@ -117,9 +119,18 @@ public class AdminController {
         @FailApiResponses
         @PostMapping("/category")
         public ResponseEntity<ServerResponse<?>> createCategory(
-                        @RequestBody CategoryDto.CategoryCreateRequest createRequest) {
+                        @RequestBody CategoryCreateRequest createRequest) {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.createCategory(createRequest)));
         }
+
+        @Operation(summary = "카테고리 업데이트 API", description = "카테고리 업데이트 API입니다.")
+        @ApiResponse(responseCode = "200", description = "업데이트 성공", content = @Content(schema = @Schema(implementation = CategoryInfo.class)))
+        @FailApiResponses
+        @PatchMapping("/category/{id}")
+        public ResponseEntity<ServerResponse<?>> updateCategory(@PathVariable("id") Long id, @RequestBody CategoryUpdateRequest categoryUpdateRequest) {
+                return ResponseEntity.ok(new ServerResponse<>(adminService.updateCategory(id, categoryUpdateRequest)));
+        }
+
 
         @Operation(summary = "카테고리 삭제 API", description = "카테고리 삭제 API 입니다")
         @FailApiResponses
@@ -149,23 +160,23 @@ public class AdminController {
         }
 
         // ==============================================================================================================
-        // 마켓 관련 API
+        // 상품 세트 관련 API
         // ==============================================================================================================
-        @Operation(summary = "마켓 생성 API", description = "마켓 생성 API입니다.")
+        @Operation(summary = "상품 세트 생성 API", description = "상품 세트 생성 API입니다.")
         @ApiResponse(responseCode = "200", description = "생성 성공")
         @FailApiResponses
-        @PostMapping("/market")
-        public ResponseEntity<ServerResponse<?>> tempAddMarket(@RequestBody MarketCreateRequest createRequest) {
-                return ResponseEntity.ok(new ServerResponse<>(adminService.createMarket(createRequest)));
+        @PostMapping("/bundle")
+        public ResponseEntity<ServerResponse<?>> tempAddMarket(@RequestBody BundleCreateRequest createRequest) {
+                return ResponseEntity.ok(new ServerResponse<>(adminService.createBundle(createRequest)));
         }
 
-        @Operation(summary = "마켓 이미지 추가 API", description = "마켓 이미지 추가 API입니다")
-        @ApiResponse(responseCode = "200", description = "추가 성공", content = @Content(schema = @Schema(implementation = MarketInfo.class)))
+        @Operation(summary = "상품 세트 이미지 추가 API", description = "상품 세트 이미지 추가 API입니다")
+        @ApiResponse(responseCode = "200", description = "추가 성공", content = @Content(schema = @Schema(implementation = BundleInfo.class)))
         @FailApiResponses
-        @PostMapping("/market/{id}/images")
+        @PostMapping("/bundle/{id}/images")
         public ResponseEntity<ServerResponse<?>> addImagesToMarket(@PathVariable("id") Long id,
-                                                                     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "등록할 마켓 이미지들") @RequestParam("images") List<MultipartFile> images) {
-                return ResponseEntity.ok(new ServerResponse<>(adminService.uploadMarketImages(id, images)));
+                                                                     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "등록할 상품 세트 이미지들") @RequestParam("images") List<MultipartFile> images) {
+                return ResponseEntity.ok(new ServerResponse<>(adminService.uploadBundleImages(id, images)));
         }
 
         // ==============================================================================================================
