@@ -179,8 +179,56 @@ public class AdminService {
     }
 
     @Transactional
-    public ProductUpdateResult updateProductInfo(Long id, ProductUpdateRequest updateRequest) {
-        return null;
+    public ProductUpdateRequest updateProductInfo(Long id, ProductUpdateRequest updateRequest, Boolean isEvent) {
+        ProductBase productBase;
+        if (updateRequest.getMarketOrBundleId() != null) {
+            if (isEvent) {
+                EventProduct eventProduct = eventProductRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+                Event event = eventRepository.findById(updateRequest.getMarketOrBundleId()).orElseThrow(NotFoundByIdException::new);
+                eventProduct.setEvent(event);
+                productBase = eventProduct;
+            } else {
+                BundleProduct bundleProduct = bundleProductRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+                Bundle bundle = bundleRepository.findById(updateRequest.getMarketOrBundleId()).orElseThrow(NotFoundByIdException::new);
+                bundleProduct.setBundle(bundle);
+                productBase = bundleProduct;
+            }
+        } else {
+            productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        }
+        if (updateRequest.getVisible() != null) {
+            productBase.setVisible(updateRequest.getVisible());
+        }
+        if (updateRequest.getDiscount() != null) {
+            productBase.setDiscount(updateRequest.getDiscount());
+        }
+        if (updateRequest.getDisplayOrder() != null) {
+            productBase.setDisplayOrder(updateRequest.getDisplayOrder());
+        }
+        if (updateRequest.getCategoryId() != null) {
+            Category category = categoryRepository.findById(updateRequest.getCategoryId()).orElseThrow(NotFoundByIdException::new);
+            productBase.setCategory(category);
+        }
+        if (updateRequest.getColorAndSizes() != null) {
+            List<Color> colors = productBase.getColors();
+            colorRepository.deleteAll(colors);
+
+            HashMap<String, Color> colorToSave = new HashMap<>();
+            List<Size> sizeToSave = new ArrayList<>();
+
+            setColorAndSize(updateRequest.getColorAndSizes(), colorToSave, sizeToSave, productBase);
+
+            colorRepository.saveAll(colorToSave.values());
+            sizeRepository.saveAll(sizeToSave);
+        }
+        if (updateRequest.getPrice() != null) {
+            productBase.setPrice(updateRequest.getPrice());
+        }
+        if (updateRequest.getName() != null) {
+            productBase.setName(updateRequest.getName());
+        }
+
+        return updateRequest;
     }
 
 

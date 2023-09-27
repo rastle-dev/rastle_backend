@@ -24,7 +24,6 @@ public class ProductBase {
     @Column(name = "display_order")
     private Long displayOrder;
     private String name;
-
     private int price;
     private int discount;
     @Column(name = "is_event_product")
@@ -84,5 +83,37 @@ public class ProductBase {
 
     public void setDetailImage(ProductImage detailImage) {
         this.detailImage = detailImage;
+    }
+
+    public void setDisplayOrder(Long displayOrder) {
+        this.displayOrder = displayOrder;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    public void setDiscount(int discount) {
+        this.discount = discount;
+    }
+
+    public void setEventProduct(boolean eventProduct) {
+        isEventProduct = eventProduct;
+    }
+
+    public void setColors(List<Color> colors) {
+        this.colors = colors;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 }

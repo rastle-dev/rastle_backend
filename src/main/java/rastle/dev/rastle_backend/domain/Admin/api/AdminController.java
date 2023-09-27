@@ -1,6 +1,8 @@
 package rastle.dev.rastle_backend.domain.Admin.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -32,6 +34,8 @@ import rastle.dev.rastle_backend.global.response.ServerResponse;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Tag(name = "관리자 기능 API", description = "관리자 기능 관련 API입니다.")
 @RestController
@@ -39,6 +43,7 @@ import java.util.List;
 @RequestMapping("/admin")
 public class AdminController {
         private final AdminService adminService;
+        private final ObjectMapper objectMapper;
 
 
         // ==============================================================================================================
@@ -100,8 +105,13 @@ public class AdminController {
         @GetExecutionTime
         @PatchMapping("/product/{id}")
         public ResponseEntity<ServerResponse<?>> updateProductInfo(@PathVariable("id") Long id,
-                                                                   @RequestBody ProductUpdateRequest productUpdateRequest) {
-                return ResponseEntity.ok(new ServerResponse<>(adminService.updateProductInfo(id, productUpdateRequest)));
+                                                                   @Parameter(name = "이벤트 상품인지 아닌지", description = "true false로 무조건 보내줘야함", required = true)
+                                                                   @RequestParam(name = "isEvent") Boolean isEvent,
+                                                                   @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "가계부 업데이트 요청", content = @Content(schema = @Schema(implementation = ProductUpdateRequest.class)))
+                                                                   @RequestBody Map<String, Object> updateMap) {
+
+                ProductUpdateRequest productUpdateRequest = objectMapper.convertValue(updateMap, ProductUpdateRequest.class);
+                return ResponseEntity.ok(new ServerResponse<>(adminService.updateProductInfo(id, productUpdateRequest, isEvent)));
         }
 
         @Operation(summary = "상품 메인 썸네일 이미지 업데이트 API", description = "상품 메인 썸네일 이미지 업데이트 API입니다.")

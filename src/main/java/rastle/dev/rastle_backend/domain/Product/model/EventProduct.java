@@ -25,4 +25,8 @@ public class EventProduct extends ProductBase {
         super(name, price, isEventProduct, mainThumbnailImage, subThumbnailImage, discount, category, displayOrder, visible);
         this.event = event;
     }
+
+    public void setEvent(Event event) {
+        this.event = event;
+    }
 }

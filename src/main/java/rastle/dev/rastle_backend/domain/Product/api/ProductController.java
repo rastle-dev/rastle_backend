@@ -49,9 +49,9 @@ public class ProductController {
     public ResponseEntity<ServerResponse<?>> getBundleProducts(
             @Parameter(name = "상품 세트 가시성 여부", description = "ALL - visible 여부 관계 없이 리턴, TRUE-true인 것만, FALSE - false인 것만, 상품 세트 조회 api를 먼저 호출해야되고 그거랑 같은 값으로 넣어야함")
             @RequestParam(name = "visible", defaultValue = ALL) String visible,
-            @Parameter(name = "lowerBound", description = "상품 세트 조회 api 호출해서 리턴된 최소 상품 세트 아이디")
+            @Parameter(name = "lowerBound", description = "상품 세트 조회 api 호출해서 리턴된 최소 상품 세트 아이디", required = true)
             @RequestParam(name = "lowerBound") Long lowerBound,
-            @Parameter(name = "upperBound", description = "상품 세트 조회 api 호출해서 리턴된 최대 상품 세트 아이디")
+            @Parameter(name = "upperBound", description = "상품 세트 조회 api 호출해서 리턴된 최대 상품 세트 아이디", required = true)
             @RequestParam(name = "upperBound") Long upperBound) {
         return ResponseEntity.ok(new ServerResponse<>(productService.getBundleProducts(visible, lowerBound, upperBound)));
     }
@@ -64,9 +64,9 @@ public class ProductController {
     public ResponseEntity<ServerResponse<?>> getEventProducts(
             @Parameter(name = "이벤트 가시성 여부", description = "ALL - visible 여부 관계 없이 리턴, TRUE-true인 것만, FALSE - false인 것만, 이벤트 조회 api를 먼저 호출해야되고 그거랑 같은 값으로 넣어야함")
             @RequestParam(name = "visible", defaultValue = ALL) String visible,
-            @Parameter(name = "lowerBound", description = "이벤트 조회 api 호출해서 리턴된 최소 이벤트 아이디")
+            @Parameter(name = "lowerBound", description = "이벤트 조회 api 호출해서 리턴된 최소 이벤트 아이디", required = true)
             @RequestParam(name = "lowerBound") Long lowerBound,
-            @Parameter(name = "upperBound", description = "이벤트 조회 api 호출해서 리턴된 최대 이벤트 아이디")
+            @Parameter(name = "upperBound", description = "이벤트 조회 api 호출해서 리턴된 최대 이벤트 아이디", required = true)
             @RequestParam(name = "upperBound") Long upperBound) {
         return ResponseEntity.ok(new ServerResponse<>(productService.getEventProducts(visible, lowerBound, upperBound)));
     }

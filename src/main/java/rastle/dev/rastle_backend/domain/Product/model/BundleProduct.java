@@ -22,4 +22,8 @@ public class BundleProduct extends ProductBase {
         super(name, price, isEventProduct, mainThumbnailImage, subThumbnailImage, discount, category, displayOrder, visible);
         this.bundle = bundle;
     }
+
+    public void setBundle(Bundle bundle) {
+        this.bundle = bundle;
+    }
 }
