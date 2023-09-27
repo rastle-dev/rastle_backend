@@ -5,7 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import rastle.dev.rastle_backend.domain.Product.dto.BundleProductInfo;
 import rastle.dev.rastle_backend.domain.Product.dto.ColorInfo;
+import rastle.dev.rastle_backend.domain.Product.dto.EventProductInfo;
 import rastle.dev.rastle_backend.domain.Product.model.*;
 import rastle.dev.rastle_backend.domain.Product.repository.*;
 import rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo;
@@ -57,13 +59,26 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public Page<SimpleProductInfo> getBundleProducts(String visible, Long lowerBound, Long upperBound, Pageable pageable) {
-        return bundleProductRepository.getBundleProducts(LocalDateTime.now(), pageable);
+    public List<BundleProductInfo> getBundleProducts(String visible, Long lowerBound, Long upperBound) {
+        if (visible.equals(ALL)) {
+            return bundleProductRepository.getBundleProducts(lowerBound, upperBound);
+        } else if (visible.equals(TRUE)) {
+            return bundleProductRepository.getBundleProductsByVisibility(true, lowerBound, upperBound);
+        } else {
+            return bundleProductRepository.getBundleProductsByVisibility(false, lowerBound, upperBound);
+        }
     }
 
 
     @Transactional(readOnly = true)
-    public Page<SimpleProductInfo> getEventProducts(String visible, Long lowerBound, Long upperBound, Pageable pageable) {
-        return eventProductRepository.getEventProducts(pageable);
+    public List<EventProductInfo> getEventProducts(String visible, Long lowerBound, Long upperBound) {
+        if (visible.equals(ALL)) {
+            return eventProductRepository.getEventProducts(lowerBound, upperBound);
+        } else if (visible.equals(TRUE)) {
+            return eventProductRepository.getEventProductByVisibility(true, lowerBound, upperBound);
+        } else {
+            return eventProductRepository.getEventProductByVisibility(false, lowerBound, upperBound);
+        }
+
     }
 }

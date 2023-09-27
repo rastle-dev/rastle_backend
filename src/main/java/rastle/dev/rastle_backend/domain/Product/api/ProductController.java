@@ -50,9 +50,8 @@ public class ProductController {
             @Parameter(name = "lowerBound", description = "상품 세트 조회 api 호출해서 리턴된 최소 상품 세트 아이디")
             @RequestParam(name = "lowerBound", required = true) Long lowerBound,
             @Parameter(name = "upperBound", description = "상품 세트 조회 api 호출해서 리턴된 최대 상품 세트 아이디")
-            @RequestParam(name = "upperBound", required = true) Long upperBound,
-            Pageable pageable) {
-        return ResponseEntity.ok(new ServerResponse<>(productService.getBundleProducts(visible, lowerBound, upperBound, pageable)));
+            @RequestParam(name = "upperBound", required = true) Long upperBound) {
+        return ResponseEntity.ok(new ServerResponse<>(productService.getBundleProducts(visible, lowerBound, upperBound)));
     }
 
 
@@ -66,9 +65,8 @@ public class ProductController {
             @Parameter(name = "lowerBound", description = "이벤트 조회 api 호출해서 리턴된 최소 이벤트 아이디")
             @RequestParam(name = "lowerBound", required = true) Long lowerBound,
             @Parameter(name = "upperBound", description = "이벤트 조회 api 호출해서 리턴된 최대 이벤트 아이디")
-            @RequestParam(name = "upperBound", required = true) Long upperBound,
-            Pageable pageable) {
-        return ResponseEntity.ok(new ServerResponse<>(productService.getEventProducts(visible, lowerBound, upperBound, pageable)));
+            @RequestParam(name = "upperBound", required = true) Long upperBound) {
+        return ResponseEntity.ok(new ServerResponse<>(productService.getEventProducts(visible, lowerBound, upperBound)));
     }
 
     @Operation(summary = "상품 상세 조회 API", description = "상품 상세 조회 API입니다.")
