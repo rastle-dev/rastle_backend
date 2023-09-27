@@ -46,6 +46,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static rastle.dev.rastle_backend.global.common.constants.CommonConstant.*;
+
 @Service
 @RequiredArgsConstructor
 public class AdminService {
@@ -119,7 +121,7 @@ public class AdminService {
     @Transactional
     public ProductImageInfo uploadMainThumbnail(Long id, MultipartFile mainThumbnail) {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        String mainThumbnailUrl = s3Component.uploadSingleImageToS3(mainThumbnail);
+        String mainThumbnailUrl = s3Component.uploadSingleImageToS3(MAIN_THUMBNAIL, mainThumbnail);
         productBase.setMainThumbnailImage(mainThumbnailUrl);
 
         return ProductImageInfo.builder()
@@ -131,7 +133,7 @@ public class AdminService {
     @Transactional
     public ProductImageInfo uploadSubThumbnail(Long id, MultipartFile subThumbnail) {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        String subThumbnailUrl = s3Component.uploadSingleImageToS3(subThumbnail);
+        String subThumbnailUrl = s3Component.uploadSingleImageToS3(SUB_THUMBNAIL,subThumbnail);
         productBase.setSubThumbnailImage(subThumbnailUrl);
 
         return ProductImageInfo.builder()
@@ -149,7 +151,7 @@ public class AdminService {
 
         productBase.setMainImage(mainImage);
 
-        List<Image> images = s3Component.uploadAndGetImageList(mainImages, mainImage);
+        List<Image> images = s3Component.uploadAndGetImageList(MAIN_IMAGE, mainImages, mainImage);
         imageRepository.saveAll(images);
 
         return ProductImageInfo.builder()
@@ -167,7 +169,7 @@ public class AdminService {
 
         productBase.setDetailImage(detailImage);
 
-        List<Image> images = s3Component.uploadAndGetImageList(detailImages, detailImage);
+        List<Image> images = s3Component.uploadAndGetImageList(DETAIL_IMAGE, detailImages, detailImage);
         imageRepository.saveAll(images);
 
         return ProductImageInfo.builder()
@@ -181,9 +183,82 @@ public class AdminService {
         return null;
     }
 
+
+    @Transactional
+    public ProductImageInfo updateMainThumbnail(Long id, MultipartFile mainThumbnail) {
+        ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        s3Component.deleteImageByUrl(productBase.getMainThumbnailImage());
+        String mainThumbnailUrl = s3Component.uploadSingleImageToS3(MAIN_THUMBNAIL, mainThumbnail);
+        productBase.setMainThumbnailImage(mainThumbnailUrl);
+
+        return ProductImageInfo.builder()
+                .productBaseId(productBase.getId())
+                .imageUrls(List.of(mainThumbnailUrl))
+                .build();
+    }
+
+    @Transactional
+    public ProductImageInfo updateSubThumbnail(Long id, MultipartFile subThumbnail) {
+        ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        s3Component.deleteImageByUrl(productBase.getSubThumbnailImage());
+        String subThumbnailUrl = s3Component.uploadSingleImageToS3(SUB_THUMBNAIL, subThumbnail);
+        productBase.setSubThumbnailImage(subThumbnailUrl);
+
+        return ProductImageInfo.builder()
+                .productBaseId(productBase.getId())
+                .imageUrls(List.of(subThumbnailUrl))
+                .build();
+    }
+
+    @Transactional
+    public ProductImageInfo updateMainImages(Long id, List<MultipartFile> mainImages) {
+        ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        List<Image> toDelete = productBase.getMainImage().getImages();
+        ProductImage mainImage = productBase.getMainImage();
+        return updateImage(mainImages, productBase, toDelete, mainImage, MAIN_IMAGE);
+    }
+
+    @Transactional
+    public ProductImageInfo updateDetailImages(Long id, List<MultipartFile> detailImages) {
+        ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        List<Image> toDelete = productBase.getDetailImage().getImages();
+        ProductImage detailImage = productBase.getDetailImage();
+        return updateImage(detailImages, productBase, toDelete, detailImage, DETAIL_IMAGE);
+    }
+
+    private ProductImageInfo updateImage(List<MultipartFile> detailImages, ProductBase productBase, List<Image> toDelete, ProductImage detailImage, String imageType) {
+        for (Image image : toDelete) {
+            s3Component.deleteImageByUrl(image.getImageUrl());
+        }
+
+        List<Image> images = s3Component.uploadAndGetImageList(imageType,detailImages, detailImage);
+        imageRepository.saveAll(images);
+
+        return ProductImageInfo.builder()
+                .productBaseId(productBase.getId())
+                .imageUrls(images.stream().map(Image::getImageUrl).collect(Collectors.toList()))
+                .build();
+    }
+
     @Transactional
     public String deleteProduct(Long id) {
-        return null;
+        ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+
+        s3Component.deleteImageByUrl(productBase.getMainThumbnailImage());
+        s3Component.deleteImageByUrl(productBase.getSubThumbnailImage());
+        List<Image> detailImages = productBase.getDetailImage().getImages();
+        List<Image> mainImages = productBase.getMainImage().getImages();
+
+        for (Image image : detailImages) {
+            s3Component.deleteImageByUrl(image.getImageUrl());
+        }
+
+        for (Image image : mainImages) {
+            s3Component.deleteImageByUrl(image.getImageUrl());
+        }
+
+        productBaseRepository.delete(productBase);
+        return "DELETED";
     }
 
     // ==============================================================================================================
@@ -205,7 +280,7 @@ public class AdminService {
     @Transactional
     public BundleInfo uploadBundleImages(Long id, List<MultipartFile> images) {
         Bundle bundle =  bundleRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        String imageUrls = s3Component.uploadImagesAndGetString(images);
+        String imageUrls = s3Component.uploadImagesAndGetString(BUNDLE_IMAGE, images);
         bundle.setImageUrls(imageUrls);
 
         return BundleInfo.builder()
@@ -263,7 +338,7 @@ public class AdminService {
     @Transactional
     public EventInfo uploadEventImages(Long id, List<MultipartFile> images) {
         Event event =  eventRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        String imageUrls = s3Component.uploadImagesAndGetString(images);
+        String imageUrls = s3Component.uploadImagesAndGetString(EVENT_IMAGE, images);
         event.setImageUrls(imageUrls);
 
         return EventInfo.builder()

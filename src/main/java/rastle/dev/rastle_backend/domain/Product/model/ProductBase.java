@@ -44,11 +44,11 @@ public class ProductBase {
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<CartProduct> cartProduct = new ArrayList<>();
     private boolean visible;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "main_image_id")
     private ProductImage mainImage;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "detail_image_id")
     private ProductImage detailImage;
 

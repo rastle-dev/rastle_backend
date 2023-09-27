@@ -40,6 +40,7 @@ import java.util.List;
 public class AdminController {
         private final AdminService adminService;
 
+
         // ==============================================================================================================
         // 상품 관련 API
         // ==============================================================================================================
@@ -102,6 +103,48 @@ public class AdminController {
                                                                    @RequestBody ProductUpdateRequest productUpdateRequest) {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.updateProductInfo(id, productUpdateRequest)));
         }
+
+        @Operation(summary = "상품 메인 썸네일 이미지 업데이트 API", description = "상품 메인 썸네일 이미지 업데이트 API입니다.")
+        @ApiResponse(responseCode = "200", description = "업데이트 성공", content = @Content(schema = @Schema(implementation = ProductImageInfo.class)))
+        @FailApiResponses
+        @GetExecutionTime
+        @PutMapping("/product/{id}/mainThumbnail")
+        public ResponseEntity<ServerResponse<?>> updateMainThumbnail(@PathVariable("id") Long id,
+                                                                     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "업데이트할 상품 썸네일 이미지") @RequestParam("mainThumbnail") MultipartFile mainThumbnail) {
+                return ResponseEntity.ok(new ServerResponse<>(adminService.updateMainThumbnail(id, mainThumbnail)));
+        }
+
+        @Operation(summary = "상품 서브 썸네일 이미지 업데이트 API", description = "상품 서브 썸네일 이미지 업데이트 API입니다.")
+        @ApiResponse(responseCode = "200", description = "생성 성공", content = @Content(schema = @Schema(implementation = ProductImageInfo.class)))
+        @FailApiResponses
+        @GetExecutionTime
+        @PutMapping("/product/{id}/subThumbnail")
+        public ResponseEntity<ServerResponse<?>> updateSubThumbnail(@PathVariable("id") Long id,
+                                                                    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "업데이트할 상품 썸네일 이미지") @RequestParam("subThumbnail") MultipartFile subThumbnail) {
+                return ResponseEntity.ok(new ServerResponse<>(adminService.updateSubThumbnail(id, subThumbnail)));
+        }
+
+        @Operation(summary = "상품 메인 이미지들 업데이트 API", description = "상품 메인 이미지들 업데이트 API입니다.")
+        @ApiResponse(responseCode = "200", description = "업데이트 성공", content = @Content(schema = @Schema(implementation = ProductImageInfo.class)))
+        @FailApiResponses
+        @GetExecutionTime
+        @PutMapping("/product/{id}/mainImages")
+        public ResponseEntity<ServerResponse<?>> updateMainImages(@PathVariable("id") Long id,
+                                                                  @RequestParam("mainImages") List<MultipartFile> mainImages) {
+                return ResponseEntity.ok(new ServerResponse<>(adminService.updateMainImages(id, mainImages)));
+        }
+
+        @Operation(summary = "상품 상세 이미지들 업데이트 API", description = "상품 상세 이미지들 업데이트 API입니다.")
+        @ApiResponse(responseCode = "200", description = "업데이트 성공", content = @Content(schema = @Schema(implementation = ProductImageInfo.class)))
+        @FailApiResponses
+        @GetExecutionTime
+        @PutMapping("/product/{id}/detailImages")
+        public ResponseEntity<ServerResponse<?>> updateDetailImages(@PathVariable("id") Long id,
+                                                                    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "업데이트할 상품 이미지들") @RequestParam("detailImages") List<MultipartFile> detailImages) {
+                return ResponseEntity.ok(new ServerResponse<>(adminService.updateDetailImages(id, detailImages)));
+        }
+
+
 
         @Operation(summary = "상품 삭제 API", description = "상품 삭제 API 입니다.")
         @FailApiResponses

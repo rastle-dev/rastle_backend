@@ -36,25 +36,25 @@ public class S3Component {
         return url.substring(IMAGE_PREFIX.length());
     }
 
-    public List<Image> uploadAndGetImageList(List<MultipartFile> images, ProductImage image) {
+    public List<Image> uploadAndGetImageList(String type, List<MultipartFile> images, ProductImage image) {
         List<Image> toReturn = new ArrayList<>();
         for (MultipartFile mainImageFile : images) {
-            Image newImage = new Image(uploadSingleImageToS3(mainImageFile), image);
+            Image newImage = new Image(uploadSingleImageToS3(type, mainImageFile), image);
             toReturn.add(newImage);
         }
         return toReturn;
     }
 
-    public String uploadImagesAndGetString(List<MultipartFile> images) {
+    public String uploadImagesAndGetString(String type, List<MultipartFile> images) {
         StringBuilder sb = new StringBuilder();
         for (MultipartFile image : images) {
-            sb.append(uploadSingleImageToS3(image)).append(",");
+            sb.append(uploadSingleImageToS3(type, image)).append(",");
         }
         return sb.toString();
     }
 
 
-    public String uploadSingleImageToS3(MultipartFile file) {
+    public String uploadSingleImageToS3(String type, MultipartFile file) {
         String fileName = file.getOriginalFilename();
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(file.getSize());
