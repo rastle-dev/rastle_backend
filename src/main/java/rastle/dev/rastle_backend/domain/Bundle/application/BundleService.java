@@ -19,7 +19,7 @@ public class BundleService {
     private final BundleRepository bundleRepository;
 
     @Transactional(readOnly = true)
-    public Page<BundleInfo> getBundles(Pageable pageable) {
+    public Page<BundleInfo> getBundles(String visible, Pageable pageable) {
         LocalDateTime current = LocalDateTime.now();
         log.info(current.toString());
         return bundleRepository.getBundles(current, pageable);

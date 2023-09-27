@@ -14,7 +14,7 @@ public class EventService {
     private final EventRepository eventRepository;
 
     @Transactional(readOnly = true)
-    public Page<EventInfo> getEventInfo(Pageable pageable) {
+    public Page<EventInfo> getEventInfo(String visible, Pageable pageable) {
         return eventRepository.getEventInfo(pageable);
     }
 }

@@ -17,8 +17,10 @@ public interface BundleRepository extends JpaRepository<Bundle, Long> {
                     "b.name, " +
                     "b.imageUrls, " +
                     "b.description, " +
-                    "b.saleStartTime)" +
-                    "from Bundle b where b.saleStartTime >= :current"
+                    "b.saleStartTime, " +
+                    "b.visible) " +
+                    "from Bundle b " +
+                    "where b.saleStartTime >= :currentTime"
     )
-    Page<BundleInfo> getBundles(@Param("current") LocalDateTime current,Pageable pageable);
+    Page<BundleInfo> getBundles(@Param("currentTime") LocalDateTime currentTime, Pageable pageable);
 }

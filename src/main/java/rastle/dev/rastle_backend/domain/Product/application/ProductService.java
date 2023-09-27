@@ -13,6 +13,8 @@ import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
 import java.time.LocalDateTime;
 import java.util.*;
 import static rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.*;
+import static rastle.dev.rastle_backend.global.common.constants.CommonConstant.ALL;
+import static rastle.dev.rastle_backend.global.common.constants.CommonConstant.TRUE;
 
 @Service
 @RequiredArgsConstructor
@@ -24,9 +26,15 @@ public class ProductService {
     private final ImageRepository imageRepository;
 
     @Transactional(readOnly = true)
-    public Page<SimpleProductInfo> getProductInfos(Pageable pageable) {
+    public Page<SimpleProductInfo> getProductInfos(String visible, Pageable pageable) {
+        if (visible.equals(ALL)) {
+            return productBaseRepository.getProductInfos(pageable);
 
-        return productBaseRepository.getProductInfos(pageable);
+        } else if (visible.equals(TRUE)) {
+            return productBaseRepository.getProductInfosByVisibility(true, pageable);
+        } else {
+            return productBaseRepository.getProductInfosByVisibility(false, pageable);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -49,18 +57,13 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public Page<SimpleProductInfo> getCurrentMarketProducts(Pageable pageable) {
+    public Page<SimpleProductInfo> getBundleProducts(String visible, Long lowerBound, Long upperBound, Pageable pageable) {
         return bundleProductRepository.getBundleProducts(LocalDateTime.now(), pageable);
     }
 
-    @Transactional(readOnly = true)
-    public Page<SimpleProductInfo> getPastMarketProducts(Pageable pageable) {
-        return bundleProductRepository.getPastMarketProducts(LocalDateTime.now(), pageable);
-
-    }
 
     @Transactional(readOnly = true)
-    public Page<SimpleProductInfo> getEventMarketProducts(Pageable pageable) {
+    public Page<SimpleProductInfo> getEventProducts(String visible, Long lowerBound, Long upperBound, Pageable pageable) {
         return eventProductRepository.getEventProducts(pageable);
     }
 }
