@@ -48,4 +48,6 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
             "from ProductBase pb " +
             "where pb.id = :id")
     SimpleProductInfo getProductInfoById(@Param("id") Long id);
+
+    boolean existsProductBaseByCategoryId(Long id);
 }

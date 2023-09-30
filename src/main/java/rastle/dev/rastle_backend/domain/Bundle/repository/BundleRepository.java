@@ -32,4 +32,5 @@ public interface BundleRepository extends JpaRepository<Bundle, Long> {
                     "from Bundle b WHERE b.visible = :visible"
     )
     Page<BundleInfo> getBundlesByVisibility(@Param("visible") boolean visible, Pageable pageable);
+
 }

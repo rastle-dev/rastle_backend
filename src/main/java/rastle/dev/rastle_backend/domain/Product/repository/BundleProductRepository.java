@@ -13,6 +13,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BundleProductRepository extends JpaRepository<BundleProduct, Long> {
+
+    Boolean existsBundleProductByBundleId(Long id);
+
     @Query(
             "select new rastle.dev.rastle_backend.domain.Product.dto.BundleProductInfo(" +
                     "b.id, " +

@@ -15,11 +15,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 import rastle.dev.rastle_backend.domain.Admin.application.AdminService;
-import rastle.dev.rastle_backend.domain.Category.dto.CategoryDto;
+import rastle.dev.rastle_backend.domain.Bundle.dto.BundleDTO.BundleUpdateRequest;
 import rastle.dev.rastle_backend.domain.Category.dto.CategoryDto.CategoryCreateRequest;
 import rastle.dev.rastle_backend.domain.Category.dto.CategoryDto.CategoryUpdateRequest;
 import rastle.dev.rastle_backend.domain.Category.dto.CategoryInfo;
 import rastle.dev.rastle_backend.domain.Event.dto.EventDTO.EventCreateRequest;
+import rastle.dev.rastle_backend.domain.Event.dto.EventDTO.EventUpdateRequest;
 import rastle.dev.rastle_backend.domain.Event.dto.EventInfo;
 import rastle.dev.rastle_backend.domain.Bundle.dto.BundleDTO.BundleCreateRequest;
 import rastle.dev.rastle_backend.domain.Bundle.dto.BundleInfo;
@@ -32,10 +33,8 @@ import rastle.dev.rastle_backend.global.common.annotation.GetExecutionTime;
 import rastle.dev.rastle_backend.global.response.FailApiResponses;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Tag(name = "관리자 기능 API", description = "관리자 기능 관련 API입니다.")
 @RestController
@@ -55,7 +54,7 @@ public class AdminController {
         @GetExecutionTime
         @PostMapping("/product")
         public ResponseEntity<ServerResponse<?>> createProduct(
-                        @RequestBody ProductDTO.ProductCreateRequest createRequest) throws IOException {
+                        @RequestBody ProductDTO.ProductCreateRequest createRequest) {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.createProduct(createRequest)));
         }
 
@@ -199,7 +198,7 @@ public class AdminController {
         @ApiResponse(responseCode = "200", description = "추가 성공")
         @FailApiResponses
         @PostMapping("/event")
-        public ResponseEntity<ServerResponse<?>> tempAddMarket(@RequestBody EventCreateRequest createRequest) {
+        public ResponseEntity<ServerResponse<?>> addBundle(@RequestBody EventCreateRequest createRequest) {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.createEvent(createRequest)));
         }
 
@@ -212,6 +211,32 @@ public class AdminController {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.uploadEventImages(id, images)));
         }
 
+        @Operation(summary = "이벤트 업데이트 API", description = "이벤트 업데이트 API 입니다.")
+        @ApiResponse(responseCode = "200", description = "업데이트 성공", content = @Content(schema = @Schema(implementation = EventUpdateRequest.class)))
+        @FailApiResponses
+        @PatchMapping("/event/{id}")
+        public ResponseEntity<ServerResponse<?>> updateEvent(@PathVariable("id") Long id, @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "이벤트 업데이트 요청", content = @Content(schema = @Schema(implementation = EventUpdateRequest.class))) @RequestBody Map<String, Object> updateMap) {
+                EventUpdateRequest eventUpdateRequest = objectMapper.convertValue(updateMap, EventUpdateRequest.class);
+                return ResponseEntity.ok(new ServerResponse<>(adminService.updateEvent(id, eventUpdateRequest)));
+        }
+
+        @Operation(summary = "이벤트 이미지 업데이트 API", description = "이벤트 이미지 업데이트 API입니다.")
+        @ApiResponse(responseCode = "200", description = "업데이트 성공", content = @Content(schema = @Schema(implementation = EventInfo.class)))
+        @FailApiResponses
+        @PatchMapping("/event/{id}/images")
+        public ResponseEntity<ServerResponse<?>> updateEventImage(@PathVariable("id") Long id,
+                                                                  @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "등록할 이벤트 이미지들") @RequestParam("images") List<MultipartFile> images) {
+                return ResponseEntity.ok(new ServerResponse<>(adminService.updateEventImages(id, images)));
+        }
+
+
+        @Operation(summary = "이벤트 삭제", description = "이벤트 삭제 API 입니다")
+        @FailApiResponses
+        @DeleteMapping("/event/{id}")
+        public ResponseEntity<ServerResponse<?>> deleteEvent(@PathVariable("id") Long id) {
+                return ResponseEntity.ok(new ServerResponse<>(adminService.deleteEvent(id)));
+        }
+
         // ==============================================================================================================
         // 상품 세트 관련 API
         // ==============================================================================================================
@@ -219,7 +244,7 @@ public class AdminController {
         @ApiResponse(responseCode = "200", description = "생성 성공")
         @FailApiResponses
         @PostMapping("/bundle")
-        public ResponseEntity<ServerResponse<?>> tempAddMarket(@RequestBody BundleCreateRequest createRequest) {
+        public ResponseEntity<ServerResponse<?>> addBundle(@RequestBody BundleCreateRequest createRequest) {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.createBundle(createRequest)));
         }
 
@@ -227,10 +252,38 @@ public class AdminController {
         @ApiResponse(responseCode = "200", description = "추가 성공", content = @Content(schema = @Schema(implementation = BundleInfo.class)))
         @FailApiResponses
         @PostMapping("/bundle/{id}/images")
-        public ResponseEntity<ServerResponse<?>> addImagesToMarket(@PathVariable("id") Long id,
-                                                                     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "등록할 상품 세트 이미지들") @RequestParam("images") List<MultipartFile> images) {
+        public ResponseEntity<ServerResponse<?>> addImagesToBundle(@PathVariable("id") Long id,
+                                                                   @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "등록할 상품 세트 이미지들") @RequestParam("images") List<MultipartFile> images) {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.uploadBundleImages(id, images)));
         }
+
+        @Operation(summary = "상품 세트 업데이트 API", description = "상품 세트 업데이트 API 입니다")
+        @ApiResponse(responseCode = "200", description = "업데이트 성공시", content = @Content(schema = @Schema(implementation = BundleUpdateRequest.class)))
+        @FailApiResponses
+        @PatchMapping("/bundle/{id}")
+        public ResponseEntity<ServerResponse<?>> updateBundle(@PathVariable("id") Long id,
+                                                              @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "이벤트 업데이트 요청", content = @Content(schema = @Schema(implementation = BundleUpdateRequest.class)))
+                                                              @RequestBody Map<String, Object> updateMap) {
+                BundleUpdateRequest bundleUpdateRequest = objectMapper.convertValue(updateMap, BundleUpdateRequest.class);
+                return ResponseEntity.ok(new ServerResponse<>(adminService.updateBundle(id, bundleUpdateRequest)));
+        }
+
+        @Operation(summary = "상품 세트 이미지 업데이트 API", description = "상품 세트 이미지 업데이트 API입니다.")
+        @ApiResponse(responseCode = "200", description = "업데이트 성공", content = @Content(schema = @Schema(implementation = BundleInfo.class)))
+        @FailApiResponses
+        @PatchMapping("/bundle/{id}/images")
+        public ResponseEntity<ServerResponse<?>> updateBundleImage(@PathVariable("id") Long id,
+                                                                  @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "등록할 상품 세트 이미지들") @RequestParam("images") List<MultipartFile> images) {
+                return ResponseEntity.ok(new ServerResponse<>(adminService.updateBundleImages(id, images)));
+        }
+
+        @Operation(summary = "상품 세트 삭제 API", description = "상품 세트 삭제 API입니다.")
+        @FailApiResponses
+        @DeleteMapping("/bundle/{id}")
+        public ResponseEntity<ServerResponse<?>> deleteBundle(@PathVariable("id") Long id) {
+                return ResponseEntity.ok(new ServerResponse<>(adminService.deleteBundle(id)));
+        }
+
 
         // ==============================================================================================================
         // 회원 관련 API

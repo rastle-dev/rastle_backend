@@ -59,7 +59,7 @@ public class ProductDTO {
         @Schema(description = "상품 보여질 순서", defaultValue = "1000")
         Long displayOrder;
         @Schema(description = "상품 보여질지 여부", defaultValue = "true")
-        boolean visible;
+        Boolean visible;
     }
 
     @Getter

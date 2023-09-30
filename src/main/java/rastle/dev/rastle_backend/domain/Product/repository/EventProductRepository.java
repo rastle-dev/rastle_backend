@@ -12,6 +12,8 @@ import rastle.dev.rastle_backend.domain.Product.model.EventProduct;
 import java.util.List;
 
 public interface EventProductRepository extends JpaRepository<EventProduct, Long> {
+
+    boolean existsByEventId(Long id);
     @Query(
             "select new rastle.dev.rastle_backend.domain.Product.dto.EventProductInfo(" +
                     "e.id, " +

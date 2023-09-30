@@ -54,4 +54,20 @@ public class Bundle {
                 .visible(visible)
                 .build();
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setSaleStartTime(LocalDateTime saleStartTime) {
+        this.saleStartTime = saleStartTime;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
 }

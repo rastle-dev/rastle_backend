@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import rastle.dev.rastle_backend.domain.Admin.exception.InvalidImageUrlException;
+import rastle.dev.rastle_backend.domain.Admin.exception.NotEmptyBundleException;
+import rastle.dev.rastle_backend.domain.Admin.exception.NotEmptyCategoryException;
+import rastle.dev.rastle_backend.domain.Admin.exception.NotEmptyEventException;
 import rastle.dev.rastle_backend.global.error.exception.S3ImageUploadException;
 import rastle.dev.rastle_backend.global.error.response.ErrorResponse;
 
@@ -24,4 +27,41 @@ public class AdminExceptionHandler {
                 .build(),
                 CONFLICT);
     }
+
+    @ExceptionHandler(NotEmptyBundleException.class)
+    protected final ResponseEntity<ErrorResponse> handleNotEmptyBundleException(
+            NotEmptyBundleException ex, WebRequest request
+    ) {
+        log.warn(ex.getMessage());
+        return new ResponseEntity<>(ErrorResponse.builder()
+                .errorCode(409L)
+                .message(ex.getMessage())
+                .build(),
+                CONFLICT);
+    }
+
+    @ExceptionHandler(NotEmptyCategoryException.class)
+    protected final ResponseEntity<ErrorResponse> handleNotEmptyCategoryException(
+            NotEmptyCategoryException ex, WebRequest request
+    ) {
+        log.warn(ex.getMessage());
+        return new ResponseEntity<>(ErrorResponse.builder()
+                .errorCode(409L)
+                .message(ex.getMessage())
+                .build(),
+                CONFLICT);
+    }
+
+    @ExceptionHandler(NotEmptyEventException.class)
+    protected final ResponseEntity<ErrorResponse> handleNotEmptyEventException(
+            NotEmptyEventException ex, WebRequest request
+    ) {
+        log.warn(ex.getMessage());
+        return new ResponseEntity<>(ErrorResponse.builder()
+                .errorCode(409L)
+                .message(ex.getMessage())
+                .build(),
+                CONFLICT);
+    }
+
 }

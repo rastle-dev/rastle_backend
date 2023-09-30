@@ -7,13 +7,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import rastle.dev.rastle_backend.domain.Admin.exception.NotEmptyBundleException;
+import rastle.dev.rastle_backend.domain.Admin.exception.NotEmptyCategoryException;
+import rastle.dev.rastle_backend.domain.Admin.exception.NotEmptyEventException;
 import rastle.dev.rastle_backend.domain.Bundle.dto.BundleDTO.BundleCreateRequest;
+import rastle.dev.rastle_backend.domain.Bundle.dto.BundleDTO.BundleUpdateRequest;
 import rastle.dev.rastle_backend.domain.Category.dto.CategoryDto.CategoryCreateRequest;
 import rastle.dev.rastle_backend.domain.Category.dto.CategoryDto.CategoryUpdateRequest;
 import rastle.dev.rastle_backend.domain.Category.dto.CategoryInfo;
 import rastle.dev.rastle_backend.domain.Category.model.Category;
 import rastle.dev.rastle_backend.domain.Category.repository.CategoryRepository;
 import rastle.dev.rastle_backend.domain.Event.dto.EventDTO.EventCreateRequest;
+import rastle.dev.rastle_backend.domain.Event.dto.EventDTO.EventUpdateRequest;
 import rastle.dev.rastle_backend.domain.Event.dto.EventInfo;
 import rastle.dev.rastle_backend.domain.Event.model.Event;
 import rastle.dev.rastle_backend.domain.Event.repository.EventRepository;
@@ -31,7 +36,6 @@ import rastle.dev.rastle_backend.domain.Product.dto.ColorInfo;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductCreateResult;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductUpdateRequest;
-import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductUpdateResult;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductImageInfo;
 import rastle.dev.rastle_backend.domain.Product.model.*;
 import rastle.dev.rastle_backend.domain.Product.repository.*;
@@ -39,6 +43,7 @@ import rastle.dev.rastle_backend.global.component.S3Component;
 import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
 import rastle.dev.rastle_backend.global.util.TimeUtil;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -310,7 +315,7 @@ public class AdminService {
     }
 
     // ==============================================================================================================
-    // 마켓 관련 서비스
+    // 상품세트 관련 서비스
     // ==============================================================================================================
     @Transactional
     public BundleInfo createBundle(BundleCreateRequest createRequest) {
@@ -319,7 +324,7 @@ public class AdminService {
                 .saleStartTime(TimeUtil.convertStringToLocalDateTime(createRequest.getStartDate(),
                         createRequest.getStartHour(), createRequest.getStartMinute(), createRequest.getStartSecond()))
                 .description(createRequest.getDescription())
-                .visible(createRequest.isVisible())
+                .visible(createRequest.getVisible())
                 .build();
         bundleRepository.save(newBundle);
         return newBundle.toBundleInfo();
@@ -340,6 +345,61 @@ public class AdminService {
                 .build();
     }
 
+    @Transactional
+    public BundleUpdateRequest updateBundle(Long id, BundleUpdateRequest bundleUpdateRequest) {
+        Bundle bundle = bundleRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        if (bundleUpdateRequest.getVisible() != null) {
+            bundle.setVisible(bundleUpdateRequest.getVisible());
+        }
+        if (bundleUpdateRequest.getName() != null) {
+            bundle.setName(bundleUpdateRequest.getName());
+        }
+        if (bundleUpdateRequest.getDescription() != null) {
+            bundle.setDescription(bundleUpdateRequest.getDescription());
+        }
+        if (bundleUpdateRequest.getStartDate() != null) {
+            bundle.setSaleStartTime(TimeUtil.convertStringToLocalDateTime(
+                    bundleUpdateRequest.getStartDate(),
+                    bundleUpdateRequest.getStartHour(),
+                    bundleUpdateRequest.getStartMinute(),
+                    bundleUpdateRequest.getStartSecond(
+                    )));
+        }
+
+        return bundleUpdateRequest;
+    }
+
+    @Transactional
+    public BundleInfo updateBundleImages(Long id, List<MultipartFile> images) {
+        Bundle bundle = bundleRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        String[] imageUrls = bundle.getImageUrls().split(",");
+        for (String imageUrl : imageUrls) {
+            if (imageUrl.length() > 1) {
+                s3Component.deleteImageByUrl(imageUrl);
+            }
+        }
+
+        String imageUrlString = s3Component.uploadImagesAndGetString(BUNDLE_IMAGE, images);
+        bundle.setImageUrls(imageUrlString);
+
+        return BundleInfo.builder()
+                .id(bundle.getId())
+                .saleStartTime(bundle.getSaleStartTime())
+                .name(bundle.getName())
+                .imageUrls(bundle.getImageUrls())
+                .description(bundle.getDescription())
+                .build();
+    }
+
+    @Transactional
+    public String deleteBundle(Long id) {
+        if (bundleProductRepository.existsBundleProductByBundleId(id)) {
+            throw new NotEmptyBundleException();
+        }
+        bundleRepository.deleteById(id);
+        return "DELETED";
+    }
+
     // ==============================================================================================================
     // 카테고리 관련 서비스
     // ==============================================================================================================
@@ -355,13 +415,22 @@ public class AdminService {
 
     @Transactional
     public CategoryInfo updateCategory(Long id, CategoryUpdateRequest categoryUpdateRequest) {
-        return null;
+        Category category = categoryRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        category.setName(categoryUpdateRequest.getName());
+        return CategoryInfo.builder()
+                .id(category.getId())
+                .name(category.getName())
+                .build();
     }
 
 
     @Transactional
     public String deleteCategory(Long id) {
-        return null;
+        if (productBaseRepository.existsProductBaseByCategoryId(id)) {
+            throw new NotEmptyCategoryException();
+        }
+        categoryRepository.deleteById(id);
+        return "DELETED";
     }
 
 
@@ -377,7 +446,7 @@ public class AdminService {
                 .eventEndDate(TimeUtil.convertStringToLocalDateTime(createRequest.getEndDate(),
                         createRequest.getEndHour(), createRequest.getEndMinute(), createRequest.getEndSecond()))
                 .description(createRequest.getDescription())
-                .visible(createRequest.isVisible())
+                .visible(createRequest.getVisible())
                 .build();
         eventRepository.save(newEvent);
         return newEvent.toEventInfo();
@@ -398,6 +467,72 @@ public class AdminService {
                 .description(event.getDescription())
                 .visible(event.isVisible())
                 .build();
+    }
+
+    @Transactional
+    public EventUpdateRequest updateEvent(Long id, EventUpdateRequest eventUpdateRequest) {
+        Event event =  eventRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        if (eventUpdateRequest.getVisible() != null) {
+            event.setVisible(eventUpdateRequest.getVisible());
+        }
+        if (eventUpdateRequest.getDescription() != null) {
+            event.setDescription(eventUpdateRequest.getDescription());
+        }
+        if (eventUpdateRequest.getName() != null) {
+            event.setName(eventUpdateRequest.getName());
+        }
+        if (eventUpdateRequest.getEndDate() != null) {
+            event.setEventEndDate(TimeUtil.convertStringToLocalDateTime(
+                    eventUpdateRequest.getEndDate(),
+                    eventUpdateRequest.getEndHour(),
+                    eventUpdateRequest.getEndMinute(),
+                    eventUpdateRequest.getEndSecond()
+            ));
+        }
+        if (eventUpdateRequest.getStartDate() != null) {
+            event.setEventStartDate(TimeUtil.convertStringToLocalDateTime(
+                    eventUpdateRequest.getStartDate(),
+                    eventUpdateRequest.getStartHour(),
+                    eventUpdateRequest.getStartMinute(),
+                    eventUpdateRequest.getStartSecond(
+                    )));
+        }
+
+        return eventUpdateRequest;
+    }
+
+    @Transactional
+    public EventInfo updateEventImages(Long id, List<MultipartFile> images) {
+        Event event =  eventRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        String[] imageUrls = event.getImageUrls().split(",");
+        for (String image : imageUrls) {
+            if (image.length() > 1) {
+                s3Component.deleteImageByUrl(image);
+            }
+        }
+
+        String imageUrlString = s3Component.uploadImagesAndGetString(EVENT_IMAGE, images);
+        event.setImageUrls(imageUrlString);
+
+
+        return EventInfo.builder()
+                .id(event.getId())
+                .startDate(event.getEventStartDate())
+                .endDate(event.getEventEndDate())
+                .name(event.getName())
+                .imageUrls(event.getImageUrls())
+                .description(event.getDescription())
+                .visible(event.isVisible())
+                .build();
+    }
+
+    @Transactional
+    public String deleteEvent(Long id) {
+        if (eventProductRepository.existsByEventId(id)) {
+            throw new NotEmptyEventException();
+        }
+        eventRepository.deleteById(id);
+        return "DELETED";
     }
 
     // ==============================================================================================================
