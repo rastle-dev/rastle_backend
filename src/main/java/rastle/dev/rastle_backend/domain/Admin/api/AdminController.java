@@ -104,7 +104,7 @@ public class AdminController {
         @GetExecutionTime
         @PatchMapping("/product/{id}")
         public ResponseEntity<ServerResponse<?>> updateProductInfo(@PathVariable("id") Long id,
-                                                                   @Parameter(name = "이벤트 상품인지 아닌지", description = "true false로 무조건 보내줘야함", required = true)
+                                                                   @Parameter(name = "isEvent", description = "true or false로 무조건 보내줘야함, 이벤트 상품이면 true", required = true, example = "true")
                                                                    @RequestParam(name = "isEvent") Boolean isEvent,
                                                                    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "가계부 업데이트 요청", content = @Content(schema = @Schema(implementation = ProductUpdateRequest.class)))
                                                                    @RequestBody Map<String, Object> updateMap) {
