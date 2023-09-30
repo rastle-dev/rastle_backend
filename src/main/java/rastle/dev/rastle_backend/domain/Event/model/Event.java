@@ -28,18 +28,19 @@ public class Event {
     @Column(name = "event_end_date")
     private LocalDateTime eventEndDate;
     private String description;
-
+    private boolean visible;
 
     @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<EventProduct> eventProducts = new ArrayList<>();
 
     @Builder
-    public Event(String name, LocalDateTime eventStartDate, LocalDateTime eventEndDate, String imageUrls, String description) {
+    public Event(String name, LocalDateTime eventStartDate, LocalDateTime eventEndDate, String imageUrls, String description, boolean visible) {
         this.name = name;
         this.eventStartDate = eventStartDate;
         this.eventEndDate = eventEndDate;
         this.imageUrls = imageUrls;
         this.description = description;
+        this.visible = visible;
     }
 
     public void setImageUrls(String imageUrls) {
@@ -54,7 +55,27 @@ public class Event {
                 .description(description)
                 .startDate(getEventStartDate())
                 .endDate(getEventEndDate())
+                .visible(visible)
                 .build();
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setEventStartDate(LocalDateTime eventStartDate) {
+        this.eventStartDate = eventStartDate;
+    }
+
+    public void setEventEndDate(LocalDateTime eventEndDate) {
+        this.eventEndDate = eventEndDate;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
 }

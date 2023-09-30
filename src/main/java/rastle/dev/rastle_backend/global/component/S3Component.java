@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import rastle.dev.rastle_backend.domain.Admin.exception.InvalidImageUrlException;
 import rastle.dev.rastle_backend.domain.Product.model.Image;
 import rastle.dev.rastle_backend.domain.Product.model.ProductImage;
 import rastle.dev.rastle_backend.global.error.exception.S3ImageUploadException;
@@ -21,25 +22,39 @@ public class S3Component {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public List<Image> uploadAndGetImageList(List<MultipartFile> images, ProductImage image) {
+    static final String IMAGE_PREFIX = "https://rastle-dev.s3.ap-northeast-2.amazonaws.com/";
+
+    public void deleteImageByUrl(String imageUrl) {
+
+        amazonS3.deleteObject(bucket, getFileName(imageUrl));
+    }
+
+    private String getFileName(String url) {
+        if (!url.contains(IMAGE_PREFIX)) {
+            throw new InvalidImageUrlException();
+        }
+        return url.substring(IMAGE_PREFIX.length());
+    }
+
+    public List<Image> uploadAndGetImageList(String type, List<MultipartFile> images, ProductImage image) {
         List<Image> toReturn = new ArrayList<>();
         for (MultipartFile mainImageFile : images) {
-            Image newImage = new Image(uploadSingleImageToS3(mainImageFile), image);
+            Image newImage = new Image(uploadSingleImageToS3(type, mainImageFile), image);
             toReturn.add(newImage);
         }
         return toReturn;
     }
 
-    public String uploadImagesAndGetString(List<MultipartFile> images) {
+    public String uploadImagesAndGetString(String type, List<MultipartFile> images) {
         StringBuilder sb = new StringBuilder();
         for (MultipartFile image : images) {
-            sb.append(uploadSingleImageToS3(image)).append(",");
+            sb.append(uploadSingleImageToS3(type, image)).append(",");
         }
         return sb.toString();
     }
 
 
-    public String uploadSingleImageToS3(MultipartFile file) {
+    public String uploadSingleImageToS3(String type, MultipartFile file) {
         String fileName = file.getOriginalFilename();
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(file.getSize());

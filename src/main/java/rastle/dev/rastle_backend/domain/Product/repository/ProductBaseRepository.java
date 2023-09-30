@@ -18,9 +18,22 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
             "pb.subThumbnailImage," +
             "pb.isEventProduct, " +
             "pb.discount, " +
-            "pb.displayOrder) " +
+            "pb.displayOrder, " +
+            "pb.visible) " +
             "from ProductBase pb")
     Page<SimpleProductInfo> getProductInfos(Pageable pageable);
+    @Query("select new rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo(" +
+            "pb.id, " +
+            "pb.name, " +
+            "pb.price, " +
+            "pb.mainThumbnailImage, " +
+            "pb.subThumbnailImage," +
+            "pb.isEventProduct, " +
+            "pb.discount, " +
+            "pb.displayOrder, " +
+            "pb.visible) " +
+            "from ProductBase pb WHERE pb.visible = :visible")
+    Page<SimpleProductInfo> getProductInfosByVisibility(@Param("visible") boolean visible, Pageable pageable);
 
     @Query("select new rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo(" +
             "pb.id, " +
@@ -30,8 +43,11 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
             "pb.subThumbnailImage," +
             "pb.isEventProduct, " +
             "pb.discount, " +
-            "pb.displayOrder) " +
+            "pb.displayOrder, " +
+            "pb.visible) " +
             "from ProductBase pb " +
             "where pb.id = :id")
     SimpleProductInfo getProductInfoById(@Param("id") Long id);
+
+    boolean existsProductBaseByCategoryId(Long id);
 }

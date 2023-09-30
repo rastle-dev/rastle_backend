@@ -7,18 +7,24 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import rastle.dev.rastle_backend.domain.Category.dto.CategoryDto;
+import rastle.dev.rastle_backend.domain.Admin.exception.NotEmptyBundleException;
+import rastle.dev.rastle_backend.domain.Admin.exception.NotEmptyCategoryException;
+import rastle.dev.rastle_backend.domain.Admin.exception.NotEmptyEventException;
+import rastle.dev.rastle_backend.domain.Bundle.dto.BundleDTO.BundleCreateRequest;
+import rastle.dev.rastle_backend.domain.Bundle.dto.BundleDTO.BundleUpdateRequest;
+import rastle.dev.rastle_backend.domain.Category.dto.CategoryDto.CategoryCreateRequest;
+import rastle.dev.rastle_backend.domain.Category.dto.CategoryDto.CategoryUpdateRequest;
 import rastle.dev.rastle_backend.domain.Category.dto.CategoryInfo;
 import rastle.dev.rastle_backend.domain.Category.model.Category;
 import rastle.dev.rastle_backend.domain.Category.repository.CategoryRepository;
-import rastle.dev.rastle_backend.domain.Event.dto.EventDTO;
+import rastle.dev.rastle_backend.domain.Event.dto.EventDTO.EventCreateRequest;
+import rastle.dev.rastle_backend.domain.Event.dto.EventDTO.EventUpdateRequest;
 import rastle.dev.rastle_backend.domain.Event.dto.EventInfo;
 import rastle.dev.rastle_backend.domain.Event.model.Event;
 import rastle.dev.rastle_backend.domain.Event.repository.EventRepository;
-import rastle.dev.rastle_backend.domain.Market.dto.MarketDTO;
-import rastle.dev.rastle_backend.domain.Market.dto.MarketInfo;
-import rastle.dev.rastle_backend.domain.Market.model.Market;
-import rastle.dev.rastle_backend.domain.Market.repository.MarketRepository;
+import rastle.dev.rastle_backend.domain.Bundle.dto.BundleInfo;
+import rastle.dev.rastle_backend.domain.Bundle.model.Bundle;
+import rastle.dev.rastle_backend.domain.Bundle.repository.BundleRepository;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.MemberInfoDto;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.MemberInfoDto.OrderDetail;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.MemberInfoDto.OrderProductDetail;
@@ -28,6 +34,8 @@ import rastle.dev.rastle_backend.domain.Orders.model.Orders;
 import rastle.dev.rastle_backend.domain.Orders.repository.OrderRepository;
 import rastle.dev.rastle_backend.domain.Product.dto.ColorInfo;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO;
+import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductCreateResult;
+import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductUpdateRequest;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductImageInfo;
 import rastle.dev.rastle_backend.domain.Product.model.*;
 import rastle.dev.rastle_backend.domain.Product.repository.*;
@@ -42,14 +50,16 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static rastle.dev.rastle_backend.global.common.constants.CommonConstant.*;
+
 @Service
 @RequiredArgsConstructor
 public class AdminService {
     private final CategoryRepository categoryRepository;
     private final EventRepository eventRepository;
     private final EventProductRepository eventProductRepository;
-    private final MarketRepository marketRepository;
-    private final MarketProductRepository marketProductRepository;
+    private final BundleRepository bundleRepository;
+    private final BundleProductRepository bundleProductRepository;
     private final ColorRepository colorRepository;
     private final SizeRepository sizeRepository;
     private final ProductBaseRepository productBaseRepository;
@@ -63,7 +73,7 @@ public class AdminService {
     // 상품 관련 서비스
     // ==============================================================================================================
     @Transactional
-    public ProductDTO.ProductCreateResult createProduct(ProductDTO.ProductCreateRequest createRequest) {
+    public ProductCreateResult createProduct(ProductDTO.ProductCreateRequest createRequest) {
         ProductBase saved;
         HashMap<String, Color> colorToSave = new HashMap<>();
         List<Size> sizeToSave = new ArrayList<>();
@@ -75,10 +85,10 @@ public class AdminService {
             EventProduct eventProduct = createRequest.toEventProduct(event, category);
             saved = eventProductRepository.save(eventProduct);
         } else {
-            Market market = marketRepository.findById(createRequest.getMarketId())
+            Bundle bundle = bundleRepository.findById(createRequest.getMarketId())
                     .orElseThrow(NotFoundByIdException::new);
-            MarketProduct marketProduct = createRequest.toMarketProduct(market, category);
-            saved = marketProductRepository.save(marketProduct);
+            BundleProduct bundleProduct = createRequest.toBundleProduct(bundle, category);
+            saved = bundleProductRepository.save(bundleProduct);
         }
 
         setColorAndSize(createRequest.getColorAndSizes(), colorToSave, sizeToSave, saved);
@@ -88,9 +98,9 @@ public class AdminService {
         return toCreateResult(saved, createRequest);
     }
 
-    private ProductDTO.ProductCreateResult toCreateResult(ProductBase saved,
+    private ProductCreateResult toCreateResult(ProductBase saved,
             ProductDTO.ProductCreateRequest createRequest) {
-        return ProductDTO.ProductCreateResult.builder()
+        return ProductCreateResult.builder()
                 .id(saved.getId())
                 .name(saved.getName())
                 .isEvent(saved.isEventProduct())
@@ -99,6 +109,7 @@ public class AdminService {
                 .price(saved.getPrice())
                 .discount(saved.getDiscount())
                 .displayOrder(saved.getDisplayOrder())
+                .visible(saved.isVisible())
                 .build();
     }
 
@@ -114,7 +125,7 @@ public class AdminService {
     @Transactional
     public ProductImageInfo uploadMainThumbnail(Long id, MultipartFile mainThumbnail) {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        String mainThumbnailUrl = s3Component.uploadSingleImageToS3(mainThumbnail);
+        String mainThumbnailUrl = s3Component.uploadSingleImageToS3(MAIN_THUMBNAIL, mainThumbnail);
         productBase.setMainThumbnailImage(mainThumbnailUrl);
 
         return ProductImageInfo.builder()
@@ -126,7 +137,7 @@ public class AdminService {
     @Transactional
     public ProductImageInfo uploadSubThumbnail(Long id, MultipartFile subThumbnail) {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        String subThumbnailUrl = s3Component.uploadSingleImageToS3(subThumbnail);
+        String subThumbnailUrl = s3Component.uploadSingleImageToS3(SUB_THUMBNAIL,subThumbnail);
         productBase.setSubThumbnailImage(subThumbnailUrl);
 
         return ProductImageInfo.builder()
@@ -144,7 +155,7 @@ public class AdminService {
 
         productBase.setMainImage(mainImage);
 
-        List<Image> images = s3Component.uploadAndGetImageList(mainImages, mainImage);
+        List<Image> images = s3Component.uploadAndGetImageList(MAIN_IMAGE, mainImages, mainImage);
         imageRepository.saveAll(images);
 
         return ProductImageInfo.builder()
@@ -162,7 +173,7 @@ public class AdminService {
 
         productBase.setDetailImage(detailImage);
 
-        List<Image> images = s3Component.uploadAndGetImageList(detailImages, detailImage);
+        List<Image> images = s3Component.uploadAndGetImageList(DETAIL_IMAGE, detailImages, detailImage);
         imageRepository.saveAll(images);
 
         return ProductImageInfo.builder()
@@ -171,41 +182,228 @@ public class AdminService {
                 .build();
     }
 
+    @Transactional
+    public ProductUpdateRequest updateProductInfo(Long id, ProductUpdateRequest updateRequest, Boolean isEvent) {
+        ProductBase productBase;
+        if (updateRequest.getMarketOrBundleId() != null) {
+            if (isEvent) {
+                EventProduct eventProduct = eventProductRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+                Event event = eventRepository.findById(updateRequest.getMarketOrBundleId()).orElseThrow(NotFoundByIdException::new);
+                eventProduct.setEvent(event);
+                productBase = eventProduct;
+            } else {
+                BundleProduct bundleProduct = bundleProductRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+                Bundle bundle = bundleRepository.findById(updateRequest.getMarketOrBundleId()).orElseThrow(NotFoundByIdException::new);
+                bundleProduct.setBundle(bundle);
+                productBase = bundleProduct;
+            }
+        } else {
+            productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        }
+        if (updateRequest.getVisible() != null) {
+            productBase.setVisible(updateRequest.getVisible());
+        }
+        if (updateRequest.getDiscount() != null) {
+            productBase.setDiscount(updateRequest.getDiscount());
+        }
+        if (updateRequest.getDisplayOrder() != null) {
+            productBase.setDisplayOrder(updateRequest.getDisplayOrder());
+        }
+        if (updateRequest.getCategoryId() != null) {
+            Category category = categoryRepository.findById(updateRequest.getCategoryId()).orElseThrow(NotFoundByIdException::new);
+            productBase.setCategory(category);
+        }
+        if (updateRequest.getColorAndSizes() != null) {
+            List<Color> colors = productBase.getColors();
+            colorRepository.deleteAll(colors);
+
+            HashMap<String, Color> colorToSave = new HashMap<>();
+            List<Size> sizeToSave = new ArrayList<>();
+
+            setColorAndSize(updateRequest.getColorAndSizes(), colorToSave, sizeToSave, productBase);
+
+            colorRepository.saveAll(colorToSave.values());
+            sizeRepository.saveAll(sizeToSave);
+        }
+        if (updateRequest.getPrice() != null) {
+            productBase.setPrice(updateRequest.getPrice());
+        }
+        if (updateRequest.getName() != null) {
+            productBase.setName(updateRequest.getName());
+        }
+
+        return updateRequest;
+    }
+
+
+    @Transactional
+    public ProductImageInfo updateMainThumbnail(Long id, MultipartFile mainThumbnail) {
+        ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        s3Component.deleteImageByUrl(productBase.getMainThumbnailImage());
+        String mainThumbnailUrl = s3Component.uploadSingleImageToS3(MAIN_THUMBNAIL, mainThumbnail);
+        productBase.setMainThumbnailImage(mainThumbnailUrl);
+
+        return ProductImageInfo.builder()
+                .productBaseId(productBase.getId())
+                .imageUrls(List.of(mainThumbnailUrl))
+                .build();
+    }
+
+    @Transactional
+    public ProductImageInfo updateSubThumbnail(Long id, MultipartFile subThumbnail) {
+        ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        s3Component.deleteImageByUrl(productBase.getSubThumbnailImage());
+        String subThumbnailUrl = s3Component.uploadSingleImageToS3(SUB_THUMBNAIL, subThumbnail);
+        productBase.setSubThumbnailImage(subThumbnailUrl);
+
+        return ProductImageInfo.builder()
+                .productBaseId(productBase.getId())
+                .imageUrls(List.of(subThumbnailUrl))
+                .build();
+    }
+
+    @Transactional
+    public ProductImageInfo updateMainImages(Long id, List<MultipartFile> mainImages) {
+        ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        List<Image> toDelete = productBase.getMainImage().getImages();
+        ProductImage mainImage = productBase.getMainImage();
+        return updateImage(mainImages, productBase, toDelete, mainImage, MAIN_IMAGE);
+    }
+
+    @Transactional
+    public ProductImageInfo updateDetailImages(Long id, List<MultipartFile> detailImages) {
+        ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        List<Image> toDelete = productBase.getDetailImage().getImages();
+        ProductImage detailImage = productBase.getDetailImage();
+        return updateImage(detailImages, productBase, toDelete, detailImage, DETAIL_IMAGE);
+    }
+
+    private ProductImageInfo updateImage(List<MultipartFile> detailImages, ProductBase productBase, List<Image> toDelete, ProductImage detailImage, String imageType) {
+        for (Image image : toDelete) {
+            s3Component.deleteImageByUrl(image.getImageUrl());
+        }
+
+        List<Image> images = s3Component.uploadAndGetImageList(imageType,detailImages, detailImage);
+        imageRepository.saveAll(images);
+
+        return ProductImageInfo.builder()
+                .productBaseId(productBase.getId())
+                .imageUrls(images.stream().map(Image::getImageUrl).collect(Collectors.toList()))
+                .build();
+    }
+
+    @Transactional
+    public String deleteProduct(Long id) {
+        ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+
+        s3Component.deleteImageByUrl(productBase.getMainThumbnailImage());
+        s3Component.deleteImageByUrl(productBase.getSubThumbnailImage());
+        List<Image> detailImages = productBase.getDetailImage().getImages();
+        List<Image> mainImages = productBase.getMainImage().getImages();
+
+        for (Image image : detailImages) {
+            s3Component.deleteImageByUrl(image.getImageUrl());
+        }
+
+        for (Image image : mainImages) {
+            s3Component.deleteImageByUrl(image.getImageUrl());
+        }
+
+        productBaseRepository.delete(productBase);
+        return "DELETED";
+    }
+
     // ==============================================================================================================
-    // 마켓 관련 서비스
+    // 상품세트 관련 서비스
     // ==============================================================================================================
     @Transactional
-    public MarketInfo createMarket(MarketDTO.MarketCreateRequest createRequest) {
-        Market newMarket = Market.builder()
+    public BundleInfo createBundle(BundleCreateRequest createRequest) {
+        Bundle newBundle = Bundle.builder()
                 .name(createRequest.getName())
                 .saleStartTime(TimeUtil.convertStringToLocalDateTime(createRequest.getStartDate(),
                         createRequest.getStartHour(), createRequest.getStartMinute(), createRequest.getStartSecond()))
                 .description(createRequest.getDescription())
+                .visible(createRequest.getVisible())
                 .build();
-        marketRepository.save(newMarket);
-        return newMarket.toMarketInfo();
+        bundleRepository.save(newBundle);
+        return newBundle.toBundleInfo();
     }
 
     @Transactional
-    public MarketInfo uploadMarketImages(Long id, List<MultipartFile> images) {
-        Market market = marketRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        String imageUrls = s3Component.uploadImagesAndGetString(images);
-        market.setImageUrls(imageUrls);
+    public BundleInfo uploadBundleImages(Long id, List<MultipartFile> images) {
+        Bundle bundle =  bundleRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        String imageUrls = s3Component.uploadImagesAndGetString(BUNDLE_IMAGE, images);
+        bundle.setImageUrls(imageUrls);
 
-        return MarketInfo.builder()
-                .id(market.getId())
-                .startDate(market.getSaleStartTime())
-                .name(market.getName())
-                .imageUrls(market.getImageUrls())
-                .description(market.getDescription())
+        return BundleInfo.builder()
+                .id(bundle.getId())
+                .saleStartTime(bundle.getSaleStartTime())
+                .name(bundle.getName())
+                .imageUrls(bundle.getImageUrls())
+                .description(bundle.getDescription())
                 .build();
+    }
+
+    @Transactional
+    public BundleUpdateRequest updateBundle(Long id, BundleUpdateRequest bundleUpdateRequest) {
+        Bundle bundle = bundleRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        if (bundleUpdateRequest.getVisible() != null) {
+            bundle.setVisible(bundleUpdateRequest.getVisible());
+        }
+        if (bundleUpdateRequest.getName() != null) {
+            bundle.setName(bundleUpdateRequest.getName());
+        }
+        if (bundleUpdateRequest.getDescription() != null) {
+            bundle.setDescription(bundleUpdateRequest.getDescription());
+        }
+        if (bundleUpdateRequest.getStartDate() != null) {
+            bundle.setSaleStartTime(TimeUtil.convertStringToLocalDateTime(
+                    bundleUpdateRequest.getStartDate(),
+                    bundleUpdateRequest.getStartHour(),
+                    bundleUpdateRequest.getStartMinute(),
+                    bundleUpdateRequest.getStartSecond(
+                    )));
+        }
+
+        return bundleUpdateRequest;
+    }
+
+    @Transactional
+    public BundleInfo updateBundleImages(Long id, List<MultipartFile> images) {
+        Bundle bundle = bundleRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        String[] imageUrls = bundle.getImageUrls().split(",");
+        for (String imageUrl : imageUrls) {
+            if (imageUrl.length() > 1) {
+                s3Component.deleteImageByUrl(imageUrl);
+            }
+        }
+
+        String imageUrlString = s3Component.uploadImagesAndGetString(BUNDLE_IMAGE, images);
+        bundle.setImageUrls(imageUrlString);
+
+        return BundleInfo.builder()
+                .id(bundle.getId())
+                .saleStartTime(bundle.getSaleStartTime())
+                .name(bundle.getName())
+                .imageUrls(bundle.getImageUrls())
+                .description(bundle.getDescription())
+                .build();
+    }
+
+    @Transactional
+    public String deleteBundle(Long id) {
+        if (bundleProductRepository.existsBundleProductByBundleId(id)) {
+            throw new NotEmptyBundleException();
+        }
+        bundleRepository.deleteById(id);
+        return "DELETED";
     }
 
     // ==============================================================================================================
     // 카테고리 관련 서비스
     // ==============================================================================================================
     @Transactional
-    public CategoryInfo createCategory(CategoryDto.CategoryCreateRequest createRequest) {
+    public CategoryInfo createCategory(CategoryCreateRequest createRequest) {
         Category saved = categoryRepository.save(createRequest.toEntity());
 
         return CategoryInfo.builder()
@@ -214,11 +412,32 @@ public class AdminService {
                 .build();
     }
 
+    @Transactional
+    public CategoryInfo updateCategory(Long id, CategoryUpdateRequest categoryUpdateRequest) {
+        Category category = categoryRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        category.setName(categoryUpdateRequest.getName());
+        return CategoryInfo.builder()
+                .id(category.getId())
+                .name(category.getName())
+                .build();
+    }
+
+
+    @Transactional
+    public String deleteCategory(Long id) {
+        if (productBaseRepository.existsProductBaseByCategoryId(id)) {
+            throw new NotEmptyCategoryException();
+        }
+        categoryRepository.deleteById(id);
+        return "DELETED";
+    }
+
+
     // ==============================================================================================================
     // 이벤트 관련 서비스
     // ==============================================================================================================
     @Transactional
-    public EventInfo createEvent(EventDTO.EventCreateRequest createRequest) {
+    public EventInfo createEvent(EventCreateRequest createRequest) {
         Event newEvent = Event.builder()
                 .name(createRequest.getName())
                 .eventStartDate(TimeUtil.convertStringToLocalDateTime(createRequest.getStartDate(),
@@ -226,6 +445,7 @@ public class AdminService {
                 .eventEndDate(TimeUtil.convertStringToLocalDateTime(createRequest.getEndDate(),
                         createRequest.getEndHour(), createRequest.getEndMinute(), createRequest.getEndSecond()))
                 .description(createRequest.getDescription())
+                .visible(createRequest.getVisible())
                 .build();
         eventRepository.save(newEvent);
         return newEvent.toEventInfo();
@@ -233,8 +453,8 @@ public class AdminService {
 
     @Transactional
     public EventInfo uploadEventImages(Long id, List<MultipartFile> images) {
-        Event event = eventRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        String imageUrls = s3Component.uploadImagesAndGetString(images);
+        Event event =  eventRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        String imageUrls = s3Component.uploadImagesAndGetString(EVENT_IMAGE, images);
         event.setImageUrls(imageUrls);
 
         return EventInfo.builder()
@@ -244,7 +464,74 @@ public class AdminService {
                 .name(event.getName())
                 .imageUrls(event.getImageUrls())
                 .description(event.getDescription())
+                .visible(event.isVisible())
                 .build();
+    }
+
+    @Transactional
+    public EventUpdateRequest updateEvent(Long id, EventUpdateRequest eventUpdateRequest) {
+        Event event =  eventRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        if (eventUpdateRequest.getVisible() != null) {
+            event.setVisible(eventUpdateRequest.getVisible());
+        }
+        if (eventUpdateRequest.getDescription() != null) {
+            event.setDescription(eventUpdateRequest.getDescription());
+        }
+        if (eventUpdateRequest.getName() != null) {
+            event.setName(eventUpdateRequest.getName());
+        }
+        if (eventUpdateRequest.getEndDate() != null) {
+            event.setEventEndDate(TimeUtil.convertStringToLocalDateTime(
+                    eventUpdateRequest.getEndDate(),
+                    eventUpdateRequest.getEndHour(),
+                    eventUpdateRequest.getEndMinute(),
+                    eventUpdateRequest.getEndSecond()
+            ));
+        }
+        if (eventUpdateRequest.getStartDate() != null) {
+            event.setEventStartDate(TimeUtil.convertStringToLocalDateTime(
+                    eventUpdateRequest.getStartDate(),
+                    eventUpdateRequest.getStartHour(),
+                    eventUpdateRequest.getStartMinute(),
+                    eventUpdateRequest.getStartSecond(
+                    )));
+        }
+
+        return eventUpdateRequest;
+    }
+
+    @Transactional
+    public EventInfo updateEventImages(Long id, List<MultipartFile> images) {
+        Event event =  eventRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        String[] imageUrls = event.getImageUrls().split(",");
+        for (String image : imageUrls) {
+            if (image.length() > 1) {
+                s3Component.deleteImageByUrl(image);
+            }
+        }
+
+        String imageUrlString = s3Component.uploadImagesAndGetString(EVENT_IMAGE, images);
+        event.setImageUrls(imageUrlString);
+
+
+        return EventInfo.builder()
+                .id(event.getId())
+                .startDate(event.getEventStartDate())
+                .endDate(event.getEventEndDate())
+                .name(event.getName())
+                .imageUrls(event.getImageUrls())
+                .description(event.getDescription())
+                .visible(event.isVisible())
+                .build();
+    }
+
+    @Transactional
+    public String deleteEvent(Long id) {
+        if (eventProductRepository.existsByEventId(id)) {
+            throw new NotEmptyEventException();
+        }
+        eventRepository.deleteById(id);
+        return "DELETED";
     }
 
     // ==============================================================================================================

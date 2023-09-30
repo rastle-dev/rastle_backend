@@ -5,7 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import rastle.dev.rastle_backend.domain.Product.dto.BundleProductInfo;
 import rastle.dev.rastle_backend.domain.Product.dto.ColorInfo;
+import rastle.dev.rastle_backend.domain.Product.dto.EventProductInfo;
 import rastle.dev.rastle_backend.domain.Product.model.*;
 import rastle.dev.rastle_backend.domain.Product.repository.*;
 import rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo;
@@ -13,20 +15,28 @@ import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
 import java.time.LocalDateTime;
 import java.util.*;
 import static rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.*;
+import static rastle.dev.rastle_backend.global.common.constants.CommonConstant.ALL;
+import static rastle.dev.rastle_backend.global.common.constants.CommonConstant.TRUE;
 
 @Service
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductBaseRepository productBaseRepository;
     private final ColorRepository colorRepository;
-    private final MarketProductRepository marketProductRepository;
+    private final BundleProductRepository bundleProductRepository;
     private final EventProductRepository eventProductRepository;
     private final ImageRepository imageRepository;
 
     @Transactional(readOnly = true)
-    public Page<SimpleProductInfo> getProductInfos(Pageable pageable) {
+    public Page<SimpleProductInfo> getProductInfos(String visible, Pageable pageable) {
+        if (visible.equals(ALL)) {
+            return productBaseRepository.getProductInfos(pageable);
 
-        return productBaseRepository.getProductInfos(pageable);
+        } else if (visible.equals(TRUE)) {
+            return productBaseRepository.getProductInfosByVisibility(true, pageable);
+        } else {
+            return productBaseRepository.getProductInfosByVisibility(false, pageable);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -49,18 +59,26 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public Page<SimpleProductInfo> getCurrentMarketProducts(Pageable pageable) {
-        return marketProductRepository.getCurrentMarketProducts(LocalDateTime.now(), pageable);
+    public List<BundleProductInfo> getBundleProducts(String visible, Long lowerBound, Long upperBound) {
+        if (visible.equals(ALL)) {
+            return bundleProductRepository.getBundleProducts(lowerBound, upperBound);
+        } else if (visible.equals(TRUE)) {
+            return bundleProductRepository.getBundleProductsByVisibility(true, lowerBound, upperBound);
+        } else {
+            return bundleProductRepository.getBundleProductsByVisibility(false, lowerBound, upperBound);
+        }
     }
 
-    @Transactional(readOnly = true)
-    public Page<SimpleProductInfo> getPastMarketProducts(Pageable pageable) {
-        return marketProductRepository.getPastMarketProducts(LocalDateTime.now(), pageable);
-
-    }
 
     @Transactional(readOnly = true)
-    public Page<SimpleProductInfo> getEventMarketProducts(Pageable pageable) {
-        return eventProductRepository.getEventProducts(pageable);
+    public List<EventProductInfo> getEventProducts(String visible, Long lowerBound, Long upperBound) {
+        if (visible.equals(ALL)) {
+            return eventProductRepository.getEventProducts(lowerBound, upperBound);
+        } else if (visible.equals(TRUE)) {
+            return eventProductRepository.getEventProductByVisibility(true, lowerBound, upperBound);
+        } else {
+            return eventProductRepository.getEventProductByVisibility(false, lowerBound, upperBound);
+        }
+
     }
 }

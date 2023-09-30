@@ -19,4 +19,12 @@ public class CategoryDto {
                     .name(name).build();
         }
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CategoryUpdateRequest {
+        @Schema(description = "업데이트할 카테고리 이름", defaultValue = "바지")
+        String name;
+    }
 }

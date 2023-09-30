@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,4 +26,6 @@ public class EventInfo {
     String imageUrls;
     @Schema(description = "이벤트 설명", defaultValue = "이벤트 설명입니다")
     String description;
+    @Schema(description = "이벤트의 가시성 여부", defaultValue = "true")
+    boolean visible;
 }

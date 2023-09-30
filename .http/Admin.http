@@ -8,6 +8,10 @@ Content-Type: application/json
 }
 > {% client.global.set("auth_token", response.headers.valueOf("Authorization")); %}
 
+### 삭제 테스트
+GET http://localhost:8080/admin/test
+Authorization: {{auth_token}}
+
 
 ### 카테고리 생성
 POST http://localhost:8080/admin/category
