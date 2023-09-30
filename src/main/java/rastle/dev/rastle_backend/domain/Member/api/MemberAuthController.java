@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,7 +24,6 @@ import rastle.dev.rastle_backend.global.response.FailApiResponses;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
 
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -64,20 +62,13 @@ public class MemberAuthController {
         // }
 
         @Operation(summary = "이메일 중복 확인", description = "중복된 이메일이 있는지 확인합니다.")
-        @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "이메일 사용 가능"),
-                        @ApiResponse(responseCode = "409", description = "이미 사용 중인 이메일")
-        })
+        @ApiResponse(responseCode = "200", description = "확인 완료", content = @Content(schema = @Schema(implementation = Boolean.class)))
         @GetMapping(value = "/checkEmail/{email}")
         public ResponseEntity<ServerResponse<?>> checkEmailExists(@PathVariable String email) {
                 boolean isDuplicated = memberAuthService.isEmailDuplicated(email);
+                ServerResponse<Boolean> response = new ServerResponse<>(isDuplicated);
 
-                HttpStatus status = isDuplicated ? HttpStatus.CONFLICT : HttpStatus.OK;
-
-                String message = isDuplicated ? "이메일이 이미 사용 중입니다." : "이메일을 사용할 수 있습니다.";
-                ServerResponse<String> response = new ServerResponse<>(message);
-
-                return ResponseEntity.status(status).body(response);
+                return ResponseEntity.ok(response);
         }
 
         @Operation(summary = "로그인", description = "회원 로그인을 처리합니다.")
