@@ -37,7 +37,7 @@ public class ProductController {
     @GetExecutionTime
     @GetMapping("")
     public ResponseEntity<ServerResponse<?>> getProducts(
-            @Parameter(name = "상품 가시성 여부", description = "ALL - visible 여부 관계 없이 리턴, TRUE-true인 것만, FALSE - false인 것만")
+            @Parameter(name = "visible", description = "ALL - visible 여부 관계 없이 리턴, TRUE-true인 것만, FALSE - false인 것만")
             @RequestParam(name = "visible", defaultValue = ALL) String visible, Pageable pageable) {
         return ResponseEntity.ok(new ServerResponse<>(productService.getProductInfos(visible, pageable)));
     }
