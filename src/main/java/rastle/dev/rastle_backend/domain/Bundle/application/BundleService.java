@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rastle.dev.rastle_backend.domain.Bundle.dto.BundleInfo;
 import rastle.dev.rastle_backend.domain.Bundle.repository.BundleRepository;
+import rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo;
+import rastle.dev.rastle_backend.domain.Product.repository.BundleProductRepository;
 import rastle.dev.rastle_backend.global.common.constants.CommonConstant;
 
 import java.time.LocalDateTime;
@@ -21,6 +23,7 @@ import static rastle.dev.rastle_backend.global.common.constants.CommonConstant.T
 @Slf4j
 public class BundleService {
     private final BundleRepository bundleRepository;
+    private final BundleProductRepository bundleProductRepository;
 
     @Transactional(readOnly = true)
     public Page<BundleInfo> getBundles(String visible, Pageable pageable) {
@@ -34,5 +37,10 @@ public class BundleService {
         } else {
             return bundleRepository.getBundlesByVisibility(false, pageable);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<SimpleProductInfo> getBundleProducts(Long id) {
+        return bundleProductRepository.getBundleProductInfosByBundleId(id);
     }
 }
