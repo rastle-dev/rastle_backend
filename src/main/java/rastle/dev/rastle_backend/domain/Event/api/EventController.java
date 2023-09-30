@@ -35,4 +35,12 @@ public class EventController {
             Pageable pageable) {
         return ResponseEntity.ok(new ServerResponse<>(eventService.getEventInfo(visible, pageable)));
     }
+
+    @Operation(summary = "이벤트에 속한 상품 조회 API", description = "이벤트에 속한 상품을 이벤트 아이디로 조회하는 API입니다.")
+    @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = SimpleProductInfo.class)))
+    @FailApiResponses
+    @GetMapping("/{id}/products")
+    public ResponseEntity<ServerResponse<?>> getEventProducts(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(new ServerResponse<>(eventService.getEventProducts(id)));
+    }
 }

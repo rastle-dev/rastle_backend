@@ -7,7 +7,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rastle.dev.rastle_backend.domain.Event.dto.EventInfo;
 import rastle.dev.rastle_backend.domain.Event.repository.EventRepository;
+import rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo;
+import rastle.dev.rastle_backend.domain.Product.repository.EventProductRepository;
 import rastle.dev.rastle_backend.global.common.constants.CommonConstant;
+
+import java.util.List;
 
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstant.ALL;
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstant.TRUE;
@@ -16,6 +20,7 @@ import static rastle.dev.rastle_backend.global.common.constants.CommonConstant.T
 @RequiredArgsConstructor
 public class EventService {
     private final EventRepository eventRepository;
+    private final EventProductRepository eventProductRepository;
 
     @Transactional(readOnly = true)
     public Page<EventInfo> getEventInfo(String visible, Pageable pageable) {
@@ -26,5 +31,9 @@ public class EventService {
         } else {
             return eventRepository.getEventInfoByVisibility(false, pageable);
         }
+    }
+    @Transactional(readOnly = true)
+    public List<SimpleProductInfo> getEventProducts(Long id) {
+        return eventProductRepository.getEventProductInfosByEventId(id);
     }
 }

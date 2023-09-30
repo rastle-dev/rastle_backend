@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rastle.dev.rastle_backend.domain.Bundle.application.BundleService;
 import rastle.dev.rastle_backend.domain.Bundle.dto.BundleInfo;
+import rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo;
 import rastle.dev.rastle_backend.global.response.FailApiResponses;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
 
@@ -33,5 +34,13 @@ public class BundleController {
             @RequestParam(name = "visible", defaultValue = ALL) String visible,
             Pageable pageable) {
         return ResponseEntity.ok(new ServerResponse<>(bundleService.getBundles(visible, pageable)));
+    }
+
+    @Operation(summary = "상품 세트에 속한 상품 조회 API", description = "상품 세트에 속한 상품을 상품 세트 아이디로 조회하는 API입니다.")
+    @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = SimpleProductInfo.class)))
+    @FailApiResponses
+    @GetMapping("/{id}/products")
+    public ResponseEntity<ServerResponse<?>> getBundleProducts(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(new ServerResponse<>(bundleService.getBundleProducts(id)));
     }
 }

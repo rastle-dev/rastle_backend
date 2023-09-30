@@ -57,4 +57,18 @@ public interface BundleProductRepository extends JpaRepository<BundleProduct, Lo
     )
     List<BundleProductInfo> getBundleProductsByVisibility(@Param("visible") boolean visible, @Param("lowerBound") Long lowerBound, @Param("upperBound") Long upperBound);
 
+    @Query("select new rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo(" +
+            "bp.id, " +
+            "bp.name, " +
+            "bp.price, " +
+            "bp.mainThumbnailImage, " +
+            "bp.subThumbnailImage," +
+            "bp.isEventProduct, " +
+            "bp.discount, " +
+            "bp.displayOrder, " +
+            "bp.visible) " +
+            "from BundleProduct bp " +
+            "WHERE bp.bundle.id = :id")
+    List<SimpleProductInfo> getBundleProductInfosByBundleId(@Param("id") Long id);
+
 }
