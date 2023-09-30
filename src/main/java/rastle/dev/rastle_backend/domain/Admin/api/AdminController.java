@@ -202,7 +202,7 @@ public class AdminController {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.createEvent(createRequest)));
         }
 
-        @Operation(summary = "이벤트 이미지 추가 API", description = "이벤트 이미지 추가 API입니다")
+        @Operation(summary = "이벤트 이미지 등록 API", description = "이벤트 이미지 등록 API입니다")
         @ApiResponse(responseCode = "200", description = "추가 성공", content = @Content(schema = @Schema(implementation = EventInfo.class)))
         @FailApiResponses
         @PostMapping("/event/{id}/images")
@@ -223,7 +223,7 @@ public class AdminController {
         @Operation(summary = "이벤트 이미지 업데이트 API", description = "이벤트 이미지 업데이트 API입니다.")
         @ApiResponse(responseCode = "200", description = "업데이트 성공", content = @Content(schema = @Schema(implementation = EventInfo.class)))
         @FailApiResponses
-        @PatchMapping("/event/{id}/images")
+        @PutMapping("/event/{id}/images")
         public ResponseEntity<ServerResponse<?>> updateEventImage(@PathVariable("id") Long id,
                                                                   @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "등록할 이벤트 이미지들") @RequestParam("images") List<MultipartFile> images) {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.updateEventImages(id, images)));
@@ -248,7 +248,7 @@ public class AdminController {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.createBundle(createRequest)));
         }
 
-        @Operation(summary = "상품 세트 이미지 추가 API", description = "상품 세트 이미지 추가 API입니다")
+        @Operation(summary = "상품 세트 이미지 등록 API", description = "상품 세트 이미지 등록 API입니다")
         @ApiResponse(responseCode = "200", description = "추가 성공", content = @Content(schema = @Schema(implementation = BundleInfo.class)))
         @FailApiResponses
         @PostMapping("/bundle/{id}/images")
@@ -271,7 +271,7 @@ public class AdminController {
         @Operation(summary = "상품 세트 이미지 업데이트 API", description = "상품 세트 이미지 업데이트 API입니다.")
         @ApiResponse(responseCode = "200", description = "업데이트 성공", content = @Content(schema = @Schema(implementation = BundleInfo.class)))
         @FailApiResponses
-        @PatchMapping("/bundle/{id}/images")
+        @PutMapping("/bundle/{id}/images")
         public ResponseEntity<ServerResponse<?>> updateBundleImage(@PathVariable("id") Long id,
                                                                   @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "등록할 상품 세트 이미지들") @RequestParam("images") List<MultipartFile> images) {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.updateBundleImages(id, images)));
