@@ -81,11 +81,11 @@ public class AdminService {
                 .orElseThrow(NotFoundByIdException::new);
 
         if (createRequest.isEventCategory()) {
-            Event event = eventRepository.findById(createRequest.getMarketId()).orElseThrow(NotFoundByIdException::new);
+            Event event = eventRepository.findById(createRequest.getBundleId()).orElseThrow(NotFoundByIdException::new);
             EventProduct eventProduct = createRequest.toEventProduct(event, category);
             saved = eventProductRepository.save(eventProduct);
         } else {
-            Bundle bundle = bundleRepository.findById(createRequest.getMarketId())
+            Bundle bundle = bundleRepository.findById(createRequest.getBundleId())
                     .orElseThrow(NotFoundByIdException::new);
             BundleProduct bundleProduct = createRequest.toBundleProduct(bundle, category);
             saved = bundleProductRepository.save(bundleProduct);
