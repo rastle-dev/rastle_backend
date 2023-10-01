@@ -86,7 +86,7 @@ public class SecurityConfig {
                                                 .requestMatchers("/swagger-ui/**").permitAll()
                                                 .requestMatchers("/v1/api-docs/**").permitAll()
                                                 .requestMatchers("/product/**").permitAll()
-                                                .requestMatchers("/market/**").permitAll()
+                                                .requestMatchers("/bundle/**").permitAll()
                                                 .requestMatchers("/event/**").permitAll()
                                                 .requestMatchers("/admin/**").hasRole("ADMIN")
                                                 .requestMatchers("/cart/**").hasRole("USER")
