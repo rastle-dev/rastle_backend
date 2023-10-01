@@ -2,6 +2,8 @@ package rastle.dev.rastle_backend.domain.Cart.api;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,9 +46,9 @@ public class CartController {
     @ApiResponse(responseCode = "200", description = "장바구니 상품 조회 성공", content = @Content(schema = @Schema(implementation = CartItemInfoDto.class)))
     @FailApiResponses
     @GetMapping
-    public ResponseEntity<ServerResponse<List<CartItemInfoDto>>> getCartItems() {
-        List<CartItemInfoDto> cartItems = cartService.getCartItems();
-        ServerResponse<List<CartItemInfoDto>> response = new ServerResponse<>(cartItems);
+    public ResponseEntity<ServerResponse<Page<CartItemInfoDto>>> getCartItems(Pageable pageable) {
+        Page<CartItemInfoDto> cartItems = cartService.getCartItems(pageable);
+        ServerResponse<Page<CartItemInfoDto>> response = new ServerResponse<>(cartItems);
         return ResponseEntity.ok(response);
     }
 
