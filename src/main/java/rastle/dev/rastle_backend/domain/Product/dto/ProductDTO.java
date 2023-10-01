@@ -76,7 +76,7 @@ public class ProductDTO {
         @Schema(description = "이벤트 인지 세트 상품인지", defaultValue = "10")
         boolean eventCategory;
         @Schema(description = "이벤트 혹은 세트아이디", defaultValue = "1")
-        Long marketId;
+        Long bundleId;
         @Schema(description = "카테고리 아이디", defaultValue = "2")
         Long categoryId;
         @Schema(description = "제품 색상, 사이즈 정세", defaultValue = "list of colorinfo")
