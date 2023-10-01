@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -82,24 +85,22 @@ public class CartService {
      * @return List<CartItemInfoDto>
      */
     @Transactional
-    public List<CartItemInfoDto> getCartItems() {
+    public Page<CartItemInfoDto> getCartItems(Pageable pageable) {
         Long memberId = SecurityUtil.getCurrentMemberId();
 
         Cart cart = cartRepository.findByMemberId(memberId).orElseThrow(() -> new NotFoundByIdException());
 
-        List<CartItemInfoDto> cartItems = cart.getCartProducts()
-                .stream()
-                .map(cp -> {
-                    CartItemInfoDto dto = CartItemInfoDto.builder()
-                            .productName(cp.getProduct().getName())
-                            .productPrice(cp.getProduct().getPrice())
-                            .color(cp.getColor())
-                            .size(cp.getSize())
-                            .count(cp.getCount())
-                            .build();
-                    return dto;
-                })
-                .collect(Collectors.toList());
+        Page<CartItemInfoDto> cartItems = new PageImpl<>(
+                cart.getCartProducts().stream()
+                        .map(cp -> CartItemInfoDto.builder()
+                                .productName(cp.getProduct().getName())
+                                .productPrice(cp.getProduct().getPrice())
+                                .color(cp.getColor())
+                                .size(cp.getSize())
+                                .count(cp.getCount())
+                                .build())
+                        .collect(Collectors.toList()),
+                pageable, cart.getCartProducts().size());
 
         return cartItems;
     }
