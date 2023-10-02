@@ -114,15 +114,7 @@ public class ProductDTO {
         }
 
         public ProductBase toProductBase(Category category) {
-            return ProductBase.builder()
-                    .name(name)
-                    .price(price)
-                    .category(category)
-                    .isEventProduct(false)
-                    .discount(discount)
-                    .displayOrder(displayOrder)
-                    .visible(visible)
-                    .build();
+            return new ProductBase(name, price, false, null, null, discount, category, displayOrder, visible);
         }
 
     }
