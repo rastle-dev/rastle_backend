@@ -5,12 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import rastle.dev.rastle_backend.domain.Product.dto.BundleProductInfo;
-import rastle.dev.rastle_backend.domain.Product.dto.ColorInfo;
-import rastle.dev.rastle_backend.domain.Product.dto.EventProductInfo;
+import rastle.dev.rastle_backend.domain.Product.dto.*;
 import rastle.dev.rastle_backend.domain.Product.model.*;
 import rastle.dev.rastle_backend.domain.Product.repository.*;
-import rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo;
 import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -40,8 +37,12 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public SimpleProductInfo getProductDetail(Long id) {
-        return productBaseRepository.getProductInfoById(id);
+    public SimpleBundleOrEventProductInfo getProductDetail(Long id, Boolean isEvent) {
+        if (isEvent) {
+            return eventProductRepository.getEventProductInfoById(id).orElseThrow(NotFoundByIdException::new);
+        } else {
+            return bundleProductRepository.getBundleProductInfoById(id).orElseThrow(NotFoundByIdException::new);
+        }
     }
 
     @Transactional(readOnly = true)
