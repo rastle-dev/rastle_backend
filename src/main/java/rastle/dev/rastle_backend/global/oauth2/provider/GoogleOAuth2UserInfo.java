@@ -26,7 +26,12 @@ public class GoogleOAuth2UserInfo extends OAuth2UserInfo {
     }
 
     @Override
-    public String getProvider(){
+    public String getPhoneNumber() {
+        return null;
+    }
+
+    @Override
+    public String getProvider() {
         return UserLoginType.GOOGLE.toString();
     }
 
