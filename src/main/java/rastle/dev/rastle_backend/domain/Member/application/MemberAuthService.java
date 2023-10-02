@@ -25,6 +25,7 @@ import rastle.dev.rastle_backend.domain.Member.dto.MemberAuthDTO.SignUpDto;
 import rastle.dev.rastle_backend.domain.Member.model.Member;
 import rastle.dev.rastle_backend.domain.Member.repository.MemberRepository;
 import rastle.dev.rastle_backend.domain.Token.dto.TokenDTO.TokenInfoDTO;
+import rastle.dev.rastle_backend.global.error.exception.InvalidRequestException;
 import rastle.dev.rastle_backend.global.jwt.JwtTokenProvider;
 
 @Service
@@ -45,6 +46,9 @@ public class MemberAuthService {
      */
     @Transactional
     public SignUpDto signUp(SignUpDto signUpDto) {
+        if (isEmailDuplicated(signUpDto.getEmail())) {
+            throw new InvalidRequestException("이미 존재하는 이메일입니다.");
+        }
         signUpDto.encode(passwordEncoder);
         Member entity = signUpDto.toEntity();
         memberRepository.save(entity);
