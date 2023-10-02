@@ -2,8 +2,6 @@ package rastle.dev.rastle_backend.global.oauth2.application;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
@@ -47,12 +45,10 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         }
 
         private Member createUser(OAuth2UserInfo memberInfo, UserLoginType loginType) {
-                PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-                String encode = passwordEncoder.encode(memberInfo.getEmail());
                 Member member = Member.builder()
                                 .email(memberInfo.getEmail())
                                 .userName(memberInfo.getName())
-                                .password(encode)
+                                .phoneNumber(memberInfo.getPhoneNumber())
                                 .userLoginType(loginType)
                                 .authority(Authority.ROLE_USER)
                                 .build();

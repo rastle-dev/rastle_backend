@@ -26,6 +26,11 @@ public class NaverOAuth2UserInfo extends OAuth2UserInfo {
     }
 
     @Override
+    public String getPhoneNumber() {
+        return safelyGetString("mobile");
+    }
+
+    @Override
     public String getProvider() {
         return UserLoginType.NAVER.toString();
     }

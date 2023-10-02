@@ -28,6 +28,11 @@ public class KakaoOAuth2UserInfo extends OAuth2UserInfo {
     }
 
     @Override
+    public String getPhoneNumber() {
+        return safelyGetNestedString("kakao_account", "phone_number");
+    }
+
+    @Override
     public String getProvider() {
         return UserLoginType.KAKAO.toString();
     }
