@@ -2,6 +2,7 @@ package rastle.dev.rastle_backend.domain.Product.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.Category.model.Category;
@@ -57,6 +58,7 @@ public class ProductBase {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+    @Builder
     public ProductBase(String name, int price, boolean isEventProduct, String mainThumbnailImage, String subThumbnailImage, int discount, Category category, Long displayOrder, boolean visible) {
         this.name = name;
         this.price = price;
