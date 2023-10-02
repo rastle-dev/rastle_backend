@@ -45,7 +45,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
                     Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
                     User user = (User) authentication.getPrincipal();
-                    if (user.getUsername() != null && redisTemplate.hasKey(user.getUsername())) {
+                    if (user.getUsername() != null) {
                         log.info("memberId : " + user.getUsername());
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                     }
