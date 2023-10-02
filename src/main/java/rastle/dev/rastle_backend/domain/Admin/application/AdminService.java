@@ -34,6 +34,7 @@ import rastle.dev.rastle_backend.domain.Orders.model.Orders;
 import rastle.dev.rastle_backend.domain.Orders.repository.OrderRepository;
 import rastle.dev.rastle_backend.domain.Product.dto.ColorInfo;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO;
+import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductCreateRequest;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductCreateResult;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductUpdateRequest;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductImageInfo;
@@ -73,23 +74,29 @@ public class AdminService {
     // 상품 관련 서비스
     // ==============================================================================================================
     @Transactional
-    public ProductCreateResult createProduct(ProductDTO.ProductCreateRequest createRequest) {
+    public ProductCreateResult createProduct(ProductCreateRequest createRequest) {
         ProductBase saved;
         HashMap<String, Color> colorToSave = new HashMap<>();
         List<Size> sizeToSave = new ArrayList<>();
         Category category = categoryRepository.findById(createRequest.getCategoryId())
                 .orElseThrow(NotFoundByIdException::new);
+        if (createRequest.getBundleId() != null) {
+            if (createRequest.isEventCategory()) {
+                Event event = eventRepository.findById(createRequest.getBundleId()).orElseThrow(NotFoundByIdException::new);
+                EventProduct eventProduct = createRequest.toEventProduct(event, category);
+                saved = eventProductRepository.save(eventProduct);
+            } else {
+                Bundle bundle = bundleRepository.findById(createRequest.getBundleId())
+                        .orElseThrow(NotFoundByIdException::new);
+                BundleProduct bundleProduct = createRequest.toBundleProduct(bundle, category);
+                saved = bundleProductRepository.save(bundleProduct);
+            }
 
-        if (createRequest.isEventCategory()) {
-            Event event = eventRepository.findById(createRequest.getBundleId()).orElseThrow(NotFoundByIdException::new);
-            EventProduct eventProduct = createRequest.toEventProduct(event, category);
-            saved = eventProductRepository.save(eventProduct);
         } else {
-            Bundle bundle = bundleRepository.findById(createRequest.getBundleId())
-                    .orElseThrow(NotFoundByIdException::new);
-            BundleProduct bundleProduct = createRequest.toBundleProduct(bundle, category);
-            saved = bundleProductRepository.save(bundleProduct);
+            ProductBase productBase = createRequest.toProductBase(category);
+            saved = productBaseRepository.save(productBase);
         }
+
 
         setColorAndSize(createRequest.getColorAndSizes(), colorToSave, sizeToSave, saved);
         colorRepository.saveAll(colorToSave.values());
@@ -99,7 +106,7 @@ public class AdminService {
     }
 
     private ProductCreateResult toCreateResult(ProductBase saved,
-            ProductDTO.ProductCreateRequest createRequest) {
+            ProductCreateRequest createRequest) {
         return ProductCreateResult.builder()
                 .id(saved.getId())
                 .name(saved.getName())

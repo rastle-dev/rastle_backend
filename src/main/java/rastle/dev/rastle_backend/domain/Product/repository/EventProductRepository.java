@@ -33,7 +33,7 @@ public interface EventProductRepository extends JpaRepository<EventProduct, Long
                     "ep.visible) " +
                     "FROM EventProduct ep " +
                     "JOIN Event e ON e.id = ep.event.id " +
-                    "WHERE :lowerBound <= e.id AND e.id <= :upperBound"
+                    "WHERE :lowerBound <= e.id AND e.id <= :upperBound ORDER BY ep.displayOrder ASC"
     )
     List<EventProductInfo> getEventProducts(@Param("lowerBound") Long lowerBound, @Param("upperBound") Long upperBound);
     @Query(
@@ -57,7 +57,7 @@ public interface EventProductRepository extends JpaRepository<EventProduct, Long
                     "JOIN Event e ON e.id = ep.event.id " +
                     "WHERE e.visible = :visible AND " +
                     ":lowerBound <= e.id AND" +
-                    " e.id <= :upperBound"
+                    " e.id <= :upperBound ORDER BY ep.displayOrder ASC"
     )
     List<EventProductInfo> getEventProductByVisibility(@Param("visible") boolean visible, @Param("lowerBound") Long lowerBound, @Param("upperBound") Long upperBound);
     @Query("select new rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo(" +
@@ -71,6 +71,6 @@ public interface EventProductRepository extends JpaRepository<EventProduct, Long
             "ep.displayOrder, " +
             "ep.visible) " +
             "from EventProduct ep " +
-            "WHERE ep.event.id = :id")
+            "WHERE ep.event.id = :id ORDER BY ep.displayOrder ASC")
     List<SimpleProductInfo> getEventProductInfosByEventId(@Param("id") Long id);
 }

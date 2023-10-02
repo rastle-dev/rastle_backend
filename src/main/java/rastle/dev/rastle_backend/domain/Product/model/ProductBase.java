@@ -2,6 +2,7 @@ package rastle.dev.rastle_backend.domain.Product.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.Category.model.Category;
