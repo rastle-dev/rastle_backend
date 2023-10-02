@@ -25,7 +25,7 @@ public class SimpleProductInfo {
     @Schema(description = "이벤트 상품 여부", defaultValue = "false")
     boolean isEvent;
     @Schema(description = "할인율", defaultValue = "10")
-    int discount;
+    int discountPrice;
     @Schema(description = "상품 보여질 순서", defaultValue = "100")
     Long displayOrder;
     @Schema(description = "상품 보여질지 여부", defaultValue = "true")

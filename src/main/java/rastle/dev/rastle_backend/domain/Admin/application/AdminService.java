@@ -33,7 +33,6 @@ import rastle.dev.rastle_backend.domain.Member.repository.MemberRepository;
 import rastle.dev.rastle_backend.domain.Orders.model.Orders;
 import rastle.dev.rastle_backend.domain.Orders.repository.OrderRepository;
 import rastle.dev.rastle_backend.domain.Product.dto.ColorInfo;
-import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductCreateRequest;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductCreateResult;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductUpdateRequest;
@@ -114,7 +113,7 @@ public class AdminService {
                 .categoryId(createRequest.getCategoryId())
                 .colorAndSizes(createRequest.getColorAndSizes())
                 .price(saved.getPrice())
-                .discount(saved.getDiscount())
+                .discountPrice(saved.getDiscountPrice())
                 .displayOrder(saved.getDisplayOrder())
                 .visible(saved.isVisible())
                 .build();
@@ -210,8 +209,8 @@ public class AdminService {
         if (updateRequest.getVisible() != null) {
             productBase.setVisible(updateRequest.getVisible());
         }
-        if (updateRequest.getDiscount() != null) {
-            productBase.setDiscount(updateRequest.getDiscount());
+        if (updateRequest.getDiscountPrice() != null) {
+            productBase.setDiscountPrice(updateRequest.getDiscountPrice());
         }
         if (updateRequest.getDisplayOrder() != null) {
             productBase.setDisplayOrder(updateRequest.getDisplayOrder());

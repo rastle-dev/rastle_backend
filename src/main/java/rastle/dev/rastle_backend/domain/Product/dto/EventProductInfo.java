@@ -38,8 +38,8 @@ public class EventProductInfo {
     String mainThumbnail;
     @Schema(description = "서브 썸네일", defaultValue = "https://aws.~~~~")
     String subThumbnail;
-    @Schema(description = "할인율", defaultValue = "10")
-    int discount;
+    @Schema(description = "할인가격", defaultValue = "90000")
+    int discountPrice;
     @Schema(description = "상품 보여질 순서", defaultValue = "100")
     Long displayOrder;
     @Schema(description = "상품 보여질지 여부", defaultValue = "true")
