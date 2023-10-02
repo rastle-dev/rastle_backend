@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import rastle.dev.rastle_backend.domain.Cart.dto.CartDTO.CartItemInfoDto;
 import rastle.dev.rastle_backend.domain.Cart.dto.CartDTO.CreateCartItemDto;
+import rastle.dev.rastle_backend.domain.Cart.dto.CartDTO.DeleteCartItemDto;
 import rastle.dev.rastle_backend.domain.Cart.model.Cart;
 import rastle.dev.rastle_backend.domain.Cart.repository.CartProductRepository;
 import rastle.dev.rastle_backend.domain.Cart.repository.CartRepository;
@@ -27,121 +28,134 @@ import rastle.dev.rastle_backend.global.util.SecurityUtil;
 @Service
 @RequiredArgsConstructor
 public class CartService {
-    private final CartRepository cartRepository;
-    private final CartProductRepository cartProductRepository;
-    private final ProductBaseRepository productBaseRepository;
-    private final MemberRepository memberRepository;
+        private final CartRepository cartRepository;
+        private final CartProductRepository cartProductRepository;
+        private final ProductBaseRepository productBaseRepository;
+        private final MemberRepository memberRepository;
 
-    /**
-     * 장바구니에 상품 추가
-     * 
-     * @param cartItemInfoDto
-     * @return void
-     */
-    @Transactional
-    public void addToCart(CreateCartItemDto createCartItemDto) {
-        Long memberId = SecurityUtil.getCurrentMemberId();
+        /**
+         * 장바구니에 상품 추가
+         * 
+         * @param cartItemInfoDto
+         * @return void
+         */
+        @Transactional
+        public void addToCart(List<CreateCartItemDto> createCartItemDtos) {
+                Long memberId = SecurityUtil.getCurrentMemberId();
 
-        Optional<Cart> cartOptional = cartRepository.findByMemberId(memberId);
-        Cart cart = cartOptional.orElseGet(() -> {
-            Member member = memberRepository.findById(memberId)
-                    .orElseThrow(() -> new NotFoundByIdException());
-            return Cart.builder()
-                    .member(member)
-                    .build();
-        });
-        ProductBase product = productBaseRepository.findById(createCartItemDto.getProductId())
-                .orElseThrow(() -> new NotFoundByIdException());
+                Optional<Cart> cartOptional = cartRepository.findByMemberId(memberId);
+                Cart cart = cartOptional.orElseGet(() -> {
+                        Member member = memberRepository.findById(memberId)
+                                        .orElseThrow(() -> new NotFoundByIdException());
+                        return Cart.builder()
+                                        .member(member)
+                                        .build();
+                });
 
-        // 해당 상품이 장바구니에 이미 있는지 확인
-        Optional<CartProduct> existingCartProduct = cart.getCartProducts().stream()
-                .filter(cp -> cp.getProduct().getId().equals(createCartItemDto.getProductId()))
-                .findFirst();
+                for (CreateCartItemDto createCartItemDto : createCartItemDtos) {
+                        ProductBase product = productBaseRepository.findById(createCartItemDto.getProductId())
+                                        .orElseThrow(() -> new NotFoundByIdException());
 
-        if (existingCartProduct.isPresent()) {
-            // 장바구니에 이미 해당 상품이 있는 경우, 수량 업데이트
-            CartProduct cartProduct = existingCartProduct.get();
-            cartProduct.updateCount(createCartItemDto.getCount());
-            cartProductRepository.save(cartProduct);
-        } else {
-            // 장바구니에 해당 상품이 없는 경우, 새로운 CartProduct 생성
-            CartProduct cartProduct = CartProduct.builder()
-                    .count(createCartItemDto.getCount())
-                    .color(createCartItemDto.getColor())
-                    .size(createCartItemDto.getSize())
-                    .cart(cart)
-                    .product(product)
-                    .build();
-            // cart.getCartProducts().add(cartProduct);
-            cartProductRepository.save(cartProduct);
+                        // 해당 상품이 장바구니에 이미 있는지 확인
+                        Optional<CartProduct> existingCartProduct = cart.getCartProducts().stream()
+                                        .filter(cp -> cp.getProduct().getId().equals(createCartItemDto.getProductId())
+                                                        &&
+                                                        cp.getColor().equals(createCartItemDto.getColor()) &&
+                                                        cp.getSize().equals(createCartItemDto.getSize()))
+                                        .findFirst();
+
+                        if (existingCartProduct.isPresent()) {
+                                // 장바구니에 이미 해당 상품이 있는 경우, 수량 업데이트
+                                CartProduct cartProduct = existingCartProduct.get();
+                                cartProduct.updateCount(createCartItemDto.getCount());
+                                cartProductRepository.save(cartProduct);
+                        } else {
+                                // 장바구니에 해당 상품이 없는 경우, 새로운 CartProduct 생성
+                                CartProduct cartProduct = CartProduct.builder()
+                                                .count(createCartItemDto.getCount())
+                                                .color(createCartItemDto.getColor())
+                                                .size(createCartItemDto.getSize())
+                                                .cart(cart)
+                                                .product(product)
+                                                .build();
+                                cartProductRepository.save(cartProduct);
+                        }
+                }
+
+                cartRepository.save(cart);
         }
 
-        cartRepository.save(cart);
-    }
+        /*
+         * 장바구니 조회
+         * 
+         * @return List<CartItemInfoDto>
+         */
+        @Transactional
+        public Page<CartItemInfoDto> getCartItems(Pageable pageable) {
+                Long memberId = SecurityUtil.getCurrentMemberId();
 
-    /*
-     * 장바구니 조회
-     * 
-     * @return List<CartItemInfoDto>
-     */
-    @Transactional
-    public Page<CartItemInfoDto> getCartItems(Pageable pageable) {
-        Long memberId = SecurityUtil.getCurrentMemberId();
+                Cart cart = cartRepository.findByMemberId(memberId).orElseThrow(() -> new NotFoundByIdException());
 
-        Cart cart = cartRepository.findByMemberId(memberId).orElseThrow(() -> new NotFoundByIdException());
+                Page<CartItemInfoDto> cartItems = new PageImpl<>(
+                                cart.getCartProducts().stream()
+                                                .map(cp -> CartItemInfoDto.builder()
+                                                                .productName(cp.getProduct().getName())
+                                                                .productPrice(cp.getProduct().getPrice())
+                                                                .color(cp.getColor())
+                                                                .size(cp.getSize())
+                                                                .count(cp.getCount())
+                                                                .build())
+                                                .collect(Collectors.toList()),
+                                pageable, cart.getCartProducts().size());
 
-        Page<CartItemInfoDto> cartItems = new PageImpl<>(
-                cart.getCartProducts().stream()
-                        .map(cp -> CartItemInfoDto.builder()
-                                .productName(cp.getProduct().getName())
-                                .productPrice(cp.getProduct().getPrice())
-                                .color(cp.getColor())
-                                .size(cp.getSize())
-                                .count(cp.getCount())
-                                .build())
-                        .collect(Collectors.toList()),
-                pageable, cart.getCartProducts().size());
+                return cartItems;
+        }
 
-        return cartItems;
-    }
+        /*
+         * 장바구니에서 모든 상품 삭제
+         * 
+         * @return void
+         */
+        @Transactional
+        public void removeAllProducts() {
+                Long memberId = SecurityUtil.getCurrentMemberId();
 
-    /*
-     * 장바구니에서 모든 상품 삭제
-     * 
-     * @return void
-     */
-    @Transactional
-    public void removeAllProducts() {
-        Long memberId = SecurityUtil.getCurrentMemberId();
+                Cart cart = cartRepository.findByMemberId(memberId).orElseThrow(() -> new NotFoundByIdException());
 
-        Cart cart = cartRepository.findByMemberId(memberId).orElseThrow(() -> new NotFoundByIdException());
+                cart.getCartProducts().clear();
+                cartRepository.save(cart);
 
-        cart.getCartProducts().clear();
-        cartRepository.save(cart);
+                cartProductRepository.deleteAllByCart(cart);
+        }
 
-        cartProductRepository.deleteAllByCart(cart);
-    }
+        /**
+         * 장바구니에서 선택한 상품들 삭제
+         * 
+         * @param productIds
+         * @return void
+         */
+        @Transactional
+        public void removeSelectedProducts(List<DeleteCartItemDto> deleteCartItemDtos) {
+                Long memberId = SecurityUtil.getCurrentMemberId();
 
-    /**
-     * 장바구니에서 선택한 상품들 삭제
-     * 
-     * @param productIds
-     * @return void
-     */
-    @Transactional
-    public void removeSelectedProducts(List<Long> productIds) {
-        Long memberId = SecurityUtil.getCurrentMemberId();
+                Cart cart = cartRepository.findByMemberId(memberId).orElseThrow(() -> new NotFoundByIdException());
 
-        Cart cart = cartRepository.findByMemberId(memberId).orElseThrow(() -> new NotFoundByIdException());
+                for (DeleteCartItemDto deleteCartItemDto : deleteCartItemDtos) {
+                        Long productId = deleteCartItemDto.getProductId();
+                        String color = deleteCartItemDto.getColor();
+                        String size = deleteCartItemDto.getSize();
 
-        List<CartProduct> cartProductsToRemove = cart.getCartProducts()
-                .stream()
-                .filter(cp -> productIds.contains(cp.getProduct().getId()))
-                .collect(Collectors.toList());
+                        List<CartProduct> cartProductsToRemove = cart.getCartProducts()
+                                        .stream()
+                                        .filter(cp -> cp.getProduct().getId().equals(productId) &&
+                                                        cp.getColor().equals(color) &&
+                                                        cp.getSize().equals(size))
+                                        .collect(Collectors.toList());
 
-        cart.getCartProducts().removeAll(cartProductsToRemove);
-        cartRepository.save(cart);
+                        cart.getCartProducts().removeAll(cartProductsToRemove);
+                        cartProductRepository.deleteAll(cartProductsToRemove);
+                }
 
-        cartProductRepository.deleteAll(cartProductsToRemove);
-    }
+                cartRepository.save(cart);
+        }
 }
