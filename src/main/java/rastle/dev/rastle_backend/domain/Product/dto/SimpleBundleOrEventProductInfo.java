@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Builder
 @Schema(description = "전체 상품 조회 시 리턴 데이터")
-public class SimpleProductInfo {
+public class SimpleBundleOrEventProductInfo {
     @Schema(description = "상품 아이디", defaultValue = "0")
     Long id;
     @Schema(description = "상품 명", defaultValue = "멋있는 청바지")
@@ -32,4 +32,6 @@ public class SimpleProductInfo {
     boolean visible;
     @Schema(description = "상품 카테고리 아이디", defaultValue = "1")
     Long categoryId;
+    @Schema(description = "번들 혹은 이벤트 아이디", defaultValue = "2")
+    Long eventOrBundleId;
 }

@@ -75,8 +75,11 @@ public class ProductController {
     @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = SimpleProductInfo.class)))
     @FailApiResponses
     @GetMapping("/{id}/detail")
-    public ResponseEntity<ServerResponse<?>> getProductDetail(@PathVariable(name = "id") Long id) {
-        return ResponseEntity.ok(new ServerResponse<>(productService.getProductDetail(id)));
+    public ResponseEntity<ServerResponse<?>> getProductDetail(
+            @Parameter(name = "isEvent", description = "이벤트 상품인지 아닌지, 필수로 넘겨줘야함")
+            @RequestParam(value = "isEvent", required = true) Boolean isEvent,
+            @PathVariable(name = "id") Long id) {
+        return ResponseEntity.ok(new ServerResponse<>(productService.getProductDetail(id, isEvent)));
     }
 
     @Operation(summary = "상품 색상 사이즈 조회 API", description = "상품 색상, 사이즈 조회 API입니다.")
