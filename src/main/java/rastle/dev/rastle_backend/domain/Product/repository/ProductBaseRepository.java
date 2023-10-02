@@ -17,7 +17,7 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
             "pb.mainThumbnailImage, " +
             "pb.subThumbnailImage," +
             "pb.isEventProduct, " +
-            "pb.discount, " +
+            "pb.discountPrice, " +
             "pb.displayOrder, " +
             "pb.visible) " +
             "from ProductBase pb ORDER BY pb.displayOrder ASC")
@@ -29,7 +29,7 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
             "pb.mainThumbnailImage, " +
             "pb.subThumbnailImage," +
             "pb.isEventProduct, " +
-            "pb.discount, " +
+            "pb.discountPrice, " +
             "pb.displayOrder, " +
             "pb.visible) " +
             "from ProductBase pb WHERE pb.visible = :visible ORDER BY pb.displayOrder ASC")
@@ -42,7 +42,7 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
             "pb.mainThumbnailImage, " +
             "pb.subThumbnailImage," +
             "pb.isEventProduct, " +
-            "pb.discount, " +
+            "pb.discountPrice, " +
             "pb.displayOrder, " +
             "pb.visible) " +
             "from ProductBase pb " +

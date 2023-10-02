@@ -28,7 +28,7 @@ public interface EventProductRepository extends JpaRepository<EventProduct, Long
                     "ep.price, " +
                     "ep.mainThumbnailImage, " +
                     "ep.subThumbnailImage, " +
-                    "ep.discount, " +
+                    "ep.discountPrice, " +
                     "ep.displayOrder, " +
                     "ep.visible) " +
                     "FROM EventProduct ep " +
@@ -50,7 +50,7 @@ public interface EventProductRepository extends JpaRepository<EventProduct, Long
                     "ep.price, " +
                     "ep.mainThumbnailImage, " +
                     "ep.subThumbnailImage, " +
-                    "ep.discount, " +
+                    "ep.discountPrice, " +
                     "ep.displayOrder, " +
                     "ep.visible) " +
                     "FROM EventProduct ep " +
@@ -67,7 +67,7 @@ public interface EventProductRepository extends JpaRepository<EventProduct, Long
             "ep.mainThumbnailImage, " +
             "ep.subThumbnailImage," +
             "ep.isEventProduct, " +
-            "ep.discount, " +
+            "ep.discountPrice, " +
             "ep.displayOrder, " +
             "ep.visible) " +
             "from EventProduct ep " +

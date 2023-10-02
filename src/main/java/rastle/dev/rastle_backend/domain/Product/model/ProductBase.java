@@ -2,7 +2,6 @@ package rastle.dev.rastle_backend.domain.Product.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.Category.model.Category;
@@ -26,7 +25,8 @@ public class ProductBase {
     private Long displayOrder;
     private String name;
     private int price;
-    private int discount;
+    @Column(name = "discount_price")
+    private int discountPrice;
     @Column(name = "is_event_product")
     private boolean isEventProduct;
 
@@ -58,13 +58,13 @@ public class ProductBase {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
-    public ProductBase(String name, int price, boolean isEventProduct, String mainThumbnailImage, String subThumbnailImage, int discount, Category category, Long displayOrder, boolean visible) {
+    public ProductBase(String name, int price, boolean isEventProduct, String mainThumbnailImage, String subThumbnailImage, int discountPrice, Category category, Long displayOrder, boolean visible) {
         this.name = name;
         this.price = price;
         this.isEventProduct = isEventProduct;
         this.mainThumbnailImage = mainThumbnailImage;
         this.subThumbnailImage = subThumbnailImage;
-        this.discount = discount;
+        this.discountPrice = discountPrice;
         this.category = category;
         this.displayOrder = displayOrder;
         this.visible = visible;
@@ -98,8 +98,8 @@ public class ProductBase {
         this.price = price;
     }
 
-    public void setDiscount(int discount) {
-        this.discount = discount;
+    public void setDiscountPrice(int discount) {
+        this.discountPrice = discount;
     }
 
     public void setEventProduct(boolean eventProduct) {

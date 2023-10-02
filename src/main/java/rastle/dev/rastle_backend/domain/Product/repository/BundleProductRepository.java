@@ -29,7 +29,7 @@ public interface BundleProductRepository extends JpaRepository<BundleProduct, Lo
                     "bp.price, " +
                     "bp.mainThumbnailImage, " +
                     "bp.subThumbnailImage, " +
-                    "bp.discount, " +
+                    "bp.discountPrice, " +
                     "bp.displayOrder, " +
                     "bp.visible) " +
                     "from BundleProduct bp " +
@@ -49,7 +49,7 @@ public interface BundleProductRepository extends JpaRepository<BundleProduct, Lo
                     "bp.price, " +
                     "bp.mainThumbnailImage, " +
                     "bp.subThumbnailImage, " +
-                    "bp.discount, " +
+                    "bp.discountPrice, " +
                     "bp.displayOrder, " +
                     "bp.visible) " +
                     "from BundleProduct bp " +
@@ -64,7 +64,7 @@ public interface BundleProductRepository extends JpaRepository<BundleProduct, Lo
             "bp.mainThumbnailImage, " +
             "bp.subThumbnailImage," +
             "bp.isEventProduct, " +
-            "bp.discount, " +
+            "bp.discountPrice, " +
             "bp.displayOrder, " +
             "bp.visible) " +
             "from BundleProduct bp " +
