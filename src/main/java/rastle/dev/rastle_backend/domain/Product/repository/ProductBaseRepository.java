@@ -20,7 +20,7 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
             "pb.discount, " +
             "pb.displayOrder, " +
             "pb.visible) " +
-            "from ProductBase pb")
+            "from ProductBase pb ORDER BY pb.displayOrder ASC")
     Page<SimpleProductInfo> getProductInfos(Pageable pageable);
     @Query("select new rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo(" +
             "pb.id, " +
@@ -32,7 +32,7 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
             "pb.discount, " +
             "pb.displayOrder, " +
             "pb.visible) " +
-            "from ProductBase pb WHERE pb.visible = :visible")
+            "from ProductBase pb WHERE pb.visible = :visible ORDER BY pb.displayOrder ASC")
     Page<SimpleProductInfo> getProductInfosByVisibility(@Param("visible") boolean visible, Pageable pageable);
 
     @Query("select new rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo(" +

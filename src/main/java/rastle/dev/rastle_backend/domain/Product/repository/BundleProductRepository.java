@@ -33,7 +33,7 @@ public interface BundleProductRepository extends JpaRepository<BundleProduct, Lo
                     "bp.displayOrder, " +
                     "bp.visible) " +
                     "from BundleProduct bp " +
-                    "join Bundle b on b.id = bp.bundle.id WHERE :lowerBound <= b.id AND b.id <= :upperBound"
+                    "join Bundle b on b.id = bp.bundle.id WHERE :lowerBound <= b.id AND b.id <= :upperBound ORDER BY bp.displayOrder ASC"
     )
     List<BundleProductInfo> getBundleProducts(@Param("lowerBound") Long lowerBound, @Param("upperBound") Long upperBound);
     @Query(
@@ -53,7 +53,7 @@ public interface BundleProductRepository extends JpaRepository<BundleProduct, Lo
                     "bp.displayOrder, " +
                     "bp.visible) " +
                     "from BundleProduct bp " +
-                    "join Bundle b on b.id = bp.bundle.id WHERE b.visible = :visible and :lowerBound <= b.id AND b.id <= :upperBound"
+                    "join Bundle b on b.id = bp.bundle.id WHERE b.visible = :visible and :lowerBound <= b.id AND b.id <= :upperBound ORDER BY bp.displayOrder ASC"
     )
     List<BundleProductInfo> getBundleProductsByVisibility(@Param("visible") boolean visible, @Param("lowerBound") Long lowerBound, @Param("upperBound") Long upperBound);
 
@@ -68,7 +68,7 @@ public interface BundleProductRepository extends JpaRepository<BundleProduct, Lo
             "bp.displayOrder, " +
             "bp.visible) " +
             "from BundleProduct bp " +
-            "WHERE bp.bundle.id = :id")
+            "WHERE bp.bundle.id = :id ORDER BY bp.displayOrder ASC")
     List<SimpleProductInfo> getBundleProductInfosByBundleId(@Param("id") Long id);
 
 }
