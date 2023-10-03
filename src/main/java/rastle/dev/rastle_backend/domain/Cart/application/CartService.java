@@ -65,9 +65,10 @@ public class CartService {
                                         .findFirst();
 
                         if (existingCartProduct.isPresent()) {
-                                // 장바구니에 이미 해당 상품이 있는 경우, 수량 업데이트
+                                // 장바구니에 이미 해당 상품이 있는 경우, 수량 추가
                                 CartProduct cartProduct = existingCartProduct.get();
-                                cartProduct.updateCount(createCartItemDto.getCount());
+                                int updatedCount = cartProduct.getCount() + createCartItemDto.getCount();
+                                cartProduct.updateCount(updatedCount);
                                 cartProductRepository.save(cartProduct);
                         } else {
                                 // 장바구니에 해당 상품이 없는 경우, 새로운 CartProduct 생성
@@ -104,6 +105,8 @@ public class CartService {
                                                                 .color(cp.getColor())
                                                                 .size(cp.getSize())
                                                                 .count(cp.getCount())
+                                                                .mainThumbnailImage(
+                                                                                cp.getProduct().getMainThumbnailImage())
                                                                 .build())
                                                 .collect(Collectors.toList()),
                                 pageable, cart.getCartProducts().size());

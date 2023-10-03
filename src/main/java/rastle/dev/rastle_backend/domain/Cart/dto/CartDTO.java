@@ -40,6 +40,8 @@ public class CartDTO {
         private String size;
         @Schema(description = "장바구니 아이템 수량", type = "int", format = "count", example = "1")
         private int count;
+        @Schema(description = "장바구니 아이템 메인 썸네일 이미지", type = "string", format = "image", example = "image-url")
+        private String mainThumbnailImage;
     }
 
     @Builder
