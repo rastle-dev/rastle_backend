@@ -2,18 +2,15 @@ package rastle.dev.rastle_backend.domain.Cart.application;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import rastle.dev.rastle_backend.domain.Cart.dto.CartDTO.CartItemInfoDto;
-import rastle.dev.rastle_backend.domain.Cart.dto.CartDTO.CreateCartItemDto;
-import rastle.dev.rastle_backend.domain.Cart.dto.CartDTO.DeleteCartItemDto;
+import rastle.dev.rastle_backend.domain.Cart.dto.CartDTO.CartProductInfoDto;
+import rastle.dev.rastle_backend.domain.Cart.dto.CartDTO.CreateCartProductDto;
 import rastle.dev.rastle_backend.domain.Cart.model.Cart;
 import rastle.dev.rastle_backend.domain.Cart.repository.CartProductRepository;
 import rastle.dev.rastle_backend.domain.Cart.repository.CartRepository;
@@ -36,11 +33,11 @@ public class CartService {
         /**
          * 장바구니에 상품 추가
          * 
-         * @param cartItemInfoDto
+         * @param createCartProductDtos
          * @return void
          */
         @Transactional
-        public void addToCart(List<CreateCartItemDto> createCartItemDtos) {
+        public void addToCart(List<CreateCartProductDto> createCartProductDtos) {
                 Long memberId = SecurityUtil.getCurrentMemberId();
 
                 Optional<Cart> cartOptional = cartRepository.findByMemberId(memberId);
@@ -52,30 +49,31 @@ public class CartService {
                                         .build();
                 });
 
-                for (CreateCartItemDto createCartItemDto : createCartItemDtos) {
-                        ProductBase product = productBaseRepository.findById(createCartItemDto.getProductId())
+                for (CreateCartProductDto createCartProductDto : createCartProductDtos) {
+                        ProductBase product = productBaseRepository.findById(createCartProductDto.getProductId())
                                         .orElseThrow(() -> new NotFoundByIdException());
 
                         // 해당 상품이 장바구니에 이미 있는지 확인
                         Optional<CartProduct> existingCartProduct = cart.getCartProducts().stream()
-                                        .filter(cp -> cp.getProduct().getId().equals(createCartItemDto.getProductId())
+                                        .filter(cp -> cp.getProduct().getId()
+                                                        .equals(createCartProductDto.getProductId())
                                                         &&
-                                                        cp.getColor().equals(createCartItemDto.getColor()) &&
-                                                        cp.getSize().equals(createCartItemDto.getSize()))
+                                                        cp.getColor().equals(createCartProductDto.getColor()) &&
+                                                        cp.getSize().equals(createCartProductDto.getSize()))
                                         .findFirst();
 
                         if (existingCartProduct.isPresent()) {
-                                // 장바구니에 이미 해당 상품이 있는 경우, 수량 추가
+                                // 장바구니에 이미 해당 상품이 있는 경우, 수량 누적 업데이트
                                 CartProduct cartProduct = existingCartProduct.get();
-                                int updatedCount = cartProduct.getCount() + createCartItemDto.getCount();
+                                int updatedCount = cartProduct.getCount() + createCartProductDto.getCount();
                                 cartProduct.updateCount(updatedCount);
                                 cartProductRepository.save(cartProduct);
                         } else {
                                 // 장바구니에 해당 상품이 없는 경우, 새로운 CartProduct 생성
                                 CartProduct cartProduct = CartProduct.builder()
-                                                .count(createCartItemDto.getCount())
-                                                .color(createCartItemDto.getColor())
-                                                .size(createCartItemDto.getSize())
+                                                .count(createCartProductDto.getCount())
+                                                .color(createCartProductDto.getColor())
+                                                .size(createCartProductDto.getSize())
                                                 .cart(cart)
                                                 .product(product)
                                                 .build();
@@ -89,27 +87,13 @@ public class CartService {
         /*
          * 장바구니 조회
          * 
-         * @return List<CartItemInfoDto>
+         * @return List<CartProductInfoDto>
          */
         @Transactional
-        public Page<CartItemInfoDto> getCartItems(Pageable pageable) {
+        public Page<CartProductInfoDto> getCartProducts(Pageable pageable) {
                 Long memberId = SecurityUtil.getCurrentMemberId();
 
-                Cart cart = cartRepository.findByMemberId(memberId).orElseThrow(() -> new NotFoundByIdException());
-
-                Page<CartItemInfoDto> cartItems = new PageImpl<>(
-                                cart.getCartProducts().stream()
-                                                .map(cp -> CartItemInfoDto.builder()
-                                                                .productName(cp.getProduct().getName())
-                                                                .productPrice(cp.getProduct().getPrice())
-                                                                .color(cp.getColor())
-                                                                .size(cp.getSize())
-                                                                .count(cp.getCount())
-                                                                .mainThumbnailImage(
-                                                                                cp.getProduct().getMainThumbnailImage())
-                                                                .build())
-                                                .collect(Collectors.toList()),
-                                pageable, cart.getCartProducts().size());
+                Page<CartProductInfoDto> cartItems = cartProductRepository.getCartProducts(memberId, pageable);
 
                 return cartItems;
         }
@@ -134,31 +118,18 @@ public class CartService {
         /**
          * 장바구니에서 선택한 상품들 삭제
          * 
-         * @param productIds
+         * @param deleteCartProductIdList
          * @return void
          */
         @Transactional
-        public void removeSelectedProducts(List<DeleteCartItemDto> deleteCartItemDtos) {
+        public void removeSelectedProducts(List<Long> deleteCartProductIdList) {
                 Long memberId = SecurityUtil.getCurrentMemberId();
 
                 Cart cart = cartRepository.findByMemberId(memberId).orElseThrow(() -> new NotFoundByIdException());
 
-                for (DeleteCartItemDto deleteCartItemDto : deleteCartItemDtos) {
-                        Long productId = deleteCartItemDto.getProductId();
-                        String color = deleteCartItemDto.getColor();
-                        String size = deleteCartItemDto.getSize();
+                cart.getCartProducts().removeIf(cp -> deleteCartProductIdList.contains(cp.getId()));
 
-                        List<CartProduct> cartProductsToRemove = cart.getCartProducts()
-                                        .stream()
-                                        .filter(cp -> cp.getProduct().getId().equals(productId) &&
-                                                        cp.getColor().equals(color) &&
-                                                        cp.getSize().equals(size))
-                                        .collect(Collectors.toList());
-
-                        cart.getCartProducts().removeAll(cartProductsToRemove);
-                        cartProductRepository.deleteAll(cartProductsToRemove);
-                }
-
+                cartProductRepository.deleteByIdIn(deleteCartProductIdList);
                 cartRepository.save(cart);
         }
 }

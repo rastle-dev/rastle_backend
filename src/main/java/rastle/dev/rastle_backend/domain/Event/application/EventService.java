@@ -9,7 +9,6 @@ import rastle.dev.rastle_backend.domain.Event.dto.EventInfo;
 import rastle.dev.rastle_backend.domain.Event.repository.EventRepository;
 import rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo;
 import rastle.dev.rastle_backend.domain.Product.repository.EventProductRepository;
-import rastle.dev.rastle_backend.global.common.constants.CommonConstant;
 
 import java.util.List;
 
@@ -32,6 +31,7 @@ public class EventService {
             return eventRepository.getEventInfoByVisibility(false, pageable);
         }
     }
+
     @Transactional(readOnly = true)
     public List<SimpleProductInfo> getEventProducts(Long id) {
         return eventProductRepository.getEventProductInfosByEventId(id);
