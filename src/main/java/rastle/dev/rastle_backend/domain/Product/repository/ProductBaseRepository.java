@@ -5,8 +5,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import rastle.dev.rastle_backend.domain.Product.dto.SimpleBundleOrEventProductInfo;
 import rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo;
 import rastle.dev.rastle_backend.domain.Product.model.ProductBase;
+
+import java.util.Optional;
 
 public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> {
 
@@ -53,4 +56,19 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
     SimpleProductInfo getProductInfoById(@Param("id") Long id);
 
     boolean existsProductBaseByCategoryId(Long id);
+
+    @Query("select new rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo(" +
+            "p.id, " +
+            "p.name, " +
+            "p.price, " +
+            "p.mainThumbnailImage, " +
+            "p.subThumbnailImage," +
+            "p.isEventProduct, " +
+            "p.discountPrice, " +
+            "p.displayOrder, " +
+            "p.visible, " +
+            "p.category.id) " +
+            "from ProductBase p " +
+            "WHERE p.id = :id")
+    Optional<SimpleProductInfo> getInfoById(@Param("id") Long id);
 }

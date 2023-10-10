@@ -37,8 +37,10 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public SimpleBundleOrEventProductInfo getProductDetail(Long id, Boolean isEvent) {
-        if (isEvent) {
+    public SimpleProductInfo getProductDetail(Long id, Boolean isEvent) {
+        if (isEvent == null) {
+            return productBaseRepository.getProductInfoById(id);
+        } else if (isEvent) {
             return eventProductRepository.getEventProductInfoById(id).orElseThrow(NotFoundByIdException::new);
         } else {
             return bundleProductRepository.getBundleProductInfoById(id).orElseThrow(NotFoundByIdException::new);

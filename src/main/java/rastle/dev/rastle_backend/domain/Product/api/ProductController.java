@@ -77,7 +77,7 @@ public class ProductController {
     @GetMapping("/{id}/detail")
     public ResponseEntity<ServerResponse<?>> getProductDetail(
             @Parameter(name = "isEvent", description = "이벤트 상품인지 아닌지, 필수로 넘겨줘야함")
-            @RequestParam(value = "isEvent", required = true) Boolean isEvent,
+            @RequestParam(value = "isEvent", required = false) Boolean isEvent,
             @PathVariable(name = "id") Long id) {
         return ResponseEntity.ok(new ServerResponse<>(productService.getProductDetail(id, isEvent)));
     }
