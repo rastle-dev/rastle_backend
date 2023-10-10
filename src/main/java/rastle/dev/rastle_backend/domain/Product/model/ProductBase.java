@@ -2,9 +2,12 @@ package rastle.dev.rastle_backend.domain.Product.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import rastle.dev.rastle_backend.domain.Bundle.model.Bundle;
 import rastle.dev.rastle_backend.domain.Category.model.Category;
+import rastle.dev.rastle_backend.domain.Event.model.Event;
 import rastle.dev.rastle_backend.domain.Orders.model.OrderProduct;
 
 import java.util.ArrayList;
@@ -56,9 +59,18 @@ public class ProductBase {
     private List<CartProduct> cartProducts = new ArrayList<>();
 
     @ManyToOne
+    @JoinColumn(name = "bundle_id")
+    private Bundle bundle;
+
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    private Event event;
+
+    @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
-    public ProductBase(String name, int price, boolean isEventProduct, String mainThumbnailImage, String subThumbnailImage, int discountPrice, Category category, Long displayOrder, boolean visible) {
+    @Builder
+    public ProductBase(String name, int price, boolean isEventProduct, String mainThumbnailImage, String subThumbnailImage, int discountPrice, Category category, Long displayOrder, boolean visible, Bundle bundle, Event event) {
         this.name = name;
         this.price = price;
         this.isEventProduct = isEventProduct;
@@ -68,6 +80,8 @@ public class ProductBase {
         this.category = category;
         this.displayOrder = displayOrder;
         this.visible = visible;
+        this.bundle = bundle;
+        this.event = event;
     }
 
     public void setMainThumbnailImage(String mainThumbnailImage) {
@@ -116,5 +130,13 @@ public class ProductBase {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public void setBundle(Bundle bundle) {
+        this.bundle = bundle;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
     }
 }

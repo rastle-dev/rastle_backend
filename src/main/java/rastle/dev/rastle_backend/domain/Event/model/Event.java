@@ -9,7 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.Event.dto.EventInfo;
-import rastle.dev.rastle_backend.domain.Product.model.EventProduct;
+import rastle.dev.rastle_backend.domain.Product.model.ProductBase;
 
 @Entity
 @Getter
@@ -31,7 +31,7 @@ public class Event {
     private boolean visible;
 
     @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<EventProduct> eventProducts = new ArrayList<>();
+    private List<ProductBase> eventProducts = new ArrayList<>();
 
     @Builder
     public Event(String name, LocalDateTime eventStartDate, LocalDateTime eventEndDate, String imageUrls, String description, boolean visible) {
