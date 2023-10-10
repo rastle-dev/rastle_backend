@@ -27,7 +27,6 @@ public class ProductService {
     public Page<SimpleProductInfo> getProductInfos(String visible, Pageable pageable) {
         if (visible.equals(ALL)) {
             return productBaseRepository.getProductInfos(pageable);
-
         } else if (visible.equals(TRUE)) {
             return productBaseRepository.getProductInfosByVisibility(true, pageable);
         } else {
@@ -36,14 +35,8 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public SimpleProductInfo getProductDetail(Long id, Boolean isEvent) {
-        if (isEvent == null) {
-            return productBaseRepository.getProductInfoById(id);
-        } else if (isEvent) {
-            return eventProductRepository.getEventProductInfoById(id).orElseThrow(NotFoundByIdException::new);
-        } else {
-            return bundleProductRepository.getBundleProductInfoById(id).orElseThrow(NotFoundByIdException::new);
-        }
+    public SimpleProductInfo getProductDetail(Long id) {
+        return productBaseRepository.getProductInfoById(id).orElseThrow(NotFoundByIdException::new);
     }
 
     @Transactional(readOnly = true)

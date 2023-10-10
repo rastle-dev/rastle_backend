@@ -9,7 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.Bundle.dto.BundleInfo;
-import rastle.dev.rastle_backend.domain.Product.model.BundleProduct;
+import rastle.dev.rastle_backend.domain.Product.model.ProductBase;
 
 @Entity
 @Getter
@@ -29,7 +29,7 @@ public class Bundle {
     boolean visible;
 
     @OneToMany(mappedBy = "bundle", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<BundleProduct> bundleProducts = new ArrayList<>();
+    private List<ProductBase> bundleProducts = new ArrayList<>();
 
     @Builder
     public Bundle(String name, String imageUrls, String description, LocalDateTime saleStartTime, boolean visible) {

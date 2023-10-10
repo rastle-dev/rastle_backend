@@ -79,24 +79,18 @@ public class AdminService {
         List<Size> sizeToSave = new ArrayList<>();
         Category category = categoryRepository.findById(createRequest.getCategoryId())
                 .orElseThrow(NotFoundByIdException::new);
+        Bundle bundle = null;
+        Event event = null;
         if (createRequest.getBundleId() != null) {
-            if (createRequest.isEventCategory()) {
-                Event event = eventRepository.findById(createRequest.getBundleId()).orElseThrow(NotFoundByIdException::new);
-                EventProduct eventProduct = createRequest.toEventProduct(event, category);
-                saved = eventProductRepository.save(eventProduct);
-            } else {
-                Bundle bundle = bundleRepository.findById(createRequest.getBundleId())
-                        .orElseThrow(NotFoundByIdException::new);
-                BundleProduct bundleProduct = createRequest.toBundleProduct(bundle, category);
-                saved = bundleProductRepository.save(bundleProduct);
-            }
-
-        } else {
-            ProductBase productBase = createRequest.toProductBase(category);
-            saved = productBaseRepository.save(productBase);
+            bundle = bundleRepository.findById(createRequest.getBundleId())
+                    .orElseThrow(NotFoundByIdException::new);
         }
 
-
+        if (createRequest.getEventId() != null) {
+            event = eventRepository.findById(createRequest.getEventId()).orElseThrow(NotFoundByIdException::new);
+        }
+        ProductBase productBase = createRequest.toProductBase(category, bundle, event);
+        saved = productBaseRepository.save(productBase);
         setColorAndSize(createRequest.getColorAndSizes(), colorToSave, sizeToSave, saved);
         colorRepository.saveAll(colorToSave.values());
         sizeRepository.saveAll(sizeToSave);
@@ -189,23 +183,8 @@ public class AdminService {
     }
 
     @Transactional
-    public ProductUpdateRequest updateProductInfo(Long id, ProductUpdateRequest updateRequest, Boolean isEvent) {
-        ProductBase productBase;
-        if (updateRequest.getMarketOrBundleId() != null) {
-            if (isEvent) {
-                EventProduct eventProduct = eventProductRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-                Event event = eventRepository.findById(updateRequest.getMarketOrBundleId()).orElseThrow(NotFoundByIdException::new);
-                eventProduct.setEvent(event);
-                productBase = eventProduct;
-            } else {
-                BundleProduct bundleProduct = bundleProductRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-                Bundle bundle = bundleRepository.findById(updateRequest.getMarketOrBundleId()).orElseThrow(NotFoundByIdException::new);
-                bundleProduct.setBundle(bundle);
-                productBase = bundleProduct;
-            }
-        } else {
-            productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        }
+    public ProductUpdateRequest updateProductInfo(Long id, ProductUpdateRequest updateRequest) {
+        ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         if (updateRequest.getVisible() != null) {
             productBase.setVisible(updateRequest.getVisible());
         }
@@ -236,6 +215,14 @@ public class AdminService {
         }
         if (updateRequest.getName() != null) {
             productBase.setName(updateRequest.getName());
+        }
+        if (updateRequest.getBundleId() != null) {
+            Bundle bundle = bundleRepository.findById(updateRequest.getBundleId()).orElseThrow(NotFoundByIdException::new);
+            productBase.setBundle(bundle);
+        }
+        if (updateRequest.getEventId() != null) {
+            Event event = eventRepository.findById(updateRequest.getEventId()).orElseThrow(NotFoundByIdException::new);
+            productBase.setEvent(event);
         }
 
         return updateRequest;

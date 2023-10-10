@@ -104,13 +104,12 @@ public class AdminController {
         @GetExecutionTime
         @PatchMapping("/product/{id}")
         public ResponseEntity<ServerResponse<?>> updateProductInfo(@PathVariable("id") Long id,
-                                                                   @Parameter(name = "isEvent", description = "true or false로 무조건 보내줘야함, 이벤트 상품이면 true", required = true, example = "true")
-                                                                   @RequestParam(name = "isEvent") Boolean isEvent,
+
                                                                    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "가계부 업데이트 요청", content = @Content(schema = @Schema(implementation = ProductUpdateRequest.class)))
                                                                    @RequestBody Map<String, Object> updateMap) {
 
                 ProductUpdateRequest productUpdateRequest = objectMapper.convertValue(updateMap, ProductUpdateRequest.class);
-                return ResponseEntity.ok(new ServerResponse<>(adminService.updateProductInfo(id, productUpdateRequest, isEvent)));
+                return ResponseEntity.ok(new ServerResponse<>(adminService.updateProductInfo(id, productUpdateRequest)));
         }
 
         @Operation(summary = "상품 메인 썸네일 이미지 업데이트 API", description = "상품 메인 썸네일 이미지 업데이트 API입니다.")

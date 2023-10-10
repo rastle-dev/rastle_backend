@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.Bundle.model.Bundle;
 import rastle.dev.rastle_backend.domain.Category.model.Category;
 import rastle.dev.rastle_backend.domain.Event.model.Event;
-import rastle.dev.rastle_backend.domain.Product.model.BundleProduct;
-import rastle.dev.rastle_backend.domain.Product.model.EventProduct;
 import rastle.dev.rastle_backend.domain.Product.model.ProductBase;
 
 import java.util.List;
@@ -27,8 +25,6 @@ public class ProductDTO {
         Integer price;
         @Schema(description = "할인가격", defaultValue = "90000")
         Integer discountPrice;
-        @Schema(description = "이벤트 혹은 세트아이디", defaultValue = "1")
-        Long marketOrBundleId;
         @Schema(description = "카테고리 아이디", defaultValue = "2")
         Long categoryId;
         @Schema(description = "제품 색상, 사이즈 정세", defaultValue = "list of colorinfo")
@@ -37,6 +33,10 @@ public class ProductDTO {
         Long displayOrder;
         @Schema(description = "상품 보여질지 여부", defaultValue = "true")
         Boolean visible;
+        @Schema(description = "이벤트 아이디", defaultValue = "1")
+        Long eventId;
+        @Schema(description = "번들 아이디", defaultValue = "1")
+        Long bundleId;
     }
 
 
@@ -74,10 +74,6 @@ public class ProductDTO {
         int price;
         @Schema(description = "할인가격", defaultValue = "90000")
         int discountPrice;
-        @Schema(description = "이벤트 인지 세트 상품인지", defaultValue = "10")
-        boolean eventCategory;
-        @Schema(description = "이벤트 혹은 세트아이디", defaultValue = "1")
-        Long bundleId;
         @Schema(description = "카테고리 아이디", defaultValue = "2")
         Long categoryId;
         @Schema(description = "제품 색상, 사이즈 정세", defaultValue = "list of colorinfo")
@@ -86,35 +82,14 @@ public class ProductDTO {
         Long displayOrder;
         @Schema(description = "상품 보여질지 여부", defaultValue = "true")
         boolean visible;
+        @Schema(description = "번들아이디", defaultValue = "1")
+        Long bundleId;
+        @Schema(description = "이벤트아이디", defaultValue = "1")
+        Long eventId;
 
-        public EventProduct toEventProduct(Event event, Category category) {
-            return EventProduct.builder()
-                    .name(name)
-                    .price(price)
-                    .category(category)
-                    .isEventProduct(true)
-                    .discount(discountPrice)
-                    .displayOrder(displayOrder)
-                    .event(event)
-                    .visible(visible)
-                    .build();
-        }
 
-        public BundleProduct toBundleProduct(Bundle bundle, Category category) {
-            return BundleProduct.builder()
-                    .name(name)
-                    .price(price)
-                    .category(category)
-                    .isEventProduct(false)
-                    .discount(discountPrice)
-                    .bundle(bundle)
-                    .displayOrder(displayOrder)
-                    .visible(visible)
-                    .build();
-        }
-
-        public ProductBase toProductBase(Category category) {
-            return new ProductBase(name, price, false, null, null, discountPrice, category, displayOrder, visible);
+        public ProductBase toProductBase(Category category, Bundle bundle, Event event) {
+            return new ProductBase(name, price, false, null, null, discountPrice, category, displayOrder, visible, bundle, event);
         }
 
     }
