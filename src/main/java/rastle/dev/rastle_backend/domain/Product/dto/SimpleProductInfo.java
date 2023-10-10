@@ -7,11 +7,24 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
-@Builder
 @Schema(description = "전체 상품 조회 시 리턴 데이터")
 public class SimpleProductInfo {
+
+    @Builder
+    public SimpleProductInfo(Long id, String name, int price, String mainThumbnail, String subThumbnail, boolean isEvent, int discountPrice, Long displayOrder, boolean visible, Long categoryId) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.mainThumbnail = mainThumbnail;
+        this.subThumbnail = subThumbnail;
+        this.isEvent = isEvent;
+        this.discountPrice = discountPrice;
+        this.displayOrder = displayOrder;
+        this.visible = visible;
+        this.categoryId = categoryId;
+    }
+
     @Schema(description = "상품 아이디", defaultValue = "0")
     Long id;
     @Schema(description = "상품 명", defaultValue = "멋있는 청바지")
