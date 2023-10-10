@@ -9,7 +9,6 @@ import rastle.dev.rastle_backend.domain.Product.dto.*;
 import rastle.dev.rastle_backend.domain.Product.model.*;
 import rastle.dev.rastle_backend.domain.Product.repository.*;
 import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
-import java.time.LocalDateTime;
 import java.util.*;
 import static rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.*;
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstant.ALL;
@@ -71,7 +70,6 @@ public class ProductService {
             return bundleProductRepository.getBundleProductsByVisibility(false, lowerBound, upperBound);
         }
     }
-
 
     @Transactional(readOnly = true)
     public List<EventProductInfo> getEventProducts(String visible, Long lowerBound, Long upperBound) {
