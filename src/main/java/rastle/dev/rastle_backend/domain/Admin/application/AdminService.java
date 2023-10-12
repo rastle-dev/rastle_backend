@@ -95,12 +95,12 @@ public class AdminService {
         colorRepository.saveAll(colorToSave.values());
         sizeRepository.saveAll(sizeToSave);
 
-        return toCreateResult(saved, createRequest);
+        return toCreateResult(saved, createRequest, event, bundle);
     }
 
     private ProductCreateResult toCreateResult(ProductBase saved,
-            ProductCreateRequest createRequest) {
-        return ProductCreateResult.builder()
+                                               ProductCreateRequest createRequest, Event event, Bundle bundle) {
+        ProductCreateResult createResult = ProductCreateResult.builder()
                 .id(saved.getId())
                 .name(saved.getName())
                 .isEvent(saved.isEventProduct())
@@ -111,6 +111,13 @@ public class AdminService {
                 .displayOrder(saved.getDisplayOrder())
                 .visible(saved.isVisible())
                 .build();
+        if (event != null) {
+            createResult.setEventId(event.getId());
+        }
+        if (bundle != null) {
+            createResult.setBundleId(bundle.getId());
+        }
+        return createResult;
     }
 
     private void setColorAndSize(List<ColorInfo> colorInfos, HashMap<String, Color> colorToSave, List<Size> sizeToSave,

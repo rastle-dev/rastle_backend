@@ -130,6 +130,18 @@ public class ProductDTO {
         Long displayOrder;
         @Schema(description = "상품 보여질지 여부", defaultValue = "true")
         boolean visible;
+        @Schema(description = "번들 아이디", defaultValue = "1")
+        Long bundleId;
+        @Schema(description = "이벤트 아이디", defaultValue = "1")
+        Long eventId;
+
+        public void setBundleId(Long bundleId) {
+            this.bundleId = bundleId;
+        }
+
+        public void setEventId(Long eventId) {
+            this.eventId = eventId;
+        }
     }
 
 }
