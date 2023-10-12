@@ -25,8 +25,10 @@ public class S3Component {
     static final String IMAGE_PREFIX = "https://rastle-dev.s3.ap-northeast-2.amazonaws.com/";
 
     public void deleteImageByUrl(String imageUrl) {
+        if (imageUrl != null) {
+            amazonS3.deleteObject(bucket, getFileName(imageUrl));
+        }
 
-        amazonS3.deleteObject(bucket, getFileName(imageUrl));
     }
 
     private String getFileName(String url) {
