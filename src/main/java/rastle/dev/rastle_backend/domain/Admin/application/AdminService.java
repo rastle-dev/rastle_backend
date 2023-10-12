@@ -298,16 +298,19 @@ public class AdminService {
 
         s3Component.deleteImageByUrl(productBase.getMainThumbnailImage());
         s3Component.deleteImageByUrl(productBase.getSubThumbnailImage());
-        List<Image> detailImages = productBase.getDetailImage().getImages();
-        List<Image> mainImages = productBase.getMainImage().getImages();
-
-        for (Image image : detailImages) {
-            s3Component.deleteImageByUrl(image.getImageUrl());
+        if (productBase.getDetailImage() != null) {
+            List<Image> detailImages = productBase.getDetailImage().getImages();
+            for (Image image : detailImages) {
+                s3Component.deleteImageByUrl(image.getImageUrl());
+            }
+        }
+        if (productBase.getMainImage() != null) {
+            List<Image> mainImages = productBase.getMainImage().getImages();
+            for (Image image : mainImages) {
+                s3Component.deleteImageByUrl(image.getImageUrl());
+            }
         }
 
-        for (Image image : mainImages) {
-            s3Component.deleteImageByUrl(image.getImageUrl());
-        }
 
         productBaseRepository.delete(productBase);
         return "DELETED";
