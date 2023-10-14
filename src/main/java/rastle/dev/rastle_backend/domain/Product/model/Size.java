@@ -15,6 +15,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Table(name = "size", catalog = "rastle_db")
+/**
+ * 없앨 클래스
+ */
 public class Size {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
