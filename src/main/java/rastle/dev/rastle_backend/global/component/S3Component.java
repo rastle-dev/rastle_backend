@@ -3,6 +3,7 @@ package rastle.dev.rastle_backend.global.component;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class S3Component {
 
@@ -26,6 +28,7 @@ public class S3Component {
 
     public void deleteImageByUrl(String imageUrl) {
         if (imageUrl != null) {
+            log.info("delete file name " + getFileName(imageUrl));
             amazonS3.deleteObject(bucket, getFileName(imageUrl));
         }
 
