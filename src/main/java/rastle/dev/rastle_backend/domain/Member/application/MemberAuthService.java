@@ -95,6 +95,7 @@ public class MemberAuthService {
         Authentication authentication = authenticate(loginDto);
         TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authentication, response);
         HttpHeaders responseHeaders = createAuthorizationHeader(tokenInfoDTO.getAccessToken());
+        responseHeaders.add("Authority", authentication.getAuthorities().toString());
         return new ResponseEntity<>("로그인 성공", responseHeaders, HttpStatus.OK);
     }
 
