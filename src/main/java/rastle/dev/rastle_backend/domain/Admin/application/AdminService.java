@@ -37,6 +37,7 @@ import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductCreateRequ
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductCreateResult;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductUpdateRequest;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductImageInfo;
+import rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo;
 import rastle.dev.rastle_backend.domain.Product.model.*;
 import rastle.dev.rastle_backend.domain.Product.repository.*;
 import rastle.dev.rastle_backend.global.component.S3Component;
@@ -72,6 +73,23 @@ public class AdminService {
     // ==============================================================================================================
     // 상품 관련 서비스
     // ==============================================================================================================
+
+    @Transactional(readOnly = true)
+    public Page<SimpleProductInfo> getProductByBundleId(Long bundleId, Pageable pageable) {
+
+        return productBaseRepository.getProductInfoByBundleId(bundleId, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<SimpleProductInfo> getProductByEventId(Long eventId, Pageable pageable) {
+        return productBaseRepository.getProductInfoByEventId(eventId, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<SimpleProductInfo> getProductByCategoryId(Long categoryId, Pageable pageable) {
+        return productBaseRepository.getProductInfoByCategoryId(categoryId, pageable);
+    }
+
     @Transactional
     public ProductCreateResult createProduct(ProductCreateRequest createRequest) {
         ProductBase saved;

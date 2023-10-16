@@ -25,6 +25,7 @@ import rastle.dev.rastle_backend.domain.Event.dto.EventInfo;
 import rastle.dev.rastle_backend.domain.Bundle.dto.BundleDTO.BundleCreateRequest;
 import rastle.dev.rastle_backend.domain.Bundle.dto.BundleInfo;
 import rastle.dev.rastle_backend.domain.Member.dto.MemberDTO.MemberInfoDto;
+import rastle.dev.rastle_backend.domain.Product.dto.BundleProductInfo;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductUpdateRequest;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductImageInfo;
@@ -35,6 +36,8 @@ import rastle.dev.rastle_backend.global.response.ServerResponse;
 
 import java.util.List;
 import java.util.Map;
+
+import static rastle.dev.rastle_backend.global.common.constants.CommonConstant.ALL;
 
 @Tag(name = "관리자 기능 API", description = "관리자 기능 관련 API입니다.")
 @RestController
@@ -48,6 +51,32 @@ public class AdminController {
         // ==============================================================================================================
         // 상품 관련 API
         // ==============================================================================================================
+
+        @Operation(summary = "상품 세트에 속한 상품 조회 API", description = "상품 세트에 속한 상품 조회 API 입니다.")
+        @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = SimpleProductInfo.class)))
+        @FailApiResponses
+        @GetMapping("/bundle/{id}")
+        public ResponseEntity<ServerResponse<?>> getBundleProducts(@PathVariable("id") Long bundleId, Pageable pageable) {
+
+                return ResponseEntity.ok(new ServerResponse<>(adminService.getProductByBundleId(bundleId, pageable)));
+        }
+
+        @Operation(summary = "이벤트에 속한 상품 조회 API", description = "이벤트에 속한 상품 조회 API 입니다.")
+        @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = SimpleProductInfo.class)))
+        @FailApiResponses
+        @GetMapping("/event/{id}")
+        public ResponseEntity<ServerResponse<?>> getEventProducts(@PathVariable("id") Long eventId, Pageable pageable) {
+                return ResponseEntity.ok(new ServerResponse<>(adminService.getProductByEventId(eventId , pageable)));
+        }
+
+        @Operation(summary = "카테고리에 속한 상품 조회 API", description = "카테고리에 속한 상품 조회 API 입니다.")
+        @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = SimpleProductInfo.class)))
+        @FailApiResponses
+        @GetMapping("/category/{id}")
+        public ResponseEntity<ServerResponse<?>> getCategoryProducts(@PathVariable("id") Long categoryId, Pageable pageable) {
+                return ResponseEntity.ok(new ServerResponse<>(adminService.getProductByCategoryId(categoryId, pageable)));
+        }
+
         @Operation(summary = "상품 생성 API", description = "상품 생성 API입니다.")
         @ApiResponse(responseCode = "200", description = "생성 성공", content = @Content(schema = @Schema(implementation = SimpleProductInfo.class)))
         @FailApiResponses
