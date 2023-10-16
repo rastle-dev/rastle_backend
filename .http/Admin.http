@@ -1,5 +1,5 @@
 ### admin 로그인
-POST http://localhost:8080/auth/login
+POST https://rastledev.site/auth/login
 Content-Type: application/json
 
 {
