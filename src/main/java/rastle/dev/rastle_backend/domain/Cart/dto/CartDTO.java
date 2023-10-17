@@ -44,5 +44,7 @@ public class CartDTO {
         private int count;
         @Schema(description = "제품 메인 썸네일 이미지", type = "string", format = "image", example = "image-url")
         private String mainThumbnailImage;
+        @Schema(description = "제품 ID", type = "long", format = "id", example = "1")
+        private Long productId;
     }
 }
