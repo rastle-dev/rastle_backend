@@ -1,5 +1,5 @@
 ### 전체 상품 조회
-GET http://localhost:8080/product
+GET https://rastledev.site/product/event?lowerBound=0&upperBound=100
 
 ### 상품 상세 조회
 GET http://localhost:8080/product/50/detail

@@ -37,6 +37,7 @@ import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductCreateRequ
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductCreateResult;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductUpdateRequest;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductImageInfo;
+import rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo;
 import rastle.dev.rastle_backend.domain.Product.model.*;
 import rastle.dev.rastle_backend.domain.Product.repository.*;
 import rastle.dev.rastle_backend.global.component.S3Component;
@@ -72,6 +73,23 @@ public class AdminService {
     // ==============================================================================================================
     // 상품 관련 서비스
     // ==============================================================================================================
+
+    @Transactional(readOnly = true)
+    public Page<SimpleProductInfo> getProductByBundleId(Long bundleId, Pageable pageable) {
+
+        return productBaseRepository.getProductInfoByBundleId(bundleId, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<SimpleProductInfo> getProductByEventId(Long eventId, Pageable pageable) {
+        return productBaseRepository.getProductInfoByEventId(eventId, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<SimpleProductInfo> getProductByCategoryId(Long categoryId, Pageable pageable) {
+        return productBaseRepository.getProductInfoByCategoryId(categoryId, pageable);
+    }
+
     @Transactional
     public ProductCreateResult createProduct(ProductCreateRequest createRequest) {
         ProductBase saved;
@@ -95,15 +113,14 @@ public class AdminService {
         colorRepository.saveAll(colorToSave.values());
         sizeRepository.saveAll(sizeToSave);
 
-        return toCreateResult(saved, createRequest);
+        return toCreateResult(saved, createRequest, event, bundle);
     }
 
     private ProductCreateResult toCreateResult(ProductBase saved,
-            ProductCreateRequest createRequest) {
-        return ProductCreateResult.builder()
+                                               ProductCreateRequest createRequest, Event event, Bundle bundle) {
+        ProductCreateResult createResult = ProductCreateResult.builder()
                 .id(saved.getId())
                 .name(saved.getName())
-                .isEvent(saved.isEventProduct())
                 .categoryId(createRequest.getCategoryId())
                 .colorAndSizes(createRequest.getColorAndSizes())
                 .price(saved.getPrice())
@@ -111,6 +128,13 @@ public class AdminService {
                 .displayOrder(saved.getDisplayOrder())
                 .visible(saved.isVisible())
                 .build();
+        if (event != null) {
+            createResult.setEventId(event.getId());
+        }
+        if (bundle != null) {
+            createResult.setBundleId(bundle.getId());
+        }
+        return createResult;
     }
 
     private void setColorAndSize(List<ColorInfo> colorInfos, HashMap<String, Color> colorToSave, List<Size> sizeToSave,
@@ -275,7 +299,7 @@ public class AdminService {
         for (Image image : toDelete) {
             s3Component.deleteImageByUrl(image.getImageUrl());
         }
-
+        imageRepository.deleteAll(toDelete);
         List<Image> images = s3Component.uploadAndGetImageList(imageType,detailImages, detailImage);
         imageRepository.saveAll(images);
 
@@ -291,16 +315,19 @@ public class AdminService {
 
         s3Component.deleteImageByUrl(productBase.getMainThumbnailImage());
         s3Component.deleteImageByUrl(productBase.getSubThumbnailImage());
-        List<Image> detailImages = productBase.getDetailImage().getImages();
-        List<Image> mainImages = productBase.getMainImage().getImages();
-
-        for (Image image : detailImages) {
-            s3Component.deleteImageByUrl(image.getImageUrl());
+        if (productBase.getDetailImage() != null) {
+            List<Image> detailImages = productBase.getDetailImage().getImages();
+            for (Image image : detailImages) {
+                s3Component.deleteImageByUrl(image.getImageUrl());
+            }
+        }
+        if (productBase.getMainImage() != null) {
+            List<Image> mainImages = productBase.getMainImage().getImages();
+            for (Image image : mainImages) {
+                s3Component.deleteImageByUrl(image.getImageUrl());
+            }
         }
 
-        for (Image image : mainImages) {
-            s3Component.deleteImageByUrl(image.getImageUrl());
-        }
 
         productBaseRepository.delete(productBase);
         return "DELETED";

@@ -47,9 +47,18 @@ public class ProductService {
     @Transactional(readOnly = true)
     public ProductImages getProductImages(Long id) {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        List<String> mainImageUrls = null;
+        List<String> detailImageUrls = null;
+        if (productBase.getMainImage() != null) {
+            mainImageUrls = imageRepository.findImageUrlByProductImageId(productBase.getMainImage().getId());
+        }
+        if (productBase.getDetailImage() != null) {
+            detailImageUrls = imageRepository.findImageUrlByProductImageId(productBase.getDetailImage().getId());
+        }
+
         return ProductImages.builder()
-                .mainImages(imageRepository.findImageUrlByProductImageId(productBase.getMainImage().getId()))
-                .detailImages(imageRepository.findImageUrlByProductImageId(productBase.getDetailImage().getId()))
+                .mainImages(mainImageUrls)
+                .detailImages(detailImageUrls)
                 .build();
     }
 

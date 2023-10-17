@@ -11,6 +11,9 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @Table(name = "color", catalog = "rastle_db")
+/**
+ * 없앨 클래스
+ */
 public class Color {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
