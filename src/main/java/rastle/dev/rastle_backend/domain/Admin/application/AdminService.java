@@ -300,7 +300,7 @@ public class AdminService {
         for (Image image : toDelete) {
             s3Component.deleteImageByUrl(image.getImageUrl());
         }
-
+        imageRepository.deleteAll(toDelete);
         List<Image> images = s3Component.uploadAndGetImageList(imageType,detailImages, detailImage);
         imageRepository.saveAll(images);
 
