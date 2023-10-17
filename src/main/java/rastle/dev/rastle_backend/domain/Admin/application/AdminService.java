@@ -117,7 +117,7 @@ public class AdminService {
     }
 
     private ProductCreateResult toCreateResult(ProductBase saved,
-                                               ProductCreateRequest createRequest, Event event, Bundle bundle) {
+            ProductCreateRequest createRequest, Event event, Bundle bundle) {
         ProductCreateResult createResult = ProductCreateResult.builder()
                 .id(saved.getId())
                 .name(saved.getName())
@@ -161,7 +161,7 @@ public class AdminService {
     @Transactional
     public ProductImageInfo uploadSubThumbnail(Long id, MultipartFile subThumbnail) {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        String subThumbnailUrl = s3Component.uploadSingleImageToS3(SUB_THUMBNAIL,subThumbnail);
+        String subThumbnailUrl = s3Component.uploadSingleImageToS3(SUB_THUMBNAIL, subThumbnail);
         productBase.setSubThumbnailImage(subThumbnailUrl);
 
         return ProductImageInfo.builder()
@@ -219,7 +219,8 @@ public class AdminService {
             productBase.setDisplayOrder(updateRequest.getDisplayOrder());
         }
         if (updateRequest.getCategoryId() != null) {
-            Category category = categoryRepository.findById(updateRequest.getCategoryId()).orElseThrow(NotFoundByIdException::new);
+            Category category = categoryRepository.findById(updateRequest.getCategoryId())
+                    .orElseThrow(NotFoundByIdException::new);
             productBase.setCategory(category);
         }
         if (updateRequest.getColorAndSizes() != null) {
@@ -241,7 +242,8 @@ public class AdminService {
             productBase.setName(updateRequest.getName());
         }
         if (updateRequest.getBundleId() != null) {
-            Bundle bundle = bundleRepository.findById(updateRequest.getBundleId()).orElseThrow(NotFoundByIdException::new);
+            Bundle bundle = bundleRepository.findById(updateRequest.getBundleId())
+                    .orElseThrow(NotFoundByIdException::new);
             productBase.setBundle(bundle);
         }
         if (updateRequest.getEventId() != null) {
@@ -251,7 +253,6 @@ public class AdminService {
 
         return updateRequest;
     }
-
 
     @Transactional
     public ProductImageInfo updateMainThumbnail(Long id, MultipartFile mainThumbnail) {
@@ -295,12 +296,13 @@ public class AdminService {
         return updateImage(detailImages, productBase, toDelete, detailImage, DETAIL_IMAGE);
     }
 
-    private ProductImageInfo updateImage(List<MultipartFile> detailImages, ProductBase productBase, List<Image> toDelete, ProductImage detailImage, String imageType) {
+    private ProductImageInfo updateImage(List<MultipartFile> detailImages, ProductBase productBase,
+            List<Image> toDelete, ProductImage detailImage, String imageType) {
         for (Image image : toDelete) {
             s3Component.deleteImageByUrl(image.getImageUrl());
         }
         imageRepository.deleteAll(toDelete);
-        List<Image> images = s3Component.uploadAndGetImageList(imageType,detailImages, detailImage);
+        List<Image> images = s3Component.uploadAndGetImageList(imageType, detailImages, detailImage);
         imageRepository.saveAll(images);
 
         return ProductImageInfo.builder()
@@ -328,7 +330,6 @@ public class AdminService {
             }
         }
 
-
         productBaseRepository.delete(productBase);
         return "DELETED";
     }
@@ -351,7 +352,7 @@ public class AdminService {
 
     @Transactional
     public BundleInfo uploadBundleImages(Long id, List<MultipartFile> images) {
-        Bundle bundle =  bundleRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        Bundle bundle = bundleRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         String imageUrls = s3Component.uploadImagesAndGetString(BUNDLE_IMAGE, images);
         bundle.setImageUrls(imageUrls);
 
@@ -381,8 +382,7 @@ public class AdminService {
                     bundleUpdateRequest.getStartDate(),
                     bundleUpdateRequest.getStartHour(),
                     bundleUpdateRequest.getStartMinute(),
-                    bundleUpdateRequest.getStartSecond(
-                    )));
+                    bundleUpdateRequest.getStartSecond()));
         }
 
         return bundleUpdateRequest;
@@ -442,7 +442,6 @@ public class AdminService {
                 .build();
     }
 
-
     @Transactional
     public String deleteCategory(Long id) {
         if (productBaseRepository.existsProductBaseByCategoryId(id)) {
@@ -451,7 +450,6 @@ public class AdminService {
         categoryRepository.deleteById(id);
         return "DELETED";
     }
-
 
     // ==============================================================================================================
     // 이벤트 관련 서비스
@@ -473,7 +471,7 @@ public class AdminService {
 
     @Transactional
     public EventInfo uploadEventImages(Long id, List<MultipartFile> images) {
-        Event event =  eventRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        Event event = eventRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         String imageUrls = s3Component.uploadImagesAndGetString(EVENT_IMAGE, images);
         event.setImageUrls(imageUrls);
 
@@ -490,7 +488,7 @@ public class AdminService {
 
     @Transactional
     public EventUpdateRequest updateEvent(Long id, EventUpdateRequest eventUpdateRequest) {
-        Event event =  eventRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        Event event = eventRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         if (eventUpdateRequest.getVisible() != null) {
             event.setVisible(eventUpdateRequest.getVisible());
         }
@@ -505,16 +503,14 @@ public class AdminService {
                     eventUpdateRequest.getEndDate(),
                     eventUpdateRequest.getEndHour(),
                     eventUpdateRequest.getEndMinute(),
-                    eventUpdateRequest.getEndSecond()
-            ));
+                    eventUpdateRequest.getEndSecond()));
         }
         if (eventUpdateRequest.getStartDate() != null) {
             event.setEventStartDate(TimeUtil.convertStringToLocalDateTime(
                     eventUpdateRequest.getStartDate(),
                     eventUpdateRequest.getStartHour(),
                     eventUpdateRequest.getStartMinute(),
-                    eventUpdateRequest.getStartSecond(
-                    )));
+                    eventUpdateRequest.getStartSecond()));
         }
 
         return eventUpdateRequest;
@@ -522,7 +518,7 @@ public class AdminService {
 
     @Transactional
     public EventInfo updateEventImages(Long id, List<MultipartFile> images) {
-        Event event =  eventRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        Event event = eventRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         String[] imageUrls = event.getImageUrls().split(",");
         for (String image : imageUrls) {
             if (image.length() > 1) {
@@ -532,7 +528,6 @@ public class AdminService {
 
         String imageUrlString = s3Component.uploadImagesAndGetString(EVENT_IMAGE, images);
         event.setImageUrls(imageUrlString);
-
 
         return EventInfo.builder()
                 .id(event.getId())
