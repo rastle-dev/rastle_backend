@@ -138,4 +138,12 @@ public class MemberAuthController {
                 ServerResponse<String> serverResponse = new ServerResponse<>(result.getBody());
                 return new ResponseEntity<>(serverResponse, result.getHeaders(), result.getStatusCode());
         }
+
+        @Operation(summary = "회원 권한 조회 API", description = "회원 로그인 정보를 확인하여 해당 회원의 권한을 조회합니다.")
+        @ApiResponse(responseCode = "200", description = "true, 관리자 / false, 일반 회원", content = @Content(schema = @Schema(implementation = Boolean.class)))
+        @FailApiResponses
+        @GetMapping("/authority")
+        public ResponseEntity<ServerResponse<?>> isAdmin() {
+                return ResponseEntity.ok(new ServerResponse<>(MemberAuthService.isAdmin()));
+        }
 }
