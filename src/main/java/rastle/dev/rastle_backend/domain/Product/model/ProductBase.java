@@ -30,8 +30,6 @@ public class ProductBase {
     private int price;
     @Column(name = "discount_price")
     private int discountPrice;
-    @Column(name = "is_event_product")
-    private boolean isEventProduct;
 
     @Column(name = "main_thumbnail_image")
     private String mainThumbnailImage;
@@ -70,10 +68,9 @@ public class ProductBase {
     @JoinColumn(name = "category_id")
     private Category category;
     @Builder
-    public ProductBase(String name, int price, boolean isEventProduct, String mainThumbnailImage, String subThumbnailImage, int discountPrice, Category category, Long displayOrder, boolean visible, Bundle bundle, Event event) {
+    public ProductBase(String name, int price, String mainThumbnailImage, String subThumbnailImage, int discountPrice, Category category, Long displayOrder, boolean visible, Bundle bundle, Event event) {
         this.name = name;
         this.price = price;
-        this.isEventProduct = isEventProduct;
         this.mainThumbnailImage = mainThumbnailImage;
         this.subThumbnailImage = subThumbnailImage;
         this.discountPrice = discountPrice;
@@ -116,9 +113,6 @@ public class ProductBase {
         this.discountPrice = discount;
     }
 
-    public void setEventProduct(boolean eventProduct) {
-        isEventProduct = eventProduct;
-    }
 
     public void setColors(List<Color> colors) {
         this.colors = colors;

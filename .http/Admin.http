@@ -169,7 +169,7 @@ Content-Disposition: form-data; name="subThumbnail"; filename="thumbnail10.png"
 --WebAppBoundary--
 
 ### 상품 메인 이미지 등록
-POST http://localhost:8080/admin/product/16/mainImages
+POST https://rastledev.site/admin/product/60/mainImages
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 Authorization: {{auth_token}}
 
@@ -185,7 +185,39 @@ Content-Disposition: form-data; name="mainImages"; filename="thumbnail4.png"
 
 
 ### 상품 상세 이미지 등록
-POST http://localhost:8080/admin/product/16/detailImages
+POST https://rastledev.site/admin/product/60/detailImages
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+Authorization: {{auth_token}}
+
+--WebAppBoundary
+Content-Disposition: form-data; name="detailImages"; filename="thumbnail2.png"
+
+< img/thumbnail2.png
+--WebAppBoundary--
+Content-Disposition: form-data; name="detailImages"; filename="thumbnail1.png"
+
+< img/thumbnail1.png
+--WebAppBoundary--
+
+
+### 상품 메인 이미지 업데이트
+PUT https://rastledev.site/admin/product/60/mainImages
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+Authorization: {{auth_token}}
+
+--WebAppBoundary
+Content-Disposition: form-data; name="mainImages"; filename="thumbnail3.png"
+
+< img/thumbnail3.png
+--WebAppBoundary--
+Content-Disposition: form-data; name="mainImages"; filename="thumbnail4.png"
+
+< img/thumbnail4.png
+--WebAppBoundary--
+
+
+### 상품 상세 이미지 업데이트
+PUT https://rastledev.site/admin/product/60/detailImages
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 Authorization: {{auth_token}}
 
