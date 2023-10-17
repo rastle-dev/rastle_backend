@@ -121,7 +121,6 @@ public class AdminService {
         ProductCreateResult createResult = ProductCreateResult.builder()
                 .id(saved.getId())
                 .name(saved.getName())
-                .isEvent(saved.isEventProduct())
                 .categoryId(createRequest.getCategoryId())
                 .colorAndSizes(createRequest.getColorAndSizes())
                 .price(saved.getPrice())

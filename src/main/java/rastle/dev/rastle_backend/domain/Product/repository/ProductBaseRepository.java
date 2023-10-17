@@ -71,7 +71,7 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
             "pb.category.id, " +
             "pb.bundle.id, " +
             "pb.event.id) " +
-            "from ProductBase pb WHERE pb.event.id = :id ORDER BY pb.displayOrder ASC")
+            "from ProductBase pb WHERE pb.event.id = :id ORDER BY pb.displayOrder DESC")
     Page<SimpleProductInfo> getProductInfoByBundleId(@Param("id") Long id, Pageable pageable);
 
     @Query("select new rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo(" +
@@ -86,7 +86,7 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
             "pb.category.id, " +
             "pb.bundle.id, " +
             "pb.event.id) " +
-            "from ProductBase pb WHERE pb.category.id = :id ORDER BY pb.displayOrder ASC")
+            "from ProductBase pb WHERE pb.category.id = :id ORDER BY pb.displayOrder DESC")
     Page<SimpleProductInfo> getProductInfoByCategoryId(@Param("id") Long id, Pageable pageable);
 
     @Query("select new rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo(" +
@@ -101,7 +101,7 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
             "pb.category.id, " +
             "pb.bundle.id, " +
             "pb.event.id) " +
-            "from ProductBase pb WHERE pb.event.id = :id ORDER BY pb.displayOrder ASC")
+            "from ProductBase pb WHERE pb.event.id = :id ORDER BY pb.displayOrder DESC")
     Page<SimpleProductInfo> getProductInfoByEventId(@Param("id") Long id, Pageable pageable);
 
 }

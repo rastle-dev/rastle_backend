@@ -89,7 +89,7 @@ public class ProductDTO {
 
 
         public ProductBase toProductBase(Category category, Bundle bundle, Event event) {
-            return new ProductBase(name, price, false, null, null, discountPrice, category, displayOrder, visible, bundle, event);
+            return new ProductBase(name, price,  null, null, discountPrice, category, displayOrder, visible, bundle, event);
         }
 
     }
@@ -120,8 +120,6 @@ public class ProductDTO {
         int price;
         @Schema(description = "상품 할인가격", defaultValue = "90000")
         int discountPrice;
-        @Schema(description = "이벤트 상품 여부", defaultValue = "false")
-        boolean isEvent;
         @Schema(description = "이벤트 상품이면 이벤트 아이디, 마켓 상품이면 마켓 아이디", defaultValue = "2")
         Long categoryId;
         @Schema(description = "색상 & 사이즈 정보", defaultValue = "상품 색상 & 사이즈 정보")
