@@ -6,7 +6,7 @@ build/
 !**/src/test/**/build/
 
 .http/img
-
+.DS_Store
 ### config file
 
 src/main/resources/application.yml
