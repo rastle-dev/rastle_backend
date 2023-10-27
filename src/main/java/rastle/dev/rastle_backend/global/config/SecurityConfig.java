@@ -124,7 +124,7 @@ public class SecurityConfig {
                 CorsConfiguration configuration = new CorsConfiguration();
 
                 configuration.setAllowedOrigins(
-                                Arrays.asList("http://localhost:3000", "https://localhost:3000"));
+                                Arrays.asList("http://localhost:3000", "https://localhost:3000", "https://www.recordyslow.com", "https://recordyslow.com"));
                 configuration.setAllowedMethods(
                                 Arrays.asList("HEAD", "POST", "GET", "DELETE", "PUT", "OPTIONS", "PATCH"));
                 configuration.addAllowedHeader(("*"));
