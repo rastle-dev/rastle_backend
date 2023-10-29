@@ -3,20 +3,19 @@ POST https://rastledev.site/auth/signup
 Content-Type: application/json
 
 {
-  "email": "testest@email.com",
-  "password": "12341234",
+  "email": "testest2@email.com",
+  "password": "12341234@",
   "username": "qwerqwer",
-  "phoneNumber": "010-1234-1234"
+  "phoneNumber": "01012541534"
 }
 
 ### 멤버 로그인
 POST https://rastledev.site/auth/login
 Content-Type: application/json
-Authorization: {{auth_token}}
 
 {
-  "email": "testest@email.com",
-  "password": "12341234"
+  "email": "testest2@email.com",
+  "password": "12341234@"
 }
 
 > {% client.global.set("auth_token", response.headers.valueOf("Authorization")); %}
