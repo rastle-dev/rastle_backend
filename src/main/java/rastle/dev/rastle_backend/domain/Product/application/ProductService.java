@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rastle.dev.rastle_backend.domain.Product.dto.*;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductDetailInfo;
+import rastle.dev.rastle_backend.domain.Product.model.Color;
 import rastle.dev.rastle_backend.domain.Product.model.ProductColor;
 import rastle.dev.rastle_backend.domain.Product.model.ProductImage;
 import rastle.dev.rastle_backend.domain.Product.repository.*;
@@ -23,10 +24,10 @@ import static rastle.dev.rastle_backend.global.common.constants.CommonConstant.T
 public class ProductService {
     private final ObjectMapper objectMapper;
     private final ProductBaseRepository productBaseRepository;
-    private final ColorRepository colorRepository;
+//    private final ColorRepository colorRepository;
     private final BundleProductRepository bundleProductRepository;
     private final EventProductRepository eventProductRepository;
-    private final ImageRepository imageRepository;
+//    private final ImageRepository imageRepository;
 
     @Transactional(readOnly = true)
     public Page<SimpleProductInfo> getProductInfos(String visible, Pageable pageable) {
@@ -42,10 +43,21 @@ public class ProductService {
     @Transactional(readOnly = true)
     public ProductDetailInfo getProductDetail(Long id) throws JsonProcessingException {
         ProductInfo productInfo = productBaseRepository.getProductDetailInfoById(id).orElseThrow(NotFoundByIdException::new);
-        ProductColor productColor = objectMapper.readValue(productInfo.getProductColors(), ProductColor.class);
-        ProductImage mainImage = objectMapper.readValue(productInfo.getProductMainImages(), ProductImage.class);
-        ProductImage detailImage = objectMapper.readValue(productInfo.getProductDetailImages(), ProductImage.class);
-        return productInfo.toDetailInfo(productColor, mainImage, detailImage);
+        ProductColor color = null;
+        ProductImage mainImage = null, detailImage = null;
+        if (productInfo.getProductColors() != null) {
+
+            color = objectMapper.readValue(productInfo.getProductColors(), ProductColor.class);
+        }
+        if (productInfo.getProductMainImages() != null) {
+
+            mainImage = objectMapper.readValue(productInfo.getProductMainImages(), ProductImage.class);
+        }
+        if (productInfo.getProductDetailImages() != null) {
+
+            detailImage = objectMapper.readValue(productInfo.getProductDetailImages(), ProductImage.class);
+        }
+        return productInfo.toDetailInfo(color, mainImage, detailImage);
     }
 
 //    @Transactional(readOnly = true)

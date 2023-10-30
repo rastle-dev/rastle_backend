@@ -1,5 +1,5 @@
 ### admin 로그인
-POST https://rastledev.site/auth/login
+POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
@@ -123,25 +123,44 @@ Content-Type: application/json
 Authorization: {{auth_token}}
 
 {
-  "name": "상품10",
+  "name": "상품13",
   "price": 100000,
-  "discount": 10,
-  "eventCategory": true,
-  "marketId": 2,
-  "categoryId": 7,
-  "colorAndSizes": [
-    {
-      "color": "blue",
-      "size": "M",
-      "count": 1
-    },
-    {
-      "color": "blue",
-      "size":"L",
-      "count": 1
-    }
-  ],
-  "displayOrder": 1000
+  "discountPrice": 10,
+  "bundleId": 19,
+  "categoryId": 20,
+  "productColor": {
+    "productColors": [
+      {
+        "color": "blue",
+        "sizes": [
+          {
+            "size": "M",
+            "count": 1
+          },
+          {
+            "size": "L",
+            "count": 10
+          }
+        ]
+      },
+      {
+        "color": "red",
+        "sizes": [
+          {
+            "size": "M",
+            "count": 1
+          },
+          {
+            "size": "L",
+            "count": 10
+          }
+        ]
+      }
+
+    ]
+  },
+  "displayOrder": 1000,
+  "visible": true
 }
 
 

@@ -9,6 +9,7 @@ import rastle.dev.rastle_backend.domain.Bundle.model.Bundle;
 import rastle.dev.rastle_backend.domain.Category.model.Category;
 import rastle.dev.rastle_backend.domain.Event.model.Event;
 import rastle.dev.rastle_backend.domain.Product.model.ProductBase;
+import rastle.dev.rastle_backend.domain.Product.model.Color;
 import rastle.dev.rastle_backend.domain.Product.model.ProductColor;
 import rastle.dev.rastle_backend.domain.Product.model.ProductImage;
 
@@ -66,7 +67,7 @@ public class ProductDTO {
         @Schema(description = "카테고리 아이디", defaultValue = "2")
         Long categoryId;
         @Schema(description = "제품 색상, 사이즈 정세", defaultValue = "list of colorinfo")
-        List<ColorInfo> colorAndSizes;
+        ProductColor productColor;
         @Schema(description = "상품 보여질 순서", defaultValue = "1000")
         Long displayOrder;
         @Schema(description = "상품 보여질지 여부", defaultValue = "true")
@@ -94,7 +95,7 @@ public class ProductDTO {
         @Schema(description = "카테고리 아이디", defaultValue = "2")
         Long categoryId;
         @Schema(description = "제품 색상, 사이즈 정세", defaultValue = "list of colorinfo")
-        List<ColorInfo> colorAndSizes;
+        ProductColor productColor;
         @Schema(description = "상품 보여질 순서", defaultValue = "1000")
         Long displayOrder;
         @Schema(description = "상품 보여질지 여부", defaultValue = "true")
@@ -115,7 +116,7 @@ public class ProductDTO {
         @Schema(description = "카테고리 아이디", defaultValue = "2")
         Long categoryId;
         @Schema(description = "제품 색상, 사이즈 정세", defaultValue = "list of colorinfo")
-        List<ColorInfo> colorAndSizes;
+        ProductColor productColor;
         @Schema(description = "상품 보여질 순서", defaultValue = "1000")
         Long displayOrder;
         @Schema(description = "상품 보여질지 여부", defaultValue = "true")
@@ -161,7 +162,7 @@ public class ProductDTO {
         @Schema(description = "이벤트 상품이면 이벤트 아이디, 마켓 상품이면 마켓 아이디", defaultValue = "2")
         Long categoryId;
         @Schema(description = "색상 & 사이즈 정보", defaultValue = "상품 색상 & 사이즈 정보")
-        List<ColorInfo> colorAndSizes;
+        ProductColor productColor;
         @Schema(description = "상품 보여질 순서", defaultValue = "100")
         Long displayOrder;
         @Schema(description = "상품 보여질지 여부", defaultValue = "true")

@@ -12,10 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rastle.dev.rastle_backend.domain.Product.application.ProductService;
-import rastle.dev.rastle_backend.domain.Product.dto.BundleProductInfo;
-import rastle.dev.rastle_backend.domain.Product.dto.ColorInfo;
-import rastle.dev.rastle_backend.domain.Product.dto.EventProductInfo;
-import rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo;
+import rastle.dev.rastle_backend.domain.Product.dto.*;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductImages;
 import rastle.dev.rastle_backend.global.common.annotation.GetExecutionTime;
 import rastle.dev.rastle_backend.global.response.FailApiResponses;
@@ -66,7 +63,7 @@ public class ProductController {
     }
 
     @Operation(summary = "상품 상세 조회 API", description = "상품 상세 조회 API입니다.")
-    @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = SimpleProductInfo.class)))
+    @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = ProductDTO.ProductDetailInfo.class)))
     @FailApiResponses
     @GetMapping("/{id}/detail")
     public ResponseEntity<ServerResponse<?>> getProductDetail(

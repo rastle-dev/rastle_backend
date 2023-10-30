@@ -1,5 +1,6 @@
 package rastle.dev.rastle_backend.domain.Admin.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -81,7 +82,7 @@ public class AdminController {
         @GetExecutionTime
         @PostMapping("/product")
         public ResponseEntity<ServerResponse<?>> createProduct(
-                        @RequestBody ProductDTO.ProductCreateRequest createRequest) {
+                        @RequestBody ProductDTO.ProductCreateRequest createRequest) throws JsonProcessingException {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.createProduct(createRequest)));
         }
 
@@ -111,7 +112,7 @@ public class AdminController {
         @GetExecutionTime
         @PostMapping("/product/{id}/mainImages")
         public ResponseEntity<ServerResponse<?>> uploadMainImages(@PathVariable("id") Long id,
-                        @RequestParam("mainImages") List<MultipartFile> mainImages) {
+                        @RequestParam("mainImages") List<MultipartFile> mainImages) throws JsonProcessingException {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.uploadMainImages(id, mainImages)));
         }
 
@@ -121,7 +122,7 @@ public class AdminController {
         @GetExecutionTime
         @PostMapping("/product/{id}/detailImages")
         public ResponseEntity<ServerResponse<?>> uploadDetailImages(@PathVariable("id") Long id,
-                        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "등록할 상품 이미지들") @RequestParam("detailImages") List<MultipartFile> detailImages) {
+                        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "등록할 상품 이미지들") @RequestParam("detailImages") List<MultipartFile> detailImages) throws JsonProcessingException {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.uploadDetailImages(id, detailImages)));
         }
 
@@ -132,7 +133,7 @@ public class AdminController {
         @PatchMapping("/product/{id}")
         public ResponseEntity<ServerResponse<?>> updateProductInfo(@PathVariable("id") Long id,
 
-                        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "가계부 업데이트 요청", content = @Content(schema = @Schema(implementation = ProductUpdateRequest.class))) @RequestBody Map<String, Object> updateMap) {
+                        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "가계부 업데이트 요청", content = @Content(schema = @Schema(implementation = ProductUpdateRequest.class))) @RequestBody Map<String, Object> updateMap) throws JsonProcessingException {
 
                 ProductUpdateRequest productUpdateRequest = objectMapper.convertValue(updateMap,
                                 ProductUpdateRequest.class);
@@ -166,7 +167,7 @@ public class AdminController {
         @GetExecutionTime
         @PutMapping("/product/{id}/mainImages")
         public ResponseEntity<ServerResponse<?>> updateMainImages(@PathVariable("id") Long id,
-                        @RequestParam("mainImages") List<MultipartFile> mainImages) {
+                        @RequestParam("mainImages") List<MultipartFile> mainImages) throws JsonProcessingException {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.updateMainImages(id, mainImages)));
         }
 
@@ -176,7 +177,7 @@ public class AdminController {
         @GetExecutionTime
         @PutMapping("/product/{id}/detailImages")
         public ResponseEntity<ServerResponse<?>> updateDetailImages(@PathVariable("id") Long id,
-                        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "업데이트할 상품 이미지들") @RequestParam("detailImages") List<MultipartFile> detailImages) {
+                        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "업데이트할 상품 이미지들") @RequestParam("detailImages") List<MultipartFile> detailImages) throws JsonProcessingException {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.updateDetailImages(id, detailImages)));
         }
 

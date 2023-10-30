@@ -46,7 +46,7 @@ public class ProductBase {
     private List<CartProduct> cartProduct = new ArrayList<>();
     private boolean visible;
     @OneToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "product_image_id")
+    @JoinColumn(name = "product_detail_id")
     private ProductDetail productDetail;
 
 //    @OneToOne(cascade = CascadeType.REMOVE)

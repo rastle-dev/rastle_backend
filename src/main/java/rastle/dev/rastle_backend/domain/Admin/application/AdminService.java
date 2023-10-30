@@ -1,5 +1,7 @@
 package rastle.dev.rastle_backend.domain.Admin.application;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
@@ -32,7 +34,6 @@ import rastle.dev.rastle_backend.domain.Member.model.Member;
 import rastle.dev.rastle_backend.domain.Member.repository.MemberRepository;
 import rastle.dev.rastle_backend.domain.Orders.model.Orders;
 import rastle.dev.rastle_backend.domain.Orders.repository.OrderRepository;
-import rastle.dev.rastle_backend.domain.Product.dto.ColorInfo;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductCreateRequest;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductCreateResult;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductUpdateRequest;
@@ -44,8 +45,6 @@ import rastle.dev.rastle_backend.global.component.S3Component;
 import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
 import rastle.dev.rastle_backend.global.util.TimeUtil;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -56,17 +55,18 @@ import static rastle.dev.rastle_backend.global.common.constants.CommonConstant.*
 @Service
 @RequiredArgsConstructor
 public class AdminService {
+    private final ObjectMapper objectMapper;
     private final CategoryRepository categoryRepository;
     private final EventRepository eventRepository;
     private final EventProductRepository eventProductRepository;
     private final BundleRepository bundleRepository;
     private final BundleProductRepository bundleProductRepository;
-    private final ColorRepository colorRepository;
-    private final SizeRepository sizeRepository;
+//    private final ColorRepository colorRepository;
+//    private final SizeRepository sizeRepository;
     private final ProductBaseRepository productBaseRepository;
     private final S3Component s3Component;
     private final ProductDetailRepository productDetailRepository;
-    private final ImageRepository imageRepository;
+//    private final ImageRepository imageRepository;
     private final MemberRepository memberRepository;
     private final OrderRepository orderRepository;
 
@@ -91,10 +91,7 @@ public class AdminService {
     }
 
     @Transactional
-    public ProductCreateResult createProduct(ProductCreateRequest createRequest) {
-        ProductBase saved;
-        HashMap<String, Color> colorToSave = new HashMap<>();
-        List<Size> sizeToSave = new ArrayList<>();
+    public ProductCreateResult createProduct(ProductCreateRequest createRequest) throws JsonProcessingException {
         Category category = categoryRepository.findById(createRequest.getCategoryId())
                 .orElseThrow(NotFoundByIdException::new);
         Bundle bundle = null;
@@ -108,12 +105,11 @@ public class AdminService {
             event = eventRepository.findById(createRequest.getEventId()).orElseThrow(NotFoundByIdException::new);
         }
         ProductBase productBase = createRequest.toProductBase(category, bundle, event);
-        saved = productBaseRepository.save(productBase);
-        setColorAndSize(createRequest.getColorAndSizes(), colorToSave, sizeToSave, saved);
-        colorRepository.saveAll(colorToSave.values());
-        sizeRepository.saveAll(sizeToSave);
+        productBaseRepository.save(productBase);
+        ProductDetail productDetail = productDetailRepository.save(ProductDetail.builder().productColors(objectMapper.writeValueAsString(createRequest.getProductColor())).build());
+        productBase.setProductDetail(productDetail);
 
-        return toCreateResult(saved, createRequest, event, bundle);
+        return toCreateResult(productBase, createRequest, event, bundle);
     }
 
     private ProductCreateResult toCreateResult(ProductBase saved,
@@ -122,7 +118,7 @@ public class AdminService {
                 .id(saved.getId())
                 .name(saved.getName())
                 .categoryId(createRequest.getCategoryId())
-                .colorAndSizes(createRequest.getColorAndSizes())
+                .productColor(createRequest.getProductColor())
                 .price(saved.getPrice())
                 .discountPrice(saved.getDiscountPrice())
                 .displayOrder(saved.getDisplayOrder())
@@ -137,14 +133,6 @@ public class AdminService {
         return createResult;
     }
 
-    private void setColorAndSize(List<ColorInfo> colorInfos, HashMap<String, Color> colorToSave, List<Size> sizeToSave,
-            ProductBase saved) {
-        for (ColorInfo colorAndSize : colorInfos) {
-            Color color = colorToSave.getOrDefault(colorAndSize.getColor(), new Color(colorAndSize.getColor(), saved));
-            sizeToSave.add(new Size(colorAndSize.getSize(), colorAndSize.getCount(), color));
-            colorToSave.put(colorAndSize.getColor(), color);
-        }
-    }
 
     @Transactional
     public ProductImageInfo uploadMainThumbnail(Long id, MultipartFile mainThumbnail) {
@@ -171,44 +159,38 @@ public class AdminService {
     }
 
     @Transactional
-    public ProductImageInfo uploadMainImages(Long id, List<MultipartFile> mainImages) {
+    public ProductImageInfo uploadMainImages(Long id, List<MultipartFile> mainImages) throws JsonProcessingException {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        ProductDetail productDetail = productBase.getProductDetail();
 
-        ProductDetail mainImage = new ProductDetail();
-        productDetailRepository.save(mainImage);
-
-        productBase.setProductDetail(mainImage);
-
-        List<Image> images = s3Component.uploadAndGetImageList(MAIN_IMAGE, mainImages, mainImage);
-        imageRepository.saveAll(images);
+        ProductImage productImage = s3Component.uploadAndGetImageUrlList(MAIN_IMAGE, mainImages);
+        productDetail.setProductMainImages(objectMapper.writeValueAsString(productImage));
 
         return ProductImageInfo.builder()
                 .productBaseId(productBase.getId())
-                .imageUrls(images.stream().map(Image::getImageUrl).collect(Collectors.toList()))
+                .imageUrls(productImage.getImageUrls())
                 .build();
     }
 
     @Transactional
-    public ProductImageInfo uploadDetailImages(Long id, List<MultipartFile> detailImages) {
+    public ProductImageInfo uploadDetailImages(Long id, List<MultipartFile> detailImages) throws JsonProcessingException {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        ProductDetail productDetail = productBase.getProductDetail();
 
-        ProductDetail detailImage = new ProductDetail();
-        productDetailRepository.save(detailImage);
 
-        productBase.setDetailImage(detailImage);
-
-        List<Image> images = s3Component.uploadAndGetImageList(DETAIL_IMAGE, detailImages, detailImage);
-        imageRepository.saveAll(images);
+        ProductImage productImage = s3Component.uploadAndGetImageUrlList(DETAIL_IMAGE, detailImages);
+        productDetail.setProductDetailImages(objectMapper.writeValueAsString(productImage));
 
         return ProductImageInfo.builder()
                 .productBaseId(productBase.getId())
-                .imageUrls(images.stream().map(Image::getImageUrl).collect(Collectors.toList()))
+                .imageUrls(productImage.getImageUrls())
                 .build();
     }
 
     @Transactional
-    public ProductUpdateRequest updateProductInfo(Long id, ProductUpdateRequest updateRequest) {
+    public ProductUpdateRequest updateProductInfo(Long id, ProductUpdateRequest updateRequest) throws JsonProcessingException {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        ProductDetail productDetail = productBase.getProductDetail();
         if (updateRequest.getVisible() != null) {
             productBase.setVisible(updateRequest.getVisible());
         }
@@ -223,17 +205,19 @@ public class AdminService {
                     .orElseThrow(NotFoundByIdException::new);
             productBase.setCategory(category);
         }
-        if (updateRequest.getColorAndSizes() != null) {
-            List<Color> colors = productBase.getColors();
-            colorRepository.deleteAll(colors);
+        if (updateRequest.getProductColor() != null) {
+            productDetail.setProductColors(objectMapper.writeValueAsString(updateRequest.getProductColor()));
 
-            HashMap<String, Color> colorToSave = new HashMap<>();
-            List<Size> sizeToSave = new ArrayList<>();
-
-            setColorAndSize(updateRequest.getColorAndSizes(), colorToSave, sizeToSave, productBase);
-
-            colorRepository.saveAll(colorToSave.values());
-            sizeRepository.saveAll(sizeToSave);
+//            List<Color> colors = productBase.getColors();
+//            colorRepository.deleteAll(colors);
+//
+//            HashMap<String, Color> colorToSave = new HashMap<>();
+//            List<Size> sizeToSave = new ArrayList<>();
+//
+//            setColorAndSize(updateRequest.getColorAndSizes(), colorToSave, sizeToSave, productBase);
+//
+//            colorRepository.saveAll(colorToSave.values());
+//            sizeRepository.saveAll(sizeToSave);
         }
         if (updateRequest.getPrice() != null) {
             productBase.setPrice(updateRequest.getPrice());
@@ -281,56 +265,59 @@ public class AdminService {
     }
 
     @Transactional
-    public ProductImageInfo updateMainImages(Long id, List<MultipartFile> mainImages) {
+    public ProductImageInfo updateMainImages(Long id, List<MultipartFile> mainImages) throws JsonProcessingException {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        List<Image> toDelete = productBase.getProductDetail().getImages();
-        ProductDetail mainImage = productBase.getProductDetail();
-        return updateImage(mainImages, productBase, toDelete, mainImage, MAIN_IMAGE);
+        ProductDetail productDetail = productBase.getProductDetail();
+        ProductImage mainImage = objectMapper.convertValue(productDetail.getProductMainImages(), ProductImage.class);
+        return updateImage(mainImages, productBase, mainImage.getImageUrls(),productDetail, MAIN_IMAGE);
+
     }
 
     @Transactional
-    public ProductImageInfo updateDetailImages(Long id, List<MultipartFile> detailImages) {
+    public ProductImageInfo updateDetailImages(Long id, List<MultipartFile> detailImages) throws JsonProcessingException {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        List<Image> toDelete = productBase.getDetailImage().getImages();
-        ProductDetail detailImage = productBase.getDetailImage();
-        return updateImage(detailImages, productBase, toDelete, detailImage, DETAIL_IMAGE);
+        ProductDetail productDetail = productBase.getProductDetail();
+        ProductImage detailImage = objectMapper.convertValue(productDetail.getProductDetailImages(), ProductImage.class);
+        return updateImage(detailImages, productBase, detailImage.getImageUrls(),productDetail, DETAIL_IMAGE);
     }
 
     private ProductImageInfo updateImage(List<MultipartFile> detailImages, ProductBase productBase,
-                                         List<Image> toDelete, ProductDetail detailImage, String imageType) {
-        for (Image image : toDelete) {
-            s3Component.deleteImageByUrl(image.getImageUrl());
+                                         List<String> toDelete, ProductDetail productDetail, String imageType) throws JsonProcessingException {
+        for (String image : toDelete) {
+            s3Component.deleteImageByUrl(image);
         }
-        imageRepository.deleteAll(toDelete);
-        List<Image> images = s3Component.uploadAndGetImageList(imageType, detailImages, detailImage);
-        imageRepository.saveAll(images);
-
+//        imageRepository.deleteAll(toDelete);
+        ProductImage productImage = s3Component.uploadAndGetImageUrlList(imageType, detailImages);
+//        imageRepository.saveAll(images);
+        if (imageType.equals(MAIN_IMAGE)) {
+            productDetail.setProductMainImages(objectMapper.writeValueAsString(productImage));
+        }
+        if (imageType.equals(DETAIL_IMAGE)) {
+            productDetail.setProductDetailImages(objectMapper.writeValueAsString(productImage));
+        }
         return ProductImageInfo.builder()
                 .productBaseId(productBase.getId())
-                .imageUrls(images.stream().map(Image::getImageUrl).collect(Collectors.toList()))
+                .imageUrls(productImage.getImageUrls())
                 .build();
     }
 
     @Transactional
     public String deleteProduct(Long id) {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        ProductDetail productDetail = productBase.getProductDetail();
+        ProductImage mainImage = objectMapper.convertValue(productDetail.getProductMainImages(), ProductImage.class);
+        ProductImage detailImage = objectMapper.convertValue(productDetail.getProductDetailImages(), ProductImage.class);
 
         s3Component.deleteImageByUrl(productBase.getMainThumbnailImage());
         s3Component.deleteImageByUrl(productBase.getSubThumbnailImage());
-        if (productBase.getDetailImage() != null) {
-            List<Image> detailImages = productBase.getDetailImage().getImages();
-            for (Image image : detailImages) {
-                s3Component.deleteImageByUrl(image.getImageUrl());
-            }
+        for (String image : mainImage.getImageUrls()) {
+            s3Component.deleteImageByUrl(image);
         }
-        if (productBase.getProductDetail() != null) {
-            List<Image> mainImages = productBase.getProductDetail().getImages();
-            for (Image image : mainImages) {
-                s3Component.deleteImageByUrl(image.getImageUrl());
-            }
+        for (String image : detailImage.getImageUrls()) {
+            s3Component.deleteImageByUrl(image);
         }
-
         productBaseRepository.delete(productBase);
+
         return "DELETED";
     }
 

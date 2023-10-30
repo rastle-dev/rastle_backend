@@ -1,11 +1,11 @@
 package rastle.dev.rastle_backend.domain.Product.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductDetailInfo;
+import rastle.dev.rastle_backend.domain.Product.model.Color;
 import rastle.dev.rastle_backend.domain.Product.model.ProductColor;
 import rastle.dev.rastle_backend.domain.Product.model.ProductImage;
 
@@ -29,7 +29,7 @@ public class ProductInfo {
     String productDetailImages;
     String productColors;
 
-    public ProductDetailInfo toDetailInfo(ProductColor productColor, ProductImage mainImage, ProductImage detailImage) {
+    public ProductDetailInfo toDetailInfo(ProductColor color, ProductImage mainImage, ProductImage detailImage) {
         return ProductDetailInfo.builder()
                 .id(this.id)
                 .name(this.name)
@@ -44,7 +44,7 @@ public class ProductInfo {
                 .eventId(this.eventId)
                 .mainImage(mainImage)
                 .detailImage(detailImage)
-                .productColor(productColor)
+                .productColor(color)
                 .build();
     }
 
