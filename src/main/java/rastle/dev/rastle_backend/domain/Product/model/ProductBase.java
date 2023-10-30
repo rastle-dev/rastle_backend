@@ -46,12 +46,12 @@ public class ProductBase {
     private List<CartProduct> cartProduct = new ArrayList<>();
     private boolean visible;
     @OneToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "main_image_id")
-    private ProductImage mainImage;
+    @JoinColumn(name = "product_image_id")
+    private ProductImage productImage;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "detail_image_id")
-    private ProductImage detailImage;
+//    @OneToOne(cascade = CascadeType.REMOVE)
+//    @JoinColumn(name = "detail_image_id")
+//    private ProductImage detailImage;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<CartProduct> cartProducts = new ArrayList<>();
@@ -89,13 +89,13 @@ public class ProductBase {
         this.subThumbnailImage = subThumbnailImage;
     }
 
-    public void setMainImage(ProductImage mainImage) {
-        this.mainImage = mainImage;
+    public void setProductImage(ProductImage mainImage) {
+        this.productImage = mainImage;
     }
 
-    public void setDetailImage(ProductImage detailImage) {
-        this.detailImage = detailImage;
-    }
+//    public void setDetailImage(ProductImage detailImage) {
+//        this.detailImage = detailImage;
+//    }
 
     public void setDisplayOrder(Long displayOrder) {
         this.displayOrder = displayOrder;

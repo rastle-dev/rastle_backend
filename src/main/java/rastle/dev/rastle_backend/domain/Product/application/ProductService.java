@@ -49,8 +49,8 @@ public class ProductService {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         List<String> mainImageUrls = null;
         List<String> detailImageUrls = null;
-        if (productBase.getMainImage() != null) {
-            mainImageUrls = imageRepository.findImageUrlByProductImageId(productBase.getMainImage().getId());
+        if (productBase.getProductImage() != null) {
+            mainImageUrls = imageRepository.findImageUrlByProductImageId(productBase.getProductImage().getId());
         }
         if (productBase.getDetailImage() != null) {
             detailImageUrls = imageRepository.findImageUrlByProductImageId(productBase.getDetailImage().getId());

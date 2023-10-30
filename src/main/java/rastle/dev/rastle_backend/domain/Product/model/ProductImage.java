@@ -16,8 +16,9 @@ public class ProductImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_image_id")
     private Long id;
+    private String mainImageUrls;
+    private String detailImageUrls;
 
-
-    @OneToMany(mappedBy = "productImage", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<Image> images = new ArrayList<>();
+//    @OneToMany(mappedBy = "productImage", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+//    private List<Image> images = new ArrayList<>();
 }
