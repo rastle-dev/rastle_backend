@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import rastle.dev.rastle_backend.domain.Product.dto.ProductInfo;
 import rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo;
 import rastle.dev.rastle_backend.domain.Product.model.ProductBase;
 
@@ -41,7 +42,7 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
             "from ProductBase pb WHERE pb.visible = :visible AND pb.event.id = null ORDER BY pb.displayOrder ASC")
     Page<SimpleProductInfo> getProductInfosByVisibility(@Param("visible") boolean visible, Pageable pageable);
 
-    @Query("select new rastle.dev.rastle_backend.domain.Product.dto.SimpleProductInfo(" +
+    @Query("select new rastle.dev.rastle_backend.domain.Product.dto.ProductInfo(" +
             "pb.id, " +
             "pb.name, " +
             "pb.price, " +
@@ -52,10 +53,14 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
             "pb.visible, " +
             "pb.category.id, " +
             "pb.bundle.id, " +
-            "pb.event.id) " +
-            "from ProductBase pb " +
-            "where pb.id = :id and pb.event.id = null")
-    Optional<SimpleProductInfo> getProductInfoById(@Param("id") Long id);
+            "pb.event.id, " +
+            "pd.productMainImages, " +
+            "pd.productDetailImages, " +
+            "pd.productColors) " +
+            "FROM ProductBase pb  " +
+            "JOIN ProductDetail pd ON pb.productDetail.id = pd.id " +
+            "WHERE pb.id = :id")
+    Optional<ProductInfo> getProductDetailInfoById(@Param("id") Long id);
 
     boolean existsProductBaseByCategoryId(Long id);
 

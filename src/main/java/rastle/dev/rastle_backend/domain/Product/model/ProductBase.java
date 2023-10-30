@@ -36,8 +36,8 @@ public class ProductBase {
 
     @Column(name = "sub_thumbnail_image")
     private String subThumbnailImage;
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<Color> colors = new ArrayList<>();
+//    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+//    private List<Color> colors = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<OrderProduct> orderProducts = new ArrayList<>();
@@ -46,12 +46,12 @@ public class ProductBase {
     private List<CartProduct> cartProduct = new ArrayList<>();
     private boolean visible;
     @OneToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "main_image_id")
-    private ProductImage mainImage;
+    @JoinColumn(name = "product_detail_id")
+    private ProductDetail productDetail;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "detail_image_id")
-    private ProductImage detailImage;
+//    @OneToOne(cascade = CascadeType.REMOVE)
+//    @JoinColumn(name = "detail_image_id")
+//    private ProductImage detailImage;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<CartProduct> cartProducts = new ArrayList<>();
@@ -89,13 +89,13 @@ public class ProductBase {
         this.subThumbnailImage = subThumbnailImage;
     }
 
-    public void setMainImage(ProductImage mainImage) {
-        this.mainImage = mainImage;
+    public void setProductDetail(ProductDetail mainImage) {
+        this.productDetail = mainImage;
     }
 
-    public void setDetailImage(ProductImage detailImage) {
-        this.detailImage = detailImage;
-    }
+//    public void setDetailImage(ProductImage detailImage) {
+//        this.detailImage = detailImage;
+//    }
 
     public void setDisplayOrder(Long displayOrder) {
         this.displayOrder = displayOrder;
@@ -114,9 +114,9 @@ public class ProductBase {
     }
 
 
-    public void setColors(List<Color> colors) {
-        this.colors = colors;
-    }
+//    public void setColors(List<Color> colors) {
+//        this.colors = colors;
+//    }
 
     public void setVisible(boolean visible) {
         this.visible = visible;

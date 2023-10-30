@@ -1,7 +1,7 @@
 ### 전체 상품 조회
-GET https://rastledev.site/product
+GET http://localhost:8080/product
 
 ### 상품 상세 조회
-GET http://localhost:8080/product/50/detail
+GET http://localhost:8080/product/82/detail
 
 

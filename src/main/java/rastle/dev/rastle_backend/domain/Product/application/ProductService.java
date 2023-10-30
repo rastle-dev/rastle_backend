@@ -1,27 +1,33 @@
 package rastle.dev.rastle_backend.domain.Product.application;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rastle.dev.rastle_backend.domain.Product.dto.*;
-import rastle.dev.rastle_backend.domain.Product.model.*;
+import rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.ProductDetailInfo;
+import rastle.dev.rastle_backend.domain.Product.model.Color;
+import rastle.dev.rastle_backend.domain.Product.model.ProductColor;
+import rastle.dev.rastle_backend.domain.Product.model.ProductImage;
 import rastle.dev.rastle_backend.domain.Product.repository.*;
 import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
 import java.util.*;
-import static rastle.dev.rastle_backend.domain.Product.dto.ProductDTO.*;
+
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstant.ALL;
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstant.TRUE;
 
 @Service
 @RequiredArgsConstructor
 public class ProductService {
+    private final ObjectMapper objectMapper;
     private final ProductBaseRepository productBaseRepository;
-    private final ColorRepository colorRepository;
+//    private final ColorRepository colorRepository;
     private final BundleProductRepository bundleProductRepository;
     private final EventProductRepository eventProductRepository;
-    private final ImageRepository imageRepository;
+//    private final ImageRepository imageRepository;
 
     @Transactional(readOnly = true)
     public Page<SimpleProductInfo> getProductInfos(String visible, Pageable pageable) {
@@ -35,32 +41,47 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public SimpleProductInfo getProductDetail(Long id) {
-        return productBaseRepository.getProductInfoById(id).orElseThrow(NotFoundByIdException::new);
-    }
+    public ProductDetailInfo getProductDetail(Long id) throws JsonProcessingException {
+        ProductInfo productInfo = productBaseRepository.getProductDetailInfoById(id).orElseThrow(NotFoundByIdException::new);
+        ProductColor color = null;
+        ProductImage mainImage = null, detailImage = null;
+        if (productInfo.getProductColors() != null) {
 
-    @Transactional(readOnly = true)
-    public List<ColorInfo> getProductColors(Long id) {
-        return colorRepository.findColorInfoByProductId(id);
-    }
-
-    @Transactional(readOnly = true)
-    public ProductImages getProductImages(Long id) {
-        ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        List<String> mainImageUrls = null;
-        List<String> detailImageUrls = null;
-        if (productBase.getMainImage() != null) {
-            mainImageUrls = imageRepository.findImageUrlByProductImageId(productBase.getMainImage().getId());
+            color = objectMapper.readValue(productInfo.getProductColors(), ProductColor.class);
         }
-        if (productBase.getDetailImage() != null) {
-            detailImageUrls = imageRepository.findImageUrlByProductImageId(productBase.getDetailImage().getId());
-        }
+        if (productInfo.getProductMainImages() != null) {
 
-        return ProductImages.builder()
-                .mainImages(mainImageUrls)
-                .detailImages(detailImageUrls)
-                .build();
+            mainImage = objectMapper.readValue(productInfo.getProductMainImages(), ProductImage.class);
+        }
+        if (productInfo.getProductDetailImages() != null) {
+
+            detailImage = objectMapper.readValue(productInfo.getProductDetailImages(), ProductImage.class);
+        }
+        return productInfo.toDetailInfo(color, mainImage, detailImage);
     }
+
+//    @Transactional(readOnly = true)
+//    public List<ColorInfo> getProductColors(Long id) {
+//        return colorRepository.findColorInfoByProductId(id);
+//    }
+
+//    @Transactional(readOnly = true)
+//    public ProductImages getProductImages(Long id) {
+//        ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+//        List<String> mainImageUrls = null;
+//        List<String> detailImageUrls = null;
+//        if (productBase.getProductDetail() != null) {
+//            mainImageUrls = imageRepository.findImageUrlByProductImageId(productBase.getProductDetail().getId());
+//        }
+//        if (productBase.getDetailImage() != null) {
+//            detailImageUrls = imageRepository.findImageUrlByProductImageId(productBase.getDetailImage().getId());
+//        }
+//
+//        return ProductImages.builder()
+//                .mainImages(mainImageUrls)
+//                .detailImages(detailImageUrls)
+//                .build();
+//    }
 
     @Transactional(readOnly = true)
     public List<BundleProductInfo> getBundleProducts(String visible, Long lowerBound, Long upperBound) {

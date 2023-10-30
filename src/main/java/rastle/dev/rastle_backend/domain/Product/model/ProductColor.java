@@ -11,9 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(description = "상품 색상 & 사이즈 정보")
-public class Color {
-    @Schema(description = "상품 색상 정보", defaultValue = "color")
-    private String color;
-    @Schema(description = "상품 사이즈 정보")
-    private List<Size> sizes;
+public class ProductColor {
+    List<Color> productColors;
 }

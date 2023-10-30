@@ -1,23 +1,17 @@
 package rastle.dev.rastle_backend.domain.Product.model;
 
-import jakarta.persistence.*;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@Entity
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "product_image", catalog = "rastle_db")
+@Schema(description = "상품 이미지 정보")
 public class ProductImage {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "product_image_id")
-    private Long id;
-
-
-    @OneToMany(mappedBy = "productImage", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<Image> images = new ArrayList<>();
+    @Schema(description = "이미지 경로들", defaultValue = "url list")
+    List<String> imageUrls;
 }
