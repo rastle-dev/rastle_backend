@@ -28,6 +28,4 @@ public class ProductDetail {
         this.productDetailImages = productDetailImages;
         this.productColors = productColors;
     }
-    //    @OneToMany(mappedBy = "productImage", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-//    private List<Image> images = new ArrayList<>();
 }
