@@ -16,8 +16,11 @@ public class ProductDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_detail_id")
     private Long id;
+    @Column(name = "product_main_images")
     private String productMainImages;
+    @Column(name = "product_detail_images")
     private String productDetailImages;
+    @Column(name = "product_colors")
     private String productColors;
     @Builder
     public ProductDetail(String productMainImages, String productDetailImages, String productColors) {

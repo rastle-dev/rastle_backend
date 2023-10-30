@@ -1,5 +1,5 @@
 ### admin 로그인
-POST http://localhost:8080/auth/login
+POST https://rastledev.site/auth/login
 Content-Type: application/json
 
 {
@@ -118,12 +118,12 @@ Content-Disposition: form-data; name="images"; filename="event2.png"
 
 
 ### 상품 등록
-POST http://localhost:8080/admin/product
+POST https://rastledev.site/admin/product
 Content-Type: application/json
 Authorization: {{auth_token}}
 
 {
-  "name": "상품13",
+  "name": "상품1",
   "price": 100000,
   "discountPrice": 10,
   "bundleId": 19,
