@@ -36,8 +36,8 @@ public class ProductBase {
 
     @Column(name = "sub_thumbnail_image")
     private String subThumbnailImage;
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<Color> colors = new ArrayList<>();
+//    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+//    private List<Color> colors = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<OrderProduct> orderProducts = new ArrayList<>();
@@ -47,7 +47,7 @@ public class ProductBase {
     private boolean visible;
     @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "product_image_id")
-    private ProductImage productImage;
+    private ProductDetail productDetail;
 
 //    @OneToOne(cascade = CascadeType.REMOVE)
 //    @JoinColumn(name = "detail_image_id")
@@ -89,8 +89,8 @@ public class ProductBase {
         this.subThumbnailImage = subThumbnailImage;
     }
 
-    public void setProductImage(ProductImage mainImage) {
-        this.productImage = mainImage;
+    public void setProductDetail(ProductDetail mainImage) {
+        this.productDetail = mainImage;
     }
 
 //    public void setDetailImage(ProductImage detailImage) {
@@ -114,9 +114,9 @@ public class ProductBase {
     }
 
 
-    public void setColors(List<Color> colors) {
-        this.colors = colors;
-    }
+//    public void setColors(List<Color> colors) {
+//        this.colors = colors;
+//    }
 
     public void setVisible(boolean visible) {
         this.visible = visible;

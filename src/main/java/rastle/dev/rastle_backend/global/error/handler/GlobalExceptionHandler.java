@@ -1,5 +1,6 @@
 package rastle.dev.rastle_backend.global.error.handler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -81,6 +82,17 @@ public class GlobalExceptionHandler {
                                                 .message(builder.toString()).build(),
                                 CONFLICT);
 
+        }
+
+        @ExceptionHandler(JsonProcessingException.class)
+        protected final ResponseEntity<ErrorResponse> handleJsonException(
+                JsonProcessingException ex, WebRequest request
+        ) {
+                return new ResponseEntity<>(ErrorResponse.builder()
+                        .errorCode(409L)
+                        .message(ex.getMessage())
+                        .build(),
+                        CONFLICT);
         }
 
         @ExceptionHandler(S3ImageUploadException.class)

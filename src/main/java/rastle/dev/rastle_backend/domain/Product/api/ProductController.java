@@ -1,5 +1,6 @@
 package rastle.dev.rastle_backend.domain.Product.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -69,23 +70,23 @@ public class ProductController {
     @FailApiResponses
     @GetMapping("/{id}/detail")
     public ResponseEntity<ServerResponse<?>> getProductDetail(
-            @PathVariable(name = "id") Long id) {
+            @PathVariable(name = "id") Long id) throws JsonProcessingException {
         return ResponseEntity.ok(new ServerResponse<>(productService.getProductDetail(id)));
     }
 
-    @Operation(summary = "상품 색상 사이즈 조회 API", description = "상품 색상, 사이즈 조회 API입니다.")
-    @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = ColorInfo.class)))
-    @FailApiResponses
-    @GetMapping("/{id}/color")
-    public ResponseEntity<ServerResponse<?>> getProductColor(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(new ServerResponse<>(productService.getProductColors(id)));
-    }
-
-    @Operation(summary = "상품 이미지 조회 API", description = "상품 이미지 조회 API입니다.")
-    @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = ProductImages.class)))
-    @FailApiResponses
-    @GetMapping("/{id}/image")
-    public ResponseEntity<ServerResponse<?>> getProductImage(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(new ServerResponse<>(productService.getProductImages(id)));
-    }
+//    @Operation(summary = "상품 색상 사이즈 조회 API", description = "상품 색상, 사이즈 조회 API입니다.")
+//    @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = ColorInfo.class)))
+//    @FailApiResponses
+//    @GetMapping("/{id}/color")
+//    public ResponseEntity<ServerResponse<?>> getProductColor(@PathVariable("id") Long id) {
+//        return ResponseEntity.ok(new ServerResponse<>(productService.getProductColors(id)));
+//    }
+//
+//    @Operation(summary = "상품 이미지 조회 API", description = "상품 이미지 조회 API입니다.")
+//    @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = ProductImages.class)))
+//    @FailApiResponses
+//    @GetMapping("/{id}/image")
+//    public ResponseEntity<ServerResponse<?>> getProductImage(@PathVariable("id") Long id) {
+//        return ResponseEntity.ok(new ServerResponse<>(productService.getProductImages(id)));
+//    }
 }

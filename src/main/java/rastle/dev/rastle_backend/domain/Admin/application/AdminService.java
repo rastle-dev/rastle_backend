@@ -65,7 +65,7 @@ public class AdminService {
     private final SizeRepository sizeRepository;
     private final ProductBaseRepository productBaseRepository;
     private final S3Component s3Component;
-    private final ProductImageRepository productImageRepository;
+    private final ProductDetailRepository productDetailRepository;
     private final ImageRepository imageRepository;
     private final MemberRepository memberRepository;
     private final OrderRepository orderRepository;
@@ -174,10 +174,10 @@ public class AdminService {
     public ProductImageInfo uploadMainImages(Long id, List<MultipartFile> mainImages) {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
 
-        ProductImage mainImage = new ProductImage();
-        productImageRepository.save(mainImage);
+        ProductDetail mainImage = new ProductDetail();
+        productDetailRepository.save(mainImage);
 
-        productBase.setProductImage(mainImage);
+        productBase.setProductDetail(mainImage);
 
         List<Image> images = s3Component.uploadAndGetImageList(MAIN_IMAGE, mainImages, mainImage);
         imageRepository.saveAll(images);
@@ -192,8 +192,8 @@ public class AdminService {
     public ProductImageInfo uploadDetailImages(Long id, List<MultipartFile> detailImages) {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
 
-        ProductImage detailImage = new ProductImage();
-        productImageRepository.save(detailImage);
+        ProductDetail detailImage = new ProductDetail();
+        productDetailRepository.save(detailImage);
 
         productBase.setDetailImage(detailImage);
 
@@ -283,8 +283,8 @@ public class AdminService {
     @Transactional
     public ProductImageInfo updateMainImages(Long id, List<MultipartFile> mainImages) {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        List<Image> toDelete = productBase.getProductImage().getImages();
-        ProductImage mainImage = productBase.getProductImage();
+        List<Image> toDelete = productBase.getProductDetail().getImages();
+        ProductDetail mainImage = productBase.getProductDetail();
         return updateImage(mainImages, productBase, toDelete, mainImage, MAIN_IMAGE);
     }
 
@@ -292,12 +292,12 @@ public class AdminService {
     public ProductImageInfo updateDetailImages(Long id, List<MultipartFile> detailImages) {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         List<Image> toDelete = productBase.getDetailImage().getImages();
-        ProductImage detailImage = productBase.getDetailImage();
+        ProductDetail detailImage = productBase.getDetailImage();
         return updateImage(detailImages, productBase, toDelete, detailImage, DETAIL_IMAGE);
     }
 
     private ProductImageInfo updateImage(List<MultipartFile> detailImages, ProductBase productBase,
-            List<Image> toDelete, ProductImage detailImage, String imageType) {
+                                         List<Image> toDelete, ProductDetail detailImage, String imageType) {
         for (Image image : toDelete) {
             s3Component.deleteImageByUrl(image.getImageUrl());
         }
@@ -323,8 +323,8 @@ public class AdminService {
                 s3Component.deleteImageByUrl(image.getImageUrl());
             }
         }
-        if (productBase.getProductImage() != null) {
-            List<Image> mainImages = productBase.getProductImage().getImages();
+        if (productBase.getProductDetail() != null) {
+            List<Image> mainImages = productBase.getProductDetail().getImages();
             for (Image image : mainImages) {
                 s3Component.deleteImageByUrl(image.getImageUrl());
             }

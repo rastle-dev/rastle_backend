@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import rastle.dev.rastle_backend.domain.Admin.exception.InvalidImageUrlException;
 import rastle.dev.rastle_backend.domain.Product.model.Image;
-import rastle.dev.rastle_backend.domain.Product.model.ProductImage;
+import rastle.dev.rastle_backend.domain.Product.model.ProductDetail;
 import rastle.dev.rastle_backend.global.error.exception.S3ImageUploadException;
 
 import java.io.IOException;
@@ -41,7 +41,7 @@ public class S3Component {
         return url.substring(IMAGE_PREFIX.length());
     }
 
-    public List<Image> uploadAndGetImageList(String type, List<MultipartFile> images, ProductImage image) {
+    public List<Image> uploadAndGetImageList(String type, List<MultipartFile> images, ProductDetail image) {
         List<Image> toReturn = new ArrayList<>();
         for (MultipartFile mainImageFile : images) {
             Image newImage = new Image(uploadSingleImageToS3(type, mainImageFile), image);
