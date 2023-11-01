@@ -185,7 +185,7 @@ public class AdminController {
         @FailApiResponses
         @GetExecutionTime
         @DeleteMapping("/product/{id}")
-        public ResponseEntity<ServerResponse<?>> deleteProduct(@PathVariable("id") Long id) {
+        public ResponseEntity<ServerResponse<?>> deleteProduct(@PathVariable("id") Long id) throws JsonProcessingException {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.deleteProduct(id)));
         }
 
