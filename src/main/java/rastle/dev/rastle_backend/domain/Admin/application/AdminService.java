@@ -61,12 +61,9 @@ public class AdminService {
     private final EventProductRepository eventProductRepository;
     private final BundleRepository bundleRepository;
     private final BundleProductRepository bundleProductRepository;
-//    private final ColorRepository colorRepository;
-//    private final SizeRepository sizeRepository;
     private final ProductBaseRepository productBaseRepository;
     private final S3Component s3Component;
     private final ProductDetailRepository productDetailRepository;
-//    private final ImageRepository imageRepository;
     private final MemberRepository memberRepository;
     private final OrderRepository orderRepository;
 
@@ -207,17 +204,6 @@ public class AdminService {
         }
         if (updateRequest.getProductColor() != null) {
             productDetail.setProductColors(objectMapper.writeValueAsString(updateRequest.getProductColor()));
-
-//            List<Color> colors = productBase.getColors();
-//            colorRepository.deleteAll(colors);
-//
-//            HashMap<String, Color> colorToSave = new HashMap<>();
-//            List<Size> sizeToSave = new ArrayList<>();
-//
-//            setColorAndSize(updateRequest.getColorAndSizes(), colorToSave, sizeToSave, productBase);
-//
-//            colorRepository.saveAll(colorToSave.values());
-//            sizeRepository.saveAll(sizeToSave);
         }
         if (updateRequest.getPrice() != null) {
             productBase.setPrice(updateRequest.getPrice());
@@ -286,9 +272,7 @@ public class AdminService {
         for (String image : toDelete) {
             s3Component.deleteImageByUrl(image);
         }
-//        imageRepository.deleteAll(toDelete);
         ProductImage productImage = s3Component.uploadAndGetImageUrlList(imageType, detailImages);
-//        imageRepository.saveAll(images);
         if (imageType.equals(MAIN_IMAGE)) {
             productDetail.setProductMainImages(objectMapper.writeValueAsString(productImage));
         }
@@ -310,11 +294,16 @@ public class AdminService {
 
         s3Component.deleteImageByUrl(productBase.getMainThumbnailImage());
         s3Component.deleteImageByUrl(productBase.getSubThumbnailImage());
-        for (String image : mainImage.getImageUrls()) {
-            s3Component.deleteImageByUrl(image);
+        if (mainImage != null) {
+            for (String image : mainImage.getImageUrls()) {
+                s3Component.deleteImageByUrl(image);
+            }
+
         }
-        for (String image : detailImage.getImageUrls()) {
-            s3Component.deleteImageByUrl(image);
+        if (detailImage != null) {
+            for (String image : detailImage.getImageUrls()) {
+                s3Component.deleteImageByUrl(image);
+            }
         }
         productBaseRepository.delete(productBase);
 
