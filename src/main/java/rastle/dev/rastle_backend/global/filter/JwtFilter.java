@@ -64,10 +64,8 @@ public class JwtFilter extends OncePerRequestFilter {
             response.setCharacterEncoding("utf-8");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-            String origin = request.getHeader("origin");
-            if (origin.endsWith("recordyslow.com") || origin.endsWith("localhost:3000")) {
-                response.setHeader("Access-Control-Allow-Origin", origin);
-            }
+            response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+
             // response.setHeader("Access-Control-Allow-Origin",
             // "https://www.recordyslow.com");
             try {
@@ -84,12 +82,11 @@ public class JwtFilter extends OncePerRequestFilter {
             response.setContentType("application/json");
             response.setCharacterEncoding("utf-8");
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            String origin = request.getHeader("origin");
-            if (origin.endsWith("recordyslow.com") || origin.endsWith("localhost:3000")) {
-                response.setHeader("Access-Control-Allow-Origin", origin);
-            }
+
             // response.setHeader("Access-Control-Allow-Origin",
             // "https://www.recordyslow.com");
+            response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+
             try {
                 response.getWriter().write(result);
             } catch (IOException exception) {
