@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -51,7 +52,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstant.*;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AdminService {
@@ -286,11 +287,12 @@ public class AdminService {
     }
 
     @Transactional
-    public String deleteProduct(Long id) {
+    public String deleteProduct(Long id) throws JsonProcessingException {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         ProductDetail productDetail = productBase.getProductDetail();
-        ProductImage mainImage = objectMapper.convertValue(productDetail.getProductMainImages(), ProductImage.class);
-        ProductImage detailImage = objectMapper.convertValue(productDetail.getProductDetailImages(), ProductImage.class);
+        log.info(productDetail.getProductMainImages());
+        ProductImage mainImage = objectMapper.readValue(productDetail.getProductMainImages(), ProductImage.class);
+        ProductImage detailImage = objectMapper.readValue(productDetail.getProductDetailImages(), ProductImage.class);
 
         s3Component.deleteImageByUrl(productBase.getMainThumbnailImage());
         s3Component.deleteImageByUrl(productBase.getSubThumbnailImage());

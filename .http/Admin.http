@@ -1,5 +1,5 @@
 ### admin 로그인
-POST https://rastledev.site/auth/login
+POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
@@ -9,7 +9,7 @@ Content-Type: application/json
 > {% client.global.set("auth_token", response.headers.valueOf("Authorization")); %}
 
 ### 상품 삭제 테스트
-DELETE http://localhost:8080/admin/product/36
+DELETE http://localhost:8080/admin/product/3
 Authorization: {{auth_token}}
 
 
