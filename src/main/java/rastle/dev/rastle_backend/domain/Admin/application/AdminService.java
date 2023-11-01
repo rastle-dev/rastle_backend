@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -51,7 +52,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstant.*;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AdminService {
@@ -61,12 +62,9 @@ public class AdminService {
     private final EventProductRepository eventProductRepository;
     private final BundleRepository bundleRepository;
     private final BundleProductRepository bundleProductRepository;
-//    private final ColorRepository colorRepository;
-//    private final SizeRepository sizeRepository;
     private final ProductBaseRepository productBaseRepository;
     private final S3Component s3Component;
     private final ProductDetailRepository productDetailRepository;
-//    private final ImageRepository imageRepository;
     private final MemberRepository memberRepository;
     private final OrderRepository orderRepository;
 
@@ -207,17 +205,6 @@ public class AdminService {
         }
         if (updateRequest.getProductColor() != null) {
             productDetail.setProductColors(objectMapper.writeValueAsString(updateRequest.getProductColor()));
-
-//            List<Color> colors = productBase.getColors();
-//            colorRepository.deleteAll(colors);
-//
-//            HashMap<String, Color> colorToSave = new HashMap<>();
-//            List<Size> sizeToSave = new ArrayList<>();
-//
-//            setColorAndSize(updateRequest.getColorAndSizes(), colorToSave, sizeToSave, productBase);
-//
-//            colorRepository.saveAll(colorToSave.values());
-//            sizeRepository.saveAll(sizeToSave);
         }
         if (updateRequest.getPrice() != null) {
             productBase.setPrice(updateRequest.getPrice());
@@ -286,9 +273,7 @@ public class AdminService {
         for (String image : toDelete) {
             s3Component.deleteImageByUrl(image);
         }
-//        imageRepository.deleteAll(toDelete);
         ProductImage productImage = s3Component.uploadAndGetImageUrlList(imageType, detailImages);
-//        imageRepository.saveAll(images);
         if (imageType.equals(MAIN_IMAGE)) {
             productDetail.setProductMainImages(objectMapper.writeValueAsString(productImage));
         }
@@ -302,19 +287,25 @@ public class AdminService {
     }
 
     @Transactional
-    public String deleteProduct(Long id) {
+    public String deleteProduct(Long id) throws JsonProcessingException {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         ProductDetail productDetail = productBase.getProductDetail();
-        ProductImage mainImage = objectMapper.convertValue(productDetail.getProductMainImages(), ProductImage.class);
-        ProductImage detailImage = objectMapper.convertValue(productDetail.getProductDetailImages(), ProductImage.class);
+        log.info(productDetail.getProductMainImages());
+        ProductImage mainImage = objectMapper.readValue(productDetail.getProductMainImages(), ProductImage.class);
+        ProductImage detailImage = objectMapper.readValue(productDetail.getProductDetailImages(), ProductImage.class);
 
         s3Component.deleteImageByUrl(productBase.getMainThumbnailImage());
         s3Component.deleteImageByUrl(productBase.getSubThumbnailImage());
-        for (String image : mainImage.getImageUrls()) {
-            s3Component.deleteImageByUrl(image);
+        if (mainImage != null) {
+            for (String image : mainImage.getImageUrls()) {
+                s3Component.deleteImageByUrl(image);
+            }
+
         }
-        for (String image : detailImage.getImageUrls()) {
-            s3Component.deleteImageByUrl(image);
+        if (detailImage != null) {
+            for (String image : detailImage.getImageUrls()) {
+                s3Component.deleteImageByUrl(image);
+            }
         }
         productBaseRepository.delete(productBase);
 
