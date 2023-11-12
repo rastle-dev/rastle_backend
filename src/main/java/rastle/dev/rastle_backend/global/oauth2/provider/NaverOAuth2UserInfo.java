@@ -25,10 +25,10 @@ public class NaverOAuth2UserInfo extends OAuth2UserInfo {
         return safelyGetString("email");
     }
 
-    @Override
-    public String getPhoneNumber() {
-        return safelyGetString("mobile");
-    }
+//    @Override
+//    public String getPhoneNumber() {
+//        return safelyGetString("mobile");
+//    }
 
     @Override
     public String getProvider() {
