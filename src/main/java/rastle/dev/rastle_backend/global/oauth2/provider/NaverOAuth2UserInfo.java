@@ -6,45 +6,47 @@ import rastle.dev.rastle_backend.domain.Member.model.UserLoginType;
 import rastle.dev.rastle_backend.global.oauth2.OAuth2UserInfo;
 
 public class NaverOAuth2UserInfo extends OAuth2UserInfo {
+
     public NaverOAuth2UserInfo(Map<String, Object> attributes) {
         super(attributes);
     }
 
     @Override
     public String getId() {
-        return safelyGetString("id");
+        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+
+        if (response == null) {
+            return null;
+        }
+
+        return (String) response.get("id");
     }
 
     @Override
     public String getName() {
-        return safelyGetString("nickname");
+        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+
+        if (response == null) {
+            return null;
+        }
+
+        return (String) response.get("nickname");
     }
 
     @Override
     public String getEmail() {
-        return safelyGetString("email");
-    }
+        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
 
-//    @Override
-//    public String getPhoneNumber() {
-//        return safelyGetString("mobile");
-//    }
+        if (response == null) {
+            return null;
+        }
+
+        return (String) response.get("email");
+    }
 
     @Override
     public String getProvider() {
         return UserLoginType.NAVER.toString();
     }
 
-    private String safelyGetString(String key) {
-        Object responseObj = attributes.get("response");
-
-        if (responseObj instanceof Map response) {
-            Object value = response.get(key);
-            if (value instanceof String strValue) {
-                return strValue;
-            }
-        }
-
-        return null;
-    }
 }

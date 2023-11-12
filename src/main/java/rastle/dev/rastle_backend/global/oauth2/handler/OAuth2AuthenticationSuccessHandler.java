@@ -13,6 +13,9 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import rastle.dev.rastle_backend.domain.Member.model.UserLoginType;
+import rastle.dev.rastle_backend.domain.Member.repository.MemberRepository;
 import rastle.dev.rastle_backend.global.jwt.JwtTokenProvider;
 import rastle.dev.rastle_backend.global.oauth2.OAuth2UserInfo;
 import rastle.dev.rastle_backend.global.oauth2.OAuth2UserInfoFactory;
@@ -33,6 +36,7 @@ import static rastle.dev.rastle_backend.global.oauth2.repository.OAuth2Authoriza
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final JwtTokenProvider jwtTokenProvider;
+    private final MemberRepository memberRepository;
     private final OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository;
 
     @Override
@@ -44,8 +48,13 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         log.info("authentication : " + authentication.getName());
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         Map<String, Object> attributes = oAuth2User.getAttributes();
+        log.info("attributes : " + attributes);
+        UserLoginType provider = memberRepository.findById(Long.parseLong(authentication.getName())).get()
+                .getUserLoginType();
+
+        log.info("proivder", provider);
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(
-                authentication.getName().toUpperCase(), attributes);
+                provider.getType(), attributes);
         String targetUrl;
 
         if (Objects.equals(authentication.getName(), "null")) {
