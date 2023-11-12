@@ -25,10 +25,10 @@ public class GoogleOAuth2UserInfo extends OAuth2UserInfo {
         return (String) attributes.get("email");
     }
 
-    @Override
-    public String getPhoneNumber() {
-        return null;
-    }
+//    @Override
+//    public String getPhoneNumber() {
+//        return null;
+//    }
 
     @Override
     public String getProvider() {
