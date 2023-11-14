@@ -255,7 +255,7 @@ public class AdminService {
     public ProductImageInfo updateMainImages(Long id, List<MultipartFile> mainImages) throws JsonProcessingException {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         ProductDetail productDetail = productBase.getProductDetail();
-        ProductImage mainImage = objectMapper.convertValue(productDetail.getProductMainImages(), ProductImage.class);
+        ProductImage mainImage = objectMapper.readValue(productDetail.getProductMainImages(), ProductImage.class);
         return updateImage(mainImages, productBase, mainImage.getImageUrls(),productDetail, MAIN_IMAGE);
 
     }
@@ -264,7 +264,7 @@ public class AdminService {
     public ProductImageInfo updateDetailImages(Long id, List<MultipartFile> detailImages) throws JsonProcessingException {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         ProductDetail productDetail = productBase.getProductDetail();
-        ProductImage detailImage = objectMapper.convertValue(productDetail.getProductDetailImages(), ProductImage.class);
+        ProductImage detailImage = objectMapper.readValue(productDetail.getProductDetailImages(), ProductImage.class);
         return updateImage(detailImages, productBase, detailImage.getImageUrls(),productDetail, DETAIL_IMAGE);
     }
 
