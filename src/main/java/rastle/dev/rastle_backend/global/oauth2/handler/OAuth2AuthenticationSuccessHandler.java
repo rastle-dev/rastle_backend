@@ -4,6 +4,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponseWrapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +43,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         String targetUrl = getTargetUrlFromCookie(request);
         TokenInfoDTO tokenInfoDto = jwtTokenProvider.generateTokenDto(authentication, response);
-        response.addHeader("Authorization", "Bearer " + tokenInfoDto.getAccessToken());
+        // response.addHeader("Authorization", "Bearer " +
+        // tokenInfoDto.getAccessToken());
 
         if (response.isCommitted()) {
             logger.debug("Response has already been committed. Unable to redirect to " + targetUrl);
@@ -51,7 +53,11 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         log.info("target url : " + targetUrl);
         clearAuthenticationAttributes(request, response);
-        getRedirectStrategy().sendRedirect(request, response, targetUrl);
+
+        HttpServletResponseWrapper responseWrapper = new HttpServletResponseWrapper(response);
+        responseWrapper.addHeader("Authorization", "Bearer " + tokenInfoDto.getAccessToken());
+        responseWrapper.sendRedirect(targetUrl);
+        // getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 
     // protected String determineTargetUrlForFirstLogin(HttpServletRequest request,
