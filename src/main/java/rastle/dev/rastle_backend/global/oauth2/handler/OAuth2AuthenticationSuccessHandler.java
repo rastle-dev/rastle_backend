@@ -42,9 +42,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         log.info("authentication success");
 
         String targetUrl = getTargetUrlFromCookie(request);
-        TokenInfoDTO tokenInfoDto = jwtTokenProvider.generateTokenDto(authentication, response);
-        // response.addHeader("Authorization", "Bearer " +
-        // tokenInfoDto.getAccessToken());
+        jwtTokenProvider.generateTokenDto(authentication, response);
 
         if (response.isCommitted()) {
             logger.debug("Response has already been committed. Unable to redirect to " + targetUrl);
@@ -53,11 +51,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         log.info("target url : " + targetUrl);
         clearAuthenticationAttributes(request, response);
-
-        HttpServletResponseWrapper responseWrapper = new HttpServletResponseWrapper(response);
-        responseWrapper.addHeader("Authorization", "Bearer " + tokenInfoDto.getAccessToken());
-        responseWrapper.sendRedirect(targetUrl);
-        // getRedirectStrategy().sendRedirect(request, response, targetUrl);
+        getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 
     // protected String determineTargetUrlForFirstLogin(HttpServletRequest request,
