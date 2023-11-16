@@ -30,7 +30,7 @@ public class CookieUtil {
 
     public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
         log.info(name);
-        log.info(value);
+        // log.info(value);
         Cookie cookie = new Cookie(name, value);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
@@ -60,20 +60,20 @@ public class CookieUtil {
                 .encodeToString(SerializationUtils.serialize(obj));
     }
 
-     public static <T> T deserialize(Cookie cookie, Class<T> cls) {
-     return cls.cast(
-     SerializationUtils.deserialize(
-     Base64.getUrlDecoder().decode(cookie.getValue())));
-     }
+    public static <T> T deserialize(Cookie cookie, Class<T> cls) {
+        return cls.cast(
+                SerializationUtils.deserialize(
+                        Base64.getUrlDecoder().decode(cookie.getValue())));
+    }
 
-//    public static <T> T deserialize(Cookie cookie, Class<T> cls) {
-//        try {
-//            byte[] decodedBytes = Base64.getUrlDecoder().decode(cookie.getValue());
-//            String jsonString = new String(decodedBytes, "UTF-8");
-//            return objectMapper.readValue(jsonString, cls);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
+    // public static <T> T deserialize(Cookie cookie, Class<T> cls) {
+    // try {
+    // byte[] decodedBytes = Base64.getUrlDecoder().decode(cookie.getValue());
+    // String jsonString = new String(decodedBytes, "UTF-8");
+    // return objectMapper.readValue(jsonString, cls);
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // return null;
+    // }
+    // }
 }

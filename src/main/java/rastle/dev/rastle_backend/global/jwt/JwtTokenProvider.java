@@ -158,7 +158,7 @@ public class JwtTokenProvider {
         ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
                 .secure(true)
-                .path("/auth")
+                .path("/")
                 .sameSite("None")
                 .build();
         response.addHeader("Set-Cookie", cookie.toString());
