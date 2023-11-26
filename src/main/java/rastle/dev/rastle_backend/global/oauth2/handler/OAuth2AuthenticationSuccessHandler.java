@@ -40,6 +40,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException, ServletException {
         log.info("authentication success");
+        Map<String, Object> queryParams = new HashMap<>();
 
         String targetUrl = getTargetUrlFromCookie(request);
         jwtTokenProvider.generateTokenDto(authentication, response);
@@ -49,6 +50,11 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             return;
         }
 
+        queryParams.put("social", true);
+        buildUriComponents(targetUrl, queryParams).toUriString();
+
+        // Cookie create = new Cookie("created", "true");
+        // response.addCookie(create);
         log.info("target url : " + targetUrl);
         clearAuthenticationAttributes(request, response);
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
@@ -100,11 +106,10 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 .orElse(getDefaultTargetUrl());
     }
 
-    // private UriComponents buildUriComponents(String targetUrl, Map<String,
-    // Object> queryParams) {
-    // UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(targetUrl);
-    // queryParams.forEach((key, value) -> builder.queryParam(key, value));
-    // return builder.build();
-    // }
+    private UriComponents buildUriComponents(String targetUrl, Map<String, Object> queryParams) {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(targetUrl);
+        queryParams.forEach((key, value) -> builder.queryParam(key, value));
+        return builder.build();
+    }
 
 }
