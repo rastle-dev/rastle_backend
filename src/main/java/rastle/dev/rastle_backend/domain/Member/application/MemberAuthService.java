@@ -123,7 +123,7 @@ public class MemberAuthService {
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
         String username = getCurrentUsername();
         deleteRefreshTokenFromRedis(username);
-        deleteCookie(response);
+        deleteRefreshTokenCookie(response);
         return new ResponseEntity<>("로그아웃 성공", HttpStatus.OK);
     }
 
@@ -135,7 +135,7 @@ public class MemberAuthService {
         redisTemplate.delete(username);
     }
 
-    private void deleteCookie(HttpServletResponse response) {
+    private void deleteRefreshTokenCookie(HttpServletResponse response) {
         Cookie cookie = new Cookie("refreshToken", null);
         cookie.setMaxAge(0);
         cookie.setHttpOnly(true);
