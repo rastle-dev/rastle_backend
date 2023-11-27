@@ -139,9 +139,10 @@ public class MemberAuthService {
 
     private void deleteRefreshTokenCookie(HttpServletResponse response) {
         Cookie cookie = new Cookie("refreshToken", null);
+        cookie.setPath("/");
         cookie.setMaxAge(0);
-        // cookie.setHttpOnly(true);
-        // cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
         response.addCookie(cookie);
     }
 
