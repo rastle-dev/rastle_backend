@@ -20,6 +20,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import rastle.dev.rastle_backend.domain.Cart.model.Cart;
 import rastle.dev.rastle_backend.domain.Cart.repository.CartRepository;
 // import rastle.dev.rastle_backend.domain.Member.dto.MemberAuthDTO.AdminSignUpDto;
@@ -32,6 +33,7 @@ import rastle.dev.rastle_backend.global.error.exception.InvalidRequestException;
 import rastle.dev.rastle_backend.global.jwt.JwtTokenProvider;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class MemberAuthService {
     private final MemberRepository memberRepository;
@@ -138,14 +140,20 @@ public class MemberAuthService {
     private void deleteRefreshTokenCookie(HttpServletResponse response) {
         Cookie cookie = new Cookie("refreshToken", null);
         cookie.setMaxAge(0);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        // cookie.setHttpOnly(true);
+        // cookie.setSecure(true);
         response.addCookie(cookie);
 
         try {
             response.flushBuffer();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error flushing response");
+        }
+
+        try {
+            response.getWriter().close();
+        } catch (Exception e) {
+            log.error("Error closing response");
         }
     }
 
