@@ -51,7 +51,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         }
 
         queryParams.put("social", true);
-        buildUriComponents(targetUrl, queryParams).toUriString();
+        targetUrl = buildUriComponents(targetUrl, queryParams).toUriString();
 
         // Cookie create = new Cookie("created", "true");
         // response.addCookie(create);
