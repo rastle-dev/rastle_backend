@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -138,12 +139,24 @@ public class MemberAuthService {
     }
 
     private void deleteRefreshTokenCookie(HttpServletResponse response) {
-        Cookie cookie = new Cookie("refreshToken", null);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        response.addCookie(cookie);
+        // Cookie cookie = new Cookie("refreshToken", null);
+        // cookie.setMaxAge(0);
+        // cookie.setPath("/");
+        // cookie.setHttpOnly(true);
+        // cookie.setSecure(true);
+        // cookie.setAttribute("SameSite", "None");
+
+        // response.addCookie(cookie);
+
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", null)
+                .maxAge(0)
+                .path("/")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .build();
+
+        response.addHeader("Set-Cookie", cookie.toString());
     }
 
     /**
