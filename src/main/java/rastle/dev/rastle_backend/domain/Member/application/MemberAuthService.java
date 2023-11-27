@@ -143,18 +143,6 @@ public class MemberAuthService {
         // cookie.setHttpOnly(true);
         // cookie.setSecure(true);
         response.addCookie(cookie);
-
-        try {
-            response.flushBuffer();
-        } catch (Exception e) {
-            log.error("Error flushing response");
-        }
-
-        try {
-            response.getWriter().close();
-        } catch (Exception e) {
-            log.error("Error closing response");
-        }
     }
 
     /**
