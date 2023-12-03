@@ -159,9 +159,9 @@ public class JwtTokenProvider {
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                // .sameSite("None")
-                .domain(".recordyslow.com")
-                .sameSite("Lax")
+                .sameSite("None")
+                // .domain(".recordyslow.com")
+                // .sameSite("Lax")
                 .build();
         response.addHeader("Set-Cookie", cookie.toString());
     }
