@@ -16,7 +16,7 @@ import rastle.dev.rastle_backend.domain.Cart.model.Cart;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "cart_product", catalog = "rastle_db")
+@Table(name = "cart_product")
 public class CartProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

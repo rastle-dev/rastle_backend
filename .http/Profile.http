@@ -1,0 +1,2 @@
+## 프로필 확인
+GET http://localhost:8080/env_profile

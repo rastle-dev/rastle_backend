@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "member", catalog = "rastle_db")
+@Table(name = "member")
 public class Member extends MemberBase {
     @Column(name = "user_name")
     private String userName;
