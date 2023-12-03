@@ -153,7 +153,9 @@ public class MemberAuthService {
                 .path("/")
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("None")
+                // .sameSite("None")
+                .domain(".recordyslow.com")
+                .sameSite("Lax")
                 .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
