@@ -10,6 +10,9 @@ build/
 ### config file
 
 src/main/resources/application.yml
+src/main/resources/applicaion-local.yml
+src/main/resources/application-test.yml
+src/main/resources/application-server.yml
 src/main/resources/server.yml
 .gitmessage.txt
 
