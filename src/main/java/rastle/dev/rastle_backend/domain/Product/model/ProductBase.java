@@ -17,7 +17,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "product_base", catalog = "rastle_db")
+@Table(name = "product_base")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class ProductBase {
     @Id

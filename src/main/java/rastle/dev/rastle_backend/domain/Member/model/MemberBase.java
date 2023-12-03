@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "member_base", catalog = "rastle_db")
+@Table(name = "member_base")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class MemberBase {
     @Id

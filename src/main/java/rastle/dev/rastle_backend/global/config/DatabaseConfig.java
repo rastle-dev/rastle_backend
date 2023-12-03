@@ -3,6 +3,7 @@ package rastle.dev.rastle_backend.global.config;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
@@ -15,16 +16,17 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
 @Configuration
 @EnableJpaRepositories(basePackages = { DatabaseConfig.RDS_DOMAIN_REPO })
 @MapperScan(value = { DatabaseConfig.RDS_DOMAIN_MAPPER })
 @RequiredArgsConstructor
+@Slf4j
 public class DatabaseConfig {
     static final String RDS_DOMAIN_REPO = "rastle.dev.rastle_backend.domain.*.repository";
     static final String RDS_DOMAIN_MAPPER = "rastle.dev.rastle_backend.domain.*.mapper";
@@ -48,9 +50,11 @@ public class DatabaseConfig {
 
         Map<Object, Object> dataSourceMap = new LinkedHashMap<>();
         dataSourceMap.put("master", master);
+        log.info("master "+databaseProperty.getUrl());
 
         databaseProperty.getSlaveList().forEach(slave -> {
             dataSourceMap.put(slave.getName(), routingDataProperty(slave.getUrl()));
+            log.info(slave.getName()+" "+slave.getUrl());
         });
 
         replicationRoutingDataSource.setTargetDataSources(dataSourceMap);

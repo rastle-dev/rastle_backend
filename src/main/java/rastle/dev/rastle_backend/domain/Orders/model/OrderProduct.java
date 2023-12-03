@@ -15,7 +15,7 @@ import rastle.dev.rastle_backend.domain.Product.model.ProductBase;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "order_product", catalog = "rastle_db")
+@Table(name = "order_product")
 public class OrderProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

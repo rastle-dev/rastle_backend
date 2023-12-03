@@ -15,7 +15,7 @@ import rastle.dev.rastle_backend.domain.Member.model.Member;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "event_product_apply", catalog = "rastle_db")
+@Table(name = "event_product_apply")
 public class EventProductApply {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
