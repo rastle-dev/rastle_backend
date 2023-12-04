@@ -13,7 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import rastle.dev.rastle_backend.domain.Token.exception.ExpireAccessTokenException;
+import rastle.dev.rastle_backend.domain.token.exception.ExpireAccessTokenException;
 import rastle.dev.rastle_backend.global.error.response.ErrorResponse;
 import rastle.dev.rastle_backend.global.jwt.JwtTokenProvider;
 

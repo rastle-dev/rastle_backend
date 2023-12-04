@@ -7,8 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import rastle.dev.rastle_backend.domain.Admin.exception.InvalidImageUrlException;
-import rastle.dev.rastle_backend.domain.Product.model.ProductImage;
+import rastle.dev.rastle_backend.domain.admin.exception.InvalidImageUrlException;
+import rastle.dev.rastle_backend.domain.product.model.ProductImage;
 import rastle.dev.rastle_backend.global.error.exception.S3ImageUploadException;
 
 import java.io.IOException;

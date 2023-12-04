@@ -12,7 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.stereotype.Component;
-import rastle.dev.rastle_backend.domain.Member.exception.LogoutMemberException;
+import rastle.dev.rastle_backend.domain.member.exception.LogoutMemberException;
 import rastle.dev.rastle_backend.global.jwt.JwtTokenProvider;
 
 import java.io.IOException;
