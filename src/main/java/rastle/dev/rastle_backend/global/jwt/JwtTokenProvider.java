@@ -160,6 +160,8 @@ public class JwtTokenProvider {
                 .secure(true)
                 .path("/")
                 .sameSite("None")
+                // .domain(".recordyslow.com")
+                // .sameSite("Lax")
                 .build();
         response.addHeader("Set-Cookie", cookie.toString());
     }
