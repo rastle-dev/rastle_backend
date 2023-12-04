@@ -24,10 +24,6 @@ public class MongoDBConfig extends AbstractMongoClientConfiguration {
     @Value("${spring.data.mongodb.database}")
     private String databaseName;
 
-    @Bean
-    public MongoTransactionManager mongoTransactionManager(MongoDatabaseFactory dbFactory) {
-        return new MongoTransactionManager(dbFactory);
-    }
 
     @Bean
     public MongoTemplate mongoTemplate() {
