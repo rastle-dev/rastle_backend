@@ -61,11 +61,20 @@ public class ProductController {
                 .ok(new ServerResponse<>(productService.getEventProducts(visible, lowerBound, upperBound)));
     }
 
-    @Operation(summary = "상품 상세 조회 API", description = "상품 상세 조회 API입니다.")
+    @Operation(summary = "상품 상세 조회 API - 경로 맘에 안들어서 삭제할거야", description = "상품 상세 조회 API입니다.")
     @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = ProductInfo.class)))
     @FailApiResponses
     @GetMapping("/{id}/detail")
     public ResponseEntity<ServerResponse<?>> getProductDetail(
+            @PathVariable(name = "id") Long id) throws JsonProcessingException {
+        return ResponseEntity.ok(new ServerResponse<>(productService.getProductDetail(id)));
+    }
+
+    @Operation(summary = "상품 상세 조회 API", description = "상품 상세 조회 API입니다.")
+    @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = ProductInfo.class)))
+    @FailApiResponses
+    @GetMapping("/{id}")
+    public ResponseEntity<ServerResponse<?>> getProductDetailRefactored(
             @PathVariable(name = "id") Long id) throws JsonProcessingException {
         return ResponseEntity.ok(new ServerResponse<>(productService.getProductDetail(id)));
     }

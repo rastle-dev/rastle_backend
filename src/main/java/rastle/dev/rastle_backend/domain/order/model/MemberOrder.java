@@ -33,6 +33,8 @@ public class MemberOrder extends BaseTimeEntity {
 
     @Column(name = "user_name")
     private String userName;
+    @Column(name = "phone_number")
+    private String phoneNumber;
 
     private String email;
     private int zipcode;
