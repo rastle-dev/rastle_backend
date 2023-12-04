@@ -8,9 +8,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import rastle.dev.rastle_backend.domain.Member.model.Member;
-import rastle.dev.rastle_backend.domain.Member.model.UserPrincipal;
-import rastle.dev.rastle_backend.domain.Member.repository.MemberRepository;
+import rastle.dev.rastle_backend.domain.member.model.Member;
+import rastle.dev.rastle_backend.domain.member.model.UserPrincipal;
+import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
 
 @Service
 @RequiredArgsConstructor

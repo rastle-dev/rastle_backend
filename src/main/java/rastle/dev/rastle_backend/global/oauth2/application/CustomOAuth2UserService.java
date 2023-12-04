@@ -9,13 +9,13 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import rastle.dev.rastle_backend.domain.Cart.model.Cart;
-import rastle.dev.rastle_backend.domain.Cart.repository.CartRepository;
-import rastle.dev.rastle_backend.domain.Member.model.Authority;
-import rastle.dev.rastle_backend.domain.Member.model.Member;
-import rastle.dev.rastle_backend.domain.Member.model.UserLoginType;
-import rastle.dev.rastle_backend.domain.Member.model.UserPrincipal;
-import rastle.dev.rastle_backend.domain.Member.repository.MemberRepository;
+import rastle.dev.rastle_backend.domain.cart.model.Cart;
+import rastle.dev.rastle_backend.domain.cart.repository.mysql.CartRepository;
+import rastle.dev.rastle_backend.domain.member.model.Authority;
+import rastle.dev.rastle_backend.domain.member.model.Member;
+import rastle.dev.rastle_backend.domain.member.model.UserLoginType;
+import rastle.dev.rastle_backend.domain.member.model.UserPrincipal;
+import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
 import rastle.dev.rastle_backend.global.oauth2.OAuth2UserInfo;
 import rastle.dev.rastle_backend.global.oauth2.OAuth2UserInfoFactory;
 

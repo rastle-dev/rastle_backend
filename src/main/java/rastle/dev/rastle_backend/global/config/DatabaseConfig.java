@@ -10,6 +10,7 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -23,12 +24,13 @@ import javax.sql.DataSource;
 import java.util.LinkedHashMap;
 import java.util.Map;
 @Configuration
+@EnableJpaAuditing
 @EnableJpaRepositories(basePackages = { DatabaseConfig.RDS_DOMAIN_REPO })
 @MapperScan(value = { DatabaseConfig.RDS_DOMAIN_MAPPER })
 @RequiredArgsConstructor
 @Slf4j
 public class DatabaseConfig {
-    static final String RDS_DOMAIN_REPO = "rastle.dev.rastle_backend.domain.*.repository";
+    static final String RDS_DOMAIN_REPO = "rastle.dev.rastle_backend.domain.*.repository.mysql";
     static final String RDS_DOMAIN_MAPPER = "rastle.dev.rastle_backend.domain.*.mapper";
 
     private final DatabaseProperty databaseProperty;
@@ -79,7 +81,7 @@ public class DatabaseConfig {
     }
 
     @Bean
-    public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
+    public PlatformTransactionManager jpaTransactionManager(EntityManagerFactory entityManagerFactory) {
         JpaTransactionManager tm = new JpaTransactionManager();
         tm.setEntityManagerFactory(entityManagerFactory);
         return tm;
