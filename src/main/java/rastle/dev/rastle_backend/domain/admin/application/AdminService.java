@@ -29,11 +29,10 @@ import rastle.dev.rastle_backend.domain.bundle.dto.BundleInfo;
 import rastle.dev.rastle_backend.domain.bundle.model.Bundle;
 import rastle.dev.rastle_backend.domain.bundle.repository.mysql.BundleRepository;
 import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.MemberInfoDto;
-import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.MemberInfoDto.OrderDetail;
 import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.MemberInfoDto.OrderProductDetail;
 import rastle.dev.rastle_backend.domain.member.model.Member;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
-import rastle.dev.rastle_backend.domain.order.model.MemberOrder;
+import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.MemberOrderRepository;
 import rastle.dev.rastle_backend.domain.product.dto.ProductDTO.ProductCreateRequest;
 import rastle.dev.rastle_backend.domain.product.dto.ProductDTO.ProductCreateResult;
@@ -551,7 +550,7 @@ public class AdminService {
     }
 
     private MemberInfoDto convertMemberToMemberInfoDto(Member member) {
-        List<OrderDetail> allOrderDetails = convertOrdersToOrderDetails(memberOrderRepository.findByMemberId(member.getId()));
+        List<MemberInfoDto.OrderDetail> allOrderDetails = convertOrdersToOrderDetails(memberOrderRepository.findByMemberId(member.getId()));
         return MemberInfoDto.builder()
                 .email(member.getEmail())
                 .userLoginType(member.getUserLoginType())
@@ -564,7 +563,7 @@ public class AdminService {
                 .build();
     }
 
-    private List<OrderDetail> convertOrdersToOrderDetails(List<MemberOrder> orders) {
+    private List<MemberInfoDto.OrderDetail> convertOrdersToOrderDetails(List<OrderDetail> orders) {
         return orders.stream().flatMap(order -> {
             List<OrderProductDetail> orderProductDetails = order.getOrderProduct().stream().map(op -> {
                 return OrderProductDetail.builder()
@@ -575,7 +574,7 @@ public class AdminService {
                         .build();
             }).collect(Collectors.toList());
 
-            return Stream.of(OrderDetail.builder()
+            return Stream.of(MemberInfoDto.OrderDetail.builder()
                     .orderId(order.getId())
                     .orderProducts(orderProductDetails)
                     .build());

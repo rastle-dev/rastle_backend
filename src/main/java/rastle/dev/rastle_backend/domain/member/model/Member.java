@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.cart.model.Cart;
 import rastle.dev.rastle_backend.domain.event.model.EventProductApply;
-import rastle.dev.rastle_backend.domain.order.model.MemberOrder;
+import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +41,7 @@ public class Member extends MemberBase {
     private List<EventProductApply> eventProductApplies = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<MemberOrder> orders = new ArrayList<>();
+    private List<OrderDetail> orders = new ArrayList<>();
 
     @Builder
     public Member(String email, String password, UserLoginType userLoginType, Authority authority, String userName,

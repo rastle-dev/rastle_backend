@@ -19,12 +19,12 @@ import static jakarta.persistence.InheritanceType.JOINED;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "member_order")
+@Table(name = "order_detail")
 @Inheritance(strategy = JOINED)
-public class MemberOrder extends BaseTimeEntity {
+public class OrderDetail extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_order_id")
+    @Column(name = "order_detail_id")
     private Long id;
 
     @ManyToOne
@@ -49,7 +49,6 @@ public class MemberOrder extends BaseTimeEntity {
     @Enumerated(STRING)
     @Column(name = "delivery_status")
     private DeliveryStatus deliveryStatus;
-
-    @OneToMany(mappedBy = "memberOrder", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "orderDetail", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<OrderProduct> orderProduct = new ArrayList<>();
 }
