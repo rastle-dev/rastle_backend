@@ -138,23 +138,14 @@ public class MemberAuthService {
     }
 
     private void deleteRefreshTokenCookie(HttpServletResponse response) {
-        // Cookie cookie = new Cookie("refreshToken", null);
-        // cookie.setMaxAge(0);
-        // cookie.setPath("/");
-        // cookie.setHttpOnly(true);
-        // cookie.setSecure(true);
-        // cookie.setAttribute("SameSite", "None");
-
-        // response.addCookie(cookie);
-
         ResponseCookie cookie = ResponseCookie.from("refreshToken", null)
                 .maxAge(0)
                 .path("/")
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("None")
-                // .domain(".recordyslow.com")
-                // .sameSite("Lax")
+                // .sameSite("None")
+                .domain("recordyslow.com")
+                .sameSite("Strict")
                 .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
