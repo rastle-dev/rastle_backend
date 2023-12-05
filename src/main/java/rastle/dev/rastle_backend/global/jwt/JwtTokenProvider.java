@@ -159,9 +159,10 @@ public class JwtTokenProvider {
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                .sameSite("None")
-                // .domain(".recordyslow.com")
-                // .sameSite("Lax")
+                // .sameSite("None")
+                .domain("recordyslow.com")
+                .sameSite("Strict")
+                .maxAge(REFRESH_TOKEN_EXPIRE_TIME)
                 .build();
         response.addHeader("Set-Cookie", cookie.toString());
     }
