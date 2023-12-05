@@ -42,7 +42,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         } else if (authException instanceof InsufficientAuthenticationException) {
             result = objectMapper.writeValueAsString(new ErrorResponse(403L, "인증 정보가 확인되지 않은 요청입니다."));
-            response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         }
 
         response.setContentType("application/json");
