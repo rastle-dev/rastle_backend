@@ -26,8 +26,8 @@ public class ProductInfo {
     Long categoryId;
     Long bundleId;
     Long eventId;
-    ProductImage productMainImages;
-    ProductImage productDetailImages;
+    ProductImage productMainImage;
+    ProductImage productDetailImage;
     ProductColor productColor;
 
 }
