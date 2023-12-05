@@ -162,7 +162,7 @@ public class JwtTokenProvider {
                 // .sameSite("None")
                 .domain("recordyslow.com")
                 .sameSite("Strict")
-                .maxAge(REFRESH_TOKEN_EXPIRE_TIME)
+                .maxAge(REFRESH_TOKEN_EXPIRE_TIME / 1000)
                 .build();
         response.addHeader("Set-Cookie", cookie.toString());
     }
