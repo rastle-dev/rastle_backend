@@ -11,7 +11,7 @@ import rastle.dev.rastle_backend.domain.order.dto.OrderDTO.ProductOrderRequest;
 import java.util.List;
 
 /**
- * 결제를 시작할때, 주문 정보를 관리하기 위힌 객체
+ * 결제를 시작할때, 주문 정보를 관리하기 위힌 객체, mongodb용, 안쓸 객체
  */
 @Data
 @NoArgsConstructor

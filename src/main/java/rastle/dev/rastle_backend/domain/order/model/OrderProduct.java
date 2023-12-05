@@ -21,16 +21,17 @@ public class OrderProduct {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_product_id")
     private Long id;
-    private String name;
+    private String name; // 주문 당시 구매한 상품 이름
     private String color;
     private String size;
     private int count;
+    private Long totalPrice; // 구매한 상품 총 가격
 
     @ManyToOne
     @JoinColumn(name = "product_id")
     private ProductBase product;
 
     @ManyToOne
-    @JoinColumn(name = "order_id")
-    private MemberOrder memberOrder;
+    @JoinColumn(name = "order_detail_id")
+    private OrderDetail orderDetail;
 }
