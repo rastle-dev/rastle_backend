@@ -20,6 +20,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import rastle.dev.rastle_backend.domain.cart.model.Cart;
 import rastle.dev.rastle_backend.domain.cart.repository.mysql.CartRepository;
 // import rastle.dev.rastle_backend.domain.Member.dto.MemberAuthDTO.AdminSignUpDto;
@@ -32,6 +33,7 @@ import rastle.dev.rastle_backend.global.error.exception.InvalidRequestException;
 import rastle.dev.rastle_backend.global.jwt.JwtTokenProvider;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class MemberAuthService {
     private final MemberRepository memberRepository;
@@ -159,6 +161,9 @@ public class MemberAuthService {
         String username = getCurrentUsername();
         String refreshToken = jwtTokenProvider.getRefreshTokenFromRequest(request);
         String storedToken = redisTemplate.opsForValue().get(username);
+        log.info("Username: " + username);
+        log.info("Refresh Token: " + refreshToken);
+        log.info("Stored Token: " + storedToken);
 
         if (storedToken != null && storedToken.equals(refreshToken)) {
             Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(refreshToken);
@@ -166,8 +171,10 @@ public class MemberAuthService {
 
             HttpHeaders responseHeaders = createAuthorizationHeader(newAccessToken);
             return new ResponseEntity<>("액세스 토큰 재발급 성공", responseHeaders, HttpStatus.OK);
+        } else if (storedToken == null) {
+            return new ResponseEntity<>("액세스 토큰 재발급 실패: 저장된 토큰이 없습니다.", HttpStatus.UNAUTHORIZED);
         } else {
-            return new ResponseEntity<>("액세스 토큰 재발급 실패", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>("액세스 토큰 재발급 실패: 저장된 토큰과 입력한 토큰이 일치하지 않습니다.", HttpStatus.UNAUTHORIZED);
         }
     }
 
