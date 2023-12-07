@@ -159,7 +159,6 @@ public class JwtTokenProvider {
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                // .sameSite("None")
                 .domain("recordyslow.com")
                 .sameSite("Strict")
                 .maxAge(REFRESH_TOKEN_EXPIRE_TIME / 1000)
@@ -195,7 +194,6 @@ public class JwtTokenProvider {
         long now = (new Date()).getTime();
         String accessToken = buildToken(authentication.getName(), authorities, now + ACCESS_TOKEN_EXPIRE_TIME);
 
-        storeRefreshTokenInRedis(authentication.getName(), accessToken);
         return accessToken;
     }
 

@@ -20,7 +20,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import rastle.dev.rastle_backend.domain.cart.model.Cart;
 import rastle.dev.rastle_backend.domain.cart.repository.mysql.CartRepository;
 // import rastle.dev.rastle_backend.domain.Member.dto.MemberAuthDTO.AdminSignUpDto;
@@ -33,7 +32,6 @@ import rastle.dev.rastle_backend.global.error.exception.InvalidRequestException;
 import rastle.dev.rastle_backend.global.jwt.JwtTokenProvider;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class MemberAuthService {
     private final MemberRepository memberRepository;
@@ -143,7 +141,6 @@ public class MemberAuthService {
                 .path("/")
                 .httpOnly(true)
                 .secure(true)
-                // .sameSite("None")
                 .domain("recordyslow.com")
                 .sameSite("Strict")
                 .build();
@@ -157,13 +154,21 @@ public class MemberAuthService {
      * @param request
      * @return 액세스 토큰 재발급 성공 여부
      */
-    public ResponseEntity<String> refreshAccessToken(HttpServletRequest request) {
-        String refreshToken = jwtTokenProvider.getRefreshTokenFromRequest(request);
-        Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(refreshToken);
-        String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
 
-        HttpHeaders responseHeaders = createAuthorizationHeader(newAccessToken);
-        return new ResponseEntity<>("액세스 토큰 재발급 성공", responseHeaders, HttpStatus.OK);
+    public ResponseEntity<String> refreshAccessToken(HttpServletRequest request) {
+        String username = getCurrentUsername();
+        String refreshToken = jwtTokenProvider.getRefreshTokenFromRequest(request);
+        String storedToken = redisTemplate.opsForValue().get(username);
+
+        if (storedToken != null && storedToken.equals(refreshToken)) {
+            Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(refreshToken);
+            String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
+
+            HttpHeaders responseHeaders = createAuthorizationHeader(newAccessToken);
+            return new ResponseEntity<>("액세스 토큰 재발급 성공", responseHeaders, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("액세스 토큰 재발급 실패", HttpStatus.UNAUTHORIZED);
+        }
     }
 
     public static boolean isAdmin() {
