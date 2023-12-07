@@ -23,7 +23,7 @@ public class S3Component {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    static final String IMAGE_PREFIX = "https://rastle-dev.s3.ap-northeast-2.amazonaws.com/";
+    private static final String IMAGE_PREFIX = "https://rastle-dev.s3.ap-northeast-2.amazonaws.com/";
 
     public void deleteImageByUrl(String imageUrl) {
         if (imageUrl != null) {
