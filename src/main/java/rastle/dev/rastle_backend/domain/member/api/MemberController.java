@@ -22,6 +22,7 @@ import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.PasswordDto;
 import rastle.dev.rastle_backend.global.response.FailApiResponses;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
 import rastle.dev.rastle_backend.global.util.SecurityUtil;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Tag(name = "회원 정보", description = "회원 정보 관련 API입니다.")
 @RestController
@@ -56,9 +57,9 @@ public class MemberController {
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공"),
             @ApiResponse(responseCode = "400", description = "회원 탈퇴 실패") })
     @DeleteMapping("")
-    public ResponseEntity<ServerResponse<String>> deleteMember() {
+    public ResponseEntity<ServerResponse<String>> deleteMember(HttpServletResponse response) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        memberService.deleteMember(currentMemberId);
+        memberService.deleteMember(response, currentMemberId);
         return ResponseEntity.ok(new ServerResponse<>("회원 탈퇴 성공"));
     }
 

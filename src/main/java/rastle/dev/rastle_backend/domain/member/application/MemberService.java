@@ -1,8 +1,12 @@
 package rastle.dev.rastle_backend.domain.member.application;
 
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.ResponseCookie;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.LoginMemberInfoDto;
@@ -15,6 +19,7 @@ import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RedisTemplate<String, String> redisTemplate;
 
     /**
      * 로그인한 멤버 정보 조회
@@ -47,8 +52,21 @@ public class MemberService {
      * @param memberId
      */
     @Transactional
-    public void deleteMember(Long memberId) {
+    public void deleteMember(HttpServletResponse response, Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        redisTemplate.delete(username);
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", null)
+                .maxAge(0)
+                .path("/")
+                .httpOnly(true)
+                .secure(true)
+                .domain("recordyslow.com")
+                .sameSite("Strict")
+                .build();
+
+        response.addHeader("Set-Cookie", cookie.toString());
         memberRepository.delete(member);
     }
 }
