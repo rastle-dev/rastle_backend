@@ -158,15 +158,15 @@ public class MemberAuthService {
      */
 
     public ResponseEntity<String> refreshAccessToken(HttpServletRequest request) {
-        String username = getCurrentUsername();
         String refreshToken = jwtTokenProvider.getRefreshTokenFromRequest(request);
+        Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(refreshToken);
+        String username = authentication.getName();
         String storedToken = redisTemplate.opsForValue().get(username);
         log.info("Username: " + username);
         log.info("Refresh Token: " + refreshToken);
         log.info("Stored Token: " + storedToken);
 
         if (storedToken != null && storedToken.equals(refreshToken)) {
-            Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(refreshToken);
             String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
 
             HttpHeaders responseHeaders = createAuthorizationHeader(newAccessToken);
