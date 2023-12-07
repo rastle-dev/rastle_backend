@@ -26,9 +26,7 @@ import static rastle.dev.rastle_backend.global.common.constants.JwtConstants.BEA
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
-
     private final RedisTemplate<String, String> redisTemplate;
-
     private final ObjectMapper mapper;
 
     @Override
@@ -37,10 +35,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         log.info(request.getMethod() + " " + request.getRequestURI());
         try {
-            // 1. request Header에서 토큰 꺼냄, 여기서 HTTP ONLY 쿠키에서 읽어오게 변경 가능
             String jwt = resolveToken(request);
-            // 2. validateToken으로 유효성 검사
-            // 정상 토큰이면, Authentication을 가져와서 SecurityContext에 저장
             if (jwt != null) {
                 if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
                     Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
@@ -50,46 +45,27 @@ public class JwtFilter extends OncePerRequestFilter {
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                     }
                 } else {
-                    log.error("만료된 엑세스 토큰이다");
                     throw new ExpireAccessTokenException();
                 }
             }
 
             filterChain.doFilter(request, response);
         } catch (ExpireAccessTokenException e) {
-            log.error(e.getMessage());
-            log.error(e.getClass().getName());
-            String result = mapper.writeValueAsString(new ErrorResponse(401L, e.getMessage()));
-            response.setContentType("application/json");
-            response.setCharacterEncoding("utf-8");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
-            // response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
-
-            response.setHeader("Access-Control-Allow-Origin", "https://www.recordyslow.com");
-            try {
-                response.getWriter().write(result);
-            } catch (IOException exception) {
-                e.printStackTrace();
-            }
-
+            handleErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, e.getMessage(), 401L);
         } catch (Exception e) {
-            log.error(e.getMessage());
-            log.error(e.getClass().getName());
-            e.printStackTrace();
-            String result = mapper.writeValueAsString(new ErrorResponse(500L, e.getMessage()));
-            response.setContentType("application/json");
-            response.setCharacterEncoding("utf-8");
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            handleErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage(), 500L);
+        }
+    }
 
-            response.setHeader("Access-Control-Allow-Origin", "https://www.recordyslow.com");
-            // response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+    private void handleErrorResponse(HttpServletResponse response, int statusCode, String message, long errorCode)
+            throws IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf-8");
+        response.setStatus(statusCode);
+        response.setHeader("Access-Control-Allow-Origin", "https://www.recordyslow.com");
 
-            try {
-                response.getWriter().write(result);
-            } catch (IOException exception) {
-                e.printStackTrace();
-            }
+        try (var writer = response.getWriter()) {
+            writer.print(mapper.writeValueAsString(new ErrorResponse(errorCode, message)));
         }
     }
 
@@ -97,7 +73,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             String actualToken = bearerToken.substring(7);
-            log.info("Extracted Token: " + actualToken);
+            log.info("Extracted Access Token: " + actualToken);
             return actualToken;
         }
         return null;

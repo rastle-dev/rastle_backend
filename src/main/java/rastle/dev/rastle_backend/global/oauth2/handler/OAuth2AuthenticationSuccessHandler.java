@@ -48,47 +48,10 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         queryParams.put("social", true);
         targetUrl = buildUriComponents(targetUrl, queryParams).toUriString();
 
-        // Cookie create = new Cookie("created", "true");
-        // response.addCookie(create);
         log.info("target url : " + targetUrl);
         clearAuthenticationAttributes(request, response);
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
-
-    // protected String determineTargetUrlForFirstLogin(HttpServletRequest request,
-    // HttpServletResponse response,
-    // Authentication authentication, OAuth2UserInfo oAuth2UserInfo) {
-    // String targetUrl = getTargetUrlFromCookie(request);
-    // Map<String, Object> queryParams = new HashMap<>();
-
-    // jwtTokenProvider.generateTokenDto(authentication, response);
-
-    // queryParams.put("created", true);
-    // queryParams.put("email", oAuth2UserInfo.getEmail());
-    // queryParams.put("userName", URLEncoder.encode(oAuth2UserInfo.getName(),
-    // StandardCharsets.UTF_8));
-    // queryParams.put("loginType", oAuth2UserInfo.getProvider());
-    // // queryParams.put("accessToken", tokenDto.getAccessToken());
-
-    // return buildUriComponents(targetUrl, queryParams).toUriString();
-    // }
-
-    // protected String determineTargetUrlForLoginAgain(HttpServletRequest request,
-    // HttpServletResponse response,
-    // Authentication authentication) {
-    // String targetUrl = getTargetUrlFromCookie(request);
-    // Map<String, Object> queryParams = new HashMap<>();
-
-    // TokenInfoDTO tokenInfoDto = jwtTokenProvider.generateTokenDto(authentication,
-    // response);
-
-    // // queryParams.put("accessToken", tokenDto.getAccessToken());
-    // queryParams.put("created", false);
-    // response.addHeader("Authorization", "Bearer " +
-    // tokenInfoDto.getAccessToken());
-
-    // return buildUriComponents(targetUrl, queryParams).toUriString();
-    // }
 
     protected void clearAuthenticationAttributes(HttpServletRequest request, HttpServletResponse response) {
         super.clearAuthenticationAttributes(request);
