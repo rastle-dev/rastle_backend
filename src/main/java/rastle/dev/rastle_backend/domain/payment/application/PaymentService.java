@@ -8,6 +8,7 @@ import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderProductRepos
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO;
 import rastle.dev.rastle_backend.domain.payment.repository.mysql.PaymentRepository;
 import rastle.dev.rastle_backend.global.component.OrderNumberComponent;
+import rastle.dev.rastle_backend.global.component.PortOneComponent;
 
 @Service
 @RequiredArgsConstructor
@@ -16,9 +17,10 @@ public class PaymentService {
     private final OrderDetailRepository orderDetailRepository;
     private final OrderProductRepository orderProductRepository;
     private final OrderNumberComponent orderNumberComponent;
+    private final PortOneComponent portOneComponent;
     @Transactional
     public PaymentDTO.PaymentVerificationResponse verifyPayment(PaymentDTO.PaymentVerificationRequest paymentVerificationRequest) {
-
+        portOneComponent.getPaymentData(null, null);
         return null;
     }
 }

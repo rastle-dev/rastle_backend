@@ -89,6 +89,7 @@ public class SecurityConfig {
                         .requestMatchers("/bundle/**").permitAll()
                         .requestMatchers("/event/**").permitAll()
                         .requestMatchers("/orders/**").permitAll()
+                        .requestMatchers("/payments/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/cart/**").hasRole("USER")
                         .requestMatchers(HttpMethod.GET, "/rest-docs").permitAll());
