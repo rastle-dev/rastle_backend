@@ -77,7 +77,7 @@ public class MemberDTO {
         public static class OrderProductDetail {
             private String color;
             private String size;
-            private int count;
+            private Long count;
             private String productName;
         }
     }

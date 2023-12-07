@@ -11,16 +11,8 @@ public class PaymentDTO {
     @NoArgsConstructor
     @Builder
     public static class PaymentVerificationRequest {
-        String pg;
-        String pay_method;
+        String imp_uid;
         String merchant_uid;
-        String name;
-        Long amount;
-        String buyer_email;
-        String buyer_name;
-        String buyer_tel;
-        String buyer_addr;
-        String buyer_postcode;
     }
 
     @Getter

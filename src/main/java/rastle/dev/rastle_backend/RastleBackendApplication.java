@@ -12,7 +12,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 
 @ConfigurationPropertiesScan
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
+//@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
+@SpringBootApplication
 public class RastleBackendApplication {
 
     public static void main(String[] args) {

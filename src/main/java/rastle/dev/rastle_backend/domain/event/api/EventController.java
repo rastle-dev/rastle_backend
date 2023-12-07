@@ -16,7 +16,7 @@ import rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo;
 import rastle.dev.rastle_backend.global.response.FailApiResponses;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
 
-import static rastle.dev.rastle_backend.global.common.constants.CommonConstant.ALL;
+import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.ALL;
 
 @Tag(name = "이벤트 관련 API", description = "이벤트 관련 API 입니다.")
 @RestController
