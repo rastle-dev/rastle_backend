@@ -33,7 +33,7 @@ import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.MemberInfoDto.Order
 import rastle.dev.rastle_backend.domain.member.model.Member;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
-import rastle.dev.rastle_backend.domain.order.repository.mysql.MemberOrderRepository;
+import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderDetailRepository;
 import rastle.dev.rastle_backend.domain.product.dto.ProductDTO.ProductCreateRequest;
 import rastle.dev.rastle_backend.domain.product.dto.ProductDTO.ProductCreateResult;
 import rastle.dev.rastle_backend.domain.product.dto.ProductDTO.ProductUpdateRequest;
@@ -53,7 +53,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static rastle.dev.rastle_backend.global.common.constants.CommonConstant.*;
+import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.*;
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -68,7 +68,7 @@ public class AdminService {
     private final S3Component s3Component;
     private final ProductDetailRepository productDetailRepository;
     private final MemberRepository memberRepository;
-    private final MemberOrderRepository memberOrderRepository;
+    private final OrderDetailRepository orderDetailRepository;
 
     // ==============================================================================================================
     // 상품 관련 서비스
@@ -550,7 +550,7 @@ public class AdminService {
     }
 
     private MemberInfoDto convertMemberToMemberInfoDto(Member member) {
-        List<MemberInfoDto.OrderDetail> allOrderDetails = convertOrdersToOrderDetails(memberOrderRepository.findByMemberId(member.getId()));
+        List<MemberInfoDto.OrderDetail> allOrderDetails = convertOrdersToOrderDetails(orderDetailRepository.findByMemberId(member.getId()));
         return MemberInfoDto.builder()
                 .email(member.getEmail())
                 .userLoginType(member.getUserLoginType())

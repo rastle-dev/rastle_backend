@@ -31,111 +31,112 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-        private final JwtTokenProvider jwtTokenProvider;
-        private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-        private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-        private final RedisTemplate<String, String> redisTemplate;
-        private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
-        private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
-        private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
-        private final CustomOAuth2UserService customOAuth2UserService;
-        private final OAuth2AuthorizationRequestBasedOnCookieRepository oAuth2AuthorizationRequestBasedOnCookieRepository;
-        private final ObjectMapper mapper;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final RedisTemplate<String, String> redisTemplate;
+    private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
+    private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2AuthorizationRequestBasedOnCookieRepository oAuth2AuthorizationRequestBasedOnCookieRepository;
+    private final ObjectMapper mapper;
 
-        @Bean
-        public PasswordEncoder passwordEncoder() {
-                return new BCryptPasswordEncoder();
-        }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-        @Bean
-        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-                // CSRF 설정 Disable
-                http
-                                .cors().configurationSource(corsConfigurationSource())
-                                .and()
-                                .httpBasic().disable()
-                                .csrf().disable();
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        // CSRF 설정 Disable
+        http
+                .cors().configurationSource(corsConfigurationSource())
+                .and()
+                .httpBasic().disable()
+                .csrf().disable();
 
-                // exception handling 할때 우리가 만든 클래스 추가
-                http
-                                .exceptionHandling()
-                                .accessDeniedHandler(jwtAccessDeniedHandler)
-                                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+        // exception handling 할때 우리가 만든 클래스 추가
+        http
+                .exceptionHandling()
+                .accessDeniedHandler(jwtAccessDeniedHandler)
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
 
-                                .and()
-                                .headers()
-                                .frameOptions()
-                                .sameOrigin()
+                .and()
+                .headers()
+                .frameOptions()
+                .sameOrigin()
 
-                                .and()
-                                .sessionManagement()
-                                .sessionCreationPolicy(STATELESS)
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(STATELESS)
 
-                                .and()
-                                .authorizeHttpRequests((requests) -> requests
-                                                .requestMatchers(HttpMethod.OPTIONS, "**").permitAll()
-                                                .requestMatchers(HttpMethod.GET, "/").permitAll()
-                                                .requestMatchers(HttpMethod.GET, "/env_profile").permitAll()
-                                                .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
-                                                .requestMatchers("/actuator/**").authenticated()
-                                                .requestMatchers("/oauth2/**").permitAll()
-                                                .requestMatchers("/login/**").permitAll()
-                                                .requestMatchers("/auth/**").permitAll()
-                                                .requestMatchers("/category/**").permitAll()
-                                                .requestMatchers("/member/**").hasAnyRole("USER", "ADMIN")
-                                                .requestMatchers("/swagger-ui/**").permitAll()
-                                                .requestMatchers("/v1/api-docs/**").permitAll()
-                                                .requestMatchers("/product/**").permitAll()
-                                                .requestMatchers("/bundle/**").permitAll()
-                                                .requestMatchers("/event/**").permitAll()
-                                                .requestMatchers("/admin/**").hasRole("ADMIN")
-                                                .requestMatchers("/cart/**").hasRole("USER")
-                                                .requestMatchers(HttpMethod.GET, "/rest-docs").permitAll());
+                .and()
+                .authorizeHttpRequests((requests) -> requests
+                        .requestMatchers(HttpMethod.OPTIONS, "**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/env_profile").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
+                        .requestMatchers("/actuator/**").authenticated()
+                        .requestMatchers("/oauth2/**").permitAll()
+                        .requestMatchers("/login/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/category/**").permitAll()
+                        .requestMatchers("/member/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/v1/api-docs/**").permitAll()
+                        .requestMatchers("/product/**").permitAll()
+                        .requestMatchers("/bundle/**").permitAll()
+                        .requestMatchers("/event/**").permitAll()
+                        .requestMatchers("/orders/**").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/cart/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/rest-docs").permitAll());
 
-                http
-                                .oauth2Login()
-                                .authorizationEndpoint()
-                                .baseUri("/oauth2/authorization") // default
-                                .authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository)
-                                .and()
-                                .redirectionEndpoint()
-                                .baseUri("/oauth2/callback/*")
-                                .and()
-                                .userInfoEndpoint()
-                                .userService(customOAuth2UserService)
-                                .and()
-                                .successHandler(oAuth2AuthenticationSuccessHandler)
-                                .failureHandler(oAuth2AuthenticationFailureHandler);
+        http
+                .oauth2Login()
+                .authorizationEndpoint()
+                .baseUri("/oauth2/authorization") // default
+                .authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository)
+                .and()
+                .redirectionEndpoint()
+                .baseUri("/oauth2/callback/*")
+                .and()
+                .userInfoEndpoint()
+                .userService(customOAuth2UserService)
+                .and()
+                .successHandler(oAuth2AuthenticationSuccessHandler)
+                .failureHandler(oAuth2AuthenticationFailureHandler);
 
-                http
-                                .apply(new JwtSecurityConfig(jwtTokenProvider, mapper, redisTemplate))
-                                .and()
-                                .logout()
-                                .logoutUrl("/logout")
-                                .logoutSuccessUrl("/auth/logout-redirect")
-                                .clearAuthentication(true)
-                                .logoutSuccessHandler(customLogoutSuccessHandler);
+        http
+                .apply(new JwtSecurityConfig(jwtTokenProvider, mapper, redisTemplate))
+                .and()
+                .logout()
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/auth/logout-redirect")
+                .clearAuthentication(true)
+                .logoutSuccessHandler(customLogoutSuccessHandler);
 
-                return http.build();
-        }
+        return http.build();
+    }
 
-        @Bean
-        public CorsConfigurationSource corsConfigurationSource() {
-                CorsConfiguration configuration = new CorsConfiguration();
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
 
-                configuration.setAllowedOrigins(
-                                Arrays.asList("http://localhost:3000", "https://localhost:3000",
-                                                "https://www.recordyslow.com", "https://recordyslow.com"));
-                configuration.setAllowedMethods(
-                                Arrays.asList("HEAD", "POST", "GET", "DELETE", "PUT", "OPTIONS", "PATCH"));
-                configuration.addAllowedHeader(("*"));
-                configuration.addExposedHeader("Authorization");
-                configuration.addExposedHeader("Set-Cookie");
-                configuration.setAllowCredentials(true);
-                configuration.setMaxAge(3600L);
+        configuration.setAllowedOrigins(
+                Arrays.asList("http://localhost:3000", "https://localhost:3000",
+                        "https://www.recordyslow.com", "https://recordyslow.com"));
+        configuration.setAllowedMethods(
+                Arrays.asList("HEAD", "POST", "GET", "DELETE", "PUT", "OPTIONS", "PATCH"));
+        configuration.addAllowedHeader(("*"));
+        configuration.addExposedHeader("Authorization");
+        configuration.addExposedHeader("Set-Cookie");
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
 
-                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-                source.registerCorsConfiguration("/**", configuration);
-                return source;
-        }
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 }

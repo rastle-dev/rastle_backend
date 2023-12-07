@@ -1,11 +1,13 @@
 package rastle.dev.rastle_backend.domain.order.model;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.member.model.Member;
 import rastle.dev.rastle_backend.global.common.BaseTimeEntity;
 import rastle.dev.rastle_backend.global.common.enums.DeliveryStatus;
+import rastle.dev.rastle_backend.global.common.enums.PaymentStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,28 +29,55 @@ public class OrderDetail extends BaseTimeEntity {
     @Column(name = "order_detail_id")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
-
     @Column(name = "user_name")
     private String userName;
-    @Column(name = "phone_number")
-    private String phoneNumber;
-
+    private String tel;
     private String email;
-    private int zipcode;
-    @Column(name = "street_address")
-    private String streetAddress;
-
-    @Column(name = "detailed_address")
-    private String detailedAddress;
-
+    private String postcode;
+    @Column(name = "delivery_address")
+    private String deliveryAddress;
     @Column(name = "order_number")
     private String orderNumber;
     @Enumerated(STRING)
     @Column(name = "delivery_status")
     private DeliveryStatus deliveryStatus;
+    @Enumerated(STRING)
+    @Column(name = "payment_status")
+    private PaymentStatus paymentStatus;
+
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
     @OneToMany(mappedBy = "orderDetail", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<OrderProduct> orderProduct = new ArrayList<>();
+    private final List<OrderProduct> orderProduct = new ArrayList<>();
+
+    @Builder
+    public OrderDetail(String userName, String tel, String email, String postcode, String deliveryAddress, String orderNumber, DeliveryStatus deliveryStatus, PaymentStatus paymentStatus, Member member) {
+
+        this.userName = userName;
+        this.tel = tel;
+        this.email = email;
+        this.postcode = postcode;
+        this.deliveryAddress = deliveryAddress;
+        this.orderNumber = orderNumber;
+        this.deliveryStatus = deliveryStatus;
+        this.paymentStatus = paymentStatus;
+        this.member = member;
+    }
+
+    public void updateDeliveryStatus(DeliveryStatus status) {
+        this.deliveryStatus = status;
+    }
+
+    public void updateDeliveryAddress(String deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
+    }
+
+    public void updatePostCode(String postcode) {
+        this.postcode = postcode;
+    }
+
+    public void updateOrderNumber(String orderNumber) {
+        this.orderNumber = orderNumber;
+    }
 }

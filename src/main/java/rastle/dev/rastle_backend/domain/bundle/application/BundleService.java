@@ -14,8 +14,8 @@ import rastle.dev.rastle_backend.domain.product.repository.mysql.BundleProductRe
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static rastle.dev.rastle_backend.global.common.constants.CommonConstant.ALL;
-import static rastle.dev.rastle_backend.global.common.constants.CommonConstant.TRUE;
+import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.ALL;
+import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.TRUE;
 
 @Service
 @RequiredArgsConstructor

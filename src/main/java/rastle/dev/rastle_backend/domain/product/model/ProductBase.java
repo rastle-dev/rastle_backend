@@ -36,8 +36,6 @@ public class ProductBase {
 
     @Column(name = "sub_thumbnail_image")
     private String subThumbnailImage;
-//    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-//    private List<Color> colors = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<OrderProduct> orderProducts = new ArrayList<>();
@@ -49,9 +47,6 @@ public class ProductBase {
     @JoinColumn(name = "product_detail_id")
     private ProductDetail productDetail;
 
-//    @OneToOne(cascade = CascadeType.REMOVE)
-//    @JoinColumn(name = "detail_image_id")
-//    private ProductImage detailImage;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<CartProduct> cartProducts = new ArrayList<>();
@@ -67,8 +62,10 @@ public class ProductBase {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+
     @Builder
-    public ProductBase(String name, int price, String mainThumbnailImage, String subThumbnailImage, int discountPrice, Category category, Long displayOrder, boolean visible, Bundle bundle, Event event) {
+    public ProductBase(Long id, String name, int price, String mainThumbnailImage, String subThumbnailImage, int discountPrice, Category category, Long displayOrder, boolean visible, Bundle bundle, Event event) {
+        this.id = id;
         this.name = name;
         this.price = price;
         this.mainThumbnailImage = mainThumbnailImage;
@@ -93,9 +90,6 @@ public class ProductBase {
         this.productDetail = mainImage;
     }
 
-//    public void setDetailImage(ProductImage detailImage) {
-//        this.detailImage = detailImage;
-//    }
 
     public void setDisplayOrder(Long displayOrder) {
         this.displayOrder = displayOrder;
@@ -113,10 +107,6 @@ public class ProductBase {
         this.discountPrice = discount;
     }
 
-
-//    public void setColors(List<Color> colors) {
-//        this.colors = colors;
-//    }
 
     public void setVisible(boolean visible) {
         this.visible = visible;

@@ -92,7 +92,16 @@ public class ProductDTO {
 
 
         public ProductBase toProductBase(Category category, Bundle bundle, Event event) {
-            return new ProductBase(name, price,  null, null, discountPrice, category, displayOrder, visible, bundle, event);
+            return ProductBase.builder()
+                    .name(name)
+                    .price(price)
+                    .discountPrice(discountPrice)
+                    .category(category)
+                    .displayOrder(displayOrder)
+                    .visible(visible)
+                    .bundle(bundle)
+                    .event(event)
+                    .build();
         }
 
     }

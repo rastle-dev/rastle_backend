@@ -17,7 +17,7 @@ import rastle.dev.rastle_backend.global.common.annotation.GetExecutionTime;
 import rastle.dev.rastle_backend.global.response.FailApiResponses;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
 
-import static rastle.dev.rastle_backend.global.common.constants.CommonConstant.ALL;
+import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.ALL;
 
 @Tag(name = "상품 관련 API", description = "상품 관련 API 입니다.")
 @RestController
