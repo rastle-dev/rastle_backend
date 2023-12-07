@@ -8,12 +8,13 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.test.context.ActiveProfiles;
 
 
 @ConfigurationPropertiesScan
-//@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
-@SpringBootApplication
+@EnableScheduling
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 public class RastleBackendApplication {
 
     public static void main(String[] args) {
