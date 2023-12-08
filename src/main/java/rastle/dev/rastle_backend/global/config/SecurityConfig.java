@@ -125,16 +125,16 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(
-                Arrays.asList("http://localhost:3000", "https://localhost:3000",
-                        "https://www.recordyslow.com", "https://recordyslow.com"));
-        configuration.setAllowedMethods(
-                Arrays.asList("HEAD", "POST", "GET", "DELETE", "PUT", "OPTIONS", "PATCH"));
-        configuration.addAllowedHeader(("*"));
-        configuration.addExposedHeader("Authorization");
-        configuration.addExposedHeader("Set-Cookie");
-        configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L);
+                configuration.setAllowedOrigins(
+                                Arrays.asList("http://localhost:3000", "https://localhost:3000",
+                                                "https://www.recordyslow.com", "https://recordyslow.com"));
+                configuration.setAllowedMethods(
+                                Arrays.asList("HEAD", "POST", "GET", "DELETE", "PUT", "OPTIONS", "PATCH"));
+                configuration.addAllowedHeader(("*"));
+                configuration.addExposedHeader("Authorization");
+                // configuration.addExposedHeader("Set-Cookie");
+                configuration.setAllowCredentials(true);
+                configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
