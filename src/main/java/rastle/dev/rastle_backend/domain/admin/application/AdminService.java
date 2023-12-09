@@ -230,7 +230,7 @@ public class AdminService {
     @Transactional
     public ProductImageInfo updateMainThumbnail(Long id, MultipartFile mainThumbnail) {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        s3Component.deleteImageByUrl(productBase.getMainThumbnailImage());
+//        s3Component.deleteImageByUrl(productBase.getMainThumbnailImage());
         String mainThumbnailUrl = s3Component.uploadSingleImageToS3(MAIN_THUMBNAIL, mainThumbnail);
         productBase.setMainThumbnailImage(mainThumbnailUrl);
 
@@ -243,7 +243,7 @@ public class AdminService {
     @Transactional
     public ProductImageInfo updateSubThumbnail(Long id, MultipartFile subThumbnail) {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        s3Component.deleteImageByUrl(productBase.getSubThumbnailImage());
+//        s3Component.deleteImageByUrl(productBase.getSubThumbnailImage());
         String subThumbnailUrl = s3Component.uploadSingleImageToS3(SUB_THUMBNAIL, subThumbnail);
         productBase.setSubThumbnailImage(subThumbnailUrl);
 
@@ -272,9 +272,9 @@ public class AdminService {
 
     private ProductImageInfo updateImage(List<MultipartFile> detailImages, ProductBase productBase,
                                          List<String> toDelete, ProductDetail productDetail, String imageType) throws JsonProcessingException {
-        for (String image : toDelete) {
-            s3Component.deleteImageByUrl(image);
-        }
+//        for (String image : toDelete) {
+//            s3Component.deleteImageByUrl(image);
+//        }
         ProductImage productImage = s3Component.uploadAndGetImageUrlList(imageType, detailImages);
         if (imageType.equals(MAIN_IMAGE)) {
             productDetail.setProductMainImages(productImage);
