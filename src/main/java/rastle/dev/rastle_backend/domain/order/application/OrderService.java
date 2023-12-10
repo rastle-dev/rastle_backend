@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import static rastle.dev.rastle_backend.global.common.enums.DeliveryStatus.NOT_STARTED;
-import static rastle.dev.rastle_backend.global.common.enums.PaymentStatus.NOT_PAID;
+import static rastle.dev.rastle_backend.global.common.enums.PaymentStatus.READY;
 
 @Service
 @RequiredArgsConstructor
@@ -42,7 +42,7 @@ public class OrderService {
         }
         OrderDetail orderDetail = OrderDetail.builder()
                 .deliveryStatus(NOT_STARTED)
-                .paymentStatus(NOT_PAID)
+                .paymentStatus(READY)
                 .member(member)
                 .build();
         orderDetailRepository.save(orderDetail);
