@@ -18,4 +18,7 @@ public class Payment extends BaseTimeEntity {
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "payment_id")
     private Long id;
+    @Column(name = "imp_id", unique = true)
+    private String impId;
+
 }

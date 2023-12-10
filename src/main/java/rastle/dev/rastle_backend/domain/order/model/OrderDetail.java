@@ -1,6 +1,7 @@
 package rastle.dev.rastle_backend.domain.order.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,11 +37,14 @@ public class OrderDetail extends BaseTimeEntity {
     private String postcode;
     @Column(name = "delivery_address")
     private String deliveryAddress;
-    @Column(name = "order_number")
+    @NotNull
+    @Column(name = "order_number", unique = true)
     private String orderNumber;
+    @NotNull
     @Enumerated(STRING)
     @Column(name = "delivery_status")
     private DeliveryStatus deliveryStatus;
+    @NotNull
     @Enumerated(STRING)
     @Column(name = "payment_status")
     private PaymentStatus paymentStatus;
