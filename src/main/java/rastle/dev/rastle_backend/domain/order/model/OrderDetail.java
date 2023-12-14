@@ -37,7 +37,6 @@ public class OrderDetail extends BaseTimeEntity {
     private String postcode;
     @Column(name = "delivery_address")
     private String deliveryAddress;
-    @NotNull
     @Column(name = "order_number", unique = true)
     private String orderNumber;
     @NotNull
