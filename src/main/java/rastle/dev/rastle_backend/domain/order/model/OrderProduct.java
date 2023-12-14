@@ -26,7 +26,9 @@ public class OrderProduct {
     private String color;
     private String size;
     private Long count;
+    @Column(name = "total_price")
     private Long totalPrice; // 구매한 상품 총 가격
+    @Column(name = "product_order_number")
     private String productOrderNumber;
 
     @ManyToOne

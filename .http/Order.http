@@ -1,5 +1,5 @@
 ### 주문 생성
-POST http://localhost:8080/orders
+POST https://api.recordyslow.com/orders
 Content-Type: application/json
 
 {
