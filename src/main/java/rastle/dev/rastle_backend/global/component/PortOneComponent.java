@@ -6,14 +6,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import rastle.dev.rastle_backend.domain.payment.dto.PortOneDTO;
+import rastle.dev.rastle_backend.domain.payment.dto.PortOneDTO.PortOnePaymentResponse;
 import rastle.dev.rastle_backend.global.dto.request.PortOneTokenRequest;
 import rastle.dev.rastle_backend.global.dto.response.PortOneTokenResponse;
 import rastle.dev.rastle_backend.global.error.exception.port_one.PortOneException;
 
+import java.util.Map;
+
 import static java.util.Collections.singletonList;
+import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.*;
 
 @Component
@@ -32,10 +38,31 @@ public class PortOneComponent {
     private static final String TOKEN_URL = "/users/getToken";
     private static final String PAYMENT_URL = "/payments/";
 
-    public void getPaymentData(String impId, String merchantId) {
+    public PortOnePaymentResponse getPaymentData(String impId, String merchantId) {
         String accessToken = getAccessToken();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(singletonList(APPLICATION_JSON));
+        headers.setContentType(APPLICATION_JSON);
+        headers.set("Authorization", accessToken);
 
+        HttpEntity request = new HttpEntity(headers);
 
+        try {
+            ResponseEntity<PortOnePaymentResponse> paymentResponse = restTemplate.exchange(
+                    BASE_URL + PAYMENT_URL + impId,
+                    GET,
+                    request,
+                    PortOnePaymentResponse.class
+            );
+            return paymentResponse.getBody();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            String message = e.getMessage();
+            String encoded = convertString(message);
+            log.info(encoded);
+            throw new PortOneException(e.getMessage());
+        }
     }
 
     private String getAccessToken() {

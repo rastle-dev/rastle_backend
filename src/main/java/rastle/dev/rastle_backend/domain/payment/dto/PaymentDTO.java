@@ -20,15 +20,6 @@ public class PaymentDTO {
     @NoArgsConstructor
     @Builder
     public static class PaymentVerificationResponse {
-        String pg;
-        String pay_method;
-        String orderNumber;
-        String name;
-        Long amount;
-        String buyerEmail;
-        String buyerName;
-        String buyerTel;
-        String buyerAddr;
-        String buyerPostcode;
+        Boolean verified;
     }
 }
