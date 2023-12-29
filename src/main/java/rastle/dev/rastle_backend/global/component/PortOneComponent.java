@@ -26,8 +26,7 @@ import static org.springframework.http.MediaType.*;
 @Slf4j
 @RequiredArgsConstructor
 public class PortOneComponent {
-    @Value("${port_one.key}")
-    private String apiKey;
+    private final String apiKey = "0032172035760746";
     @Value("${port_one.secret}")
     private String apiSecret;
     private final RestTemplate restTemplate;
