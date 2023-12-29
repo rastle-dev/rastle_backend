@@ -1,5 +1,5 @@
 ### 결제 검증
-POST https://api.recordyslow.com/payments/complete
+POST http://localhost:8080/payments/complete
 Content-Type: application/json
 
 {
