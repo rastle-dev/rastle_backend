@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
@@ -14,6 +15,7 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
     @Query("SELECT od FROM OrderDetail od JOIN FETCH od.orderProduct WHERE od.orderNumber = :orderNumber")
     Optional<OrderDetail> findByOrderNumber(@Param("orderNumber") String orderNumber);
 
+    @Modifying
     @Query("DELETE FROM OrderDetail od WHERE od.paymentStatus = 'READY'")
     void deleteAllReadyOrders();
 }
