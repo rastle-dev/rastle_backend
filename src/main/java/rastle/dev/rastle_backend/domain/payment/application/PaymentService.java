@@ -1,6 +1,7 @@
 package rastle.dev.rastle_backend.domain.payment.application;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
@@ -20,6 +21,7 @@ import rastle.dev.rastle_backend.global.component.PortOneComponent;
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class PaymentService {
     private final PaymentRepository paymentRepository;
@@ -31,6 +33,7 @@ public class PaymentService {
     public PaymentVerificationResponse verifyPayment(PaymentVerificationRequest paymentVerificationRequest) {
         PortOnePaymentResponse paymentResponse = portOneComponent.getPaymentData(paymentVerificationRequest.getImp_uid(), paymentVerificationRequest.getMerchant_uid());
         String merchantUid = paymentResponse.getResponse().getMerchant_uid();
+        log.info(merchantUid);
         if (!merchantUid.equals(paymentVerificationRequest.getMerchant_uid())) {
             throw new PaymentException("포트원에서 전달받은 주문번호와, 브라우저에서 넘어온 주문번호가 다릅니다.");
         }
