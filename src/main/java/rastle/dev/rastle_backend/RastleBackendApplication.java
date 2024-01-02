@@ -14,7 +14,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ConfigurationPropertiesScan
 @EnableScheduling
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
+@SpringBootApplication
+//@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 public class RastleBackendApplication {
 
     public static void main(String[] args) {

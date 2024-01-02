@@ -11,10 +11,9 @@ import org.springframework.stereotype.Service;
 
 import rastle.dev.rastle_backend.domain.cart.model.Cart;
 import rastle.dev.rastle_backend.domain.cart.repository.mysql.CartRepository;
-import rastle.dev.rastle_backend.domain.member.model.Authority;
-import rastle.dev.rastle_backend.domain.member.model.Member;
-import rastle.dev.rastle_backend.domain.member.model.UserLoginType;
-import rastle.dev.rastle_backend.domain.member.model.UserPrincipal;
+import rastle.dev.rastle_backend.domain.coupon.model.Coupon;
+import rastle.dev.rastle_backend.domain.member.model.*;
+import rastle.dev.rastle_backend.domain.coupon.repository.mysql.CouponRepository;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
 import rastle.dev.rastle_backend.global.oauth2.OAuth2UserInfo;
 import rastle.dev.rastle_backend.global.oauth2.OAuth2UserInfoFactory;
@@ -24,7 +23,7 @@ import rastle.dev.rastle_backend.global.oauth2.OAuth2UserInfoFactory;
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
         private final MemberRepository memberRepository;
         private final CartRepository cartRepository;
-
+        private final CouponRepository couponRepository;
         @Transactional
         @Override
         public OAuth2User loadUser(OAuth2UserRequest userRequest)
@@ -54,6 +53,8 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                                 .build();
                 Cart build = Cart.builder().member(member).build();
                 cartRepository.save(build);
+                Coupon coupon = Coupon.builder().discount(3000).name("회원가입 축하 쿠폰").member(member).build();
+                couponRepository.save(coupon);
                 return memberRepository.save(member);
         }
 }
