@@ -26,7 +26,9 @@ import rastle.dev.rastle_backend.domain.cart.repository.mysql.CartRepository;
 // import rastle.dev.rastle_backend.domain.Member.dto.MemberAuthDTO.AdminSignUpDto;
 import rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO.LoginDto;
 import rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO.SignUpDto;
+import rastle.dev.rastle_backend.domain.coupon.model.Coupon;
 import rastle.dev.rastle_backend.domain.member.model.Member;
+import rastle.dev.rastle_backend.domain.coupon.repository.mysql.CouponRepository;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
 import rastle.dev.rastle_backend.domain.token.dto.TokenDTO.TokenInfoDTO;
 import rastle.dev.rastle_backend.global.error.exception.InvalidRequestException;
@@ -42,6 +44,7 @@ public class MemberAuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String, String> redisTemplate;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final CouponRepository couponRepository;
 
     /**
      * 회원가입
@@ -59,7 +62,8 @@ public class MemberAuthService {
         memberRepository.save(entity);
         Cart build = Cart.builder().member(entity).build();
         cartRepository.save(build);
-
+        Coupon coupon = Coupon.builder().discount(3000).name("회원가입 축하 쿠폰").member(entity).build();
+        couponRepository.save(coupon);
         return signUpDto;
     }
 

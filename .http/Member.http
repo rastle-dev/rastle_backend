@@ -1,9 +1,9 @@
 ### 멤버 회원가입
-POST https://rastledev.site/auth/signup
+POST http://localhost:8080/auth/signup
 Content-Type: application/json
 
 {
-  "email": "testest2@email.com",
+  "email": "testest21@email.com",
   "password": "12341234@",
   "username": "qwerqwer",
   "phoneNumber": "01012541534"
@@ -14,7 +14,7 @@ POST https://rastledev.site/auth/login
 Content-Type: application/json
 
 {
-  "email": "testest2@email.com",
+  "email": "testest21@email.com",
   "password": "12341234@"
 }
 
