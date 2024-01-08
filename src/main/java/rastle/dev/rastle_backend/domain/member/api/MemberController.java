@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import rastle.dev.rastle_backend.domain.member.application.MemberService;
 import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.LoginMemberInfoDto;
 import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.PasswordDto;
+import rastle.dev.rastle_backend.domain.member.model.Address;
 import rastle.dev.rastle_backend.global.response.FailApiResponses;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
 import rastle.dev.rastle_backend.global.util.SecurityUtil;
@@ -61,6 +62,28 @@ public class MemberController {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         memberService.deleteMember(response, currentMemberId);
         return ResponseEntity.ok(new ServerResponse<>("회원 탈퇴 성공"));
+    }
+
+    @Operation(summary = "회원 주소록 갱신", description = "회원 주소록 갱신 API입니다.")
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "회원 주소록 갱신 성공"),
+            @ApiResponse(responseCode = "400", description = "회원 주소록 갱신 실패") })
+    @PutMapping("/updateMemberAddress")
+    public ResponseEntity<ServerResponse<String>> updateMemberAddress(HttpServletResponse response,
+            @RequestBody Address address) {
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        memberService.updateMemberAddress(currentMemberId, address);
+        return ResponseEntity.ok(new ServerResponse<>("회원 주소록 갱신 성공"));
+    }
+
+    @Operation(summary = "회원 주소록 조회", description = "회원 주소록 조회 API입니다.")
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "회원 주소록 조회 성공"),
+            @ApiResponse(responseCode = "400", description = "회원 주소록 조회 실패") })
+    @GetMapping("/getMemberAddress")
+    public ResponseEntity<ServerResponse<Address>> getMemberAddress(HttpServletResponse response) {
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        Address address = memberService.getMemberAddress(currentMemberId);
+        ServerResponse<Address> serverResponse = new ServerResponse<>(address);
+        return ResponseEntity.ok(serverResponse);
     }
 
 }
