@@ -24,6 +24,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         private final MemberRepository memberRepository;
         private final CartRepository cartRepository;
         private final CouponRepository couponRepository;
+
         @Transactional
         @Override
         public OAuth2User loadUser(OAuth2UserRequest userRequest)
@@ -47,7 +48,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 Member member = Member.builder()
                                 .email(memberInfo.getEmail())
                                 .userName(memberInfo.getName())
-//                                .phoneNumber(memberInfo.getPhoneNumber())
+                                .phoneNumber(memberInfo.getPhoneNumber() != null ? memberInfo.getPhoneNumber() : "")
                                 .userLoginType(loginType)
                                 .authority(Authority.ROLE_USER)
                                 .build();
