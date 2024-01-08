@@ -34,64 +34,64 @@ public class DatabaseConfig {
 
     private final DatabaseProperty databaseProperty;
 
-//    public DataSource routingDataProperty(String url) {
-//        HikariDataSource hikariDataSource = new HikariDataSource();
-//        hikariDataSource.setJdbcUrl(databaseProperty.getUrl());
-//        hikariDataSource.setDriverClassName(databaseProperty.getDriverClassName());
-//        hikariDataSource.setPassword(databaseProperty.getPassword());
-//        hikariDataSource.setUsername(databaseProperty.getUsername());
-//
-//        return hikariDataSource;
-//    }
-//
-//    @Bean
-//    public DataSource routingDataSource() {
-//        ReplicationRoutingDataSource replicationRoutingDataSource = new ReplicationRoutingDataSource();
-//        DataSource master = routingDataProperty(databaseProperty.getUrl());
-//
-//        Map<Object, Object> dataSourceMap = new LinkedHashMap<>();
-//        dataSourceMap.put("master", master);
-//        log.info("master "+databaseProperty.getUrl());
-//
-//        databaseProperty.getSlaveList().forEach(slave -> {
-//            dataSourceMap.put(slave.getName(), routingDataProperty(slave.getUrl()));
-//            log.info(slave.getName()+" "+slave.getUrl());
-//        });
-//
-//        replicationRoutingDataSource.setTargetDataSources(dataSourceMap);
-//        replicationRoutingDataSource.setDefaultTargetDataSource(master);
-//        return replicationRoutingDataSource;
-//    }
-//
-//    @Bean
-//    public DataSource dataSource() {
-//        return new LazyConnectionDataSourceProxy(routingDataSource());
-//    }
-//
-//    @Bean
-//    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-//        LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
-//        entityManagerFactoryBean.setDataSource(dataSource());
-//        entityManagerFactoryBean.setPackagesToScan("rastle.dev.rastle_backend");
-//        JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-//        entityManagerFactoryBean.setJpaVendorAdapter(vendorAdapter);
-//
-//        return entityManagerFactoryBean;
-//    }
-//
-//    @Bean
-//    public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
-//        JpaTransactionManager tm = new JpaTransactionManager();
-//        tm.setEntityManagerFactory(entityManagerFactory);
-//        return tm;
-//    }
-//
-//    @Bean
-//    public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception {
-//        SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
-//        sessionFactory.setDataSource(dataSource);
-//        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-//        sessionFactory.setMapperLocations(resolver.getResources("classpath:/mapper/*.xml"));
-//        return sessionFactory.getObject();
-//    }
+    public DataSource routingDataProperty(String url) {
+        HikariDataSource hikariDataSource = new HikariDataSource();
+        hikariDataSource.setJdbcUrl(databaseProperty.getUrl());
+        hikariDataSource.setDriverClassName(databaseProperty.getDriverClassName());
+        hikariDataSource.setPassword(databaseProperty.getPassword());
+        hikariDataSource.setUsername(databaseProperty.getUsername());
+
+        return hikariDataSource;
+    }
+
+    @Bean
+    public DataSource routingDataSource() {
+        ReplicationRoutingDataSource replicationRoutingDataSource = new ReplicationRoutingDataSource();
+        DataSource master = routingDataProperty(databaseProperty.getUrl());
+
+        Map<Object, Object> dataSourceMap = new LinkedHashMap<>();
+        dataSourceMap.put("master", master);
+        log.info("master "+databaseProperty.getUrl());
+
+        databaseProperty.getSlaveList().forEach(slave -> {
+            dataSourceMap.put(slave.getName(), routingDataProperty(slave.getUrl()));
+            log.info(slave.getName()+" "+slave.getUrl());
+        });
+
+        replicationRoutingDataSource.setTargetDataSources(dataSourceMap);
+        replicationRoutingDataSource.setDefaultTargetDataSource(master);
+        return replicationRoutingDataSource;
+    }
+
+    @Bean
+    public DataSource dataSource() {
+        return new LazyConnectionDataSourceProxy(routingDataSource());
+    }
+
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+        LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
+        entityManagerFactoryBean.setDataSource(dataSource());
+        entityManagerFactoryBean.setPackagesToScan("rastle.dev.rastle_backend");
+        JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        entityManagerFactoryBean.setJpaVendorAdapter(vendorAdapter);
+
+        return entityManagerFactoryBean;
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
+        JpaTransactionManager tm = new JpaTransactionManager();
+        tm.setEntityManagerFactory(entityManagerFactory);
+        return tm;
+    }
+
+    @Bean
+    public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception {
+        SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
+        sessionFactory.setDataSource(dataSource);
+        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+        sessionFactory.setMapperLocations(resolver.getResources("classpath:/mapper/*.xml"));
+        return sessionFactory.getObject();
+    }
 }
