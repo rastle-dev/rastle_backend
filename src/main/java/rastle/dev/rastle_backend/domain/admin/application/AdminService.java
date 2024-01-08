@@ -54,6 +54,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.*;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -106,7 +107,8 @@ public class AdminService {
         }
         ProductBase productBase = createRequest.toProductBase(category, bundle, event);
         productBaseRepository.save(productBase);
-        ProductDetail productDetail = productDetailRepository.save(ProductDetail.builder().productColors(createRequest.getProductColor()).build());
+        ProductDetail productDetail = productDetailRepository
+                .save(ProductDetail.builder().productColors(createRequest.getProductColor()).build());
         productBase.setProductDetail(productDetail);
 
         return toCreateResult(productBase, createRequest, event, bundle);
@@ -132,7 +134,6 @@ public class AdminService {
         }
         return createResult;
     }
-
 
     @Transactional
     public ProductImageInfo uploadMainThumbnail(Long id, MultipartFile mainThumbnail) {
@@ -173,10 +174,10 @@ public class AdminService {
     }
 
     @Transactional
-    public ProductImageInfo uploadDetailImages(Long id, List<MultipartFile> detailImages) throws JsonProcessingException {
+    public ProductImageInfo uploadDetailImages(Long id, List<MultipartFile> detailImages)
+            throws JsonProcessingException {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         ProductDetail productDetail = productBase.getProductDetail();
-
 
         ProductImage productImage = s3Component.uploadAndGetImageUrlList(DETAIL_IMAGE, detailImages);
         productDetail.setProductDetailImages(productImage);
@@ -188,7 +189,8 @@ public class AdminService {
     }
 
     @Transactional
-    public ProductUpdateRequest updateProductInfo(Long id, ProductUpdateRequest updateRequest) throws JsonProcessingException {
+    public ProductUpdateRequest updateProductInfo(Long id, ProductUpdateRequest updateRequest)
+            throws JsonProcessingException {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         ProductDetail productDetail = productBase.getProductDetail();
         if (updateRequest.getVisible() != null) {
@@ -230,7 +232,7 @@ public class AdminService {
     @Transactional
     public ProductImageInfo updateMainThumbnail(Long id, MultipartFile mainThumbnail) {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-//        s3Component.deleteImageByUrl(productBase.getMainThumbnailImage());
+        // s3Component.deleteImageByUrl(productBase.getMainThumbnailImage());
         String mainThumbnailUrl = s3Component.uploadSingleImageToS3(MAIN_THUMBNAIL, mainThumbnail);
         productBase.setMainThumbnailImage(mainThumbnailUrl);
 
@@ -243,7 +245,7 @@ public class AdminService {
     @Transactional
     public ProductImageInfo updateSubThumbnail(Long id, MultipartFile subThumbnail) {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-//        s3Component.deleteImageByUrl(productBase.getSubThumbnailImage());
+        // s3Component.deleteImageByUrl(productBase.getSubThumbnailImage());
         String subThumbnailUrl = s3Component.uploadSingleImageToS3(SUB_THUMBNAIL, subThumbnail);
         productBase.setSubThumbnailImage(subThumbnailUrl);
 
@@ -258,23 +260,24 @@ public class AdminService {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         ProductDetail productDetail = productBase.getProductDetail();
         ProductImage mainImage = productDetail.getProductMainImages();
-        return updateImage(mainImages, productBase, mainImage.getImageUrls(),productDetail, MAIN_IMAGE);
+        return updateImage(mainImages, productBase, mainImage.getImageUrls(), productDetail, MAIN_IMAGE);
 
     }
 
     @Transactional
-    public ProductImageInfo updateDetailImages(Long id, List<MultipartFile> detailImages) throws JsonProcessingException {
+    public ProductImageInfo updateDetailImages(Long id, List<MultipartFile> detailImages)
+            throws JsonProcessingException {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         ProductDetail productDetail = productBase.getProductDetail();
         ProductImage detailImage = productDetail.getProductDetailImages();
-        return updateImage(detailImages, productBase, detailImage.getImageUrls(),productDetail, DETAIL_IMAGE);
+        return updateImage(detailImages, productBase, detailImage.getImageUrls(), productDetail, DETAIL_IMAGE);
     }
 
     private ProductImageInfo updateImage(List<MultipartFile> detailImages, ProductBase productBase,
-                                         List<String> toDelete, ProductDetail productDetail, String imageType) throws JsonProcessingException {
-//        for (String image : toDelete) {
-//            s3Component.deleteImageByUrl(image);
-//        }
+            List<String> toDelete, ProductDetail productDetail, String imageType) throws JsonProcessingException {
+        // for (String image : toDelete) {
+        // s3Component.deleteImageByUrl(image);
+        // }
         ProductImage productImage = s3Component.uploadAndGetImageUrlList(imageType, detailImages);
         if (imageType.equals(MAIN_IMAGE)) {
             productDetail.setProductMainImages(productImage);
@@ -550,14 +553,17 @@ public class AdminService {
     }
 
     private MemberInfoDto convertMemberToMemberInfoDto(Member member) {
-        List<MemberInfoDto.OrderDetail> allOrderDetails = convertOrdersToOrderDetails(orderDetailRepository.findByMemberId(member.getId()));
+        List<MemberInfoDto.OrderDetail> allOrderDetails = convertOrdersToOrderDetails(
+                orderDetailRepository.findByMemberId(member.getId()));
         return MemberInfoDto.builder()
                 .email(member.getEmail())
                 .userLoginType(member.getUserLoginType())
                 .userName(member.getUserName())
                 .phoneNumber(member.getPhoneNumber())
-                .address(String.format("%s %s %s", member.getZipCode(), member.getRoadAddress(),
-                        member.getDetailAddress()))
+                // .address(String.format("%s %s %s", member.getZipCode(),
+                // member.getRoadAddress(),
+                // member.getDetailAddress()))
+                .address(member.getAddress().toString())
                 .createdDate(member.getCreatedDate())
                 .allOrderDetails(allOrderDetails)
                 .build();

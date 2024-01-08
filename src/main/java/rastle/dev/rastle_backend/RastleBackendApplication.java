@@ -11,7 +11,6 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.test.context.ActiveProfiles;
 
-
 @ConfigurationPropertiesScan
 @EnableScheduling
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})

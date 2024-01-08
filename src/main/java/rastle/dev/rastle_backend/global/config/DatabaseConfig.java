@@ -22,6 +22,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
 @Configuration
 @EnableJpaAuditing
 @EnableJpaRepositories(basePackages = { DatabaseConfig.RDS_DOMAIN_REPO })
@@ -51,11 +52,11 @@ public class DatabaseConfig {
 
         Map<Object, Object> dataSourceMap = new LinkedHashMap<>();
         dataSourceMap.put("master", master);
-        log.info("master "+databaseProperty.getUrl());
+        log.info("master " + databaseProperty.getUrl());
 
         databaseProperty.getSlaveList().forEach(slave -> {
             dataSourceMap.put(slave.getName(), routingDataProperty(slave.getUrl()));
-            log.info(slave.getName()+" "+slave.getUrl());
+            log.info(slave.getName() + " " + slave.getUrl());
         });
 
         replicationRoutingDataSource.setTargetDataSources(dataSourceMap);
