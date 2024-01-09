@@ -3,6 +3,6 @@ POST https://api.recordyslow.com/payments/complete
 Content-Type: application/json
 
 {
-  "imp_uid": "imp_800508652685",
-  "merchant_uid": "min_1702907508076"
+  "imp_uid": "imp_915528547565",
+  "merchant_uid": "17047278430072"
 }
