@@ -62,6 +62,8 @@ public class JwtFilter extends OncePerRequestFilter {
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");
         response.setStatus(statusCode);
+        // response.setHeader("Access-Control-Allow-Origin",
+        // "https://www.recordyslow.com");
         response.setHeader("Access-Control-Allow-Origin", "https://www.recordyslow.com");
 
         try (var writer = response.getWriter()) {

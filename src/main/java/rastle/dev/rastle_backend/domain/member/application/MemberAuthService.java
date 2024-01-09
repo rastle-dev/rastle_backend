@@ -147,8 +147,9 @@ public class MemberAuthService {
                 .path("/")
                 .httpOnly(true)
                 .secure(true)
-                .domain("recordyslow.com")
-                .sameSite("Strict")
+                // .domain("recordyslow.com")
+                // .sameSite("Strict")
+                .sameSite("None")
                 .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
