@@ -72,7 +72,7 @@ public class MemberService {
     }
 
     /**
-     * 주소록 조회
+     * 주소지 조회
      * 
      * @param memberId
      */
@@ -83,7 +83,7 @@ public class MemberService {
     }
 
     /**
-     * 주소록 갱신
+     * 주소지 갱신
      * 
      * @param memberId
      * @param newAddress
@@ -92,5 +92,18 @@ public class MemberService {
     public void updateMemberAddress(Long memberId, Address newAddress) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
         member.updateAddress(newAddress);
+    }
+
+    /**
+     * 전화번호 갱신
+     * 
+     * @param memberId
+     * @param newPhoneNumber
+     */
+
+    @Transactional
+    public void updateMemberPhoneNumber(Long memberId, String newPhoneNumber) {
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+        member.updatePhoneNumber(newPhoneNumber);
     }
 }
