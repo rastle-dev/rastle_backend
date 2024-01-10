@@ -51,20 +51,22 @@ public class JwtFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         } catch (ExpireAccessTokenException e) {
-            handleErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, e.getMessage(), 401L);
+            handleErrorResponse(request, response, HttpServletResponse.SC_UNAUTHORIZED, e.getMessage(), 401L);
         } catch (Exception e) {
-            handleErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage(), 500L);
+            handleErrorResponse(request, response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage(), 500L);
         }
     }
 
-    private void handleErrorResponse(HttpServletResponse response, int statusCode, String message, long errorCode)
+    private void handleErrorResponse(HttpServletRequest request, HttpServletResponse response, int statusCode, String message, long errorCode)
             throws IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");
         response.setStatus(statusCode);
-        // response.setHeader("Access-Control-Allow-Origin",
-        // "https://www.recordyslow.com");
-        response.setHeader("Access-Control-Allow-Origin", "https://www.recordyslow.com");
+        if (request.getHeader("Origin") == null) {
+            response.setHeader("Access-Control-Allow-Origin", "https://www.recordyslow.com");
+        } else {
+            response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
+        }
 
         try (var writer = response.getWriter()) {
             writer.print(mapper.writeValueAsString(new ErrorResponse(errorCode, message)));
