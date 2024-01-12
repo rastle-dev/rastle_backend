@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class OrderSimpleInfo {
-    Long orderId,
+    Long orderId;
     LocalDateTime orderDate;
     String orderNumber;
     DeliveryStatus deliveryStatus;
