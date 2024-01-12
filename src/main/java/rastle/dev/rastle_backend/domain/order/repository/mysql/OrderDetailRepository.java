@@ -3,10 +3,13 @@ package rastle.dev.rastle_backend.domain.order.repository.mysql;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import rastle.dev.rastle_backend.domain.order.dto.OrderSimpleInfo;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
 
 public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> {
@@ -18,4 +21,8 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
     @Modifying
     @Query("DELETE FROM OrderDetail od WHERE od.paymentStatus = 'READY'")
     void deleteAllReadyOrders();
+    @Query("SELECT NEW rastle.dev.rastle_backend.domain.order.dto.OrderSimpleInfo(" +
+        "o.id, o.createdTime, o.orderNumber, o.deliveryStatus) " +
+        "FROM OrderDetail o WHERE o.member.id = :memberId ORDER BY o.createdTime DESC")
+    Page<OrderSimpleInfo> findSimpleOrderInfoByMemberId(@Param("memberId") Long memberId, Pageable pageable);
 }
