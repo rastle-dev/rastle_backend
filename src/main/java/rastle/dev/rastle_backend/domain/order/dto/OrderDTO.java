@@ -81,4 +81,14 @@ public class OrderDTO {
 
         List<ProductOrderResponse> orderProducts;
     }
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class MemberOrderInfo {
+        OrderSimpleInfo orderInfo;
+        List<SimpleProductOrderInfo> productOrderInfos;
+
+    }
+
 }

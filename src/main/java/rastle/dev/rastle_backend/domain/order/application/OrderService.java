@@ -1,14 +1,16 @@
 package rastle.dev.rastle_backend.domain.order.application;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rastle.dev.rastle_backend.domain.member.model.Member;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
-import rastle.dev.rastle_backend.domain.order.dto.OrderDTO.OrderCreateRequest;
-import rastle.dev.rastle_backend.domain.order.dto.OrderDTO.OrderCreateResponse;
-import rastle.dev.rastle_backend.domain.order.dto.OrderDTO.ProductOrderRequest;
-import rastle.dev.rastle_backend.domain.order.dto.OrderDTO.ProductOrderResponse;
+import rastle.dev.rastle_backend.domain.order.dto.OrderDTO;
+import rastle.dev.rastle_backend.domain.order.dto.OrderDTO.*;
+import rastle.dev.rastle_backend.domain.order.dto.OrderSimpleInfo;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
 import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderDetailRepository;
@@ -79,5 +81,16 @@ public class OrderService {
                 }
 
                 return orderResponses;
+        }
+
+        @Transactional(readOnly = true)
+        public Page<?> getMemberOrder(Long memberId, Pageable pageable) {
+                Page<OrderSimpleInfo> simpleOrderInfoByMemberId = orderDetailRepository.findSimpleOrderInfoByMemberId(memberId, pageable);
+                List<MemberOrderInfo> memberOrderInfos = new ArrayList<>();
+                for (OrderSimpleInfo orderSimpleInfo : simpleOrderInfoByMemberId) {
+                        memberOrderInfos.add(new MemberOrderInfo(orderSimpleInfo, orderProductRepository.findSimpleProductOrderInfoByOrderId(orderSimpleInfo.getOrderId())));
+                }
+                return new PageImpl<MemberOrderInfo>(memberOrderInfos, pageable, simpleOrderInfoByMemberId.getTotalElements());
+
         }
 }
