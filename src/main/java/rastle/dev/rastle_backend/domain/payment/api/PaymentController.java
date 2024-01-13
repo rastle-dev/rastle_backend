@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rastle.dev.rastle_backend.domain.payment.application.PaymentService;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO;
+import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentPrepareRequest;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentVerificationRequest;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentVerificationResponse;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
@@ -32,8 +33,8 @@ public class PaymentController {
     }
 
     @Operation(summary = "결제 사전 검증 API", description = "결제 사전 검증 API 입니다.")
-    @PostMapping("/verify")
-    public ResponseEntity<?> verifyPaymentCreation() {
-        return null;
+    @PostMapping("/prepare")
+    public ResponseEntity<?> verifyPaymentCreation(@RequestBody PaymentPrepareRequest paymentPrepareRequest) {
+        return ResponseEntity.ok(new ServerResponse<>(paymentService.preparePayment(paymentPrepareRequest)));
     }
 }
