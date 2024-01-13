@@ -4,27 +4,36 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import rastle.dev.rastle_backend.domain.coupon.exception.CouponException;
+import rastle.dev.rastle_backend.domain.coupon.model.Coupon;
+import rastle.dev.rastle_backend.domain.coupon.repository.mysql.CouponRepository;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
 import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderDetailRepository;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderProductRepository;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO;
+import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentPrepareRequest;
+import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentPrepareResponse;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentVerificationRequest;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentVerificationResponse;
 import rastle.dev.rastle_backend.domain.payment.dto.PortOneDTO;
 import rastle.dev.rastle_backend.domain.payment.dto.PortOneDTO.PortOnePaymentResponse;
 import rastle.dev.rastle_backend.domain.payment.exception.PaymentException;
 import rastle.dev.rastle_backend.domain.payment.repository.mysql.PaymentRepository;
+import rastle.dev.rastle_backend.global.common.enums.CouponStatus;
 import rastle.dev.rastle_backend.global.component.OrderNumberComponent;
 import rastle.dev.rastle_backend.global.component.PortOneComponent;
 
 import java.util.List;
+
+import static rastle.dev.rastle_backend.global.common.enums.CouponStatus.NOT_USED;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class PaymentService {
     private final PaymentRepository paymentRepository;
+    private final CouponRepository couponRepository;
     private final OrderDetailRepository orderDetailRepository;
     private final OrderProductRepository orderProductRepository;
     private final OrderNumberComponent orderNumberComponent;
@@ -53,5 +62,18 @@ public class PaymentService {
                     .build();
         }
 
+    }
+    @Transactional(readOnly = true)
+    public PaymentPrepareResponse preparePayment(PaymentPrepareRequest paymentPrepareRequest) {
+        String orderNumber = paymentPrepareRequest.getMerchant_uid();
+        Long totalPrice = orderProductRepository.findOrderProductPriceSumByOrderNumber(orderNumber);
+        Coupon coupon = couponRepository.getReferenceById(paymentPrepareRequest.getCouponId());
+        if (coupon.getCouponStatus() != NOT_USED) {
+            throw new CouponException("이미 사용한 쿠폰");
+        }
+        totalPrice -= coupon.getDiscount();
+        totalPrice += paymentPrepareRequest.getDeliveryPrice();
+
+        return portOneComponent.preparePayment(orderNumber, totalPrice);
     }
 }

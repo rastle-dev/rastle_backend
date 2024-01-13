@@ -1,4 +1,4 @@
-package rastle.dev.rastle_backend.global.dto.response;
+package rastle.dev.rastle_backend.global.component.dto.response;
 
 import lombok.*;
 
