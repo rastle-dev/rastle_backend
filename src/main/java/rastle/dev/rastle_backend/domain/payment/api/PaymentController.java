@@ -16,6 +16,7 @@ import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentPrepareRequest;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentVerificationRequest;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentVerificationResponse;
+import rastle.dev.rastle_backend.domain.payment.dto.PortOneWebHookRequest;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
 
 @Tag(name = "결제 API", description = "결제 관련 API 입니다.")
@@ -36,5 +37,11 @@ public class PaymentController {
     @PostMapping("/prepare")
     public ResponseEntity<?> verifyPaymentCreation(@RequestBody PaymentPrepareRequest paymentPrepareRequest) {
         return ResponseEntity.ok(new ServerResponse<>(paymentService.preparePayment(paymentPrepareRequest)));
+    }
+
+    @Operation(summary = "포트원 웹훅 API", description = "포트원 웹훅 처리 API 입니다.")
+    @PostMapping("/portone-webhook")
+    public ResponseEntity<?> portoneWebhook(@RequestBody PortOneWebHookRequest webHookRequest) {
+        return ResponseEntity.ok(new ServerResponse<>(paymentService.webhook(webHookRequest)));
     }
 }
