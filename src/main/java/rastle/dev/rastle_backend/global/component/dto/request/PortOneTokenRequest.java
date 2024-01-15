@@ -1,4 +1,4 @@
-package rastle.dev.rastle_backend.global.dto.request;
+package rastle.dev.rastle_backend.global.component.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

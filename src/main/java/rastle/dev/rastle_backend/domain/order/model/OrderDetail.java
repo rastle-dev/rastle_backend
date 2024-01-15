@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.member.model.Member;
+import rastle.dev.rastle_backend.domain.payment.dto.PortOneDTO;
+import rastle.dev.rastle_backend.domain.payment.dto.PortOneDTO.PortOnePaymentResponse;
 import rastle.dev.rastle_backend.global.common.BaseTimeEntity;
 import rastle.dev.rastle_backend.global.common.enums.DeliveryStatus;
 import rastle.dev.rastle_backend.global.common.enums.PaymentStatus;
@@ -15,6 +17,8 @@ import java.util.List;
 
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.InheritanceType.JOINED;
+import static rastle.dev.rastle_backend.global.common.enums.DeliveryStatus.NOT_STARTED;
+import static rastle.dev.rastle_backend.global.common.enums.PaymentStatus.PAID;
 
 /**
  * 주문이 완료된 데이터를 관리하는 객체
@@ -41,10 +45,14 @@ public class OrderDetail extends BaseTimeEntity {
     private String deliveryAddress;
     @Column(name = "order_number", unique = true)
     private String orderNumber;
+    @Column(name = "payment_price")
+    private Long paymentPrice;
     @NotNull
     @Enumerated(STRING)
     @Column(name = "delivery_status")
     private DeliveryStatus deliveryStatus;
+    @Column(name = "imp_id")
+    private String impId;
     @NotNull
     @Enumerated(STRING)
     @Column(name = "payment_status")
@@ -57,7 +65,7 @@ public class OrderDetail extends BaseTimeEntity {
     private final List<OrderProduct> orderProduct = new ArrayList<>();
 
     @Builder
-    public OrderDetail(String userName, String tel, String email, String postcode, String deliveryAddress, String orderNumber, DeliveryStatus deliveryStatus, PaymentStatus paymentStatus, Member member) {
+    public OrderDetail(String userName, String tel, String email, String postcode, String deliveryAddress, String orderNumber, DeliveryStatus deliveryStatus, PaymentStatus paymentStatus, Member member, Long paymentPrice, String impId) {
 
         this.userName = userName;
         this.tel = tel;
@@ -68,21 +76,27 @@ public class OrderDetail extends BaseTimeEntity {
         this.deliveryStatus = deliveryStatus;
         this.paymentStatus = paymentStatus;
         this.member = member;
+        this.paymentPrice = paymentPrice;
+        this.impId = impId;
     }
 
-    public void updateDeliveryStatus(DeliveryStatus status) {
-        this.deliveryStatus = status;
+    public void paid(PortOnePaymentResponse paymentResponse) {
+        this.paymentStatus = PAID;
+        this.userName = paymentResponse.getResponse().getBuyer_name();
+        this.tel = paymentResponse.getResponse().getBuyer_tel();
+        this.email = paymentResponse.getResponse().getBuyer_email();
+        this.postcode = paymentResponse.getResponse().getBuyer_postcode();
+        this.deliveryAddress = paymentResponse.getResponse().getBuyer_addr();
+        this.deliveryStatus = NOT_STARTED;
+        this.impId = paymentResponse.getResponse().getImp_uid();
     }
 
-    public void updateDeliveryAddress(String deliveryAddress) {
-        this.deliveryAddress = deliveryAddress;
-    }
-
-    public void updatePostCode(String postcode) {
-        this.postcode = postcode;
+    public void updatePaymentPrice(Long paymentPrice) {
+        this.paymentPrice = paymentPrice;
     }
 
     public void updateOrderNumber(String orderNumber) {
         this.orderNumber = orderNumber;
     }
+
 }

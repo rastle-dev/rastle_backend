@@ -22,4 +22,23 @@ public class PaymentDTO {
     public static class PaymentVerificationResponse {
         Boolean verified;
     }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class PaymentPrepareRequest {
+        String merchant_uid;
+        Long couponId;
+        Long deliveryPrice;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class PaymentPrepareResponse {
+        String merchant_uid;
+        Integer number;
+    }
 }
