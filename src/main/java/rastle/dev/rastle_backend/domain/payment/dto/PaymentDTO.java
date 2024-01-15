@@ -1,5 +1,7 @@
 package rastle.dev.rastle_backend.domain.payment.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +23,19 @@ public class PaymentDTO {
     @Builder
     public static class PaymentVerificationResponse {
         Boolean verified;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class SelectedProductsDTO {
+        private String title;
+        private Long price;
+        private String color;
+        private String size;
+        private Long count;
+        private String mainThumbnailImage;
     }
 
     @Getter

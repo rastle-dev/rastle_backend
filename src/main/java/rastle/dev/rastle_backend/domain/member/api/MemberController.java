@@ -54,7 +54,7 @@ public class MemberController {
         return ResponseEntity.ok(new ServerResponse<>("비밀번호 변경 성공"));
     }
 
-    @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 API입니다.")
+    @Operation(summary = "회원 탈퇴", description = "회원 탈퇴를 진행합니다.")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공"),
             @ApiResponse(responseCode = "400", description = "회원 탈퇴 실패") })
     @DeleteMapping("")
@@ -64,26 +64,37 @@ public class MemberController {
         return ResponseEntity.ok(new ServerResponse<>("회원 탈퇴 성공"));
     }
 
-    @Operation(summary = "회원 주소록 갱신", description = "회원 주소록 갱신 API입니다.")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "회원 주소록 갱신 성공"),
-            @ApiResponse(responseCode = "400", description = "회원 주소록 갱신 실패") })
+    @Operation(summary = "회원 주소지 갱신", description = "회원의 주소지를 갱신합니다.")
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "회원 주소지 갱신 성공"),
+            @ApiResponse(responseCode = "400", description = "회원 주소지 갱신 실패") })
     @PutMapping("/updateMemberAddress")
     public ResponseEntity<ServerResponse<String>> updateMemberAddress(HttpServletResponse response,
             @RequestBody Address address) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         memberService.updateMemberAddress(currentMemberId, address);
-        return ResponseEntity.ok(new ServerResponse<>("회원 주소록 갱신 성공"));
+        return ResponseEntity.ok(new ServerResponse<>("회원 주소지 갱신 성공"));
     }
 
-    @Operation(summary = "회원 주소록 조회", description = "회원 주소록 조회 API입니다.")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "회원 주소록 조회 성공"),
-            @ApiResponse(responseCode = "400", description = "회원 주소록 조회 실패") })
+    @Operation(summary = "회원 주소지 조회", description = "회원의 주소지를 조회합니다.")
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "회원 주소지 조회 성공"),
+            @ApiResponse(responseCode = "400", description = "회원 주소지 조회 실패") })
     @GetMapping("/getMemberAddress")
     public ResponseEntity<ServerResponse<Address>> getMemberAddress(HttpServletResponse response) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         Address address = memberService.getMemberAddress(currentMemberId);
         ServerResponse<Address> serverResponse = new ServerResponse<>(address);
         return ResponseEntity.ok(serverResponse);
+    }
+
+    @Operation(summary = "회원 전화번호 갱신", description = "회원의 전화번호를 갱신합니다.")
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "회원 전화번호 갱신 성공"),
+            @ApiResponse(responseCode = "400", description = "회원 전화번호 갱신 실패") })
+    @PutMapping("/updateMemberPhoneNumber")
+    public ResponseEntity<ServerResponse<String>> updateMemberPhoneNumber(HttpServletResponse response,
+            @RequestBody String phoneNumber) {
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        memberService.updateMemberPhoneNumber(currentMemberId, phoneNumber);
+        return ResponseEntity.ok(new ServerResponse<>("회원 전화번호 갱신 성공"));
     }
 
 }
