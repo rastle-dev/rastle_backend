@@ -19,7 +19,9 @@ public class KakaoOAuth2UserInfo extends OAuth2UserInfo {
 
     @Override
     public String getName() {
-        Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
+        // Map<String, Object> properties = (Map<String, Object>)
+        // attributes.get("properties");
+        Map<String, Object> properties = (Map<String, Object>) attributes.get("kakao_account");
 
         if (properties == null) {
             return null;
@@ -38,42 +40,18 @@ public class KakaoOAuth2UserInfo extends OAuth2UserInfo {
         return (String) properties.get("email");
     }
 
+    @Override
+    public String getPhoneNumber() {
+        Map<String, Object> properties = (Map<String, Object>) attributes.get("kakao_account");
 
-//    @Override
-//    public String getName() {
-//        return safelyGetNestedString("kakao_account", "profile", "nickname");
-//    }
-//
-//    @Override
-//    public String getEmail() {
-//        return safelyGetNestedString("kakao_account", "email");
-//    }
-
-//    @Override
-//    public String getPhoneNumber() {
-//        return safelyGetNestedString("kakao_account", "phone_number");
-//    }
+        if (properties == null) {
+            return null;
+        }
+        return (String) properties.get("phone_number");
+    }
 
     @Override
     public String getProvider() {
         return UserLoginType.KAKAO.toString();
     }
-
-//    private String safelyGetNestedString(String... keys) {
-//        Object current = attributes;
-//
-//        for (String key : keys) {
-//            if (current instanceof Map map) {
-//                current = map.get(key);
-//            } else {
-//                return null;
-//            }
-//        }
-//
-//        if (current instanceof String strValue) {
-//            return strValue;
-//        }
-//
-//        return null;
-//    }
 }

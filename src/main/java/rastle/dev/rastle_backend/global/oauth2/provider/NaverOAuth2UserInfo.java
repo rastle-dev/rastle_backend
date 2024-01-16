@@ -30,7 +30,7 @@ public class NaverOAuth2UserInfo extends OAuth2UserInfo {
             return null;
         }
 
-        return (String) response.get("nickname");
+        return (String) response.get("name");
     }
 
     @Override
@@ -45,8 +45,18 @@ public class NaverOAuth2UserInfo extends OAuth2UserInfo {
     }
 
     @Override
+    public String getPhoneNumber() {
+        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+
+        if (response == null) {
+            return null;
+        }
+
+        return (String) response.get("mobile");
+    }
+
+    @Override
     public String getProvider() {
         return UserLoginType.NAVER.toString();
     }
-
 }

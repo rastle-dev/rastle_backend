@@ -64,6 +64,10 @@ public class Member extends MemberBase {
         this.address = newAddress;
     }
 
+    public void updatePhoneNumber(String newPhoneNumber) {
+        this.phoneNumber = newPhoneNumber;
+    }
+
     // public void updateZipcode(String newZipcode) {
     // this.zipCode = newZipcode;
     // }
