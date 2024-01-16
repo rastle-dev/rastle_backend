@@ -90,7 +90,10 @@ public class PaymentService {
                     .message(VBANK_ISSUED_MSG)
                     .build();
             } else {
-                return null;
+                return PortOneWebHookResponse.builder()
+                    .status("undefined")
+                    .message("undefined")
+                    .build();
             }
         } else {
             return PortOneWebHookResponse.builder()
