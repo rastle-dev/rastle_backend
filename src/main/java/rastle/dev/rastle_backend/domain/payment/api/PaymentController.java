@@ -46,7 +46,7 @@ public class PaymentController {
         String redirectUrl = paymentService.verifyMobilePayment(impUid, merchantUid, impSuccess, errorCode, errorMsg);
         if (redirectUrl != null) {
             return ResponseEntity.status(HttpStatus.FOUND)
-                    .location(uriComponentsBuilder.path(redirectUrl).build().toUri())
+                    .location(uriComponentsBuilder.replacePath(redirectUrl).build().toUri())
                     .build();
         } else {
             return ResponseEntity.status(HttpStatus.OK)
