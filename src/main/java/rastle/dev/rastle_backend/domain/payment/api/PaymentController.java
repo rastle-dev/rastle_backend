@@ -7,8 +7,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
+
 import rastle.dev.rastle_backend.domain.payment.application.PaymentService;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentPrepareRequest;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentVerificationRequest;
@@ -31,17 +35,23 @@ public class PaymentController {
         return ResponseEntity.ok(new ServerResponse<>(paymentService.verifyPayment(paymentVerificationRequest)));
     }
 
-    @Operation(summary = "모바일 결제 사후 검증 및 생성 API", description = "포트원 API에서 발생한 모바일 결제 요청을 검증하고, memberOrder를 생성합니다.")
+    @Operation(summary = "모바일 결제 사후 검증 및 생성 API", description = "포트원 API에서 발생한 모바일 결제 요청을 검증하고, memberOrder를 생성한 후 리다이렉트합니다.")
     @ApiResponse(responseCode = "200", description = "검증 성공")
-    @GetMapping("/completeMobile")
+    @PostMapping("/completeMobile")
     public ResponseEntity<?> verifyMobilePaymentCompletion(@RequestParam("imp_uid") String impUid,
             @RequestParam("merchant_uid") String merchantUid, @RequestParam("imp_success") boolean impSuccess,
             @RequestParam(value = "error_code", required = false) String errorCode,
-            @RequestParam(value = "error_msg", required = false) String errorMsg)
-            throws JsonProcessingException {
-        return ResponseEntity
-                .ok(new ServerResponse<>(
-                        paymentService.verifyMobilePayment(impUid, merchantUid, impSuccess, errorCode, errorMsg)));
+            @RequestParam(value = "error_msg", required = false) String errorMsg,
+            UriComponentsBuilder uriComponentsBuilder) throws JsonProcessingException {
+        String redirectUrl = paymentService.verifyMobilePayment(impUid, merchantUid, impSuccess, errorCode, errorMsg);
+        if (redirectUrl != null) {
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(uriComponentsBuilder.path(redirectUrl).build().toUri())
+                    .build();
+        } else {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body("No redirect URL available.");
+        }
     }
 
     @Operation(summary = "결제 사전 검증 API", description = "결제 사전 검증 API 입니다.")
