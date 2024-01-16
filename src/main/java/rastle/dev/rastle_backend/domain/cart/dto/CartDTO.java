@@ -1,7 +1,6 @@
 package rastle.dev.rastle_backend.domain.cart.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

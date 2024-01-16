@@ -1,9 +1,9 @@
 package rastle.dev.rastle_backend.global.oauth2.provider;
 
-import java.util.Map;
-
 import rastle.dev.rastle_backend.domain.member.model.UserLoginType;
 import rastle.dev.rastle_backend.global.oauth2.OAuth2UserInfo;
+
+import java.util.Map;
 
 public class NaverOAuth2UserInfo extends OAuth2UserInfo {
 

@@ -1,21 +1,16 @@
 package rastle.dev.rastle_backend.domain.member.api;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import rastle.dev.rastle_backend.domain.member.application.MemberService;
 import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.LoginMemberInfoDto;
 import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.PasswordDto;
@@ -23,7 +18,6 @@ import rastle.dev.rastle_backend.domain.member.model.Address;
 import rastle.dev.rastle_backend.global.response.FailApiResponses;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
 import rastle.dev.rastle_backend.global.util.SecurityUtil;
-import jakarta.servlet.http.HttpServletResponse;
 
 @Tag(name = "회원 정보", description = "회원 정보 관련 API입니다.")
 @RestController

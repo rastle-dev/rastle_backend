@@ -1,7 +1,10 @@
 package rastle.dev.rastle_backend.domain.member.application;
 
-import java.util.Collection;
-
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,27 +15,21 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import rastle.dev.rastle_backend.domain.cart.model.Cart;
 import rastle.dev.rastle_backend.domain.cart.repository.mysql.CartRepository;
-// import rastle.dev.rastle_backend.domain.Member.dto.MemberAuthDTO.AdminSignUpDto;
+import rastle.dev.rastle_backend.domain.coupon.model.Coupon;
+import rastle.dev.rastle_backend.domain.coupon.repository.mysql.CouponRepository;
 import rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO.LoginDto;
 import rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO.SignUpDto;
-import rastle.dev.rastle_backend.domain.coupon.model.Coupon;
 import rastle.dev.rastle_backend.domain.member.model.Member;
-import rastle.dev.rastle_backend.domain.coupon.repository.mysql.CouponRepository;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
 import rastle.dev.rastle_backend.domain.token.dto.TokenDTO.TokenInfoDTO;
 import rastle.dev.rastle_backend.global.error.exception.InvalidRequestException;
 import rastle.dev.rastle_backend.global.jwt.JwtTokenProvider;
+
+import java.util.Collection;
 
 @Service
 @Slf4j

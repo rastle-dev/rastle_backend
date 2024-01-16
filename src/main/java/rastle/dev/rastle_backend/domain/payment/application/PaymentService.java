@@ -1,37 +1,31 @@
 package rastle.dev.rastle_backend.domain.payment.application;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import rastle.dev.rastle_backend.domain.coupon.exception.CouponException;
 import rastle.dev.rastle_backend.domain.coupon.model.Coupon;
 import rastle.dev.rastle_backend.domain.coupon.repository.mysql.CouponRepository;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderDetailRepository;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderProductRepository;
-import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentPrepareRequest;
-import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentPrepareResponse;
-import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentVerificationRequest;
-import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentVerificationResponse;
-import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.SelectedProductsDTO;
+import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.*;
 import rastle.dev.rastle_backend.domain.payment.dto.PortOneDTO.PortOnePaymentResponse;
 import rastle.dev.rastle_backend.domain.payment.dto.PortOneWebHookRequest;
 import rastle.dev.rastle_backend.domain.payment.dto.PortOneWebHookResponse;
 import rastle.dev.rastle_backend.domain.payment.exception.PaymentException;
 import rastle.dev.rastle_backend.global.component.PortOneComponent;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static rastle.dev.rastle_backend.global.common.constants.PortOneMessageConstant.*;
 import static rastle.dev.rastle_backend.global.common.constants.PortOneStatusConstant.*;
 import static rastle.dev.rastle_backend.global.common.enums.CouponStatus.NOT_USED;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -111,7 +105,7 @@ public class PaymentService {
             throw new PaymentException("결제 금액이 일치하지 않습니다.");
         }
     }
-
+  
     @Transactional
     public PaymentPrepareResponse preparePayment(PaymentPrepareRequest paymentPrepareRequest) {
         String orderNumber = paymentPrepareRequest.getMerchant_uid();
