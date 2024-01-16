@@ -100,12 +100,12 @@ public class PaymentService {
                     .queryParam("selectedProducts", objectMapper.writeValueAsString(selectedProducts))
                     .queryParam("response", objectMapper.writeValueAsString(paymentResponse.getResponse()));
 
-            return builder.toUriString();
+            return builder.encode().toUriString();
         } else {
             throw new PaymentException("결제 금액이 일치하지 않습니다.");
         }
     }
-  
+
     @Transactional
     public PaymentPrepareResponse preparePayment(PaymentPrepareRequest paymentPrepareRequest) {
         String orderNumber = paymentPrepareRequest.getMerchant_uid();
@@ -145,9 +145,9 @@ public class PaymentService {
                         .build();
             } else {
                 return PortOneWebHookResponse.builder()
-                    .status("undefined")
-                    .message("undefined")
-                    .build();
+                        .status("undefined")
+                        .message("undefined")
+                        .build();
             }
         } else {
             return PortOneWebHookResponse.builder()
