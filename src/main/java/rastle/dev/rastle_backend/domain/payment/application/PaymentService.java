@@ -105,6 +105,7 @@ public class PaymentService {
             throw new PaymentException("결제 금액이 일치하지 않습니다.");
         }
     }
+  
     @Transactional
     public PaymentPrepareResponse preparePayment(PaymentPrepareRequest paymentPrepareRequest) {
         String orderNumber = paymentPrepareRequest.getMerchant_uid();
