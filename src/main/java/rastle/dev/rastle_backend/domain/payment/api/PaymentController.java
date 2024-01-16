@@ -9,6 +9,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.URI;
+
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,18 +43,16 @@ public class PaymentController {
     @Operation(summary = "모바일 결제 사후 검증 및 생성 API", description = "포트원 API에서 발생한 모바일 결제 요청을 검증하고, memberOrder를 생성한 후 리다이렉트합니다.")
     @ApiResponse(responseCode = "200", description = "검증 성공")
     @GetMapping("/completeMobile")
-    public String verifyMobilePaymentCompletion(@RequestParam("imp_uid") String impUid,
+    public ResponseEntity<Object> verifyMobilePaymentCompletion(@RequestParam("imp_uid") String impUid,
             @RequestParam("merchant_uid") String merchantUid, @RequestParam("imp_success") boolean impSuccess,
             @RequestParam(value = "error_code", required = false) String errorCode,
             @RequestParam(value = "error_msg", required = false) String errorMsg,
             UriComponentsBuilder uriComponentsBuilder) throws JsonProcessingException {
-        String redirectUrl = paymentService.verifyMobilePayment(impUid, merchantUid, impSuccess, errorCode, errorMsg);
-        // log.info(redirectUrl);
-        if (redirectUrl != null) {
-            return "redirect:" + redirectUrl;
-        } else {
-            return "No redirect URL available.";
-        }
+        URI redirectUri = paymentService.verifyMobilePayment(impUid, merchantUid, impSuccess, errorCode, errorMsg);
+        log.info("redirectUri: {}", redirectUri);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(redirectUri);
+        return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
     }
 
     @Operation(summary = "결제 사전 검증 API", description = "결제 사전 검증 API 입니다.")

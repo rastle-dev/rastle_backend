@@ -20,6 +20,7 @@ import rastle.dev.rastle_backend.domain.payment.dto.PortOneWebHookResponse;
 import rastle.dev.rastle_backend.domain.payment.exception.PaymentException;
 import rastle.dev.rastle_backend.global.component.PortOneComponent;
 
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,7 +64,7 @@ public class PaymentService {
     }
 
     @Transactional
-    public String verifyMobilePayment(String impUid, String merchantUid, boolean impSuccess, String errorCode,
+    public URI verifyMobilePayment(String impUid, String merchantUid, boolean impSuccess, String errorCode,
             String errorMsg)
             throws JsonProcessingException {
         if (!impSuccess) {
@@ -100,7 +101,7 @@ public class PaymentService {
                     .queryParam("selectedProducts", objectMapper.writeValueAsString(selectedProducts))
                     .queryParam("response", objectMapper.writeValueAsString(paymentResponse.getResponse()));
 
-            return builder.toUriString();
+            return URI.create(builder.toUriString());
         } else {
             throw new PaymentException("결제 금액이 일치하지 않습니다.");
         }
