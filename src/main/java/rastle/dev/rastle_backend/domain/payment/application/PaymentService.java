@@ -94,14 +94,13 @@ public class PaymentService {
                             .mainThumbnailImage(orderProduct.getProduct().getMainThumbnailImage())
                             .build())
                     .collect(Collectors.toList());
-
             UriComponentsBuilder builder = UriComponentsBuilder
                     // .fromUriString("https://www.recordyslow.com/orderConfirmMobile")
-                    .fromUriString("localhost:3000/orderConfirm")
+                    .fromPath("localhost:3000/orderConfirm")
                     .queryParam("selectedProducts", objectMapper.writeValueAsString(selectedProducts))
                     .queryParam("response", objectMapper.writeValueAsString(paymentResponse.getResponse()));
 
-            return builder.encode().toUriString();
+            return builder.toUriString();
         } else {
             throw new PaymentException("결제 금액이 일치하지 않습니다.");
         }
