@@ -1,7 +1,6 @@
 package rastle.dev.rastle_backend.domain.cart.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,6 +35,8 @@ public class CartDTO {
         private String productName;
         @Schema(description = "장바구니 제품 가격", type = "int", format = "price", example = "10000")
         private int productPrice;
+        @Schema(description = "장바구니 제품 할인 가격", type = "int", format = "discountPrice", example = "8000")
+        private int discountPrice;
         @Schema(description = "장바구니 제품 색상", type = "string", format = "color", example = "베이지")
         private String color;
         @Schema(description = "장바구니 제품 사이즈", type = "string", format = "size", example = "L")

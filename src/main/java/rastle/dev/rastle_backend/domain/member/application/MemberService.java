@@ -1,14 +1,13 @@
 package rastle.dev.rastle_backend.domain.member.application;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.LoginMemberInfoDto;
 import rastle.dev.rastle_backend.domain.member.model.Address;
 import rastle.dev.rastle_backend.domain.member.model.Member;
@@ -72,7 +71,7 @@ public class MemberService {
     }
 
     /**
-     * 주소록 조회
+     * 주소지 조회
      * 
      * @param memberId
      */
@@ -83,7 +82,7 @@ public class MemberService {
     }
 
     /**
-     * 주소록 갱신
+     * 주소지 갱신
      * 
      * @param memberId
      * @param newAddress
@@ -92,5 +91,18 @@ public class MemberService {
     public void updateMemberAddress(Long memberId, Address newAddress) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
         member.updateAddress(newAddress);
+    }
+
+    /**
+     * 전화번호 갱신
+     * 
+     * @param memberId
+     * @param newPhoneNumber
+     */
+
+    @Transactional
+    public void updateMemberPhoneNumber(Long memberId, String newPhoneNumber) {
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+        member.updatePhoneNumber(newPhoneNumber);
     }
 }

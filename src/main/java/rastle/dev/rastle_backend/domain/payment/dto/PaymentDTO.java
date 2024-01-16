@@ -27,6 +27,19 @@ public class PaymentDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
+    public static class SelectedProductsDTO {
+        private String title;
+        private Long price;
+        private String color;
+        private String size;
+        private Long count;
+        private String mainThumbnailImage;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
     public static class PaymentPrepareRequest {
         String merchant_uid;
         Long couponId;
