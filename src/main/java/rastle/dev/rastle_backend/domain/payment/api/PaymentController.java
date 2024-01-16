@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import rastle.dev.rastle_backend.global.response.ServerResponse;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/payments")
+@Slf4j
 public class PaymentController {
     private final PaymentService paymentService;
 
@@ -38,19 +40,17 @@ public class PaymentController {
     @Operation(summary = "모바일 결제 사후 검증 및 생성 API", description = "포트원 API에서 발생한 모바일 결제 요청을 검증하고, memberOrder를 생성한 후 리다이렉트합니다.")
     @ApiResponse(responseCode = "200", description = "검증 성공")
     @GetMapping("/completeMobile")
-    public ResponseEntity<?> verifyMobilePaymentCompletion(@RequestParam("imp_uid") String impUid,
+    public String verifyMobilePaymentCompletion(@RequestParam("imp_uid") String impUid,
             @RequestParam("merchant_uid") String merchantUid, @RequestParam("imp_success") boolean impSuccess,
             @RequestParam(value = "error_code", required = false) String errorCode,
             @RequestParam(value = "error_msg", required = false) String errorMsg,
             UriComponentsBuilder uriComponentsBuilder) throws JsonProcessingException {
         String redirectUrl = paymentService.verifyMobilePayment(impUid, merchantUid, impSuccess, errorCode, errorMsg);
+        // log.info(redirectUrl);
         if (redirectUrl != null) {
-            return ResponseEntity.status(HttpStatus.FOUND)
-                    .location(uriComponentsBuilder.replacePath(redirectUrl).build().toUri())
-                    .build();
+            return "redirect:" + redirectUrl;
         } else {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body("No redirect URL available.");
+            return "No redirect URL available.";
         }
     }
 
