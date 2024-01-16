@@ -56,7 +56,7 @@ public class PaymentService {
         }
 
     }
-    @Transactional(readOnly = true)
+    @Transactional
     public PaymentPrepareResponse preparePayment(PaymentPrepareRequest paymentPrepareRequest) {
         String orderNumber = paymentPrepareRequest.getMerchant_uid();
         OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(orderNumber).orElseThrow(() -> new PaymentException("주문 번호로 존재하는 주문이 없습니다. " + orderNumber));
