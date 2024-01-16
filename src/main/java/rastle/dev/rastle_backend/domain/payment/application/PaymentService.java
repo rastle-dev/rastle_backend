@@ -56,6 +56,7 @@ public class PaymentService {
                 .orElseThrow(() -> new PaymentException("주문번호로 존재하는 주문이 DB에 존재하지 않는다"));
 
         if (orderDetail.getPaymentPrice().equals(paymentResponse.getResponse().getAmount())) {
+            // TODO: 포트원 응답에서 쿠폰 관련 값 받아서 쿠폰 사용 처리 해줘야함
             orderDetail.paid(paymentResponse);
             return PaymentVerificationResponse.builder()
                     .verified(true)
@@ -111,7 +112,7 @@ public class PaymentService {
         }
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public PaymentPrepareResponse preparePayment(PaymentPrepareRequest paymentPrepareRequest) {
         String orderNumber = paymentPrepareRequest.getMerchant_uid();
         OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(orderNumber)
@@ -149,7 +150,10 @@ public class PaymentService {
                         .message(VBANK_ISSUED_MSG)
                         .build();
             } else {
-                return null;
+                return PortOneWebHookResponse.builder()
+                    .status("undefined")
+                    .message("undefined")
+                    .build();
             }
         } else {
             return PortOneWebHookResponse.builder()
