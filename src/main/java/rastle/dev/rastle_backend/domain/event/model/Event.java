@@ -29,12 +29,16 @@ public class Event {
     private LocalDateTime eventEndDate;
     private String description;
     private boolean visible;
+    // 응모자 수
+    @Column(name = "apply_count")
+    private Long applyCount;
 
     @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<ProductBase> eventProducts = new ArrayList<>();
 
     @Builder
-    public Event(String name, LocalDateTime eventStartDate, LocalDateTime eventEndDate, String imageUrls, String description, boolean visible) {
+    public Event(String name, LocalDateTime eventStartDate, LocalDateTime eventEndDate, String imageUrls,
+            String description, boolean visible) {
         this.name = name;
         this.eventStartDate = eventStartDate;
         this.eventEndDate = eventEndDate;

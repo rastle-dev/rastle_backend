@@ -7,12 +7,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rastle.dev.rastle_backend.domain.member.application.MemberService;
 import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.LoginMemberInfoDto;
+import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.NewPhoneNumberDto;
 import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.PasswordDto;
 import rastle.dev.rastle_backend.domain.member.model.Address;
 import rastle.dev.rastle_backend.global.response.FailApiResponses;
@@ -42,7 +45,7 @@ public class MemberController {
     @ApiResponse(responseCode = "200", description = "비밀번호 변경 성공")
     @FailApiResponses
     @PutMapping("/changePassword")
-    public ResponseEntity<ServerResponse<String>> changePassword(@RequestBody PasswordDto passwordDto) {
+    public ResponseEntity<ServerResponse<String>> changePassword(@Valid @RequestBody PasswordDto passwordDto) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         memberService.changePassword(currentMemberId, passwordDto.getNewPassword());
         return ResponseEntity.ok(new ServerResponse<>("비밀번호 변경 성공"));
@@ -85,9 +88,9 @@ public class MemberController {
             @ApiResponse(responseCode = "400", description = "회원 전화번호 갱신 실패") })
     @PutMapping("/updateMemberPhoneNumber")
     public ResponseEntity<ServerResponse<String>> updateMemberPhoneNumber(HttpServletResponse response,
-            @RequestBody String phoneNumber) {
+            @Valid @RequestBody NewPhoneNumberDto newPhoneNumberDto) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        memberService.updateMemberPhoneNumber(currentMemberId, phoneNumber);
+        memberService.updateMemberPhoneNumber(currentMemberId, newPhoneNumberDto.getNewPhoneNumber());
         return ResponseEntity.ok(new ServerResponse<>("회원 전화번호 갱신 성공"));
     }
 

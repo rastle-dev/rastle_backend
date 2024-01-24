@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.bundle.model.Bundle;
 import rastle.dev.rastle_backend.domain.category.model.Category;
 import rastle.dev.rastle_backend.domain.event.model.Event;
+import rastle.dev.rastle_backend.domain.event.model.EventProductApply;
 import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
 
 import java.util.ArrayList;
@@ -47,7 +48,6 @@ public class ProductBase {
     @JoinColumn(name = "product_detail_id")
     private ProductDetail productDetail;
 
-
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<CartProduct> cartProducts = new ArrayList<>();
 
@@ -63,8 +63,12 @@ public class ProductBase {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @OneToMany(mappedBy = "eventApplyProduct", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<EventProductApply> eventProductApplies = new ArrayList<>();
+
     @Builder
-    public ProductBase(Long id, String name, int price, String mainThumbnailImage, String subThumbnailImage, int discountPrice, Category category, Long displayOrder, boolean visible, Bundle bundle, Event event) {
+    public ProductBase(Long id, String name, int price, String mainThumbnailImage, String subThumbnailImage,
+            int discountPrice, Category category, Long displayOrder, boolean visible, Bundle bundle, Event event) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -90,7 +94,6 @@ public class ProductBase {
         this.productDetail = mainImage;
     }
 
-
     public void setDisplayOrder(Long displayOrder) {
         this.displayOrder = displayOrder;
     }
@@ -106,7 +109,6 @@ public class ProductBase {
     public void setDiscountPrice(int discount) {
         this.discountPrice = discount;
     }
-
 
     public void setVisible(boolean visible) {
         this.visible = visible;
