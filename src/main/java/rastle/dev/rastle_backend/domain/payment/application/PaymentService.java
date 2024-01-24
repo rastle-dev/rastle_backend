@@ -126,11 +126,13 @@ public class PaymentService {
         OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(orderNumber)
                 .orElseThrow(() -> new PaymentException("주문 번호로 존재하는 주문이 없습니다. " + orderNumber));
         Long totalPrice = orderProductRepository.findOrderProductPriceSumByOrderNumber(orderNumber);
-        Coupon coupon = couponRepository.getReferenceById(paymentPrepareRequest.getCouponId());
-        if (coupon.getCouponStatus() != NOT_USED) {
-            throw new CouponException("이미 사용한 쿠폰");
+        if (paymentPrepareRequest.getCouponId() != null) {
+            Coupon coupon = couponRepository.getReferenceById(paymentPrepareRequest.getCouponId());
+            if (coupon.getCouponStatus() != NOT_USED) {
+                throw new CouponException("이미 사용한 쿠폰");
+            }
+            totalPrice -= coupon.getDiscount();
         }
-        totalPrice -= coupon.getDiscount();
         totalPrice += paymentPrepareRequest.getDeliveryPrice();
         orderDetail.updatePaymentPrice(totalPrice);
         return portOneComponent.preparePayment(orderNumber, totalPrice);
