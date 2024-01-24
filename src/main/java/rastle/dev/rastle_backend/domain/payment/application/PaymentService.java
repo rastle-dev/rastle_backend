@@ -23,6 +23,7 @@ import rastle.dev.rastle_backend.global.common.enums.PaymentStatus;
 import rastle.dev.rastle_backend.global.component.MailComponent;
 import rastle.dev.rastle_backend.global.component.PortOneComponent;
 
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,7 +69,7 @@ public class PaymentService {
     }
 
     @Transactional
-    public String verifyMobilePayment(String impUid, String merchantUid, boolean impSuccess, String errorCode,
+    public URI verifyMobilePayment(String impUid, String merchantUid, boolean impSuccess, String errorCode,
             String errorMsg)
             throws JsonProcessingException {
         if (!impSuccess) {
@@ -99,17 +100,18 @@ public class PaymentService {
                             .mainThumbnailImage(orderProduct.getProduct().getMainThumbnailImage())
                             .build())
                     .collect(Collectors.toList());
-
             UriComponentsBuilder builder = UriComponentsBuilder
-                    .fromUriString("https://www.recordyslow.com/orderConfirmMobile")
+                    // .fromUriString("https://www.recordyslow.com/orderConfirmMobile")
+                    .fromUriString("http://localhost:3000/orderConfirm")
                     .queryParam("selectedProducts", objectMapper.writeValueAsString(selectedProducts))
                     .queryParam("response", objectMapper.writeValueAsString(paymentResponse.getResponse()));
 
-            return builder.toUriString();
+            return URI.create(builder.toUriString());
         } else {
             throw new PaymentException("결제 금액이 일치하지 않습니다.");
         }
     }
+
     @Transactional
     public PaymentPrepareResponse preparePayment(PaymentPrepareRequest paymentPrepareRequest) {
         String orderNumber = paymentPrepareRequest.getMerchant_uid();
@@ -171,6 +173,7 @@ public class PaymentService {
                         .message("undefined")
                         .build();
                 }
+
             }
         } else {
             return PortOneWebHookResponse.builder()
