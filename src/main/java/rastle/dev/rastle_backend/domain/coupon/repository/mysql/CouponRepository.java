@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface CouponRepository extends JpaRepository<Coupon, Long> {
     @Query("SELECT new rastle.dev.rastle_backend.domain.coupon.dto.CouponInfo(c.id, c.name, c.discount) " +
-        "FROM Coupon c WHERE c.member.id = :currentMemberId")
+        "FROM Coupon c WHERE c.member.id = :currentMemberId AND c.couponStatus='NOT_USED'")
     List<CouponInfo> findByMemberId(@Param("currentMemberId") Long currentMemberId);
 }
