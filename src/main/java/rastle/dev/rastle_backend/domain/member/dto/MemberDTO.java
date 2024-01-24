@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -80,5 +81,17 @@ public class MemberDTO {
             private Long count;
             private String productName;
         }
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Schema(description = "전화번호 갱신 요청 DTO")
+    public static class NewPhoneNumberDto {
+        @Schema(description = "갱신할 전화번호", type = "string", format = "phone", example = "01012345678", required = true)
+        @NotBlank(message = "전화번호를 입력해주세요.")
+        @Pattern(regexp = "^010\\d{8}$", message = "유효한 전화번호가 아닙니다.")
+        private String newPhoneNumber;
     }
 }

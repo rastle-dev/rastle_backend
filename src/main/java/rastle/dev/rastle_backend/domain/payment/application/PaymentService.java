@@ -99,7 +99,7 @@ public class PaymentService {
                     // .fromUriString("https://www.recordyslow.com/orderConfirmMobile")
                     .fromUriString("http://localhost:3000/orderConfirm")
                     .queryParam("selectedProducts", objectMapper.writeValueAsString(selectedProducts))
-                    .queryParam("response", objectMapper.writeValueAsString(paymentResponse.getResponse()));
+                    .queryParam("orderInfo", objectMapper.writeValueAsString(paymentResponse.getResponse()));
 
             return URI.create(builder.toUriString());
         } else {
