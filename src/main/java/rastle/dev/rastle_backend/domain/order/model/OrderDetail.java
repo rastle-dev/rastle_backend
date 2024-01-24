@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.member.model.Member;
-import rastle.dev.rastle_backend.domain.payment.dto.PortOneDTO;
 import rastle.dev.rastle_backend.domain.payment.dto.PortOneDTO.PortOnePaymentResponse;
 import rastle.dev.rastle_backend.global.common.BaseTimeEntity;
 import rastle.dev.rastle_backend.global.common.enums.DeliveryStatus;
@@ -97,6 +96,10 @@ public class OrderDetail extends BaseTimeEntity {
 
     public void updateOrderNumber(String orderNumber) {
         this.orderNumber = orderNumber;
+    }
+
+    public void updatePaymentStatus(PaymentStatus paymentStatus) {
+        this.paymentStatus = paymentStatus;
     }
 
 }

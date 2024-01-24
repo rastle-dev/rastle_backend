@@ -18,6 +18,9 @@ import rastle.dev.rastle_backend.domain.payment.dto.PortOneDTO.PortOnePaymentRes
 import rastle.dev.rastle_backend.domain.payment.dto.PortOneWebHookRequest;
 import rastle.dev.rastle_backend.domain.payment.dto.PortOneWebHookResponse;
 import rastle.dev.rastle_backend.domain.payment.exception.PaymentException;
+import rastle.dev.rastle_backend.global.common.constants.PortOneStatusConstant;
+import rastle.dev.rastle_backend.global.common.enums.PaymentStatus;
+import rastle.dev.rastle_backend.global.component.MailComponent;
 import rastle.dev.rastle_backend.global.component.PortOneComponent;
 
 import java.util.List;
@@ -26,6 +29,7 @@ import java.util.stream.Collectors;
 import static rastle.dev.rastle_backend.global.common.constants.PortOneMessageConstant.*;
 import static rastle.dev.rastle_backend.global.common.constants.PortOneStatusConstant.*;
 import static rastle.dev.rastle_backend.global.common.enums.CouponStatus.NOT_USED;
+import static rastle.dev.rastle_backend.global.common.enums.PaymentStatus.CANCELED;
 
 @Service
 @Slf4j
@@ -36,6 +40,7 @@ public class PaymentService {
     private final OrderProductRepository orderProductRepository;
     private final PortOneComponent portOneComponent;
     private final ObjectMapper objectMapper;
+    private final MailComponent mailComponent;
 
     @Transactional
     public PaymentVerificationResponse verifyPayment(PaymentVerificationRequest paymentVerificationRequest) {
@@ -130,23 +135,42 @@ public class PaymentService {
                 .orElseThrow(() -> new PaymentException("주문번호로 존재하는 주문이 DB에 존재하지 않는다"));
 
         if (orderDetail.getPaymentPrice().equals(paymentResponse.getResponse().getAmount())) {
-            if (webHookRequest.getStatus().equals(PAID)) {
-                orderDetail.paid(paymentResponse);
-                return PortOneWebHookResponse.builder()
+            switch (webHookRequest.getStatus()) {
+                case PAID -> {
+                    // TODO: 포트원 응답에서 쿠폰 관련 값 받아서 쿠폰 사용 처리 해줘야함
+                    orderDetail.paid(paymentResponse);
+                    return PortOneWebHookResponse.builder()
                         .status(SUCCESS)
                         .message(SUCCESS_MSG)
                         .build();
-            } else if (webHookRequest.getStatus().equals(READY)) {
-                // TODO : 가상 계좌 발급 메시지 보내면될듯?
-                return PortOneWebHookResponse.builder()
+                }
+                case READY -> {
+                    mailComponent.sendBankIssueMessage(paymentResponse);
+                    return PortOneWebHookResponse.builder()
                         .status(VBANK_ISSUED)
                         .message(VBANK_ISSUED_MSG)
                         .build();
-            } else {
-                return PortOneWebHookResponse.builder()
-                    .status("undefined")
-                    .message("undefined")
-                    .build();
+                }
+                case PortOneStatusConstant.FAILED -> {
+                    orderDetail.updatePaymentStatus(PaymentStatus.FAILED);
+                    return PortOneWebHookResponse.builder()
+                        .status(PortOneStatusConstant.FAILED)
+                        .message(FAILED_MSG)
+                        .build();
+                }
+                case CANCELLED -> {
+                    orderDetail.updatePaymentStatus(CANCELED);
+                    return PortOneWebHookResponse.builder()
+                        .status(CANCELLED)
+                        .message(CANCELLED_MSG)
+                        .build();
+                }
+                default -> {
+                    return PortOneWebHookResponse.builder()
+                        .status("undefined")
+                        .message("undefined")
+                        .build();
+                }
             }
         } else {
             return PortOneWebHookResponse.builder()
