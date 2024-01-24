@@ -46,6 +46,8 @@ public class OrderDetail extends BaseTimeEntity {
     private String orderNumber;
     @Column(name = "payment_price")
     private Long paymentPrice;
+    @Column(name = "delivery_price")
+    private Long deliveryPrice;
     @NotNull
     @Enumerated(STRING)
     @Column(name = "delivery_status")
@@ -64,7 +66,7 @@ public class OrderDetail extends BaseTimeEntity {
     private final List<OrderProduct> orderProduct = new ArrayList<>();
 
     @Builder
-    public OrderDetail(String userName, String tel, String email, String postcode, String deliveryAddress, String orderNumber, DeliveryStatus deliveryStatus, PaymentStatus paymentStatus, Member member, Long paymentPrice, String impId) {
+    public OrderDetail(String userName, String tel, String email, String postcode, String deliveryAddress, String orderNumber, DeliveryStatus deliveryStatus, PaymentStatus paymentStatus, Member member, Long paymentPrice, String impId, Long deliveryPrice) {
 
         this.userName = userName;
         this.tel = tel;
@@ -77,6 +79,7 @@ public class OrderDetail extends BaseTimeEntity {
         this.member = member;
         this.paymentPrice = paymentPrice;
         this.impId = impId;
+        this.deliveryPrice = deliveryPrice;
     }
 
     public void paid(PortOnePaymentResponse paymentResponse) {
@@ -102,4 +105,7 @@ public class OrderDetail extends BaseTimeEntity {
         this.paymentStatus = paymentStatus;
     }
 
+    public void updateDeliveryPrice(Long deliveryPrice) {
+        this.deliveryPrice = deliveryPrice;
+    }
 }

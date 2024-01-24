@@ -15,6 +15,7 @@ import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderDetailReposi
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderProductRepository;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.*;
 import rastle.dev.rastle_backend.domain.payment.dto.PortOneDTO.PortOnePaymentResponse;
+import rastle.dev.rastle_backend.domain.payment.dto.PortOneDTO.PortOnePaymentResponse.CustomData;
 import rastle.dev.rastle_backend.domain.payment.dto.PortOneWebHookRequest;
 import rastle.dev.rastle_backend.domain.payment.dto.PortOneWebHookResponse;
 import rastle.dev.rastle_backend.domain.payment.exception.PaymentException;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 import static rastle.dev.rastle_backend.global.common.constants.PortOneMessageConstant.*;
 import static rastle.dev.rastle_backend.global.common.constants.PortOneStatusConstant.*;
 import static rastle.dev.rastle_backend.global.common.enums.CouponStatus.NOT_USED;
+import static rastle.dev.rastle_backend.global.common.enums.CouponStatus.USED;
 import static rastle.dev.rastle_backend.global.common.enums.PaymentStatus.CANCELED;
 
 @Service
@@ -58,6 +60,14 @@ public class PaymentService {
         if (orderDetail.getPaymentPrice().equals(paymentResponse.getResponse().getAmount())) {
             // TODO: 포트원 응답에서 쿠폰 관련 값 받아서 쿠폰 사용 처리 해줘야함
             orderDetail.paid(paymentResponse);
+            try {
+                CustomData customData = objectMapper.readValue(paymentResponse.getResponse().getCustom_data(), CustomData.class);
+                Coupon referenceById = couponRepository.getReferenceById(customData.getCouponId());
+                referenceById.updateStatus(USED);
+                orderDetail.updateDeliveryPrice(customData.getDeliveryPrice());
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
             return PaymentVerificationResponse.builder()
                     .verified(true)
                     .build();
@@ -139,7 +149,15 @@ public class PaymentService {
         if (orderDetail.getPaymentPrice().equals(paymentResponse.getResponse().getAmount())) {
             switch (webHookRequest.getStatus()) {
                 case PAID -> {
-                    // TODO: 포트원 응답에서 쿠폰 관련 값 받아서 쿠폰 사용 처리 해줘야함
+                    CustomData customData = null;
+                    try {
+                        customData = objectMapper.readValue(paymentResponse.getResponse().getCustom_data(), CustomData.class);
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                    Coupon referenceById = couponRepository.getReferenceById(customData.getCouponId());
+                    referenceById.updateStatus(USED);
+                    orderDetail.updateDeliveryPrice(customData.getDeliveryPrice());
                     orderDetail.paid(paymentResponse);
                     return PortOneWebHookResponse.builder()
                         .status(SUCCESS)
