@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
-import java.util.Map;
 
 public class PortOneDTO {
     @Getter
@@ -46,7 +45,7 @@ public class PortOneDTO {
             String cash_receipt_issued;
             String channel;
             String currency;
-            Map<String, Object> custom_data;
+            String custom_data;
             String customer_uid;
             String customer_uid_usage;
             String emb_pg_provider;
@@ -72,6 +71,15 @@ public class PortOneDTO {
             String vbank_num;
 
 
+        }
+
+        @Getter
+        @AllArgsConstructor
+        @NoArgsConstructor
+        @Setter
+        public static class CustomData {
+            Long couponId;
+            Long deliveryPrice;
         }
     }
 }

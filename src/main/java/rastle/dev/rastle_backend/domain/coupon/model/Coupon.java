@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.member.model.Member;
-import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 import rastle.dev.rastle_backend.global.common.enums.CouponStatus;
 
 import static jakarta.persistence.EnumType.STRING;
@@ -31,5 +30,9 @@ public class Coupon {
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public void updateStatus(CouponStatus couponStatus) {
+        this.couponStatus = couponStatus;
+    }
 
 }
