@@ -56,13 +56,15 @@ public class EventService {
      * @param eventProductApplyDTO
      */
     public void applyEventProduct(Long currentMemberId, EventProductApplyDTO eventProductApplyDTO) {
-        Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
+        Member member = memberRepository.findById(currentMemberId)
+                .orElseThrow(NotFoundByIdException::new);
 
         EventProductApply eventProductApply = EventProductApply.builder()
                 .member(member)
                 .phoneNumber(eventProductApplyDTO.getEventPhoneNumber())
                 .instagramId(eventProductApplyDTO.getInstagramId())
-                .eventApplyProduct(ProductBase.builder().id(eventProductApplyDTO.getEventProductId()).build())
+                .eventApplyProduct(eventProductRepository.findById(eventProductApplyDTO.getEventProductId())
+                        .orElseThrow(NotFoundByIdException::new))
                 .build();
 
         eventProductApplyRepository.save(eventProductApply);

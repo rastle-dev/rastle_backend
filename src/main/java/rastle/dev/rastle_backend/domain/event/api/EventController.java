@@ -54,7 +54,7 @@ public class EventController {
             @RequestBody EventProductApplyDTO eventProductApplyDTO) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         eventService.applyEventProduct(currentMemberId, eventProductApplyDTO);
-        return ResponseEntity.ok(new ServerResponse<>());
+        return ResponseEntity.ok(new ServerResponse<>("이벤트 응모 신청이 완료되었습니다."));
     }
 
     @Operation(summary = "이벤트 응모 신청 내역 조회 API", description = "이벤트 응모 신청 내역을 조회합니다.")

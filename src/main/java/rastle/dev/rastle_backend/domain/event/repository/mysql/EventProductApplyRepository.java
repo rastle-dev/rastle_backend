@@ -13,7 +13,7 @@ public interface EventProductApplyRepository extends JpaRepository<EventProductA
     @Query("SELECT new rastle.dev.rastle_backend.domain.event.dto.EventProductApplyDTO$EventProductApplyInfoDTO(" +
             "pb.name, epa.applyDate, epa.instagramId, epa.phoneNumber) " +
             "FROM EventProductApply epa " +
-            "JOIN epa.product_id pb " +
+            "JOIN epa.eventApplyProduct pb " +
             "WHERE epa.member.id = :memberId")
     List<EventProductApplyInfoDTO> getEventProductApplyInfoDTOs(@Param("memberId") Long memberId);
 }

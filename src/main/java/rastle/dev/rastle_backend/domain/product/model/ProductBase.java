@@ -63,7 +63,7 @@ public class ProductBase {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "eventApplyProduct", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<EventProductApply> eventProductApplies = new ArrayList<>();
 
     @Builder
