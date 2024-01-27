@@ -4,11 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import rastle.dev.rastle_backend.domain.product.model.Color;
 import rastle.dev.rastle_backend.domain.product.model.ProductColor;
 import rastle.dev.rastle_backend.domain.product.model.ProductImage;
-
-import java.util.List;
 
 @Builder
 @AllArgsConstructor
@@ -29,5 +26,4 @@ public class ProductInfo {
     ProductImage mainImage;
     ProductImage detailImage;
     ProductColor productColor;
-
 }

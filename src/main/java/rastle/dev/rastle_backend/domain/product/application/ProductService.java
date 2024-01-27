@@ -7,10 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import rastle.dev.rastle_backend.domain.product.dto.BundleProductInfo;
-import rastle.dev.rastle_backend.domain.product.dto.EventProductInfo;
-import rastle.dev.rastle_backend.domain.product.dto.ProductInfo;
-import rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo;
+import rastle.dev.rastle_backend.domain.event.model.Event;
+import rastle.dev.rastle_backend.domain.event.repository.mysql.EventRepository;
+import rastle.dev.rastle_backend.domain.product.dto.*;
 import rastle.dev.rastle_backend.domain.product.repository.mysql.BundleProductRepository;
 import rastle.dev.rastle_backend.domain.product.repository.mysql.EventProductRepository;
 import rastle.dev.rastle_backend.domain.product.repository.mysql.ProductBaseRepository;
@@ -28,6 +27,7 @@ public class ProductService {
     private final ProductBaseRepository productBaseRepository;
     private final BundleProductRepository bundleProductRepository;
     private final EventProductRepository eventProductRepository;
+    private final EventRepository eventRepository;
 
     @Transactional(readOnly = true)
     public Page<SimpleProductInfo> getProductInfos(String visible, Pageable pageable) {
@@ -41,8 +41,13 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public ProductInfo getProductDetail(Long id) throws JsonProcessingException {
-        return productBaseRepository.getProductDetailInfoById(id).orElseThrow(NotFoundByIdException::new);
+    public Object getProductDetail(Long id) throws JsonProcessingException {
+        ProductInfo productInfo = productBaseRepository.getProductDetailInfoById(id).orElseThrow(NotFoundByIdException::new);
+        if (productInfo.getEventId() != null) {
+            Event event = eventRepository.findById(productInfo.getEventId()).orElseThrow(() -> new RuntimeException("이벤트 아이디로 존재하는 이벤트가 없음"));
+            return EventProductDetailInfo.fromProductInfo(productInfo, event);
+        }
+        return productInfo;
     }
 
     @Transactional(readOnly = true)
