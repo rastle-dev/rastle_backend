@@ -12,7 +12,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rastle.dev.rastle_backend.domain.product.application.ProductService;
-import rastle.dev.rastle_backend.domain.product.dto.*;
+import rastle.dev.rastle_backend.domain.product.dto.BundleProductInfo;
+import rastle.dev.rastle_backend.domain.product.dto.EventProductInfo;
+import rastle.dev.rastle_backend.domain.product.dto.ProductInfo;
+import rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo;
 import rastle.dev.rastle_backend.global.common.annotation.GetExecutionTime;
 import rastle.dev.rastle_backend.global.response.FailApiResponses;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
@@ -61,17 +64,9 @@ public class ProductController {
                 .ok(new ServerResponse<>(productService.getEventProducts(visible, lowerBound, upperBound)));
     }
 
-    @Operation(summary = "상품 상세 조회 API - 경로 맘에 안들어서 삭제할거야", description = "상품 상세 조회 API입니다.")
-    @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = ProductInfo.class)))
-    @FailApiResponses
-    @GetMapping("/{id}/detail")
-    public ResponseEntity<ServerResponse<?>> getProductDetail(
-            @PathVariable(name = "id") Long id) throws JsonProcessingException {
-        return ResponseEntity.ok(new ServerResponse<>(productService.getProductDetail(id)));
-    }
 
     @Operation(summary = "상품 상세 조회 API", description = "상품 상세 조회 API입니다.")
-    @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = ProductInfo.class)))
+    @ApiResponse(responseCode = "200", description = "조회 성공시, 이벤트 상품인 경우 이벤트 시작, 종료 시간 포함", content = @Content(schema = @Schema(implementation = ProductInfo.class)))
     @FailApiResponses
     @GetMapping("/{id}")
     public ResponseEntity<ServerResponse<?>> getProductDetailRefactored(
