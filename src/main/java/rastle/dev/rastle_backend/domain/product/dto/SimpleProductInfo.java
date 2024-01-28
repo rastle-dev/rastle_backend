@@ -34,4 +34,6 @@ public class SimpleProductInfo {
     Long bundleId;
     @Schema(description = "상품 이벤트 아이디", defaultValue = "1")
     Long eventId;
+    @Schema(description = "상품 이벤트 참여 횟수", defaultValue = "1")
+    Long eventApplyCount;
 }

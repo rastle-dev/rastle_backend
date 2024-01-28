@@ -7,13 +7,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rastle.dev.rastle_backend.domain.event.application.EventService;
 import rastle.dev.rastle_backend.domain.event.dto.EventInfo;
 import rastle.dev.rastle_backend.domain.event.dto.EventProductApplyDTO;
-import rastle.dev.rastle_backend.domain.event.dto.EventProductApplyDTO.EventProductApplyInfoDTO;
+import rastle.dev.rastle_backend.domain.event.dto.EventProductApplyDTO.MemberEventApplyHistoryDTO;
 import rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo;
 import rastle.dev.rastle_backend.global.response.FailApiResponses;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
@@ -57,12 +58,13 @@ public class EventController {
         return ResponseEntity.ok(new ServerResponse<>("이벤트 응모 신청이 완료되었습니다."));
     }
 
-    @Operation(summary = "이벤트 응모 신청 내역 조회 API", description = "이벤트 응모 신청 내역을 조회합니다.")
-    @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = EventProductApplyInfoDTO.class)))
+    @Operation(summary = "회원 이벤트 응모 신청 내역 조회 API", description = "회원의 이벤트 응모 신청 내역을 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = MemberEventApplyHistoryDTO.class)))
     @FailApiResponses
     @GetMapping("/apply")
-    public ResponseEntity<ServerResponse<?>> getEventProductApplyInfoDTOs() {
+    public ResponseEntity<ServerResponse<?>> getMemberEventApplyHistoryDTOs(Pageable pageable) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        return ResponseEntity.ok(new ServerResponse<>(eventService.getEventProductApplyInfoDTOs(currentMemberId)));
+        return ResponseEntity
+                .ok(new ServerResponse<>(eventService.getMemberEventApplyHistoryDTOs(currentMemberId, pageable)));
     }
 }

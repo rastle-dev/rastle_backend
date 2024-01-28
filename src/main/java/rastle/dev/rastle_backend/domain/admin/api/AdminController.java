@@ -22,6 +22,7 @@ import rastle.dev.rastle_backend.domain.category.dto.CategoryInfo;
 import rastle.dev.rastle_backend.domain.event.dto.EventDTO.EventCreateRequest;
 import rastle.dev.rastle_backend.domain.event.dto.EventDTO.EventUpdateRequest;
 import rastle.dev.rastle_backend.domain.event.dto.EventInfo;
+import rastle.dev.rastle_backend.domain.event.dto.EventProductApplyDTO.ProductEventApplyHistoryDTO;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleDTO.BundleCreateRequest;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleInfo;
 import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.MemberInfoDto;
@@ -122,7 +123,8 @@ public class AdminController {
         @GetExecutionTime
         @PostMapping("/product/{id}/detailImages")
         public ResponseEntity<ServerResponse<?>> uploadDetailImages(@PathVariable("id") Long id,
-                        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "등록할 상품 이미지들") @RequestParam("detailImages") List<MultipartFile> detailImages) throws JsonProcessingException {
+                        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "등록할 상품 이미지들") @RequestParam("detailImages") List<MultipartFile> detailImages)
+                        throws JsonProcessingException {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.uploadDetailImages(id, detailImages)));
         }
 
@@ -133,7 +135,8 @@ public class AdminController {
         @PatchMapping("/product/{id}")
         public ResponseEntity<ServerResponse<?>> updateProductInfo(@PathVariable("id") Long id,
 
-                        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "가계부 업데이트 요청", content = @Content(schema = @Schema(implementation = ProductUpdateRequest.class))) @RequestBody Map<String, Object> updateMap) throws JsonProcessingException {
+                        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "가계부 업데이트 요청", content = @Content(schema = @Schema(implementation = ProductUpdateRequest.class))) @RequestBody Map<String, Object> updateMap)
+                        throws JsonProcessingException {
 
                 ProductUpdateRequest productUpdateRequest = objectMapper.convertValue(updateMap,
                                 ProductUpdateRequest.class);
@@ -177,7 +180,8 @@ public class AdminController {
         @GetExecutionTime
         @PutMapping("/product/{id}/detailImages")
         public ResponseEntity<ServerResponse<?>> updateDetailImages(@PathVariable("id") Long id,
-                        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "업데이트할 상품 이미지들") @RequestParam("detailImages") List<MultipartFile> detailImages) throws JsonProcessingException {
+                        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "업데이트할 상품 이미지들") @RequestParam("detailImages") List<MultipartFile> detailImages)
+                        throws JsonProcessingException {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.updateDetailImages(id, detailImages)));
         }
 
@@ -185,7 +189,8 @@ public class AdminController {
         @FailApiResponses
         @GetExecutionTime
         @DeleteMapping("/product/{id}")
-        public ResponseEntity<ServerResponse<?>> deleteProduct(@PathVariable("id") Long id) throws JsonProcessingException {
+        public ResponseEntity<ServerResponse<?>> deleteProduct(@PathVariable("id") Long id)
+                        throws JsonProcessingException {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.deleteProduct(id)));
         }
 
@@ -263,6 +268,18 @@ public class AdminController {
                 return ResponseEntity.ok(new ServerResponse<>(adminService.deleteEvent(id)));
         }
 
+        @Operation(summary = "제품 이벤트 응모 신청 내역 조회 API", description = "해당 제품이 받은 이벤트 응모 신청 내역을 조회합니다.")
+        @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = ProductEventApplyHistoryDTO.class)))
+        @FailApiResponses
+        @GetMapping("/event/apply/{productId}")
+        public ResponseEntity<ServerResponse<?>> getProductEventApplyHistoryDTOs(
+                        @PathVariable("productId") Long productId,
+                        Pageable pageable) {
+                return ResponseEntity
+                                .ok(new ServerResponse<>(
+                                                adminService.getProductEventApplyHistoryDTOs(productId, pageable)));
+        }
+
         // ==============================================================================================================
         // 상품 세트 관련 API
         // ==============================================================================================================
@@ -329,11 +346,9 @@ public class AdminController {
                 return ResponseEntity.ok(adminService.getMemberByEmail(email));
         }
 
-
         // ==============================================================================================================
         // 주문 관련 API
         // ==============================================================================================================
-
 
         // ==============================================================================================================
         // 결제 관련 API

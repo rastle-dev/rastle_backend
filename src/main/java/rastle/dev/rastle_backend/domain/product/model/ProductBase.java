@@ -51,20 +51,23 @@ public class ProductBase {
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<CartProduct> cartProducts = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bundle_id")
     private Bundle bundle;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
     private Event event;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
 
     @OneToMany(mappedBy = "eventApplyProduct", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<EventProductApply> eventProductApplies = new ArrayList<>();
+
+    @Column(name = "event_apply_count")
+    private Long eventApplyCount;
 
     @Builder
     public ProductBase(Long id, String name, int price, String mainThumbnailImage, String subThumbnailImage,
@@ -124,5 +127,10 @@ public class ProductBase {
 
     public void setEvent(Event event) {
         this.event = event;
+    }
+
+    @PrePersist
+    public void incrementEventApplyCount() {
+        this.eventApplyCount++;
     }
 }
