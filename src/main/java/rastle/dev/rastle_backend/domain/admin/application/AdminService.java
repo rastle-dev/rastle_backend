@@ -23,7 +23,9 @@ import rastle.dev.rastle_backend.domain.category.repository.mysql.CategoryReposi
 import rastle.dev.rastle_backend.domain.event.dto.EventDTO.EventCreateRequest;
 import rastle.dev.rastle_backend.domain.event.dto.EventDTO.EventUpdateRequest;
 import rastle.dev.rastle_backend.domain.event.dto.EventInfo;
+import rastle.dev.rastle_backend.domain.event.dto.EventProductApplyDTO.ProductEventApplyHistoryDTO;
 import rastle.dev.rastle_backend.domain.event.model.Event;
+import rastle.dev.rastle_backend.domain.event.repository.mysql.EventProductApplyRepository;
 import rastle.dev.rastle_backend.domain.event.repository.mysql.EventRepository;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleInfo;
 import rastle.dev.rastle_backend.domain.bundle.model.Bundle;
@@ -70,6 +72,7 @@ public class AdminService {
     private final ProductDetailRepository productDetailRepository;
     private final MemberRepository memberRepository;
     private final OrderDetailRepository orderDetailRepository;
+    private final EventProductApplyRepository eventProductApplyRepository;
 
     // ==============================================================================================================
     // 상품 관련 서비스
@@ -529,6 +532,16 @@ public class AdminService {
         }
         eventRepository.deleteById(id);
         return "DELETED";
+    }
+
+    /**
+     * 제품 이벤트 응모 신청 내역 조회
+     * 
+     * @param memberId
+     */
+    @Transactional(readOnly = true)
+    public Page<ProductEventApplyHistoryDTO> getProductEventApplyHistoryDTOs(Long productId, Pageable pageable) {
+        return eventProductApplyRepository.getProductEventApplyHistoryDTOs(productId, pageable);
     }
 
     // ==============================================================================================================
