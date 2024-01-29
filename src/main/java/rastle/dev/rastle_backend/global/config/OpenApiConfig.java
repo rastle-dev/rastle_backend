@@ -2,16 +2,18 @@ package rastle.dev.rastle_backend.global.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.servers.Server;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @OpenAPIDefinition(
-        info = @Info(title = "<Rastle>",
-                description = "쇼핑몰 <Rastle> API 명세서",
-                version = "1.0"
-        )
+    servers = @Server(url = "https://api.recordyslow.com", description = "Server"),
+    info= @Info(title = "<Rastle>",
+    description = "쇼핑몰 <Rastle> API 명세서",
+    version = "1.0"
+)
 
 )
 @RequiredArgsConstructor
