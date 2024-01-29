@@ -9,8 +9,11 @@ import org.springframework.data.repository.query.Param;
 import rastle.dev.rastle_backend.domain.event.dto.EventProductApplyDTO.MemberEventApplyHistoryDTO;
 import rastle.dev.rastle_backend.domain.event.dto.EventProductApplyDTO.ProductEventApplyHistoryDTO;
 import rastle.dev.rastle_backend.domain.event.model.EventProductApply;
+import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 
 public interface EventProductApplyRepository extends JpaRepository<EventProductApply, Long> {
+        boolean existsByMemberIdAndEventApplyProduct(Long memberId, ProductBase eventProduct);
+
         // 회원 이벤트 응모 내역 조회
         @Query("SELECT new rastle.dev.rastle_backend.domain.event.dto.EventProductApplyDTO$MemberEventApplyHistoryDTO("
                         +

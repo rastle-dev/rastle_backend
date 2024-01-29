@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import rastle.dev.rastle_backend.domain.event.dto.EventInfo;
 import rastle.dev.rastle_backend.domain.event.dto.EventProductApplyDTO;
 import rastle.dev.rastle_backend.domain.event.dto.EventProductApplyDTO.MemberEventApplyHistoryDTO;
+import rastle.dev.rastle_backend.domain.event.exception.handler.EventExceptionHandler.AlreadyAppliedException;
 import rastle.dev.rastle_backend.domain.event.exception.handler.EventExceptionHandler.NotEventProductException;
 import rastle.dev.rastle_backend.domain.event.model.EventProductApply;
 import rastle.dev.rastle_backend.domain.event.repository.mysql.EventProductApplyRepository;
@@ -59,15 +60,16 @@ public class EventService {
      */
     @Transactional
     public void applyEventProduct(Long currentMemberId, EventProductApplyDTO eventProductApplyDTO) {
-        Member member = memberRepository.findById(currentMemberId)
-                .orElseThrow(NotFoundByIdException::new);
-
         ProductBase productBase = productBaseRepository.findById(eventProductApplyDTO.getEventProductId())
                 .orElseThrow(NotFoundByIdException::new);
-
+        if (eventProductApplyRepository.existsByMemberIdAndEventApplyProduct(currentMemberId, productBase)) {
+            throw new AlreadyAppliedException();
+        }
         if (productBase.getEvent() == null) {
             throw new NotEventProductException();
         }
+        Member member = memberRepository.findById(currentMemberId)
+                .orElseThrow(NotFoundByIdException::new);
 
         EventProductApply eventProductApply = EventProductApply.builder()
                 .member(member)
