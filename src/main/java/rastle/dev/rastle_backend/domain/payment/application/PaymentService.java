@@ -62,8 +62,10 @@ public class PaymentService {
             orderDetail.paid(paymentResponse);
             try {
                 CustomData customData = objectMapper.readValue(paymentResponse.getResponse().getCustom_data(), CustomData.class);
-                Coupon referenceById = couponRepository.getReferenceById(customData.getCouponId());
-                referenceById.updateStatus(USED);
+                if (customData.getCouponId() != null) {
+                    Coupon referenceById = couponRepository.getReferenceById(customData.getCouponId());
+                    referenceById.updateStatus(USED);
+                }
                 orderDetail.updateDeliveryPrice(customData.getDeliveryPrice());
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
@@ -157,8 +159,10 @@ public class PaymentService {
                     } catch (JsonProcessingException e) {
                         throw new RuntimeException(e);
                     }
-                    Coupon referenceById = couponRepository.getReferenceById(customData.getCouponId());
-                    referenceById.updateStatus(USED);
+                    if (customData.getCouponId() != null) {
+                        Coupon referenceById = couponRepository.getReferenceById(customData.getCouponId());
+                        referenceById.updateStatus(USED);
+                    }
                     orderDetail.updateDeliveryPrice(customData.getDeliveryPrice());
                     orderDetail.paid(paymentResponse);
                     return PortOneWebHookResponse.builder()
