@@ -34,28 +34,30 @@ public class EventProductDetailInfo {
     String eventDescription;
     LocalDateTime eventStartDate;
     LocalDateTime eventEndDate;
+    Long eventApplyCount;
 
     public static EventProductDetailInfo fromProductInfo(ProductInfo productInfo, Event event) {
         return EventProductDetailInfo.builder()
-            .id(productInfo.getId())
-            .name(productInfo.getName())
-            .price(productInfo.getPrice())
-            .mainThumbnailImage(productInfo.getMainThumbnailImage())
-            .subThumbnailImage(productInfo.getSubThumbnailImage())
-            .discountPrice(productInfo.getDiscountPrice())
-            .displayOrder(productInfo.getDisplayOrder())
-            .visible(productInfo.isVisible())
-            .categoryId(productInfo.getCategoryId())
-            .bundleId(productInfo.getBundleId())
-            .eventId(productInfo.getEventId())
-            .mainImage(productInfo.getMainImage())
-            .detailImage(productInfo.getDetailImage())
-            .productColor(productInfo.getProductColor())
-            .eventName(event.getName())
-            .eventImageUrls(event.getImageUrls())
-            .eventDescription(event.getDescription())
-            .eventStartDate(event.getEventStartDate())
-            .eventEndDate(event.getEventEndDate())
-            .build();
+                .id(productInfo.getId())
+                .name(productInfo.getName())
+                .price(productInfo.getPrice())
+                .mainThumbnailImage(productInfo.getMainThumbnailImage())
+                .subThumbnailImage(productInfo.getSubThumbnailImage())
+                .discountPrice(productInfo.getDiscountPrice())
+                .displayOrder(productInfo.getDisplayOrder())
+                .visible(productInfo.isVisible())
+                .categoryId(productInfo.getCategoryId())
+                .bundleId(productInfo.getBundleId())
+                .eventId(productInfo.getEventId())
+                .mainImage(productInfo.getMainImage())
+                .detailImage(productInfo.getDetailImage())
+                .productColor(productInfo.getProductColor())
+                .eventName(event.getName())
+                .eventImageUrls(event.getImageUrls())
+                .eventDescription(event.getDescription())
+                .eventStartDate(event.getEventStartDate())
+                .eventEndDate(event.getEventEndDate())
+                .eventApplyCount(productInfo.getEventApplyCount())
+                .build();
     }
 }
