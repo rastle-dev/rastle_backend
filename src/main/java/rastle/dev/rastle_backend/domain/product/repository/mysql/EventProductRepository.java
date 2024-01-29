@@ -61,34 +61,36 @@ public interface EventProductRepository extends JpaRepository<ProductBase, Long>
                         @Param("lowerBound") Long lowerBound, @Param("upperBound") Long upperBound);
 
         @Query("select new rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo(" +
-                "ep.id, " +
-                "ep.name, " +
-                "ep.price, " +
-                "ep.mainThumbnailImage, " +
-                "ep.subThumbnailImage," +
-                "ep.discountPrice, " +
-                "ep.displayOrder, " +
-                "ep.visible, " +
-                "ep.category.id, " +
-                "ep.bundle.id, " +
-                "ep.event.id) " +
-                "from ProductBase ep " +
-                "WHERE ep.event.id = :id ORDER BY ep.displayOrder DESC")
+            "ep.id, " +
+            "ep.name, " +
+            "ep.price, " +
+            "ep.mainThumbnailImage, " +
+            "ep.subThumbnailImage," +
+            "ep.discountPrice, " +
+            "ep.displayOrder, " +
+            "ep.visible, " +
+            "ep.category.id, " +
+            "ep.bundle.id, " +
+            "ep.event.id," +
+            "ep.eventApplyCount) " +
+            "from ProductBase ep " +
+            "WHERE ep.event.id = :id ORDER BY ep.displayOrder DESC")
         List<SimpleProductInfo> getEventProductInfosByEventId(@Param("id") Long id);
 
         @Query("select new rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo(" +
-                "ep.id, " +
-                "ep.name, " +
-                "ep.price, " +
-                "ep.mainThumbnailImage, " +
-                "ep.subThumbnailImage," +
-                "ep.discountPrice, " +
-                "ep.displayOrder, " +
-                "ep.visible, " +
-                "ep.category.id, " +
-                "ep.bundle.id, " +
-                "ep.event.id) " +
-                "from ProductBase ep " +
-                "WHERE ep.id = :id")
+            "ep.id, " +
+            "ep.name, " +
+            "ep.price, " +
+            "ep.mainThumbnailImage, " +
+            "ep.subThumbnailImage," +
+            "ep.discountPrice, " +
+            "ep.displayOrder, " +
+            "ep.visible, " +
+            "ep.category.id, " +
+            "ep.bundle.id, " +
+            "ep.event.id, " +
+            "ep.eventApplyCount) " +
+            "from ProductBase ep " +
+            "WHERE ep.id = :id")
         Optional<SimpleProductInfo> getEventProductInfoById(@Param("id") Long id);
 }
