@@ -55,6 +55,7 @@ public class OrderDetail extends BaseTimeEntity {
     @Column(name = "imp_id")
     private String impId;
     @NotNull
+    @Column(name = "payment_status")
     private String paymentStatus;
 
     @ManyToOne
