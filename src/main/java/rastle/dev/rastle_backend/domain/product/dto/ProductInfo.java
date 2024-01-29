@@ -26,4 +26,5 @@ public class ProductInfo {
     ProductImage mainImage;
     ProductImage detailImage;
     ProductColor productColor;
+    Long eventApplyCount;
 }
