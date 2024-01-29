@@ -55,9 +55,7 @@ public class OrderDetail extends BaseTimeEntity {
     @Column(name = "imp_id")
     private String impId;
     @NotNull
-    @Enumerated(STRING)
-    @Column(name = "payment_status")
-    private PaymentStatus paymentStatus;
+    private String paymentStatus;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
@@ -75,7 +73,7 @@ public class OrderDetail extends BaseTimeEntity {
         this.deliveryAddress = deliveryAddress;
         this.orderNumber = orderNumber;
         this.deliveryStatus = deliveryStatus;
-        this.paymentStatus = paymentStatus;
+        this.paymentStatus = paymentStatus.toString();
         this.member = member;
         this.paymentPrice = paymentPrice;
         this.impId = impId;
@@ -83,7 +81,7 @@ public class OrderDetail extends BaseTimeEntity {
     }
 
     public void paid(PortOnePaymentResponse paymentResponse) {
-        this.paymentStatus = PAID;
+        this.paymentStatus = PAID.toString();
         this.userName = paymentResponse.getResponse().getBuyer_name();
         this.tel = paymentResponse.getResponse().getBuyer_tel();
         this.email = paymentResponse.getResponse().getBuyer_email();
@@ -102,7 +100,7 @@ public class OrderDetail extends BaseTimeEntity {
     }
 
     public void updatePaymentStatus(PaymentStatus paymentStatus) {
-        this.paymentStatus = paymentStatus;
+        this.paymentStatus = paymentStatus.toString();
     }
 
     public void updateDeliveryPrice(Long deliveryPrice) {
