@@ -52,7 +52,7 @@ public class EventController {
     @FailApiResponses
     @PostMapping("/apply")
     public ResponseEntity<ServerResponse<?>> applyEventProduct(
-            @RequestBody EventProductApplyDTO eventProductApplyDTO) {
+            @RequestBody EventProductApplyDTO eventProductApplyDTO, Pageable pageable) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         eventService.applyEventProduct(currentMemberId, eventProductApplyDTO);
         return ResponseEntity.ok(new ServerResponse<>("이벤트 응모 신청이 완료되었습니다."));
