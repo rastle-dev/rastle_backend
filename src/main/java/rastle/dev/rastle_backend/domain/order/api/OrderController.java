@@ -1,13 +1,11 @@
 package rastle.dev.rastle_backend.domain.order.api;
 
-import com.amazonaws.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -31,9 +29,17 @@ public class OrderController {
     @ApiResponse(responseCode = "200", description = "주문 생성 성공시", content = @Content(schema = @Schema(implementation = OrderCreateResponse.class)))
     @PostMapping("")
     public ResponseEntity<?> createOrderDetail(@RequestBody OrderCreateRequest orderCreateRequest) {
-        Long memberId = SecurityUtil.getNullableCurrentMemberId();
+        Long memberId = SecurityUtil.getCurrentMemberId();
         return ResponseEntity.ok(new ServerResponse<>(orderService.createOrderDetail(memberId, orderCreateRequest)));
     }
+
+    @Operation(summary = "주문 상세 조회 API", description = "주문 상세 조회 API")
+    @GetMapping("/{orderId}")
+    public ResponseEntity<?> getOrderDetail(@PathVariable("orderId") Long orderId) {
+        Long memberId = SecurityUtil.getCurrentMemberId();
+        return ResponseEntity.ok(new ServerResponse<>(orderService.getOrderDetail(memberId, orderId)));
+    }
+
 
     @Operation(summary = "주문 리스트 조회 API", description = "멤버 주문 리스트 조회 API 입니다")
     @GetMapping("")
@@ -43,7 +49,7 @@ public class OrderController {
         @Parameter(name = "size", description = "페이지 크기", in = QUERY, required = false)
         @RequestParam(value = "size", required = false, defaultValue = "10") int size
     ) {
-        Long memberId = SecurityUtil.getNullableCurrentMemberId();
+        Long memberId = SecurityUtil.getCurrentMemberId();
         return ResponseEntity.ok(new ServerResponse<>(orderService.getMemberOrder(memberId, PageRequest.of(page, size))));
     }
 }

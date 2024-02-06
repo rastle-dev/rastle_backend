@@ -2,7 +2,10 @@ package rastle.dev.rastle_backend.domain.order.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
+import rastle.dev.rastle_backend.domain.coupon.dto.CouponInfo;
+import rastle.dev.rastle_backend.global.common.enums.DeliveryStatus;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class OrderDTO {
@@ -90,5 +93,49 @@ public class OrderDTO {
         List<SimpleProductOrderInfo> productOrderInfos;
 
     }
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class OrderDetailResponse {
+        String orderNumber;
+        String orderDate;
+        String memberName;
+        DeliveryStatus deliveryStatus;
 
+        List<SimpleProductOrderInfo> productOrderInfos;
+        Long paymentAmount;
+        Long deliveryPrice;
+
+        String paymentMethod;
+
+        ReceiverInfo receiverInfo;
+
+        RefundInfo refundInfo;
+
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ReceiverInfo {
+        String receiverName;
+        String postcode;
+        String address;
+        String tel;
+        String msg;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class RefundInfo {
+        LocalDateTime cancelTime;
+        Long cancelAmount;
+        String paymentMethod;
+        CouponInfo couponInfo;
+
+    }
 }
