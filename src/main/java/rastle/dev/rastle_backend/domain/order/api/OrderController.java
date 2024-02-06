@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rastle.dev.rastle_backend.domain.order.application.OrderService;
+import rastle.dev.rastle_backend.domain.order.dto.OrderDTO;
 import rastle.dev.rastle_backend.domain.order.dto.OrderDTO.OrderCreateRequest;
 import rastle.dev.rastle_backend.domain.order.dto.OrderDTO.OrderCreateResponse;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
@@ -35,7 +36,7 @@ public class OrderController {
 
     @Operation(summary = "주문 상세 조회 API", description = "주문 상세 조회 API")
     @GetMapping("/{orderId}")
-    public ResponseEntity<?> getOrderDetail(@PathVariable("orderId") Long orderId) {
+    public ResponseEntity<ServerResponse<OrderDTO.OrderDetailResponse>> getOrderDetail(@PathVariable("orderId") Long orderId) {
         Long memberId = SecurityUtil.getCurrentMemberId();
         return ResponseEntity.ok(new ServerResponse<>(orderService.getOrderDetail(memberId, orderId)));
     }
