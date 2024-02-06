@@ -77,8 +77,9 @@ dependencies {
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
     // boot pay
-    implementation 'io.github.bootpay:backend:+'
-
+    implementation 'io.github.bootpay:backend:2.2.1'
+    // p6spy
+    implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
 
     // MySql
     runtimeOnly 'mysql:mysql-connector-java'
