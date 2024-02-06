@@ -9,7 +9,7 @@ build/
 .http/PortOne.http
 .DS_Store
 ### config file
-
+docker-compose.yml
 *.env.json
 
 src/main/resources/application.yml
