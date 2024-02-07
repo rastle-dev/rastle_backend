@@ -12,6 +12,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.member.model.Authority;
+import rastle.dev.rastle_backend.domain.member.model.RecipientInfo;
 import rastle.dev.rastle_backend.domain.member.model.UserLoginType;
 
 public class MemberDTO {
@@ -59,8 +60,8 @@ public class MemberDTO {
         private String userName;
         @Schema(description = "전화번호", type = "string", format = "phone", example = "01012345678", required = true)
         private String phoneNumber;
-        @Schema(description = "주소", type = "string", format = "address", example = "서울시 강남구 어딘가로")
-        private String address;
+        @Schema(description = "배송지 정보", type = "object", format = "recipientInfo")
+        private RecipientInfo recipientInfo;
         @Schema(description = "생성 일시", type = "string", format = "createdDate", example = "2021-08-01T00:00:00")
         private LocalDateTime createdDate;
         @Schema(description = "주문 정보", type = "list", format = "orderDetails")

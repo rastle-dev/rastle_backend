@@ -24,6 +24,7 @@ import rastle.dev.rastle_backend.domain.coupon.repository.mysql.CouponRepository
 import rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO.LoginDto;
 import rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO.SignUpDto;
 import rastle.dev.rastle_backend.domain.member.model.Member;
+import rastle.dev.rastle_backend.domain.member.model.RecipientInfo;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
 import rastle.dev.rastle_backend.domain.token.dto.TokenDTO.TokenInfoDTO;
 import rastle.dev.rastle_backend.global.error.exception.InvalidRequestException;
@@ -56,6 +57,10 @@ public class MemberAuthService {
         }
         signUpDto.encode(passwordEncoder);
         Member entity = signUpDto.toEntity();
+        RecipientInfo recipientInfo = new RecipientInfo();
+        recipientInfo.setRecipientName(signUpDto.getUsername());
+        recipientInfo.setRecipientPhoneNumber(signUpDto.getPhoneNumber());
+        entity.updateRecipientInfo(recipientInfo);
         memberRepository.save(entity);
         Cart build = Cart.builder().member(entity).build();
         cartRepository.save(build);

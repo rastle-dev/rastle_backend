@@ -17,7 +17,7 @@ import rastle.dev.rastle_backend.domain.member.application.MemberService;
 import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.LoginMemberInfoDto;
 import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.NewPhoneNumberDto;
 import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.PasswordDto;
-import rastle.dev.rastle_backend.domain.member.model.Address;
+import rastle.dev.rastle_backend.domain.member.model.RecipientInfo;
 import rastle.dev.rastle_backend.global.response.FailApiResponses;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
 import rastle.dev.rastle_backend.global.util.SecurityUtil;
@@ -61,25 +61,25 @@ public class MemberController {
         return ResponseEntity.ok(new ServerResponse<>("회원 탈퇴 성공"));
     }
 
-    @Operation(summary = "회원 주소지 갱신", description = "회원의 주소지를 갱신합니다.")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "회원 주소지 갱신 성공"),
-            @ApiResponse(responseCode = "400", description = "회원 주소지 갱신 실패") })
-    @PutMapping("/updateMemberAddress")
-    public ResponseEntity<ServerResponse<String>> updateMemberAddress(HttpServletResponse response,
-            @RequestBody Address address) {
+    @Operation(summary = "회원 배송지 정보 갱신", description = "회원의 배송지 정보를 갱신합니다.")
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "회원 배송지 갱신 성공"),
+            @ApiResponse(responseCode = "400", description = "회원 배송지 갱신 실패") })
+    @PutMapping("/updateMemberRecipientInfo")
+    public ResponseEntity<ServerResponse<String>> updateMemberRecipientInfo(HttpServletResponse response,
+            @Valid @RequestBody RecipientInfo recipientInfo) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        memberService.updateMemberAddress(currentMemberId, address);
-        return ResponseEntity.ok(new ServerResponse<>("회원 주소지 갱신 성공"));
+        memberService.updateMemberRecipientInfo(currentMemberId, recipientInfo);
+        return ResponseEntity.ok(new ServerResponse<>("회원 배송지 갱신 성공"));
     }
 
-    @Operation(summary = "회원 주소지 조회", description = "회원의 주소지를 조회합니다.")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "회원 주소지 조회 성공"),
-            @ApiResponse(responseCode = "400", description = "회원 주소지 조회 실패") })
-    @GetMapping("/getMemberAddress")
-    public ResponseEntity<ServerResponse<Address>> getMemberAddress(HttpServletResponse response) {
+    @Operation(summary = "회원 배송지 정보 조회", description = "회원의 배송지 정보를 조회합니다.")
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "회원 배송지 조회 성공"),
+            @ApiResponse(responseCode = "400", description = "회원 배송지 조회 실패") })
+    @GetMapping("/getMemberRecipientInfo")
+    public ResponseEntity<ServerResponse<RecipientInfo>> getMemberRecipientInfo(HttpServletResponse response) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        Address address = memberService.getMemberAddress(currentMemberId);
-        ServerResponse<Address> serverResponse = new ServerResponse<>(address);
+        RecipientInfo recipientInfo = memberService.getMemberRecipientInfo(currentMemberId);
+        ServerResponse<RecipientInfo> serverResponse = new ServerResponse<>(recipientInfo);
         return ResponseEntity.ok(serverResponse);
     }
 
