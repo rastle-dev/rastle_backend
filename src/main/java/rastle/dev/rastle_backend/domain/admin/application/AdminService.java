@@ -573,10 +573,7 @@ public class AdminService {
                 .userLoginType(member.getUserLoginType())
                 .userName(member.getUserName())
                 .phoneNumber(member.getPhoneNumber())
-                // .address(String.format("%s %s %s", member.getZipCode(),
-                // member.getRoadAddress(),
-                // member.getDetailAddress()))
-                .address(member.getAddress().toString())
+                .recipientInfo(member.getRecipientInfo())
                 .createdDate(member.getCreatedDate())
                 .allOrderDetails(allOrderDetails)
                 .build();

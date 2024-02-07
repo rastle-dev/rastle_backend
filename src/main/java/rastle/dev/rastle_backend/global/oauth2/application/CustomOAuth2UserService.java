@@ -14,6 +14,7 @@ import rastle.dev.rastle_backend.domain.coupon.model.Coupon;
 import rastle.dev.rastle_backend.domain.coupon.repository.mysql.CouponRepository;
 import rastle.dev.rastle_backend.domain.member.model.Authority;
 import rastle.dev.rastle_backend.domain.member.model.Member;
+import rastle.dev.rastle_backend.domain.member.model.RecipientInfo;
 import rastle.dev.rastle_backend.domain.member.model.UserLoginType;
 import rastle.dev.rastle_backend.domain.member.model.UserPrincipal;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
@@ -54,10 +55,18 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                                 .userLoginType(loginType)
                                 .authority(Authority.ROLE_USER)
                                 .build();
+
+                RecipientInfo recipientInfo = new RecipientInfo();
+                recipientInfo.setRecipientName(memberInfo.getName());
+                recipientInfo.setRecipientPhoneNumber(memberInfo.getPhoneNumber());
+                member.updateRecipientInfo(recipientInfo);
+
                 Cart build = Cart.builder().member(member).build();
                 cartRepository.save(build);
+
                 Coupon coupon = Coupon.builder().discount(3000).name("회원가입 축하 쿠폰").member(member).build();
                 couponRepository.save(coupon);
+
                 return memberRepository.save(member);
         }
 }

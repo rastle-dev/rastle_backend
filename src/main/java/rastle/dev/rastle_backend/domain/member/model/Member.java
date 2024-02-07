@@ -23,18 +23,9 @@ public class Member extends MemberBase {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    // @Column(name = "zip_code")
-    // private String zipCode;
-
-    // @Column(name = "road_address")
-    // private String roadAddress;
-
-    // @Column(name = "detail_address")
-    // private String detailAddress;
-
-    @Convert(converter = Address.AddressConverter.class)
-    @Column(name = "address", columnDefinition = "JSON")
-    private Address address;
+    @Convert(converter = RecipientInfo.AddressConverter.class)
+    @Column(name = "recipient_info", columnDefinition = "JSON")
+    private RecipientInfo recipientInfo;
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Coupon> coupons = new ArrayList<>();
@@ -60,23 +51,11 @@ public class Member extends MemberBase {
         super.updatePassword(newPassword);
     }
 
-    public void updateAddress(Address newAddress) {
-        this.address = newAddress;
+    public void updateRecipientInfo(RecipientInfo newRecipientInfo) {
+        this.recipientInfo = newRecipientInfo;
     }
 
     public void updatePhoneNumber(String newPhoneNumber) {
         this.phoneNumber = newPhoneNumber;
     }
-
-    // public void updateZipcode(String newZipcode) {
-    // this.zipCode = newZipcode;
-    // }
-
-    // public void updateRoadAddress(String newRoadAddress) {
-    // this.roadAddress = newRoadAddress;
-    // }
-
-    // public void updateDetailAddress(String newDetailAddress) {
-    // this.detailAddress = newDetailAddress;
-    // }
 }

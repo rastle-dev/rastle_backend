@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.LoginMemberInfoDto;
-import rastle.dev.rastle_backend.domain.member.model.Address;
+import rastle.dev.rastle_backend.domain.member.model.RecipientInfo;
 import rastle.dev.rastle_backend.domain.member.model.Member;
 
 import java.util.Optional;
@@ -21,6 +21,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("SELECT m FROM Member m WHERE m.authority = 'ROLE_USER'")
     Page<Member> findAllUsers(Pageable pageable);
 
-    @Query("SELECT m.address FROM Member m WHERE m.id = :id")
-    Optional<Address> findAddressById(@Param("id") Long id);
+    @Query("SELECT m.recipientInfo FROM Member m WHERE m.id = :id")
+    Optional<RecipientInfo> findRecipientInfoById(@Param("id") Long id);
 }
