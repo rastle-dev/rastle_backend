@@ -23,6 +23,7 @@ import rastle.dev.rastle_backend.domain.payment.dto.PortOneDTO.PortOnePaymentRes
 import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 import rastle.dev.rastle_backend.global.component.OrderNumberComponent;
 import rastle.dev.rastle_backend.global.component.PortOneComponent;
+import rastle.dev.rastle_backend.global.error.exception.NotAuthorizedException;
 import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
 
 import java.time.Instant;
@@ -48,6 +49,9 @@ public class OrderService {
     @Transactional
     public OrderCreateResponse createOrderDetail(Long memberId, OrderCreateRequest orderCreateRequest) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+        if (member.getId() != 11L) {
+            throw new NotAuthorizedException();
+        }
         OrderDetail orderDetail = OrderDetail.builder()
             .deliveryStatus(NOT_STARTED)
             .paymentStatus(READY)
