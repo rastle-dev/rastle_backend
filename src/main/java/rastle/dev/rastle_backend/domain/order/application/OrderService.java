@@ -120,7 +120,7 @@ public class OrderService {
 
         if (paymentData.getResponse().getCancelled_at() != null) {
             Instant instant = Instant.ofEpochMilli(paymentData.getResponse().getCancelled_at());
-            ZoneId zoneId = ZoneId.of("JST");
+            ZoneId zoneId = ZoneId.of("Asia/Seoul");
             cancelTime = instant.atZone(zoneId).toLocalDateTime();
         }
 
