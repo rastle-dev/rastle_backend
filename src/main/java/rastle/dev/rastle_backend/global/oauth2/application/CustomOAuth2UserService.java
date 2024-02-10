@@ -51,7 +51,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 Member member = Member.builder()
                                 .email(memberInfo.getEmail())
                                 .userName(memberInfo.getName())
-                                .phoneNumber(memberInfo.getPhoneNumber() != null ? memberInfo.getPhoneNumber() : "")
+                                .phoneNumber(formatPhoneNumber(memberInfo.getPhoneNumber()))
                                 .userLoginType(loginType)
                                 .authority(Authority.ROLE_USER)
                                 .build();
@@ -68,5 +68,18 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 couponRepository.save(coupon);
 
                 return memberRepository.save(member);
+        }
+
+        private String formatPhoneNumber(String phoneNumber) {
+                if (phoneNumber == null || phoneNumber.isEmpty()) {
+                        return "";
+                }
+
+                phoneNumber = phoneNumber.replaceAll("[^0-9]", "");
+                if (phoneNumber.startsWith("82")) {
+                        phoneNumber = "0" + phoneNumber.substring(2);
+                }
+
+                return phoneNumber;
         }
 }
