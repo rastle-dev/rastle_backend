@@ -97,10 +97,10 @@ public class MemberAuthService {
      * @return 로그인 성공 여부
      */
     @Transactional
-    public ResponseEntity<String> login(LoginDto loginDto, HttpServletResponse response) {
+    public ResponseEntity<String> login(LoginDto loginDto, HttpServletRequest request, HttpServletResponse response) {
         Authentication authentication = authenticate(loginDto);
         TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authentication, response);
-        HttpHeaders responseHeaders = createAuthorizationHeader(tokenInfoDTO.getAccessToken());
+        HttpHeaders responseHeaders = createAuthorizationHeader(request, tokenInfoDTO.getAccessToken());
         return new ResponseEntity<>("로그인 성공", responseHeaders, HttpStatus.OK);
     }
 
@@ -109,9 +109,14 @@ public class MemberAuthService {
         return authenticationManagerBuilder.getObject().authenticate(token);
     }
 
-    private HttpHeaders createAuthorizationHeader(String accessToken) {
+    private HttpHeaders createAuthorizationHeader(HttpServletRequest request, String accessToken) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + accessToken);
+        if (request.getHeader("Origin") == null) {
+            headers.set("Access-Control-Allow-Origin", "https://recordyslow.com");
+        } else {
+            headers.set("Access-Control-Allow-Origin", request.getHeader("Origin"));
+        }
         return headers;
     }
 
@@ -171,7 +176,7 @@ public class MemberAuthService {
         if (storedToken != null && storedToken.equals(refreshToken)) {
             String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
 
-            HttpHeaders responseHeaders = createAuthorizationHeader(newAccessToken);
+            HttpHeaders responseHeaders = createAuthorizationHeader(request, newAccessToken);
             return new ResponseEntity<>("액세스 토큰 재발급 성공", responseHeaders, HttpStatus.OK);
         } else if (storedToken == null) {
             return new ResponseEntity<>("액세스 토큰 재발급 실패: 저장된 토큰이 없습니다.", HttpStatus.UNAUTHORIZED);
