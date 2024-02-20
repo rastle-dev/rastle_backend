@@ -117,11 +117,11 @@ public class MemberAuthService {
     private HttpHeaders createAuthorizationHeader(HttpServletRequest request, String accessToken) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + accessToken);
-        if (request.getHeader("Origin") == null) {
-            headers.set("Access-Control-Allow-Origin", "https://recordyslow.com");
-        } else {
-            headers.set("Access-Control-Allow-Origin", request.getHeader("Origin"));
-        }
+//        if (request.getHeader("Origin") == null) {
+//            headers.set("Access-Control-Allow-Origin", "https://recordyslow.com");
+//        } else {
+//            headers.set("Access-Control-Allow-Origin", request.getHeader("Origin"));
+//        }
         return headers;
     }
 
