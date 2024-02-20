@@ -1,8 +1,5 @@
 package rastle.dev.rastle_backend.domain.member.api;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -12,23 +9,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import rastle.dev.rastle_backend.domain.member.application.EmailCertificationService;
-import rastle.dev.rastle_backend.domain.member.application.MemberAuthService;
-// import rastle.dev.rastle_backend.domain.Member.dto.MemberAuthDTO.AdminSignUpDto;
-import rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO.EmailCertificationCheckDto;
-import rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO.EmailCertificationDto;
-import rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO.LoginDto;
-import rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO.PasswordResetRequestDto;
-import rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO.SignUpDto;
-import rastle.dev.rastle_backend.global.response.FailApiResponses;
-import rastle.dev.rastle_backend.global.response.ServerResponse;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
+import rastle.dev.rastle_backend.domain.member.application.EmailCertificationService;
+import rastle.dev.rastle_backend.domain.member.application.MemberAuthService;
+import rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO.*;
+import rastle.dev.rastle_backend.global.response.FailApiResponses;
+import rastle.dev.rastle_backend.global.response.ServerResponse;
 
 @Tag(name = "회원 인증", description = "회원 인증 관련 API입니다.")
 @RestController
@@ -76,8 +64,9 @@ public class MemberAuthController {
         @FailApiResponses
         @PostMapping(value = "/login")
         public ResponseEntity<ServerResponse<String>> login(@RequestBody LoginDto loginDto,
+                        HttpServletRequest request,
                         HttpServletResponse response) {
-                ResponseEntity<String> loginResponse = memberAuthService.login(loginDto, response);
+                ResponseEntity<String> loginResponse = memberAuthService.login(loginDto, request, response);
                 HttpHeaders headers = loginResponse.getHeaders(); // 기존 헤더 가져오기
                 ServerResponse<String> serverResponse = new ServerResponse<>(loginResponse.getBody());
                 return ResponseEntity.status(loginResponse.getStatusCode()).headers(headers).body(serverResponse);
