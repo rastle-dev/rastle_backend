@@ -128,7 +128,7 @@ public class SecurityConfig {
 
                 configuration.setAllowedOrigins(
                                 Arrays.asList("http://localhost:3000", "https://localhost:3000",
-                                                "https://www.recordyslow.com", "https://recordyslow.com", "https://api.recordyslow.com"));
+                                                "https://www.recordyslow.com", "https://recordyslow.com", "https://api.recordyslow.com", "https://optimize.d2fyka5dusxft6.amplifyapp.com"));
                 configuration.setAllowedMethods(
                                 Arrays.asList("HEAD", "POST", "GET", "DELETE", "PUT", "OPTIONS", "PATCH"));
                 configuration.addAllowedHeader(("*"));
