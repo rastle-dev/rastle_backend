@@ -77,7 +77,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/").permitAll()
                 .requestMatchers(HttpMethod.GET, "/env_profile").permitAll()
                 .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
-                .requestMatchers("/actuator/**").authenticated()
+                .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/oauth2/**").permitAll()
                 .requestMatchers("/login/**").permitAll()
                 .requestMatchers("/auth/**").permitAll()
