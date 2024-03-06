@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,13 +63,14 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<EventProductInfo> getEventProducts(String visible, Long lowerBound, Long upperBound) {
+    public List<EventProductInfo> getEventProducts(String visible, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
         if (visible.equals(ALL)) {
-            return eventProductRepository.getEventProducts(lowerBound, upperBound);
+            return eventProductRepository.getEventProducts(pageable);
         } else if (visible.equals(TRUE)) {
-            return eventProductRepository.getEventProductByVisibility(true, lowerBound, upperBound);
+            return eventProductRepository.getEventProductByVisibility(true, pageable);
         } else {
-            return eventProductRepository.getEventProductByVisibility(false, lowerBound, upperBound);
+            return eventProductRepository.getEventProductByVisibility(false, pageable);
         }
 
     }
