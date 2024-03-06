@@ -11,6 +11,7 @@ build/
 ### config file
 docker-compose.yml
 docker-compose-monitoring.yml
+prometheus.yml
 *.env.json
 
 src/main/resources/application.yml
