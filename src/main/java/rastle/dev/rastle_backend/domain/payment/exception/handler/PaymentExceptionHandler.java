@@ -11,12 +11,16 @@ import rastle.dev.rastle_backend.global.error.response.ErrorResponse;
 
 @Slf4j
 @RestControllerAdvice
-public class PaymentHandler {
+public class PaymentExceptionHandler {
+    private void logException(Exception exception) {
+        StackTraceElement[] stackTrace = exception.getStackTrace();
+        log.warn(exception.getMessage(), stackTrace[0]);
+    }
     @ExceptionHandler(PaymentException.class)
     protected final ResponseEntity<ErrorResponse> handlePaymentException(
             PaymentException ex, WebRequest request
     ) {
-        log.info(ex.getMessage());
+        logException(ex);
         return new ResponseEntity<>(ErrorResponse
                 .builder()
                 .errorCode(409L)
