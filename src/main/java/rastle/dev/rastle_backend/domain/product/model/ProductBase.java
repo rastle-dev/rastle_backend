@@ -71,7 +71,7 @@ public class ProductBase {
 
     @Builder
     public ProductBase(Long id, String name, int price, String mainThumbnailImage, String subThumbnailImage,
-            int discountPrice, Category category, Long displayOrder, boolean visible, Bundle bundle, Event event) {
+                       int discountPrice, Category category, Long displayOrder, boolean visible, Bundle bundle, Event event) {
         this.id = id;
         this.name = name;
         this.price = price;

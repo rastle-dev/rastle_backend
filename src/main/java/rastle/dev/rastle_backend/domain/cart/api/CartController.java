@@ -1,29 +1,22 @@
 package rastle.dev.rastle_backend.domain.cart.api;
 
-import java.util.List;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import rastle.dev.rastle_backend.domain.cart.application.CartService;
 import rastle.dev.rastle_backend.domain.cart.dto.CartDTO.CartProductInfoDto;
 import rastle.dev.rastle_backend.domain.cart.dto.CartDTO.CreateCartProductDto;
 import rastle.dev.rastle_backend.global.response.FailApiResponses;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
+
+import java.util.List;
 
 @Tag(name = "장바구니", description = "장바구니 관련 API입니다.")
 @RestController
@@ -37,7 +30,7 @@ public class CartController {
     @FailApiResponses
     @PostMapping
     public ResponseEntity<ServerResponse<String>> addToCart(
-            @RequestBody List<CreateCartProductDto> createCartProductDtos) {
+        @RequestBody List<CreateCartProductDto> createCartProductDtos) {
         cartService.addToCart(createCartProductDtos);
         ServerResponse<String> response = new ServerResponse<>("장바구니에 상품이 추가되었습니다.");
         return ResponseEntity.ok(response);
@@ -66,7 +59,7 @@ public class CartController {
     @FailApiResponses
     @DeleteMapping("/removeSelected")
     public ResponseEntity<ServerResponse<String>> removeSelectedProducts(
-            @RequestParam List<Long> deleteCartProductIdList) {
+        @RequestParam List<Long> deleteCartProductIdList) {
         cartService.removeSelectedProducts(deleteCartProductIdList);
         ServerResponse<String> response = new ServerResponse<>("장바구니에서 선택한 상품이 삭제되었습니다.");
         return ResponseEntity.ok(response);

@@ -46,7 +46,7 @@ public class MemberAuthService {
 
     /**
      * 회원가입
-     * 
+     *
      * @param signUpDto 회원가입 요청 DTO
      * @return 회원가입 요청 DTO
      */
@@ -86,7 +86,7 @@ public class MemberAuthService {
 
     /**
      * 이메일 중복 확인
-     * 
+     *
      * @param email 이메일
      * @return 이메일 중복 여부
      */
@@ -97,7 +97,7 @@ public class MemberAuthService {
 
     /**
      * 로그인
-     * 
+     *
      * @param loginDto
      * @return 로그인 성공 여부
      */
@@ -127,7 +127,7 @@ public class MemberAuthService {
 
     /**
      * 로그아웃
-     * 
+     *
      * @param request  HttpServletRequest
      * @param response HttpServletResponse
      * @return 로그아웃 성공 여부
@@ -150,21 +150,21 @@ public class MemberAuthService {
 
     private void deleteRefreshTokenCookie(HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from("refreshToken", null)
-                .maxAge(0)
-                .path("/")
-                .httpOnly(true)
-                .secure(true)
-                // .domain("recordyslow.com")
-                // .sameSite("Strict")
-                .sameSite("None")
-                .build();
+            .maxAge(0)
+            .path("/")
+            .httpOnly(true)
+            .secure(true)
+            // .domain("recordyslow.com")
+            // .sameSite("Strict")
+            .sameSite("None")
+            .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
     }
 
     /**
      * 액세스 토큰 재발급
-     * 
+     *
      * @param request
      * @return 액세스 토큰 재발급 성공 여부
      */

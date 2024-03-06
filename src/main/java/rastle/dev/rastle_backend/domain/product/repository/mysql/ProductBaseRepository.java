@@ -14,106 +14,106 @@ import java.util.Optional;
 public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> {
 
     @Query("select new rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo(" +
-            "pb.id, " +
-            "pb.name, " +
-            "pb.price, " +
-            "pb.mainThumbnailImage, " +
-            "pb.subThumbnailImage," +
-            "pb.discountPrice, " +
-            "pb.displayOrder, " +
-            "pb.visible, " +
-            "pb.category.id, " +
-            "pb.bundle.id, " +
-            "pb.event.id, " +
-            "pb.eventApplyCount) " +
-            "from ProductBase pb WHERE pb.event.id = null ORDER BY pb.displayOrder ASC")
+        "pb.id, " +
+        "pb.name, " +
+        "pb.price, " +
+        "pb.mainThumbnailImage, " +
+        "pb.subThumbnailImage," +
+        "pb.discountPrice, " +
+        "pb.displayOrder, " +
+        "pb.visible, " +
+        "pb.category.id, " +
+        "pb.bundle.id, " +
+        "pb.event.id, " +
+        "pb.eventApplyCount) " +
+        "from ProductBase pb WHERE pb.event.id = null ORDER BY pb.displayOrder ASC")
     Page<SimpleProductInfo> getProductInfos(Pageable pageable);
 
     @Query("select new rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo(" +
-            "pb.id, " +
-            "pb.name, " +
-            "pb.price, " +
-            "pb.mainThumbnailImage, " +
-            "pb.subThumbnailImage," +
-            "pb.discountPrice, " +
-            "pb.displayOrder, " +
-            "pb.visible, " +
-            "pb.category.id, " +
-            "pb.bundle.id, " +
-            "pb.event.id, " +
-            "pb.eventApplyCount) " +
-            "from ProductBase pb WHERE pb.visible = :visible AND pb.event.id = null ORDER BY pb.displayOrder ASC")
+        "pb.id, " +
+        "pb.name, " +
+        "pb.price, " +
+        "pb.mainThumbnailImage, " +
+        "pb.subThumbnailImage," +
+        "pb.discountPrice, " +
+        "pb.displayOrder, " +
+        "pb.visible, " +
+        "pb.category.id, " +
+        "pb.bundle.id, " +
+        "pb.event.id, " +
+        "pb.eventApplyCount) " +
+        "from ProductBase pb WHERE pb.visible = :visible AND pb.event.id = null ORDER BY pb.displayOrder ASC")
     Page<SimpleProductInfo> getProductInfosByVisibility(@Param("visible") boolean visible, Pageable pageable);
 
     @Query("select new rastle.dev.rastle_backend.domain.product.dto.ProductInfo(" +
-            "pb.id, " +
-            "pb.name, " +
-            "pb.price, " +
-            "pb.mainThumbnailImage, " +
-            "pb.subThumbnailImage," +
-            "pb.discountPrice, " +
-            "pb.displayOrder, " +
-            "pb.visible, " +
-            "pb.category.id, " +
-            "pb.bundle.id, " +
-            "pb.event.id, " +
-            "pd.productMainImages, " +
-            "pd.productDetailImages, " +
-            "pd.productColors, " +
-            "pb.eventApplyCount) " +
-            "FROM ProductBase pb  " +
-            "JOIN ProductDetail pd ON pb.productDetail.id = pd.id " +
-            "WHERE pb.id = :id")
+        "pb.id, " +
+        "pb.name, " +
+        "pb.price, " +
+        "pb.mainThumbnailImage, " +
+        "pb.subThumbnailImage," +
+        "pb.discountPrice, " +
+        "pb.displayOrder, " +
+        "pb.visible, " +
+        "pb.category.id, " +
+        "pb.bundle.id, " +
+        "pb.event.id, " +
+        "pd.productMainImages, " +
+        "pd.productDetailImages, " +
+        "pd.productColors, " +
+        "pb.eventApplyCount) " +
+        "FROM ProductBase pb  " +
+        "JOIN ProductDetail pd ON pb.productDetail.id = pd.id " +
+        "WHERE pb.id = :id")
     Optional<ProductInfo> getProductDetailInfoById(@Param("id") Long id);
 
     boolean existsProductBaseByCategoryId(Long id);
 
     @Query("select new rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo(" +
-            "pb.id, " +
-            "pb.name, " +
-            "pb.price, " +
-            "pb.mainThumbnailImage, " +
-            "pb.subThumbnailImage," +
-            "pb.discountPrice, " +
-            "pb.displayOrder, " +
-            "pb.visible, " +
-            "pb.category.id, " +
-            "pb.bundle.id, " +
-            "pb.event.id, " +
-            "pb.eventApplyCount) " +
-            "from ProductBase pb WHERE pb.event.id = :id ORDER BY pb.displayOrder DESC")
+        "pb.id, " +
+        "pb.name, " +
+        "pb.price, " +
+        "pb.mainThumbnailImage, " +
+        "pb.subThumbnailImage," +
+        "pb.discountPrice, " +
+        "pb.displayOrder, " +
+        "pb.visible, " +
+        "pb.category.id, " +
+        "pb.bundle.id, " +
+        "pb.event.id, " +
+        "pb.eventApplyCount) " +
+        "from ProductBase pb WHERE pb.event.id = :id ORDER BY pb.displayOrder DESC")
     Page<SimpleProductInfo> getProductInfoByBundleId(@Param("id") Long id, Pageable pageable);
 
     @Query("select new rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo(" +
-            "pb.id, " +
-            "pb.name, " +
-            "pb.price, " +
-            "pb.mainThumbnailImage, " +
-            "pb.subThumbnailImage," +
-            "pb.discountPrice, " +
-            "pb.displayOrder, " +
-            "pb.visible, " +
-            "pb.category.id, " +
-            "pb.bundle.id, " +
-            "pb.event.id, " +
-            "pb.eventApplyCount) " +
-            "from ProductBase pb WHERE pb.category.id = :id ORDER BY pb.displayOrder DESC")
+        "pb.id, " +
+        "pb.name, " +
+        "pb.price, " +
+        "pb.mainThumbnailImage, " +
+        "pb.subThumbnailImage," +
+        "pb.discountPrice, " +
+        "pb.displayOrder, " +
+        "pb.visible, " +
+        "pb.category.id, " +
+        "pb.bundle.id, " +
+        "pb.event.id, " +
+        "pb.eventApplyCount) " +
+        "from ProductBase pb WHERE pb.category.id = :id ORDER BY pb.displayOrder DESC")
     Page<SimpleProductInfo> getProductInfoByCategoryId(@Param("id") Long id, Pageable pageable);
 
     @Query("select new rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo(" +
-            "pb.id, " +
-            "pb.name, " +
-            "pb.price, " +
-            "pb.mainThumbnailImage, " +
-            "pb.subThumbnailImage," +
-            "pb.discountPrice, " +
-            "pb.displayOrder, " +
-            "pb.visible, " +
-            "pb.category.id, " +
-            "pb.bundle.id, " +
-            "pb.event.id, " +
-            "pb.eventApplyCount) " +
-            "from ProductBase pb WHERE pb.event.id = :id ORDER BY pb.displayOrder DESC")
+        "pb.id, " +
+        "pb.name, " +
+        "pb.price, " +
+        "pb.mainThumbnailImage, " +
+        "pb.subThumbnailImage," +
+        "pb.discountPrice, " +
+        "pb.displayOrder, " +
+        "pb.visible, " +
+        "pb.category.id, " +
+        "pb.bundle.id, " +
+        "pb.event.id, " +
+        "pb.eventApplyCount) " +
+        "from ProductBase pb WHERE pb.event.id = :id ORDER BY pb.displayOrder DESC")
     Page<SimpleProductInfo> getProductInfoByEventId(@Param("id") Long id, Pageable pageable);
 
 }

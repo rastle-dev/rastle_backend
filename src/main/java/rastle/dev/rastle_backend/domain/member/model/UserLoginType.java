@@ -18,9 +18,9 @@ public enum UserLoginType {
 
     public static UserLoginType valueOfLabel(String label) {
         return Arrays.stream(values())
-                .filter(value -> value.type.equals(label))
-                .findAny()
-                .orElse(null);
+            .filter(value -> value.type.equals(label))
+            .findAny()
+            .orElse(null);
     }
 
 }

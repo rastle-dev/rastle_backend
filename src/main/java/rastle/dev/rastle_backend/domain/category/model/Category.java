@@ -22,6 +22,7 @@ public class Category {
 
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<ProductBase> categoryProducts = new ArrayList<>();
+
     @Builder
     public Category(String name) {
         this.name = name;

@@ -25,6 +25,7 @@ public class ProductDetail {
     @Convert(converter = ProductColor.ProductColorConverter.class)
     @Column(name = "product_colors", columnDefinition = "JSON")
     private ProductColor productColors;
+
     @Builder
     public ProductDetail(ProductImage productMainImages, ProductImage productDetailImages, ProductColor productColors) {
         this.productMainImages = productMainImages;

@@ -17,9 +17,9 @@ public interface CartProductRepository extends JpaRepository<CartProduct, Long> 
     void deleteByIdIn(List<Long> cartProductIds);
 
     @Query("SELECT new rastle.dev.rastle_backend.domain.cart.dto.CartDTO$CartProductInfoDto(cp.id, p.name, p.price, p.discountPrice, cp.color, cp.size, cp.count, p.mainThumbnailImage, p.id) "
-            +
-            "FROM CartProduct cp " +
-            "JOIN cp.product p " +
-            "WHERE cp.cart.member.id = :memberId")
+        +
+        "FROM CartProduct cp " +
+        "JOIN cp.product p " +
+        "WHERE cp.cart.member.id = :memberId")
     Page<CartProductInfoDto> getCartProducts(@Param("memberId") Long memberId, Pageable pageable);
 }

@@ -8,21 +8,19 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import java.net.URI;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-
 import rastle.dev.rastle_backend.domain.payment.application.PaymentService;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentPrepareRequest;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentVerificationRequest;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentVerificationResponse;
 import rastle.dev.rastle_backend.domain.payment.dto.PortOneWebHookRequest;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
+
+import java.net.URI;
 
 @Tag(name = "결제 API", description = "결제 관련 API 입니다.")
 @RestController
@@ -36,7 +34,7 @@ public class PaymentController {
     @ApiResponse(responseCode = "200", description = "검증 성공시", content = @Content(schema = @Schema(implementation = PaymentVerificationResponse.class)))
     @PostMapping("/complete")
     public ResponseEntity<?> verifyPaymentCompletion(
-            @RequestBody PaymentVerificationRequest paymentVerificationRequest) {
+        @RequestBody PaymentVerificationRequest paymentVerificationRequest) {
         return ResponseEntity.ok(new ServerResponse<>(paymentService.verifyPayment(paymentVerificationRequest)));
     }
 
@@ -44,10 +42,10 @@ public class PaymentController {
     @ApiResponse(responseCode = "200", description = "검증 성공")
     @GetMapping("/completeMobile")
     public ResponseEntity<Object> verifyMobilePaymentCompletion(@RequestParam("imp_uid") String impUid,
-            @RequestParam("merchant_uid") String merchantUid, @RequestParam("imp_success") boolean impSuccess,
-            @RequestParam(value = "error_code", required = false) String errorCode,
-            @RequestParam(value = "error_msg", required = false) String errorMsg,
-            UriComponentsBuilder uriComponentsBuilder) throws JsonProcessingException {
+                                                                @RequestParam("merchant_uid") String merchantUid, @RequestParam("imp_success") boolean impSuccess,
+                                                                @RequestParam(value = "error_code", required = false) String errorCode,
+                                                                @RequestParam(value = "error_msg", required = false) String errorMsg,
+                                                                UriComponentsBuilder uriComponentsBuilder) throws JsonProcessingException {
         URI redirectUri = paymentService.verifyMobilePayment(impUid, merchantUid, impSuccess, errorCode, errorMsg);
         log.info("redirectUri: {}", redirectUri);
         HttpHeaders httpHeaders = new HttpHeaders();

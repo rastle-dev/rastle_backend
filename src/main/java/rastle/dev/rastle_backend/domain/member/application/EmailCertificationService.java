@@ -1,8 +1,11 @@
 package rastle.dev.rastle_backend.domain.member.application;
 
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-
+import jakarta.mail.Message;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -13,15 +16,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-
-import jakarta.mail.Message;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import rastle.dev.rastle_backend.domain.member.model.Member;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
+
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +38,7 @@ public class EmailCertificationService {
 
     /**
      * 이메일 인증 메시지 발송
-     * 
+     *
      * @param to 수신자 이메일
      * @throws Exception 발송 실패 예외
      */
@@ -60,8 +59,8 @@ public class EmailCertificationService {
 
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
 
-             valueOperations.set(to, ePw);
-             redisTemplate.expire(to, EMAIL_CERTIFICATION_TIME, TimeUnit.MILLISECONDS);
+            valueOperations.set(to, ePw);
+            redisTemplate.expire(to, EMAIL_CERTIFICATION_TIME, TimeUnit.MILLISECONDS);
         } catch (MailException es) {
             throw new IllegalArgumentException(es.getMessage());
         }
@@ -71,9 +70,9 @@ public class EmailCertificationService {
 
     /**
      * 이메일 인증 번호 확인
-     * 
+     *
      * @param email 이메일
-     * @param code   인증 번호
+     * @param code  인증 번호
      * @return 인증 번호 일치 여부
      */
     public boolean checkEmailCertification(String email, String code) {
@@ -92,7 +91,7 @@ public class EmailCertificationService {
 
     /**
      * 비밀번호 초기화 메일 발송
-     * 
+     *
      * @param to
      * @return
      * @throws Exception
@@ -112,7 +111,7 @@ public class EmailCertificationService {
             mimeMessage.addRecipients(Message.RecipientType.TO, to);
             mimeMessage.setSubject("rastle_ 비밀번호 초기화");
             mimeMessage.setFrom(new InternetAddress("rastle.fashion@gmail.com",
-                    "rastle_admin"));
+                "rastle_admin"));
 
             Context context = new Context();
             context.setVariable("password", temporaryPassword);

@@ -84,11 +84,11 @@ public class UserPrincipal implements UserDetails, OidcUser {
 
     public static UserPrincipal create(Member member) {
         return new UserPrincipal(
-                String.valueOf(member.getId()),
-                member.getPassword(),
-                member.getUserLoginType(),
-                member.getAuthority(),
-                Collections.singletonList(new SimpleGrantedAuthority(member.getAuthority().toString())));
+            String.valueOf(member.getId()),
+            member.getPassword(),
+            member.getUserLoginType(),
+            member.getAuthority(),
+            Collections.singletonList(new SimpleGrantedAuthority(member.getAuthority().toString())));
 
     }
 

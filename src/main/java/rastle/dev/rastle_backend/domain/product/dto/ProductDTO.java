@@ -10,7 +10,6 @@ import rastle.dev.rastle_backend.domain.category.model.Category;
 import rastle.dev.rastle_backend.domain.event.model.Event;
 import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 import rastle.dev.rastle_backend.domain.product.model.ProductColor;
-import rastle.dev.rastle_backend.domain.product.model.ProductImage;
 
 import java.util.List;
 
@@ -93,15 +92,15 @@ public class ProductDTO {
 
         public ProductBase toProductBase(Category category, Bundle bundle, Event event) {
             return ProductBase.builder()
-                    .name(name)
-                    .price(price)
-                    .discountPrice(discountPrice)
-                    .category(category)
-                    .displayOrder(displayOrder)
-                    .visible(visible)
-                    .bundle(bundle)
-                    .event(event)
-                    .build();
+                .name(name)
+                .price(price)
+                .discountPrice(discountPrice)
+                .category(category)
+                .displayOrder(displayOrder)
+                .visible(visible)
+                .bundle(bundle)
+                .event(event)
+                .build();
         }
 
     }

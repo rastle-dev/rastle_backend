@@ -16,7 +16,7 @@ public class CategoryDto {
 
         public Category toEntity() {
             return Category.builder()
-                    .name(name).build();
+                .name(name).build();
         }
     }
 
