@@ -12,14 +12,12 @@ import rastle.dev.rastle_backend.domain.cart.model.Cart;
 import rastle.dev.rastle_backend.domain.cart.repository.mysql.CartRepository;
 import rastle.dev.rastle_backend.domain.coupon.model.Coupon;
 import rastle.dev.rastle_backend.domain.coupon.repository.mysql.CouponRepository;
-import rastle.dev.rastle_backend.domain.member.model.Authority;
-import rastle.dev.rastle_backend.domain.member.model.Member;
-import rastle.dev.rastle_backend.domain.member.model.RecipientInfo;
-import rastle.dev.rastle_backend.domain.member.model.UserLoginType;
-import rastle.dev.rastle_backend.domain.member.model.UserPrincipal;
+import rastle.dev.rastle_backend.domain.member.model.*;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
 import rastle.dev.rastle_backend.global.oauth2.OAuth2UserInfo;
 import rastle.dev.rastle_backend.global.oauth2.OAuth2UserInfoFactory;
+
+import static rastle.dev.rastle_backend.global.common.enums.CouponStatus.NOT_USED;
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +62,8 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 Cart build = Cart.builder().member(member).build();
                 cartRepository.save(build);
 
-                Coupon coupon = Coupon.builder().discount(3000).name("회원가입 축하 쿠폰").member(member).build();
+                Coupon coupon = Coupon.builder().discount(3000).name("회원가입 축하 쿠폰").member(member)
+                    .couponStatus(NOT_USED).build();
                 couponRepository.save(coupon);
 
                 return memberRepository.save(member);

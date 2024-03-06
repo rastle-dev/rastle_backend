@@ -49,7 +49,7 @@ public class OrderService {
     @Transactional
     public OrderCreateResponse createOrderDetail(Long memberId, OrderCreateRequest orderCreateRequest) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
-        if (member.getId() != 11L) {
+        if (!(member.getId() == 11L || member.getId() == 8L)) {
             throw new NotAuthorizedException();
         }
         OrderDetail orderDetail = OrderDetail.builder()
