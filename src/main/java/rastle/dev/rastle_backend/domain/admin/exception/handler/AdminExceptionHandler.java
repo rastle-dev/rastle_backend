@@ -17,6 +17,11 @@ import static org.springframework.http.HttpStatus.CONFLICT;
 @Slf4j
 @RestControllerAdvice
 public class AdminExceptionHandler {
+
+    private void logException(Exception exception) {
+        StackTraceElement[] stackTrace = exception.getStackTrace();
+        log.warn(exception.getMessage(), stackTrace[0]);
+    }
     @ExceptionHandler(InvalidImageUrlException.class)
     protected final ResponseEntity<ErrorResponse> handleS3ImageException(
             S3ImageUploadException ex, WebRequest request) {
