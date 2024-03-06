@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,8 +33,8 @@ public class EventController {
     @FailApiResponses
     @GetMapping("")
     public ResponseEntity<ServerResponse<?>> getEventDetail(
-            @Parameter(name = "visible", description = "ALL - visible 여부 관계 없이 리턴, TRUE-true인 것만, FALSE - false인 것만") @RequestParam(name = "visible", defaultValue = ALL) String visible,
-            Pageable pageable) {
+        @Parameter(name = "visible", description = "ALL - visible 여부 관계 없이 리턴, TRUE-true인 것만, FALSE - false인 것만") @RequestParam(name = "visible", defaultValue = ALL) String visible,
+        Pageable pageable) {
         return ResponseEntity.ok(new ServerResponse<>(eventService.getEventInfo(visible, pageable)));
     }
 
@@ -52,7 +51,7 @@ public class EventController {
     @FailApiResponses
     @PostMapping("/apply")
     public ResponseEntity<ServerResponse<?>> applyEventProduct(
-            @RequestBody EventProductApplyDTO eventProductApplyDTO) {
+        @RequestBody EventProductApplyDTO eventProductApplyDTO) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         eventService.applyEventProduct(currentMemberId, eventProductApplyDTO);
         return ResponseEntity.ok(new ServerResponse<>("이벤트 응모 신청이 완료되었습니다."));
@@ -65,6 +64,6 @@ public class EventController {
     public ResponseEntity<ServerResponse<?>> getMemberEventApplyHistoryDTOs(Pageable pageable) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         return ResponseEntity
-                .ok(new ServerResponse<>(eventService.getMemberEventApplyHistoryDTOs(currentMemberId, pageable)));
+            .ok(new ServerResponse<>(eventService.getMemberEventApplyHistoryDTOs(currentMemberId, pageable)));
     }
 }

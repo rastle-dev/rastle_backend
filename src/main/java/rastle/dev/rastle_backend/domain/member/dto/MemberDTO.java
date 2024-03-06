@@ -1,8 +1,5 @@
 package rastle.dev.rastle_backend.domain.member.dto;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -14,6 +11,9 @@ import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.member.model.Authority;
 import rastle.dev.rastle_backend.domain.member.model.RecipientInfo;
 import rastle.dev.rastle_backend.domain.member.model.UserLoginType;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 public class MemberDTO {
     @Builder

@@ -9,10 +9,10 @@ import java.util.List;
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {
     @Query(
-            "select new rastle.dev.rastle_backend.domain.category.dto.CategoryInfo(" +
-                    "c.id, " +
-                    "c.name "+
-                    ") from Category c"
+        "select new rastle.dev.rastle_backend.domain.category.dto.CategoryInfo(" +
+            "c.id, " +
+            "c.name " +
+            ") from Category c"
     )
     List<CategoryInfo> getCategoryInfos();
 }

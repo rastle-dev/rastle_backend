@@ -11,6 +11,7 @@ import rastle.dev.rastle_backend.global.util.SecurityUtil;
 @RequiredArgsConstructor
 public class CouponService {
     private final CouponRepository couponRepository;
+
     @Transactional(readOnly = true)
     public CouponResponseDTO getMemberCoupons() {
         return new CouponResponseDTO(couponRepository.findByMemberId(SecurityUtil.getCurrentMemberId()));

@@ -1,13 +1,13 @@
 package rastle.dev.rastle_backend.domain.member.model;
 
-import java.util.Objects;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import rastle.dev.rastle_backend.global.converter.JsonConverter;
+
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -37,10 +37,10 @@ public class RecipientInfo {
             return false;
         RecipientInfo address = (RecipientInfo) o;
         return Objects.equals(zipCode, address.zipCode) &&
-                Objects.equals(roadAddress, address.roadAddress) &&
-                Objects.equals(detailAddress, address.detailAddress)
-                && Objects.equals(recipientName, address.recipientName)
-                && Objects.equals(recipientPhoneNumber, address.recipientPhoneNumber);
+            Objects.equals(roadAddress, address.roadAddress) &&
+            Objects.equals(detailAddress, address.detailAddress)
+            && Objects.equals(recipientName, address.recipientName)
+            && Objects.equals(recipientPhoneNumber, address.recipientPhoneNumber);
     }
 
     @Override

@@ -1,11 +1,7 @@
 package rastle.dev.rastle_backend.domain.order.scheduler;
 
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderDetailRepository;
+import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor

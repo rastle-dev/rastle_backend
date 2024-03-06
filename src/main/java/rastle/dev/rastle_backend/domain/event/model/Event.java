@@ -1,15 +1,15 @@
 package rastle.dev.rastle_backend.domain.event.model;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.event.dto.EventInfo;
 import rastle.dev.rastle_backend.domain.product.model.ProductBase;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -35,7 +35,7 @@ public class Event {
 
     @Builder
     public Event(String name, LocalDateTime eventStartDate, LocalDateTime eventEndDate, String imageUrls,
-            String description, boolean visible) {
+                 String description, boolean visible) {
         this.name = name;
         this.eventStartDate = eventStartDate;
         this.eventEndDate = eventEndDate;
@@ -50,14 +50,14 @@ public class Event {
 
     public EventInfo toEventInfo() {
         return EventInfo.builder()
-                .id(this.id)
-                .imageUrls(imageUrls)
-                .name(name)
-                .description(description)
-                .startDate(getEventStartDate())
-                .endDate(getEventEndDate())
-                .visible(visible)
-                .build();
+            .id(this.id)
+            .imageUrls(imageUrls)
+            .name(name)
+            .description(description)
+            .startDate(getEventStartDate())
+            .endDate(getEventEndDate())
+            .visible(visible)
+            .build();
     }
 
     public void setName(String name) {

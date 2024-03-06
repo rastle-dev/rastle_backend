@@ -3,7 +3,6 @@ package rastle.dev.rastle_backend.domain.admin.application;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +14,9 @@ import rastle.dev.rastle_backend.domain.admin.exception.NotEmptyCategoryExceptio
 import rastle.dev.rastle_backend.domain.admin.exception.NotEmptyEventException;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleDTO.BundleCreateRequest;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleDTO.BundleUpdateRequest;
+import rastle.dev.rastle_backend.domain.bundle.dto.BundleInfo;
+import rastle.dev.rastle_backend.domain.bundle.model.Bundle;
+import rastle.dev.rastle_backend.domain.bundle.repository.mysql.BundleRepository;
 import rastle.dev.rastle_backend.domain.category.dto.CategoryDto.CategoryCreateRequest;
 import rastle.dev.rastle_backend.domain.category.dto.CategoryDto.CategoryUpdateRequest;
 import rastle.dev.rastle_backend.domain.category.dto.CategoryInfo;
@@ -27,9 +29,6 @@ import rastle.dev.rastle_backend.domain.event.dto.EventProductApplyDTO.ProductEv
 import rastle.dev.rastle_backend.domain.event.model.Event;
 import rastle.dev.rastle_backend.domain.event.repository.mysql.EventProductApplyRepository;
 import rastle.dev.rastle_backend.domain.event.repository.mysql.EventRepository;
-import rastle.dev.rastle_backend.domain.bundle.dto.BundleInfo;
-import rastle.dev.rastle_backend.domain.bundle.model.Bundle;
-import rastle.dev.rastle_backend.domain.bundle.repository.mysql.BundleRepository;
 import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.MemberInfoDto;
 import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.MemberInfoDto.OrderProductDetail;
 import rastle.dev.rastle_backend.domain.member.model.Member;
@@ -41,7 +40,9 @@ import rastle.dev.rastle_backend.domain.product.dto.ProductDTO.ProductCreateResu
 import rastle.dev.rastle_backend.domain.product.dto.ProductDTO.ProductUpdateRequest;
 import rastle.dev.rastle_backend.domain.product.dto.ProductImageInfo;
 import rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo;
-import rastle.dev.rastle_backend.domain.product.model.*;
+import rastle.dev.rastle_backend.domain.product.model.ProductBase;
+import rastle.dev.rastle_backend.domain.product.model.ProductDetail;
+import rastle.dev.rastle_backend.domain.product.model.ProductImage;
 import rastle.dev.rastle_backend.domain.product.repository.mysql.BundleProductRepository;
 import rastle.dev.rastle_backend.domain.product.repository.mysql.EventProductRepository;
 import rastle.dev.rastle_backend.domain.product.repository.mysql.ProductBaseRepository;
@@ -97,12 +98,12 @@ public class AdminService {
     @Transactional
     public ProductCreateResult createProduct(ProductCreateRequest createRequest) throws JsonProcessingException {
         Category category = categoryRepository.findById(createRequest.getCategoryId())
-                .orElseThrow(NotFoundByIdException::new);
+            .orElseThrow(NotFoundByIdException::new);
         Bundle bundle = null;
         Event event = null;
         if (createRequest.getBundleId() != null) {
             bundle = bundleRepository.findById(createRequest.getBundleId())
-                    .orElseThrow(NotFoundByIdException::new);
+                .orElseThrow(NotFoundByIdException::new);
         }
 
         if (createRequest.getEventId() != null) {
@@ -111,24 +112,24 @@ public class AdminService {
         ProductBase productBase = createRequest.toProductBase(category, bundle, event);
         productBaseRepository.save(productBase);
         ProductDetail productDetail = productDetailRepository
-                .save(ProductDetail.builder().productColors(createRequest.getProductColor()).build());
+            .save(ProductDetail.builder().productColors(createRequest.getProductColor()).build());
         productBase.setProductDetail(productDetail);
 
         return toCreateResult(productBase, createRequest, event, bundle);
     }
 
     private ProductCreateResult toCreateResult(ProductBase saved,
-            ProductCreateRequest createRequest, Event event, Bundle bundle) {
+                                               ProductCreateRequest createRequest, Event event, Bundle bundle) {
         ProductCreateResult createResult = ProductCreateResult.builder()
-                .id(saved.getId())
-                .name(saved.getName())
-                .categoryId(createRequest.getCategoryId())
-                .productColor(createRequest.getProductColor())
-                .price(saved.getPrice())
-                .discountPrice(saved.getDiscountPrice())
-                .displayOrder(saved.getDisplayOrder())
-                .visible(saved.isVisible())
-                .build();
+            .id(saved.getId())
+            .name(saved.getName())
+            .categoryId(createRequest.getCategoryId())
+            .productColor(createRequest.getProductColor())
+            .price(saved.getPrice())
+            .discountPrice(saved.getDiscountPrice())
+            .displayOrder(saved.getDisplayOrder())
+            .visible(saved.isVisible())
+            .build();
         if (event != null) {
             createResult.setEventId(event.getId());
         }
@@ -145,9 +146,9 @@ public class AdminService {
         productBase.setMainThumbnailImage(mainThumbnailUrl);
 
         return ProductImageInfo.builder()
-                .productBaseId(productBase.getId())
-                .imageUrls(List.of(mainThumbnailUrl))
-                .build();
+            .productBaseId(productBase.getId())
+            .imageUrls(List.of(mainThumbnailUrl))
+            .build();
     }
 
     @Transactional
@@ -157,9 +158,9 @@ public class AdminService {
         productBase.setSubThumbnailImage(subThumbnailUrl);
 
         return ProductImageInfo.builder()
-                .productBaseId(productBase.getId())
-                .imageUrls(List.of(subThumbnailUrl))
-                .build();
+            .productBaseId(productBase.getId())
+            .imageUrls(List.of(subThumbnailUrl))
+            .build();
     }
 
     @Transactional
@@ -171,14 +172,14 @@ public class AdminService {
         productDetail.setProductMainImages(productImage);
 
         return ProductImageInfo.builder()
-                .productBaseId(productBase.getId())
-                .imageUrls(productImage.getImageUrls())
-                .build();
+            .productBaseId(productBase.getId())
+            .imageUrls(productImage.getImageUrls())
+            .build();
     }
 
     @Transactional
     public ProductImageInfo uploadDetailImages(Long id, List<MultipartFile> detailImages)
-            throws JsonProcessingException {
+        throws JsonProcessingException {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         ProductDetail productDetail = productBase.getProductDetail();
 
@@ -186,14 +187,14 @@ public class AdminService {
         productDetail.setProductDetailImages(productImage);
 
         return ProductImageInfo.builder()
-                .productBaseId(productBase.getId())
-                .imageUrls(productImage.getImageUrls())
-                .build();
+            .productBaseId(productBase.getId())
+            .imageUrls(productImage.getImageUrls())
+            .build();
     }
 
     @Transactional
     public ProductUpdateRequest updateProductInfo(Long id, ProductUpdateRequest updateRequest)
-            throws JsonProcessingException {
+        throws JsonProcessingException {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         ProductDetail productDetail = productBase.getProductDetail();
         if (updateRequest.getVisible() != null) {
@@ -207,7 +208,7 @@ public class AdminService {
         }
         if (updateRequest.getCategoryId() != null) {
             Category category = categoryRepository.findById(updateRequest.getCategoryId())
-                    .orElseThrow(NotFoundByIdException::new);
+                .orElseThrow(NotFoundByIdException::new);
             productBase.setCategory(category);
         }
         if (updateRequest.getProductColor() != null) {
@@ -221,7 +222,7 @@ public class AdminService {
         }
         if (updateRequest.getBundleId() != null) {
             Bundle bundle = bundleRepository.findById(updateRequest.getBundleId())
-                    .orElseThrow(NotFoundByIdException::new);
+                .orElseThrow(NotFoundByIdException::new);
             productBase.setBundle(bundle);
         }
         if (updateRequest.getEventId() != null) {
@@ -240,9 +241,9 @@ public class AdminService {
         productBase.setMainThumbnailImage(mainThumbnailUrl);
 
         return ProductImageInfo.builder()
-                .productBaseId(productBase.getId())
-                .imageUrls(List.of(mainThumbnailUrl))
-                .build();
+            .productBaseId(productBase.getId())
+            .imageUrls(List.of(mainThumbnailUrl))
+            .build();
     }
 
     @Transactional
@@ -253,9 +254,9 @@ public class AdminService {
         productBase.setSubThumbnailImage(subThumbnailUrl);
 
         return ProductImageInfo.builder()
-                .productBaseId(productBase.getId())
-                .imageUrls(List.of(subThumbnailUrl))
-                .build();
+            .productBaseId(productBase.getId())
+            .imageUrls(List.of(subThumbnailUrl))
+            .build();
     }
 
     @Transactional
@@ -269,7 +270,7 @@ public class AdminService {
 
     @Transactional
     public ProductImageInfo updateDetailImages(Long id, List<MultipartFile> detailImages)
-            throws JsonProcessingException {
+        throws JsonProcessingException {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         ProductDetail productDetail = productBase.getProductDetail();
         ProductImage detailImage = productDetail.getProductDetailImages();
@@ -277,7 +278,7 @@ public class AdminService {
     }
 
     private ProductImageInfo updateImage(List<MultipartFile> detailImages, ProductBase productBase,
-            List<String> toDelete, ProductDetail productDetail, String imageType) throws JsonProcessingException {
+                                         List<String> toDelete, ProductDetail productDetail, String imageType) throws JsonProcessingException {
         // for (String image : toDelete) {
         // s3Component.deleteImageByUrl(image);
         // }
@@ -289,9 +290,9 @@ public class AdminService {
             productDetail.setProductDetailImages(productImage);
         }
         return ProductImageInfo.builder()
-                .productBaseId(productBase.getId())
-                .imageUrls(productImage.getImageUrls())
-                .build();
+            .productBaseId(productBase.getId())
+            .imageUrls(productImage.getImageUrls())
+            .build();
     }
 
     @Transactional
@@ -325,12 +326,12 @@ public class AdminService {
     @Transactional
     public BundleInfo createBundle(BundleCreateRequest createRequest) {
         Bundle newBundle = Bundle.builder()
-                .name(createRequest.getName())
-                .saleStartTime(TimeUtil.convertStringToLocalDateTime(createRequest.getStartDate(),
-                        createRequest.getStartHour(), createRequest.getStartMinute(), createRequest.getStartSecond()))
-                .description(createRequest.getDescription())
-                .visible(createRequest.getVisible())
-                .build();
+            .name(createRequest.getName())
+            .saleStartTime(TimeUtil.convertStringToLocalDateTime(createRequest.getStartDate(),
+                createRequest.getStartHour(), createRequest.getStartMinute(), createRequest.getStartSecond()))
+            .description(createRequest.getDescription())
+            .visible(createRequest.getVisible())
+            .build();
         bundleRepository.save(newBundle);
         return newBundle.toBundleInfo();
     }
@@ -342,12 +343,12 @@ public class AdminService {
         bundle.setImageUrls(imageUrls);
 
         return BundleInfo.builder()
-                .id(bundle.getId())
-                .saleStartTime(bundle.getSaleStartTime())
-                .name(bundle.getName())
-                .imageUrls(bundle.getImageUrls())
-                .description(bundle.getDescription())
-                .build();
+            .id(bundle.getId())
+            .saleStartTime(bundle.getSaleStartTime())
+            .name(bundle.getName())
+            .imageUrls(bundle.getImageUrls())
+            .description(bundle.getDescription())
+            .build();
     }
 
     @Transactional
@@ -364,10 +365,10 @@ public class AdminService {
         }
         if (bundleUpdateRequest.getStartDate() != null) {
             bundle.setSaleStartTime(TimeUtil.convertStringToLocalDateTime(
-                    bundleUpdateRequest.getStartDate(),
-                    bundleUpdateRequest.getStartHour(),
-                    bundleUpdateRequest.getStartMinute(),
-                    bundleUpdateRequest.getStartSecond()));
+                bundleUpdateRequest.getStartDate(),
+                bundleUpdateRequest.getStartHour(),
+                bundleUpdateRequest.getStartMinute(),
+                bundleUpdateRequest.getStartSecond()));
         }
 
         return bundleUpdateRequest;
@@ -387,12 +388,12 @@ public class AdminService {
         bundle.setImageUrls(imageUrlString);
 
         return BundleInfo.builder()
-                .id(bundle.getId())
-                .saleStartTime(bundle.getSaleStartTime())
-                .name(bundle.getName())
-                .imageUrls(bundle.getImageUrls())
-                .description(bundle.getDescription())
-                .build();
+            .id(bundle.getId())
+            .saleStartTime(bundle.getSaleStartTime())
+            .name(bundle.getName())
+            .imageUrls(bundle.getImageUrls())
+            .description(bundle.getDescription())
+            .build();
     }
 
     @Transactional
@@ -412,9 +413,9 @@ public class AdminService {
         Category saved = categoryRepository.save(createRequest.toEntity());
 
         return CategoryInfo.builder()
-                .id(saved.getId())
-                .name(saved.getName())
-                .build();
+            .id(saved.getId())
+            .name(saved.getName())
+            .build();
     }
 
     @Transactional
@@ -422,9 +423,9 @@ public class AdminService {
         Category category = categoryRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         category.setName(categoryUpdateRequest.getName());
         return CategoryInfo.builder()
-                .id(category.getId())
-                .name(category.getName())
-                .build();
+            .id(category.getId())
+            .name(category.getName())
+            .build();
     }
 
     @Transactional
@@ -442,14 +443,14 @@ public class AdminService {
     @Transactional
     public EventInfo createEvent(EventCreateRequest createRequest) {
         Event newEvent = Event.builder()
-                .name(createRequest.getName())
-                .eventStartDate(TimeUtil.convertStringToLocalDateTime(createRequest.getStartDate(),
-                        createRequest.getStartHour(), createRequest.getStartMinute(), createRequest.getStartSecond()))
-                .eventEndDate(TimeUtil.convertStringToLocalDateTime(createRequest.getEndDate(),
-                        createRequest.getEndHour(), createRequest.getEndMinute(), createRequest.getEndSecond()))
-                .description(createRequest.getDescription())
-                .visible(createRequest.getVisible())
-                .build();
+            .name(createRequest.getName())
+            .eventStartDate(TimeUtil.convertStringToLocalDateTime(createRequest.getStartDate(),
+                createRequest.getStartHour(), createRequest.getStartMinute(), createRequest.getStartSecond()))
+            .eventEndDate(TimeUtil.convertStringToLocalDateTime(createRequest.getEndDate(),
+                createRequest.getEndHour(), createRequest.getEndMinute(), createRequest.getEndSecond()))
+            .description(createRequest.getDescription())
+            .visible(createRequest.getVisible())
+            .build();
         eventRepository.save(newEvent);
         return newEvent.toEventInfo();
     }
@@ -461,14 +462,14 @@ public class AdminService {
         event.setImageUrls(imageUrls);
 
         return EventInfo.builder()
-                .id(event.getId())
-                .startDate(event.getEventStartDate())
-                .endDate(event.getEventEndDate())
-                .name(event.getName())
-                .imageUrls(event.getImageUrls())
-                .description(event.getDescription())
-                .visible(event.isVisible())
-                .build();
+            .id(event.getId())
+            .startDate(event.getEventStartDate())
+            .endDate(event.getEventEndDate())
+            .name(event.getName())
+            .imageUrls(event.getImageUrls())
+            .description(event.getDescription())
+            .visible(event.isVisible())
+            .build();
     }
 
     @Transactional
@@ -485,17 +486,17 @@ public class AdminService {
         }
         if (eventUpdateRequest.getEndDate() != null) {
             event.setEventEndDate(TimeUtil.convertStringToLocalDateTime(
-                    eventUpdateRequest.getEndDate(),
-                    eventUpdateRequest.getEndHour(),
-                    eventUpdateRequest.getEndMinute(),
-                    eventUpdateRequest.getEndSecond()));
+                eventUpdateRequest.getEndDate(),
+                eventUpdateRequest.getEndHour(),
+                eventUpdateRequest.getEndMinute(),
+                eventUpdateRequest.getEndSecond()));
         }
         if (eventUpdateRequest.getStartDate() != null) {
             event.setEventStartDate(TimeUtil.convertStringToLocalDateTime(
-                    eventUpdateRequest.getStartDate(),
-                    eventUpdateRequest.getStartHour(),
-                    eventUpdateRequest.getStartMinute(),
-                    eventUpdateRequest.getStartSecond()));
+                eventUpdateRequest.getStartDate(),
+                eventUpdateRequest.getStartHour(),
+                eventUpdateRequest.getStartMinute(),
+                eventUpdateRequest.getStartSecond()));
         }
 
         return eventUpdateRequest;
@@ -515,14 +516,14 @@ public class AdminService {
         event.setImageUrls(imageUrlString);
 
         return EventInfo.builder()
-                .id(event.getId())
-                .startDate(event.getEventStartDate())
-                .endDate(event.getEventEndDate())
-                .name(event.getName())
-                .imageUrls(event.getImageUrls())
-                .description(event.getDescription())
-                .visible(event.isVisible())
-                .build();
+            .id(event.getId())
+            .startDate(event.getEventStartDate())
+            .endDate(event.getEventEndDate())
+            .name(event.getName())
+            .imageUrls(event.getImageUrls())
+            .description(event.getDescription())
+            .visible(event.isVisible())
+            .build();
     }
 
     @Transactional
@@ -536,7 +537,7 @@ public class AdminService {
 
     /**
      * 제품 이벤트 응모 신청 내역 조회
-     * 
+     *
      * @param memberId
      */
     @Transactional(readOnly = true)
@@ -567,33 +568,33 @@ public class AdminService {
 
     private MemberInfoDto convertMemberToMemberInfoDto(Member member) {
         List<MemberInfoDto.OrderDetail> allOrderDetails = convertOrdersToOrderDetails(
-                orderDetailRepository.findByMemberId(member.getId()));
+            orderDetailRepository.findByMemberId(member.getId()));
         return MemberInfoDto.builder()
-                .email(member.getEmail())
-                .userLoginType(member.getUserLoginType())
-                .userName(member.getUserName())
-                .phoneNumber(member.getPhoneNumber())
-                .recipientInfo(member.getRecipientInfo())
-                .createdDate(member.getCreatedDate())
-                .allOrderDetails(allOrderDetails)
-                .build();
+            .email(member.getEmail())
+            .userLoginType(member.getUserLoginType())
+            .userName(member.getUserName())
+            .phoneNumber(member.getPhoneNumber())
+            .recipientInfo(member.getRecipientInfo())
+            .createdDate(member.getCreatedDate())
+            .allOrderDetails(allOrderDetails)
+            .build();
     }
 
     private List<MemberInfoDto.OrderDetail> convertOrdersToOrderDetails(List<OrderDetail> orders) {
         return orders.stream().flatMap(order -> {
             List<OrderProductDetail> orderProductDetails = order.getOrderProduct().stream().map(op -> {
                 return OrderProductDetail.builder()
-                        .color(op.getColor())
-                        .size(op.getSize())
-                        .count(op.getCount())
-                        .productName(op.getProduct().getName())
-                        .build();
+                    .color(op.getColor())
+                    .size(op.getSize())
+                    .count(op.getCount())
+                    .productName(op.getProduct().getName())
+                    .build();
             }).collect(Collectors.toList());
 
             return Stream.of(MemberInfoDto.OrderDetail.builder()
-                    .orderId(order.getId())
-                    .orderProducts(orderProductDetails)
-                    .build());
+                .orderId(order.getId())
+                .orderProducts(orderProductDetails)
+                .build());
         }).collect(Collectors.toList());
     }
 

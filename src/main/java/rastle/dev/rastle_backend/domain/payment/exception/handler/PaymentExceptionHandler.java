@@ -16,15 +16,16 @@ public class PaymentExceptionHandler {
         StackTraceElement[] stackTrace = exception.getStackTrace();
         log.warn(exception.getMessage(), stackTrace[0]);
     }
+
     @ExceptionHandler(PaymentException.class)
     protected final ResponseEntity<ErrorResponse> handlePaymentException(
-            PaymentException ex, WebRequest request
+        PaymentException ex, WebRequest request
     ) {
         logException(ex);
         return new ResponseEntity<>(ErrorResponse
-                .builder()
-                .errorCode(409L)
-                .message(ex.getMessage())
-                .build(), HttpStatus.CONFLICT);
+            .builder()
+            .errorCode(409L)
+            .message(ex.getMessage())
+            .build(), HttpStatus.CONFLICT);
     }
 }

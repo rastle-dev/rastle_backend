@@ -30,9 +30,9 @@ public class BundleController {
     @FailApiResponses
     @GetMapping("")
     public ResponseEntity<ServerResponse<?>> getBundles(
-            @Parameter(name = "visible", description = "ALL - visible 여부 관계 없이 리턴, TRUE-true인 것만, FALSE - false인 것만")
-            @RequestParam(name = "visible", defaultValue = ALL) String visible,
-            Pageable pageable) {
+        @Parameter(name = "visible", description = "ALL - visible 여부 관계 없이 리턴, TRUE-true인 것만, FALSE - false인 것만")
+        @RequestParam(name = "visible", defaultValue = ALL) String visible,
+        Pageable pageable) {
         return ResponseEntity.ok(new ServerResponse<>(bundleService.getBundles(visible, pageable)));
     }
 

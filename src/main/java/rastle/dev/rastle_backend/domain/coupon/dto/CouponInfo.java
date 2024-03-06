@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class CouponInfo {
     private Long id;
     private String name;
-    private int discount;;
+    private int discount;
+    ;
 
 }

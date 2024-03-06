@@ -5,10 +5,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
 import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.LoginMemberInfoDto;
-import rastle.dev.rastle_backend.domain.member.model.RecipientInfo;
 import rastle.dev.rastle_backend.domain.member.model.Member;
+import rastle.dev.rastle_backend.domain.member.model.RecipientInfo;
 
 import java.util.Optional;
 

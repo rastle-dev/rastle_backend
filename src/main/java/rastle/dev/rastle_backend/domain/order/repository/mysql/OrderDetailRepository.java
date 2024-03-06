@@ -21,6 +21,7 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
     @Modifying
     @Query("DELETE FROM OrderDetail od WHERE od.paymentStatus = 'READY'")
     void deleteAllReadyOrders();
+
     @Query("SELECT NEW rastle.dev.rastle_backend.domain.order.dto.OrderSimpleInfo(" +
         "o.id, o.createdTime, o.orderNumber, o.deliveryStatus) " +
         "FROM OrderDetail o WHERE o.member.id = :memberId AND o.paymentStatus = 'PAID' ORDER BY o.createdTime DESC")

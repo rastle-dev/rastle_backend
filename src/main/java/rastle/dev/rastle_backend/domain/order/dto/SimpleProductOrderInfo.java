@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import rastle.dev.rastle_backend.global.common.enums.DeliveryStatus;
 
 @Getter
 @NoArgsConstructor

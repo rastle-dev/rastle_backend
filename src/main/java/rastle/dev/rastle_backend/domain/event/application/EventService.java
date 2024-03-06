@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import rastle.dev.rastle_backend.domain.event.dto.EventInfo;
 import rastle.dev.rastle_backend.domain.event.dto.EventProductApplyDTO;
 import rastle.dev.rastle_backend.domain.event.dto.EventProductApplyDTO.MemberEventApplyHistoryDTO;
@@ -54,14 +53,14 @@ public class EventService {
 
     /**
      * 이벤트 응모 신청
-     * 
+     *
      * @param memberId
      * @param eventProductApplyDTO
      */
     @Transactional
     public void applyEventProduct(Long currentMemberId, EventProductApplyDTO eventProductApplyDTO) {
         ProductBase productBase = productBaseRepository.findById(eventProductApplyDTO.getEventProductId())
-                .orElseThrow(NotFoundByIdException::new);
+            .orElseThrow(NotFoundByIdException::new);
         if (eventProductApplyRepository.existsByMemberIdAndEventApplyProduct(currentMemberId, productBase)) {
             throw new AlreadyAppliedException();
         }
@@ -69,14 +68,14 @@ public class EventService {
             throw new NotEventProductException();
         }
         Member member = memberRepository.findById(currentMemberId)
-                .orElseThrow(NotFoundByIdException::new);
+            .orElseThrow(NotFoundByIdException::new);
 
         EventProductApply eventProductApply = EventProductApply.builder()
-                .member(member)
-                .phoneNumber(eventProductApplyDTO.getEventPhoneNumber())
-                .instagramId(eventProductApplyDTO.getInstagramId())
-                .eventApplyProduct(productBase)
-                .build();
+            .member(member)
+            .phoneNumber(eventProductApplyDTO.getEventPhoneNumber())
+            .instagramId(eventProductApplyDTO.getInstagramId())
+            .eventApplyProduct(productBase)
+            .build();
         productBase.incrementEventApplyCount();
 
         eventProductApplyRepository.save(eventProductApply);
@@ -84,7 +83,7 @@ public class EventService {
 
     /**
      * 회원 이벤트 응모 신청 내역 조회
-     * 
+     *
      * @param memberId
      */
     @Transactional(readOnly = true)

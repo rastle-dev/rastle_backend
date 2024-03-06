@@ -40,14 +40,14 @@ public class OrderDTO {
 
         public static ProductOrderResponse toResponse(ProductOrderRequest request, String productOrderNumber) {
             return ProductOrderResponse.builder()
-                    .productId(request.productId)
-                    .name(request.name)
-                    .color(request.color)
-                    .size(request.size)
-                    .count(request.count)
-                    .totalPrice(request.totalPrice)
-                    .productOrderNumber(productOrderNumber)
-                    .build();
+                .productId(request.productId)
+                .name(request.name)
+                .color(request.color)
+                .size(request.size)
+                .count(request.count)
+                .totalPrice(request.totalPrice)
+                .productOrderNumber(productOrderNumber)
+                .build();
         }
 
     }
@@ -84,6 +84,7 @@ public class OrderDTO {
 
         List<ProductOrderResponse> orderProducts;
     }
+
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
@@ -93,6 +94,7 @@ public class OrderDTO {
         List<SimpleProductOrderInfo> productOrderInfos;
 
     }
+
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor

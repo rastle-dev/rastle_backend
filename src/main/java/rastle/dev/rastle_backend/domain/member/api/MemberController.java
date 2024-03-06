@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,8 +51,8 @@ public class MemberController {
     }
 
     @Operation(summary = "회원 탈퇴", description = "회원 탈퇴를 진행합니다.")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공"),
-            @ApiResponse(responseCode = "400", description = "회원 탈퇴 실패") })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "회원 탈퇴 성공"),
+        @ApiResponse(responseCode = "400", description = "회원 탈퇴 실패")})
     @DeleteMapping("")
     public ResponseEntity<ServerResponse<String>> deleteMember(HttpServletResponse response) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
@@ -62,19 +61,19 @@ public class MemberController {
     }
 
     @Operation(summary = "회원 배송지 정보 갱신", description = "회원의 배송지 정보를 갱신합니다.")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "회원 배송지 갱신 성공"),
-            @ApiResponse(responseCode = "400", description = "회원 배송지 갱신 실패") })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "회원 배송지 갱신 성공"),
+        @ApiResponse(responseCode = "400", description = "회원 배송지 갱신 실패")})
     @PutMapping("/updateMemberRecipientInfo")
     public ResponseEntity<ServerResponse<String>> updateMemberRecipientInfo(HttpServletResponse response,
-            @Valid @RequestBody RecipientInfo recipientInfo) {
+                                                                            @Valid @RequestBody RecipientInfo recipientInfo) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         memberService.updateMemberRecipientInfo(currentMemberId, recipientInfo);
         return ResponseEntity.ok(new ServerResponse<>("회원 배송지 갱신 성공"));
     }
 
     @Operation(summary = "회원 배송지 정보 조회", description = "회원의 배송지 정보를 조회합니다.")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "회원 배송지 조회 성공"),
-            @ApiResponse(responseCode = "400", description = "회원 배송지 조회 실패") })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "회원 배송지 조회 성공"),
+        @ApiResponse(responseCode = "400", description = "회원 배송지 조회 실패")})
     @GetMapping("/getMemberRecipientInfo")
     public ResponseEntity<ServerResponse<RecipientInfo>> getMemberRecipientInfo(HttpServletResponse response) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
@@ -84,11 +83,11 @@ public class MemberController {
     }
 
     @Operation(summary = "회원 전화번호 갱신", description = "회원의 전화번호를 갱신합니다.")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "회원 전화번호 갱신 성공"),
-            @ApiResponse(responseCode = "400", description = "회원 전화번호 갱신 실패") })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "회원 전화번호 갱신 성공"),
+        @ApiResponse(responseCode = "400", description = "회원 전화번호 갱신 실패")})
     @PutMapping("/updateMemberPhoneNumber")
     public ResponseEntity<ServerResponse<String>> updateMemberPhoneNumber(HttpServletResponse response,
-            @Valid @RequestBody NewPhoneNumberDto newPhoneNumberDto) {
+                                                                          @Valid @RequestBody NewPhoneNumberDto newPhoneNumberDto) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         memberService.updateMemberPhoneNumber(currentMemberId, newPhoneNumberDto.getNewPhoneNumber());
         return ResponseEntity.ok(new ServerResponse<>("회원 전화번호 갱신 성공"));

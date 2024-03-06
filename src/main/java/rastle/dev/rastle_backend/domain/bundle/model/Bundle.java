@@ -1,15 +1,15 @@
 package rastle.dev.rastle_backend.domain.bundle.model;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleInfo;
 import rastle.dev.rastle_backend.domain.product.model.ProductBase;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -46,13 +46,13 @@ public class Bundle {
 
     public BundleInfo toBundleInfo() {
         return BundleInfo.builder()
-                .id(id)
-                .description(description)
-                .name(name)
-                .imageUrls(imageUrls)
-                .saleStartTime(saleStartTime)
-                .visible(visible)
-                .build();
+            .id(id)
+            .description(description)
+            .name(name)
+            .imageUrls(imageUrls)
+            .saleStartTime(saleStartTime)
+            .visible(visible)
+            .build();
     }
 
     public void setName(String name) {
