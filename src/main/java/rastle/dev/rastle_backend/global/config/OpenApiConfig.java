@@ -9,7 +9,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @OpenAPIDefinition(
-    servers = @Server(url = "https://api.recordyslow.com", description = "Server"),
+    servers = {
+        @Server(url = "https://api.recordyslow.com", description = "Server"),
+        @Server(url = "http://localhost:8080", description = "local")
+    },
     info= @Info(title = "<Rastle>",
     description = "쇼핑몰 <Rastle> API 명세서",
     version = "1.0"
