@@ -9,6 +9,7 @@ build/
 .http/PortOne.http
 .DS_Store
 ### config file
+docker/**
 docker-compose.yml
 docker-compose-monitoring.yml
 prometheus.yml
