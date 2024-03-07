@@ -10,9 +10,9 @@ build/
 .DS_Store
 ### config file
 docker/**
-docker-compose.yml
-docker-compose-monitoring.yml
-prometheus.yml
+docker/docker-compose.yml
+docker/docker-compose-monitoring.yml
+docker/prometheus.yml
 *.env.json
 log/**
 logs/**
