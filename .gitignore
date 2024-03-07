@@ -13,8 +13,8 @@ docker-compose.yml
 docker-compose-monitoring.yml
 prometheus.yml
 *.env.json
-./log/**
-./logs/**
+log/**
+logs/**
 
 src/main/resources/application.yml
 src/main/resources/application-local.yml
