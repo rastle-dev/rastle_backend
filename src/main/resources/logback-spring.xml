@@ -30,6 +30,7 @@
         </root>
     </springProfile>
     <springProfile name="server">
+        <logger name="p6spy" level="WARN"/>
         <root level="INFO">
             <appender-ref ref="CONSOLE" />
             <appender-ref ref="FILE" />
