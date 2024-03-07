@@ -22,6 +22,7 @@ import static org.springframework.http.HttpStatus.*;
 public class GlobalExceptionHandler {
     private void logException(Exception exception) {
         StackTraceElement[] stackTrace = exception.getStackTrace();
+        log.warn(exception.getClass().getName(), stackTrace[0]);
         log.warn(exception.getMessage(), stackTrace[0]);
     }
 

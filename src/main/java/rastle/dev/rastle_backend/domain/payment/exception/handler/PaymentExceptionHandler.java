@@ -14,7 +14,9 @@ import rastle.dev.rastle_backend.global.error.response.ErrorResponse;
 public class PaymentExceptionHandler {
     private void logException(Exception exception) {
         StackTraceElement[] stackTrace = exception.getStackTrace();
+        log.warn(exception.getClass().getName(), stackTrace[0]);
         log.warn(exception.getMessage(), stackTrace[0]);
+
     }
 
     @ExceptionHandler(PaymentException.class)
