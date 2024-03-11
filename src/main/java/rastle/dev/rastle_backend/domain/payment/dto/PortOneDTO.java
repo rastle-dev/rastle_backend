@@ -80,6 +80,7 @@ public class PortOneDTO {
         public static class CustomData {
             Long couponId;
             Long deliveryPrice;
+            String msg;
         }
     }
 }
