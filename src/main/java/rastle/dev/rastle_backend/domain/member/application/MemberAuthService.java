@@ -92,7 +92,7 @@ public class MemberAuthService {
      */
     @Transactional
     public boolean isEmailDuplicated(String email) {
-        return memberRepository.findByEmail(email).isPresent();
+        return memberRepository.findUserIdByEmail(email).isPresent();
     }
 
     /**
@@ -117,11 +117,11 @@ public class MemberAuthService {
     private HttpHeaders createAuthorizationHeader(HttpServletRequest request, String accessToken) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + accessToken);
-//        if (request.getHeader("Origin") == null) {
-//            headers.set("Access-Control-Allow-Origin", "https://recordyslow.com");
-//        } else {
-//            headers.set("Access-Control-Allow-Origin", request.getHeader("Origin"));
-//        }
+        // if (request.getHeader("Origin") == null) {
+        // headers.set("Access-Control-Allow-Origin", "https://recordyslow.com");
+        // } else {
+        // headers.set("Access-Control-Allow-Origin", request.getHeader("Origin"));
+        // }
         return headers;
     }
 
@@ -150,14 +150,14 @@ public class MemberAuthService {
 
     private void deleteRefreshTokenCookie(HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from("refreshToken", null)
-            .maxAge(0)
-            .path("/")
-            .httpOnly(true)
-            .secure(true)
-            // .domain("recordyslow.com")
-            // .sameSite("Strict")
-            .sameSite("None")
-            .build();
+                .maxAge(0)
+                .path("/")
+                .httpOnly(true)
+                .secure(true)
+                // .domain("recordyslow.com")
+                // .sameSite("Strict")
+                .sameSite("None")
+                .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
     }

@@ -29,7 +29,7 @@ public class MemberService {
      */
     @Transactional
     public LoginMemberInfoDto getLoginMemberInfo(Long memberId) {
-        return memberRepository.findMemberInfoById(memberId).orElseThrow(NotFoundByIdException::new);
+        return memberRepository.findLoginMemberInfoById(memberId).orElseThrow(NotFoundByIdException::new);
     }
 
     /**
@@ -41,9 +41,11 @@ public class MemberService {
      */
     @Transactional
     public void changePassword(Long memberId, String newPassword) {
-        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
-        String encodedPassword = passwordEncoder.encode(newPassword);
-        member.updatePassword(encodedPassword);
+        // Member member =
+        // memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+        // String encodedPassword = passwordEncoder.encode(newPassword);
+        // member.updatePassword(encodedPassword);
+        memberRepository.updatePassword(memberId, passwordEncoder.encode(newPassword));
     }
 
     /**
@@ -58,13 +60,13 @@ public class MemberService {
 
         redisTemplate.delete(username);
         ResponseCookie cookie = ResponseCookie.from("refreshToken", null)
-            .maxAge(0)
-            .path("/")
-            .httpOnly(true)
-            .secure(true)
-            .domain("recordyslow.com")
-            .sameSite("Strict")
-            .build();
+                .maxAge(0)
+                .path("/")
+                .httpOnly(true)
+                .secure(true)
+                .domain("recordyslow.com")
+                .sameSite("Strict")
+                .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
         memberRepository.delete(member);
