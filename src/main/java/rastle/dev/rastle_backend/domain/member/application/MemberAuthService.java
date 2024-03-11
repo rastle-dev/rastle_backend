@@ -32,6 +32,8 @@ import rastle.dev.rastle_backend.global.jwt.JwtTokenProvider;
 
 import java.util.Collection;
 
+import static rastle.dev.rastle_backend.global.common.enums.CouponStatus.NOT_USED;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -64,7 +66,7 @@ public class MemberAuthService {
         memberRepository.save(entity);
         Cart build = Cart.builder().member(entity).build();
         cartRepository.save(build);
-        Coupon coupon = Coupon.builder().discount(3000).name("회원가입 축하 쿠폰").member(entity).build();
+        Coupon coupon = Coupon.builder().discount(3000).name("회원가입 축하 쿠폰").couponStatus(NOT_USED).member(entity).build();
         couponRepository.save(coupon);
         return signUpDto;
     }
