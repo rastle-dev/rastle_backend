@@ -149,6 +149,7 @@ public class OrderService {
                     .cancelAmount(Long.valueOf(paymentData.getResponse().getCancel_amount()))
                     .couponInfo(couponInfo)
                     .cancelTime(cancelTime)
+                    .paymentMethod(paymentData.getResponse().getPay_method())
                     .build()
             )
             .build();
