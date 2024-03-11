@@ -108,6 +108,7 @@ public class OrderDTO {
         List<SimpleProductOrderInfo> productOrderInfos;
         Long paymentAmount;
         Long deliveryPrice;
+        String deliveryMsg;
 
         String paymentMethod;
 

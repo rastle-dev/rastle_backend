@@ -114,8 +114,9 @@ public class OrderService {
         PortOnePaymentResponse paymentData = portOneComponent.getPaymentData(orderDetail.getImpId(), orderDetail.getOrderNumber());
         CouponInfo couponInfo = null;
         LocalDateTime cancelTime = null;
+        CustomData customData = null;
         try {
-            CustomData customData = objectMapper.readValue(paymentData.getResponse().getCustom_data(), CustomData.class);
+            customData = objectMapper.readValue(paymentData.getResponse().getCustom_data(), CustomData.class);
             couponInfo = couponRepository.findByCouponInfoById(customData.getCouponId()).orElse(null);
 
         } catch (JsonProcessingException e) {
@@ -145,6 +146,7 @@ public class OrderService {
                     .postcode(paymentData.getResponse().getBuyer_postcode())
                     .build()
             )
+            .deliveryMsg(customData.getMsg())
             .refundInfo(
                 RefundInfo.builder()
                     .cancelAmount(Long.valueOf(paymentData.getResponse().getCancel_amount()))
