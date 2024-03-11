@@ -31,7 +31,8 @@
     </springProfile>
     <springProfile name="server">
         <logger name="p6spy" level="WARN"/>
-        <logger name="org.mongo.driver" level="WARN"/>
+        <logger name="org.mongodb.driver" level="WARN"/>
+        <logger name="org.springframework.data.repository.config" level="WARN"/>
         <root level="INFO">
             <appender-ref ref="CONSOLE" />
             <appender-ref ref="FILE" />

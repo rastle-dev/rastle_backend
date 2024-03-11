@@ -71,7 +71,7 @@ public class ProductBase {
 
     @Builder
     public ProductBase(Long id, String name, int price, String mainThumbnailImage, String subThumbnailImage,
-                       int discountPrice, Category category, Long displayOrder, boolean visible, Bundle bundle, Event event) {
+                       int discountPrice, Category category, Long displayOrder, boolean visible, Bundle bundle, Event event, long eventApplyCount) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -83,6 +83,7 @@ public class ProductBase {
         this.visible = visible;
         this.bundle = bundle;
         this.event = event;
+        this.eventApplyCount = eventApplyCount;
     }
 
     public void setMainThumbnailImage(String mainThumbnailImage) {

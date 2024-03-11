@@ -100,6 +100,7 @@ public class ProductDTO {
                 .visible(visible)
                 .bundle(bundle)
                 .event(event)
+                .eventApplyCount(0L)
                 .build();
         }
 

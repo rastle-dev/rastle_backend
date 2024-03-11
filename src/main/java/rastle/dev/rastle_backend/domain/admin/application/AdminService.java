@@ -538,7 +538,7 @@ public class AdminService {
     /**
      * 제품 이벤트 응모 신청 내역 조회
      *
-     * @param memberId
+     * @param productId
      */
     @Transactional(readOnly = true)
     public Page<ProductEventApplyHistoryDTO> getProductEventApplyHistoryDTOs(Long productId, Pageable pageable) {
