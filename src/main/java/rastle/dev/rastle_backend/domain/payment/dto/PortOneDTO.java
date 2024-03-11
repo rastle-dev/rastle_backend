@@ -33,7 +33,7 @@ public class PortOneDTO {
             String buyer_postcode;
             String buyer_tel;
             String cancel_amount;
-            List<String> cancel_history;
+            List<CancelInfo> cancel_history;
             String cancel_reason;
             List<String> cancel_receipt_urls;
             Long cancelled_at;
@@ -80,7 +80,20 @@ public class PortOneDTO {
         public static class CustomData {
             Long couponId;
             Long deliveryPrice;
-            String msg;
+            String deliveryMsg;
+        }
+
+        @Getter
+        @AllArgsConstructor
+        @NoArgsConstructor
+        @Setter
+        public static class CancelInfo {
+            String pg_tid;
+            Long amount;
+            Long cancelled_at;
+            String reason;
+            String receipt_url;
+            String cancellation_id;
         }
     }
 }

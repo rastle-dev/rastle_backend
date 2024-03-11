@@ -113,7 +113,9 @@ public class OrderService {
         OrderDetail orderDetail = orderDetailRepository.findById(orderId).orElseThrow(NotFoundByIdException::new);
         PortOnePaymentResponse paymentData = portOneComponent.getPaymentData(orderDetail.getImpId(), orderDetail.getOrderNumber());
         CouponInfo couponInfo = null;
-        LocalDateTime cancelTime = null;
+        Instant instant = Instant.ofEpochSecond(paymentData.getResponse().getCancelled_at());
+        ZoneId zoneId = ZoneId.of("Asia/Seoul");
+        LocalDateTime cancelTime = instant.atZone(zoneId).toLocalDateTime();
         CustomData customData = null;
         try {
             customData = objectMapper.readValue(paymentData.getResponse().getCustom_data(), CustomData.class);
@@ -123,11 +125,6 @@ public class OrderService {
             throw new RuntimeException(e);
         }
 
-        if (paymentData.getResponse().getCancelled_at() != null) {
-            Instant instant = Instant.ofEpochMilli(paymentData.getResponse().getCancelled_at());
-            ZoneId zoneId = ZoneId.of("Asia/Seoul");
-            cancelTime = instant.atZone(zoneId).toLocalDateTime();
-        }
 
         return OrderDetailResponse.builder()
             .orderNumber(orderDetail.getOrderNumber())
@@ -146,7 +143,7 @@ public class OrderService {
                     .postcode(paymentData.getResponse().getBuyer_postcode())
                     .build()
             )
-            .deliveryMsg(customData.getMsg())
+            .deliveryMsg(customData.getDeliveryMsg())
             .refundInfo(
                 RefundInfo.builder()
                     .cancelAmount(Long.valueOf(paymentData.getResponse().getCancel_amount()))
