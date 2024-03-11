@@ -73,4 +73,15 @@ public class ProductController {
         @PathVariable(name = "id") Long id) throws JsonProcessingException {
         return ResponseEntity.ok(new ServerResponse<>(productService.getProductDetail(id)));
     }
+
+    @Operation(summary = "인기 상품 조회", description = "인기 상품 조회 API 입니다.")
+    @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = SimpleProductInfo.class)))
+    @FailApiResponses
+    @GetMapping("/popular")
+    public ResponseEntity<ServerResponse<?>> getPopularProducts(
+        @Parameter(name = "visible", description = "ALL - visible 여부 관계 없이 리턴, TRUE-true인 것만, FALSE - false인 것만") @RequestParam(name = "visible", defaultValue = ALL) String visible,
+        Pageable pageable
+    ) {
+        return ResponseEntity.ok(new ServerResponse<>(productService.getPopularProducts(visible, pageable)));
+    }
 }

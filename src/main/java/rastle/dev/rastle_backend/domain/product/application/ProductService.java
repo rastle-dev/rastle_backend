@@ -74,4 +74,16 @@ public class ProductService {
         }
 
     }
+
+    @Transactional(readOnly = true)
+    public Page<SimpleProductInfo> getPopularProducts(String visible, Pageable pageable) {
+        if (visible.equals(ALL)) {
+            return productBaseRepository.getPopularProductInfos(pageable);
+        } else if (visible.equals(TRUE)) {
+            return productBaseRepository.getPopularProductInfosByVisibility(true, pageable);
+        } else {
+            return productBaseRepository.getPopularProductInfosByVisibility(false, pageable);
+
+        }
+    }
 }

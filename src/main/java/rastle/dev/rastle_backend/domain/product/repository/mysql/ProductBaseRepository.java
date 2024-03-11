@@ -115,5 +115,45 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
         "pb.eventApplyCount) " +
         "from ProductBase pb WHERE pb.event.id = :id ORDER BY pb.displayOrder DESC")
     Page<SimpleProductInfo> getProductInfoByEventId(@Param("id") Long id, Pageable pageable);
-
+    @Query(
+        "select new rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo(" +
+            "pb.id, " +
+            "pb.name, " +
+            "pb.price, " +
+            "pb.mainThumbnailImage, " +
+            "pb.subThumbnailImage," +
+            "pb.discountPrice, " +
+            "pb.displayOrder, " +
+            "pb.visible, " +
+            "pb.category.id, " +
+            "pb.bundle.id, " +
+            "pb.event.id, " +
+            "pb.eventApplyCount) " +
+            "from ProductBase pb " +
+            "LEFT OUTER JOIN OrderProduct op ON pb.id = op.product.id " +
+            "GROUP BY pb.id " +
+            "ORDER BY COALESCE(COUNT(op.id), 0) DESC"
+    )
+    Page<SimpleProductInfo> getPopularProductInfos(Pageable pageable);
+    @Query(
+        "select new rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo(" +
+            "pb.id, " +
+            "pb.name, " +
+            "pb.price, " +
+            "pb.mainThumbnailImage, " +
+            "pb.subThumbnailImage," +
+            "pb.discountPrice, " +
+            "pb.displayOrder, " +
+            "pb.visible, " +
+            "pb.category.id, " +
+            "pb.bundle.id, " +
+            "pb.event.id, " +
+            "pb.eventApplyCount) " +
+            "from ProductBase pb " +
+            "LEFT OUTER JOIN OrderProduct op ON pb.id = op.product.id " +
+            "WHERE pb.visible = :visible " +
+            "GROUP BY pb.id " +
+            "ORDER BY COALESCE(COUNT(op.id), 0) DESC"
+    )
+    Page<SimpleProductInfo> getPopularProductInfosByVisibility(@Param("visible") boolean visible, Pageable pageable);
 }
