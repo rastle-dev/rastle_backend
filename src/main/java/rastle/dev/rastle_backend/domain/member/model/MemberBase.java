@@ -46,7 +46,7 @@ public class MemberBase {
         this.authority = authority;
     }
 
-    public void updatePassword(String newPassword) {
-        this.password = newPassword;
-    }
+    // public void updatePassword(String newPassword) {
+    // this.password = newPassword;
+    // }
 }

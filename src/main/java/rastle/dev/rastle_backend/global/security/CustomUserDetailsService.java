@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO.UserPrincipalInfoDto;
 import rastle.dev.rastle_backend.domain.member.model.Member;
 import rastle.dev.rastle_backend.domain.member.model.UserPrincipal;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
@@ -19,7 +20,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<Member> byEmail = memberRepository.findByEmail(username);
+        Optional<UserPrincipalInfoDto> byEmail = memberRepository.findUserPrincipalInfoByEmail(username);
         if (byEmail.isPresent()) {
             return UserPrincipal.create(byEmail.get());
         } else {

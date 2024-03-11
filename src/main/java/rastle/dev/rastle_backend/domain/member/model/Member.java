@@ -41,15 +41,15 @@ public class Member extends MemberBase {
 
     @Builder
     public Member(String email, String password, UserLoginType userLoginType, Authority authority, String userName,
-                  String phoneNumber) {
+            String phoneNumber) {
         super(email, password, userLoginType, authority);
         this.userName = userName;
         this.phoneNumber = phoneNumber;
     }
 
-    public void updatePassword(String newPassword) {
-        super.updatePassword(newPassword);
-    }
+    // public void updatePassword(String newPassword) {
+    // super.updatePassword(newPassword);
+    // }
 
     public void updateRecipientInfo(RecipientInfo newRecipientInfo) {
         this.recipientInfo = newRecipientInfo;

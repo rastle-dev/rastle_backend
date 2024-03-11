@@ -12,6 +12,7 @@ import rastle.dev.rastle_backend.domain.cart.model.Cart;
 import rastle.dev.rastle_backend.domain.cart.repository.mysql.CartRepository;
 import rastle.dev.rastle_backend.domain.coupon.model.Coupon;
 import rastle.dev.rastle_backend.domain.coupon.repository.mysql.CouponRepository;
+import rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO.UserPrincipalInfoDto;
 import rastle.dev.rastle_backend.domain.member.model.*;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
 import rastle.dev.rastle_backend.global.oauth2.OAuth2UserInfo;
@@ -39,13 +40,18 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(loginType.getType(),
                                 oAuth2User.getAttributes());
 
-                Member member = memberRepository.findByEmail(userInfo.getEmail())
+                // Member member = memberRepository.findByEmail(userInfo.getEmail())
+                // .orElseGet(() -> createUser(userInfo, loginType));
+
+                // return UserPrincipal.create(member, oAuth2User.getAttributes());
+                UserPrincipalInfoDto userPrincipalInfoDto = memberRepository
+                                .findUserPrincipalInfoByEmail(userInfo.getEmail())
                                 .orElseGet(() -> createUser(userInfo, loginType));
 
-                return UserPrincipal.create(member, oAuth2User.getAttributes());
+                return UserPrincipal.create(userPrincipalInfoDto); // 수정된 부분
         }
 
-        private Member createUser(OAuth2UserInfo memberInfo, UserLoginType loginType) {
+        private UserPrincipalInfoDto createUser(OAuth2UserInfo memberInfo, UserLoginType loginType) {
                 Member member = Member.builder()
                                 .email(memberInfo.getEmail())
                                 .userName(memberInfo.getName())
@@ -63,10 +69,17 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 cartRepository.save(build);
 
                 Coupon coupon = Coupon.builder().discount(3000).name("회원가입 축하 쿠폰").member(member)
-                    .couponStatus(NOT_USED).build();
+                                .couponStatus(NOT_USED).build();
                 couponRepository.save(coupon);
 
-                return memberRepository.save(member);
+                memberRepository.save(member);
+
+                return UserPrincipalInfoDto.builder()
+                                .id(member.getId())
+                                .password(member.getPassword())
+                                .userLoginType(member.getUserLoginType())
+                                .authority(member.getAuthority())
+                                .build();
         }
 
         private String formatPhoneNumber(String phoneNumber) {
