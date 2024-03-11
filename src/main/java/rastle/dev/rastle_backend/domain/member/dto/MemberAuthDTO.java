@@ -49,13 +49,13 @@ public class MemberAuthDTO {
 
         public Member toEntity() {
             return Member.builder()
-                .email(email)
-                .password(password)
-                .userLoginType(UserLoginType.EMAIL)
-                .authority(Authority.ROLE_USER)
-                .phoneNumber(phoneNumber)
-                .userName(username)
-                .build();
+                    .email(email)
+                    .password(password)
+                    .userLoginType(UserLoginType.EMAIL)
+                    .authority(Authority.ROLE_USER)
+                    .phoneNumber(phoneNumber)
+                    .userName(username)
+                    .build();
         }
     }
 
@@ -135,5 +135,17 @@ public class MemberAuthDTO {
     public static class PasswordResetRequestDto {
         @Schema(description = "비밀번호 초기화 요청 이메일", type = "string", format = "email", example = "example@email.com", required = true)
         private String email;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Schema(description = "인증된 유저 정보 요청 DTO")
+    public static class UserPrincipalInfoDto {
+        private Long id;
+        private String password;
+        private UserLoginType userLoginType;
+        private Authority authority;
     }
 }

@@ -31,6 +31,7 @@ public class EmailCertificationService {
     private final RedisTemplate<String, String> redisTemplate;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MemberService memberService;
 
     public static final long EMAIL_CERTIFICATION_TIME = 1000 * 60 * 5; // 하루
     // 인증 번호
@@ -98,20 +99,28 @@ public class EmailCertificationService {
      */
     @Transactional
     public String sendPasswordResetMessage(String to) throws Exception {
-        Optional<Member> memberOptional = memberRepository.findByEmail(to);
-        Member member = memberOptional.orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+        // Optional<Member> memberOptional = memberRepository.findByEmail(to)
+        // .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+        // Member member = memberOptional.orElseThrow(() -> new
+        // UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        // String temporaryPassword = RandomStringUtils.randomAlphanumeric(12);
+        // String encodedPassword = passwordEncoder.encode(temporaryPassword);
+
+        // member.updatePassword(encodedPassword);
+        Optional<Long> memberIdOptional = memberRepository.findUserIdByEmail(to);
+        Long memberId = memberIdOptional.orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         String temporaryPassword = RandomStringUtils.randomAlphanumeric(12);
-        String encodedPassword = passwordEncoder.encode(temporaryPassword);
 
-        member.updatePassword(encodedPassword);
+        memberService.changePassword(memberId, temporaryPassword);
 
         MimeMessage mimeMessage = emailSender.createMimeMessage();
         try {
             mimeMessage.addRecipients(Message.RecipientType.TO, to);
             mimeMessage.setSubject("rastle_ 비밀번호 초기화");
             mimeMessage.setFrom(new InternetAddress("rastle.fashion@gmail.com",
-                "rastle_admin"));
+                    "rastle_admin"));
 
             Context context = new Context();
             context.setVariable("password", temporaryPassword);
