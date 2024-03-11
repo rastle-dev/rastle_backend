@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO.UserPrincipalInfoDto;
-import rastle.dev.rastle_backend.domain.member.model.Member;
 import rastle.dev.rastle_backend.domain.member.model.UserPrincipal;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
 
@@ -30,7 +29,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     public UserDetails loadUserById(String userIdString) {
         Long userId = Long.parseLong(userIdString);
-        Optional<Member> byId = memberRepository.findById(userId);
+        Optional<UserPrincipalInfoDto> byId = memberRepository.findUserPrincipalInfoById(userId);
         if (byId.isPresent()) {
             return UserPrincipal.create(byId.get());
         } else {

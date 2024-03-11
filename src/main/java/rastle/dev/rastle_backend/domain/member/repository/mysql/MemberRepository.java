@@ -22,6 +22,9 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("SELECT NEW rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO$UserPrincipalInfoDto(m.id, m.password, m.userLoginType, m.authority) FROM Member m WHERE m.email = :email")
     Optional<UserPrincipalInfoDto> findUserPrincipalInfoByEmail(@Param("email") String email);
 
+    @Query("SELECT NEW rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO$UserPrincipalInfoDto(m.id, m.password, m.userLoginType, m.authority) FROM Member m WHERE m.id = :id")
+    Optional<UserPrincipalInfoDto> findUserPrincipalInfoById(@Param("email") Long id);
+
     @Modifying
     @Query("UPDATE Member m SET m.password = :newPassword WHERE m.id = :memberId")
     void updatePassword(@Param("memberId") Long memberId, @Param("newPassword") String newPassword);
