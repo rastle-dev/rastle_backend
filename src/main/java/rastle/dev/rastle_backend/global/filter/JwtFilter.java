@@ -32,7 +32,9 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        log.info(request.getMethod() + " " + request.getRequestURI());
+        if (!request.getRequestURI().equals("/actuator/prometheus")) {
+            log.info(request.getMethod() + " " + request.getRequestURI());
+        }
         try {
             String jwt = resolveToken(request);
             if (jwt != null) {
