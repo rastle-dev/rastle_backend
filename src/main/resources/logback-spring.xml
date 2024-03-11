@@ -22,8 +22,9 @@
         <logger name="rastle.dev.rastle_backend" level="DEBUG"/>
         <logger name="org.springframework.transaction.interceptor" level="DEBUG"/>
         <logger name="org.springframework.orm.jpa" level="DEBUG"/>
-        <logger name="org.hibernate.jdbc" level="DEBUG"/>
-        <logger name="org.hibernate.type.descriptor.sql" level="DEBUG"/>
+        <logger name="org.hibernate" level="INFO"/>
+        <logger name="org.mongodb.driver" level="WARN"/>
+        <logger name="org.springframework.data.repository.config" level="WARN"/>
         <root level="INFO">
             <appender-ref ref="CONSOLE" />
             <appender-ref ref="FILE"/>
