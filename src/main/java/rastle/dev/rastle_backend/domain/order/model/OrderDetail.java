@@ -6,10 +6,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.member.model.Member;
-import rastle.dev.rastle_backend.domain.payment.dto.PortOneDTO.PortOnePaymentResponse;
 import rastle.dev.rastle_backend.global.common.BaseTimeEntity;
 import rastle.dev.rastle_backend.global.common.enums.DeliveryStatus;
 import rastle.dev.rastle_backend.global.common.enums.PaymentStatus;
+import rastle.dev.rastle_backend.global.component.dto.response.PaymentResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +57,8 @@ public class OrderDetail extends BaseTimeEntity {
     @NotNull
     @Column(name = "payment_status")
     private String paymentStatus;
-
+    @Column(name = "delivery_msg")
+    private String deliveryMsg;
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
@@ -65,7 +66,7 @@ public class OrderDetail extends BaseTimeEntity {
     private final List<OrderProduct> orderProduct = new ArrayList<>();
 
     @Builder
-    public OrderDetail(String userName, String tel, String email, String postcode, String deliveryAddress, String orderNumber, DeliveryStatus deliveryStatus, PaymentStatus paymentStatus, Member member, Long paymentPrice, String impId, Long deliveryPrice) {
+    public OrderDetail(String userName, String tel, String email, String postcode, String deliveryAddress, String orderNumber, DeliveryStatus deliveryStatus, PaymentStatus paymentStatus, Member member, Long paymentPrice, String impId, Long deliveryPrice, String devlieryMsg) {
 
         this.userName = userName;
         this.tel = tel;
@@ -79,17 +80,18 @@ public class OrderDetail extends BaseTimeEntity {
         this.paymentPrice = paymentPrice;
         this.impId = impId;
         this.deliveryPrice = deliveryPrice;
+        this.deliveryMsg = devlieryMsg;
     }
 
-    public void paid(PortOnePaymentResponse paymentResponse) {
+    public void paid(PaymentResponse paymentResponse) {
         this.paymentStatus = PAID.toString();
-        this.userName = paymentResponse.getResponse().getBuyer_name();
-        this.tel = paymentResponse.getResponse().getBuyer_tel();
-        this.email = paymentResponse.getResponse().getBuyer_email();
-        this.postcode = paymentResponse.getResponse().getBuyer_postcode();
-        this.deliveryAddress = paymentResponse.getResponse().getBuyer_addr();
+        this.userName = paymentResponse.getBuyerName();
+        this.tel = paymentResponse.getBuyerTel();
+        this.email = paymentResponse.getBuyerEmail();
+        this.postcode = paymentResponse.getBuyerPostCode();
+        this.deliveryAddress = paymentResponse.getBuyerAddress();
         this.deliveryStatus = NOT_STARTED;
-        this.impId = paymentResponse.getResponse().getImp_uid();
+        this.impId = paymentResponse.getImpUID();
     }
 
     public void updatePaymentPrice(Long paymentPrice) {

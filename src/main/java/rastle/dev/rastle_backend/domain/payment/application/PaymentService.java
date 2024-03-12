@@ -14,8 +14,6 @@ import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderDetailRepository;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderProductRepository;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.*;
-import rastle.dev.rastle_backend.domain.payment.dto.PortOneDTO.PortOnePaymentResponse;
-import rastle.dev.rastle_backend.domain.payment.dto.PortOneDTO.PortOnePaymentResponse.CustomData;
 import rastle.dev.rastle_backend.domain.payment.dto.PortOneWebHookRequest;
 import rastle.dev.rastle_backend.domain.payment.dto.PortOneWebHookResponse;
 import rastle.dev.rastle_backend.domain.payment.exception.PaymentException;
@@ -23,6 +21,7 @@ import rastle.dev.rastle_backend.global.common.constants.PortOneStatusConstant;
 import rastle.dev.rastle_backend.global.common.enums.PaymentStatus;
 import rastle.dev.rastle_backend.global.component.MailComponent;
 import rastle.dev.rastle_backend.global.component.PortOneComponent;
+import rastle.dev.rastle_backend.global.component.dto.response.PaymentResponse;
 
 import java.net.URI;
 import java.util.List;
@@ -44,12 +43,17 @@ public class PaymentService {
     private final PortOneComponent portOneComponent;
     private final ObjectMapper objectMapper;
     private final MailComponent mailComponent;
+    /*
+    TODO: 결제 사후 검증 로직 검토
+    TODO: 결제 사전 검증 로직 검토
+    TODO: 웹훅 처리 로직 검토
+     */
 
     @Transactional
     public PaymentVerificationResponse verifyPayment(PaymentVerificationRequest paymentVerificationRequest) {
-        PortOnePaymentResponse paymentResponse = portOneComponent
-            .getPaymentData(paymentVerificationRequest.getImp_uid(), paymentVerificationRequest.getMerchant_uid());
-        String merchantUid = paymentResponse.getResponse().getMerchant_uid();
+        PaymentResponse paymentResponse = portOneComponent
+            .getPaymentData(paymentVerificationRequest.getImp_uid());
+        String merchantUid = paymentResponse.getMerchantUID();
         log.info(merchantUid);
         if (!merchantUid.equals(paymentVerificationRequest.getMerchant_uid())) {
             throw new PaymentException("포트원에서 전달받은 주문번호와, 브라우저에서 넘어온 주문번호가 다릅니다.");
@@ -57,19 +61,13 @@ public class PaymentService {
         OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(merchantUid)
             .orElseThrow(() -> new PaymentException("주문번호로 존재하는 주문이 DB에 존재하지 않는다"));
 
-        if (orderDetail.getPaymentPrice().equals(paymentResponse.getResponse().getAmount())) {
-            // TODO: 포트원 응답에서 쿠폰 관련 값 받아서 쿠폰 사용 처리 해줘야함
+        if (orderDetail.getPaymentPrice().equals(paymentResponse.getAmount())) {
             orderDetail.paid(paymentResponse);
-            try {
-                CustomData customData = objectMapper.readValue(paymentResponse.getResponse().getCustom_data(), CustomData.class);
-                if (customData.getCouponId() != null) {
-                    Coupon referenceById = couponRepository.getReferenceById(customData.getCouponId());
-                    referenceById.updateStatus(USED);
-                }
-                orderDetail.updateDeliveryPrice(customData.getDeliveryPrice());
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+            if (paymentResponse.getCouponId() != null) {
+                Coupon referenceById = couponRepository.getReferenceById(paymentResponse.getCouponId());
+                referenceById.updateStatus(USED);
             }
+            orderDetail.updateDeliveryPrice(paymentResponse.getDeliveryPrice());
             return PaymentVerificationResponse.builder()
                 .verified(true)
                 .build();
@@ -88,8 +86,8 @@ public class PaymentService {
             throw new PaymentException("결제 실패, errorCode: " + errorCode + ", errorMsg: " + errorMsg);
         }
 
-        PortOnePaymentResponse paymentResponse = portOneComponent.getPaymentData(impUid, merchantUid);
-        String portoneMerchantUid = paymentResponse.getResponse().getMerchant_uid();
+        PaymentResponse paymentResponse = portOneComponent.getPaymentData(impUid);
+        String portoneMerchantUid = paymentResponse.getMerchantUID();
         log.info(merchantUid);
 
         if (!portoneMerchantUid.equals(merchantUid)) {
@@ -99,7 +97,7 @@ public class PaymentService {
         OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(merchantUid)
             .orElseThrow(() -> new PaymentException("주문번호로 존재하는 주문이 DB에 존재하지 않습니다."));
 
-        if (orderDetail.getPaymentPrice().equals(paymentResponse.getResponse().getAmount())) {
+        if (orderDetail.getPaymentPrice().equals(paymentResponse.getAmount())) {
             orderDetail.paid(paymentResponse);
 
             List<SelectedProductsDTO> selectedProducts = orderDetail.getOrderProduct().stream()
@@ -116,7 +114,7 @@ public class PaymentService {
                 // .fromUriString("https://www.recordyslow.com/orderConfirmMobile")
                 .fromUriString("http://localhost:3000/orderConfirm")
                 .queryParam("selectedProducts", objectMapper.writeValueAsString(selectedProducts))
-                .queryParam("orderInfo", objectMapper.writeValueAsString(paymentResponse.getResponse()));
+                .queryParam("orderInfo", objectMapper.writeValueAsString(paymentResponse.getMap()));
 
             return URI.create(builder.toUriString());
         } else {
@@ -144,26 +142,19 @@ public class PaymentService {
 
     @Transactional
     public PortOneWebHookResponse webhook(PortOneWebHookRequest webHookRequest) {
-        PortOnePaymentResponse paymentResponse = portOneComponent.getPaymentData(webHookRequest.getImp_uid(),
-            webHookRequest.getMerchant_uid());
-        String merchantUid = paymentResponse.getResponse().getMerchant_uid();
+        PaymentResponse paymentResponse = portOneComponent.getPaymentData(webHookRequest.getImp_uid());
+        String merchantUid = paymentResponse.getMerchantUID();
         OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(merchantUid)
             .orElseThrow(() -> new PaymentException("주문번호로 존재하는 주문이 DB에 존재하지 않는다"));
 
-        if (orderDetail.getPaymentPrice().equals(paymentResponse.getResponse().getAmount())) {
+        if (orderDetail.getPaymentPrice().equals(paymentResponse.getAmount())) {
             switch (webHookRequest.getStatus()) {
                 case PAID -> {
-                    CustomData customData = null;
-                    try {
-                        customData = objectMapper.readValue(paymentResponse.getResponse().getCustom_data(), CustomData.class);
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
-                    }
-                    if (customData.getCouponId() != null) {
-                        Coupon referenceById = couponRepository.getReferenceById(customData.getCouponId());
+                    if (paymentResponse.getCouponId() != null) {
+                        Coupon referenceById = couponRepository.getReferenceById(paymentResponse.getCouponId());
                         referenceById.updateStatus(USED);
                     }
-                    orderDetail.updateDeliveryPrice(customData.getDeliveryPrice());
+                    orderDetail.updateDeliveryPrice(paymentResponse.getDeliveryPrice());
                     orderDetail.paid(paymentResponse);
                     return PortOneWebHookResponse.builder()
                         .status(SUCCESS)

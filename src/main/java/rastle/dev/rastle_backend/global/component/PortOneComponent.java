@@ -2,7 +2,6 @@ package rastle.dev.rastle_backend.global.component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,11 +11,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentPrepareResponse;
-import rastle.dev.rastle_backend.domain.payment.dto.PortOneDTO.PortOnePaymentResponse;
+import rastle.dev.rastle_backend.global.cache.RedisCache;
 import rastle.dev.rastle_backend.global.component.dto.request.PortOnePaymentRequest;
 import rastle.dev.rastle_backend.global.component.dto.request.PortOneTokenRequest;
+import rastle.dev.rastle_backend.global.component.dto.response.PaymentResponse;
 import rastle.dev.rastle_backend.global.component.dto.response.PortOneTokenResponse;
 import rastle.dev.rastle_backend.global.error.exception.port_one.PortOneException;
 
@@ -25,57 +24,61 @@ import java.util.Map;
 import static java.util.Collections.singletonList;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.http.MediaType.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static rastle.dev.rastle_backend.global.common.constants.PortOneApiConstant.*;
+import static rastle.dev.rastle_backend.global.common.constants.RedisConstant.PORT_ONE_ACCESS;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class PortOneComponent {
-    private final String apiKey = "0032172035760746";
+    /*
+    TODO: portone accessToken redis caching 적용
+     */
     @Value("${port_one.secret}")
-    private String apiSecret;
+    private String API_SECRET;
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
+    private final RedisCache redisCache;
 
-    private static final String BASE_URL = "https://api.iamport.kr";
-
-    private static final String TOKEN_URL = "/users/getToken";
-    private static final String PAYMENT_URL = "/payments/";
-    private static final String PREPARE_URL = "/payments/prepare";
-
-    public PortOnePaymentResponse getPaymentData(String impId, String merchantId) {
+    public PaymentResponse getPaymentData(String impId) {
         String accessToken = getAccessToken();
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(singletonList(APPLICATION_JSON));
         headers.setContentType(APPLICATION_JSON);
-        headers.set("Authorization", accessToken);
+        headers.set(AUTHORIZATION, accessToken);
 
         HttpEntity request = new HttpEntity(headers);
-
+        ResponseEntity<String> portoneResponse = restTemplate.exchange(BASE_URL + PAYMENT_URL + impId,
+            GET,
+            request,
+            String.class);
         try {
-            ResponseEntity<PortOnePaymentResponse> paymentResponse = restTemplate.exchange(
-                    BASE_URL + PAYMENT_URL + impId,
-                    GET,
-                    request,
-                    PortOnePaymentResponse.class
-            );
-            return paymentResponse.getBody();
+            Map<String, Object> responseMap = objectMapper.readValue(portoneResponse.getBody(), new TypeReference<Map<String, Object>>() {
+            });
+            Integer code = (Integer) responseMap.get(CODE);
+            if (code != 0) {
+                throw new RuntimeException((String) responseMap.get(MESSAGE));
+            }
 
+            Map<String, Object> paymentResultmap = (Map<String, Object>) responseMap.get(RESPONSE);
+            return new PaymentResponse(paymentResultmap, objectMapper);
+        } catch (JsonProcessingException e) {
+            throw new PortOneException(e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            String message = e.getMessage();
-            String encoded = convertString(message);
-            log.info(encoded);
-            throw new PortOneException(encoded);
+            throw new RuntimeException(e.getMessage());
         }
+
     }
+
+
 
     public PaymentPrepareResponse preparePayment(String merchantId, Long price) {
         String accessToken = getAccessToken();
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(singletonList(APPLICATION_JSON));
         headers.setContentType(APPLICATION_JSON);
-        headers.set("Authorization", accessToken);
+        headers.set(AUTHORIZATION, accessToken);
 
         PortOnePaymentRequest paymentRequest = new PortOnePaymentRequest(merchantId, price);
 
@@ -84,12 +87,12 @@ public class PortOneComponent {
         try {
             Map<String, Object> responseMap = objectMapper.readValue(response.getBody(), new TypeReference<Map<String, Object>>() {
             });
-            Integer code = (Integer) responseMap.get("code");
+            Integer code = (Integer) responseMap.get(CODE);
             if (code != 0) {
-                throw new PortOneException((String) responseMap.get("message"));
+                throw new PortOneException((String) responseMap.get(MESSAGE));
             }
-            Map<String, Object> resultMap = (Map<String, Object>) responseMap.get("response");
-            return new PaymentPrepareResponse((String) resultMap.get("merchant_uid"), (Integer) resultMap.get("amount"));
+            Map<String, Object> resultMap = (Map<String, Object>) responseMap.get(RESPONSE);
+            return new PaymentPrepareResponse((String) resultMap.get(MERCHANT_UID), (Integer) resultMap.get(AMOUNT));
 
         } catch (JsonProcessingException e) {
             throw new PortOneException(e.getMessage());
@@ -100,27 +103,29 @@ public class PortOneComponent {
     }
 
     private String getAccessToken() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(singletonList(APPLICATION_JSON));
-        headers.setContentType(APPLICATION_JSON);
+        if (redisCache.get(PORT_ONE_ACCESS) != null) {
+            return redisCache.get(PORT_ONE_ACCESS);
+        } else {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setAccept(singletonList(APPLICATION_JSON));
+            headers.setContentType(APPLICATION_JSON);
 
-        PortOneTokenRequest portOneTokenRequest = new PortOneTokenRequest(apiKey, apiSecret);
+            PortOneTokenRequest portOneTokenRequest = new PortOneTokenRequest(API_KEY, API_SECRET);
 
-        log.info("imp_key " + apiKey);
-        log.info("imp_secret " + apiSecret);
-        try {
-            ResponseEntity<PortOneTokenResponse> tokenResponse = restTemplate.postForEntity(BASE_URL + TOKEN_URL, new HttpEntity<>(objectMapper.writeValueAsString(portOneTokenRequest),  headers), PortOneTokenResponse.class);
-            PortOneTokenResponse portOneTokenResponse = tokenResponse.getBody();
-            log.info(portOneTokenResponse.getResponse().getAccess_token());
-            return portOneTokenResponse.getResponse().getAccess_token();
-        } catch (Exception e) {
-            e.printStackTrace();
-            String message = e.getMessage();
-            String encoded = convertString(message);
-            log.info(encoded);
-            throw new PortOneException(e.getMessage());
+            try {
+                ResponseEntity<PortOneTokenResponse> tokenResponse = restTemplate.postForEntity(BASE_URL + TOKEN_URL, new HttpEntity<>(objectMapper.writeValueAsString(portOneTokenRequest),  headers), PortOneTokenResponse.class);
+                PortOneTokenResponse portOneTokenResponse = tokenResponse.getBody();
+
+                String accessToken = portOneTokenResponse.getResponse().getAccess_token();
+                redisCache.save(PORT_ONE_ACCESS, accessToken);
+                return accessToken;
+            } catch (Exception e) {
+                String message = e.getMessage();
+                String encoded = convertString(message);
+                log.info(encoded);
+                throw new PortOneException(encoded);
+            }
         }
-
     }
 
 
