@@ -1,4 +1,4 @@
-package rastle.dev.rastle_backend.domain.payment.dto;
+package rastle.dev.rastle_backend.global.component.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -89,8 +89,8 @@ public class PortOneDTO {
         @Setter
         public static class CancelInfo {
             String pg_tid;
-            Long amount;
-            Long cancelled_at;
+            Integer amount;
+            Integer cancelled_at;
             String reason;
             String receipt_url;
             String cancellation_id;

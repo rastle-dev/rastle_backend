@@ -9,7 +9,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-import rastle.dev.rastle_backend.domain.payment.dto.PortOneDTO.PortOnePaymentResponse;
+import rastle.dev.rastle_backend.global.component.dto.response.PaymentResponse;
 
 @Component
 @RequiredArgsConstructor
@@ -17,10 +17,10 @@ public class MailComponent {
     private final JavaMailSender emailSender;
     private final TemplateEngine templateEngine;
 
-    public void sendBankIssueMessage(PortOnePaymentResponse paymentResponse) {
+    public void sendBankIssueMessage(PaymentResponse paymentResponse) {
         MimeMessage mimeMessage = emailSender.createMimeMessage();
         try {
-            mimeMessage.addRecipients(Message.RecipientType.TO, paymentResponse.getResponse().getBuyer_email());
+            mimeMessage.addRecipients(Message.RecipientType.TO, paymentResponse.getBuyerEmail());
             mimeMessage.setSubject("rastle_ 가상계좌 발급 안내");
             mimeMessage.setFrom(new InternetAddress("rastle.fashion@gmail.com", "rastle_admin"));
 

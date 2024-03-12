@@ -1,7 +1,5 @@
 package rastle.dev.rastle_backend.domain.order.application;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -18,17 +16,14 @@ import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
 import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderDetailRepository;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderProductRepository;
-import rastle.dev.rastle_backend.domain.payment.dto.PortOneDTO.PortOnePaymentResponse;
-import rastle.dev.rastle_backend.domain.payment.dto.PortOneDTO.PortOnePaymentResponse.CustomData;
 import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 import rastle.dev.rastle_backend.global.component.OrderNumberComponent;
 import rastle.dev.rastle_backend.global.component.PortOneComponent;
+import rastle.dev.rastle_backend.global.component.dto.response.PaymentResponse;
 import rastle.dev.rastle_backend.global.error.exception.NotAuthorizedException;
 import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +39,6 @@ public class OrderService {
     private final CouponRepository couponRepository;
     private final OrderNumberComponent orderNumberComponent;
     private final PortOneComponent portOneComponent;
-    private final ObjectMapper objectMapper;
 
     @Transactional
     public OrderCreateResponse createOrderDetail(Long memberId, OrderCreateRequest orderCreateRequest) {
@@ -111,19 +105,10 @@ public class OrderService {
     public OrderDetailResponse getOrderDetail(Long memberId, Long orderId) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
         OrderDetail orderDetail = orderDetailRepository.findById(orderId).orElseThrow(NotFoundByIdException::new);
-        PortOnePaymentResponse paymentData = portOneComponent.getPaymentData(orderDetail.getImpId(), orderDetail.getOrderNumber());
-        CouponInfo couponInfo = null;
-        Instant instant = Instant.ofEpochSecond(paymentData.getResponse().getCancelled_at());
-        ZoneId zoneId = ZoneId.of("Asia/Seoul");
-        LocalDateTime cancelTime = instant.atZone(zoneId).toLocalDateTime();
-        CustomData customData = null;
-        try {
-            customData = objectMapper.readValue(paymentData.getResponse().getCustom_data(), CustomData.class);
-            couponInfo = couponRepository.findByCouponInfoById(customData.getCouponId()).orElse(null);
+        PaymentResponse paymentData = portOneComponent.getPaymentData(orderDetail.getImpId());
+        CouponInfo couponInfo = couponRepository.findByCouponInfoById(paymentData.getCouponId()).orElse(null);
 
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        LocalDateTime cancelTime = paymentData.getCancelledAt();
 
 
         return OrderDetailResponse.builder()
@@ -134,22 +119,22 @@ public class OrderService {
             .productOrderInfos(orderProductRepository.findSimpleProductOrderInfoByOrderId(orderDetail.getId()))
             .paymentAmount(orderDetail.getPaymentPrice())
             .deliveryPrice(orderDetail.getDeliveryPrice())
-            .paymentMethod(paymentData.getResponse().getPay_method())
+            .paymentMethod(paymentData.getPayMethod())
             .receiverInfo(
                 ReceiverInfo.builder()
-                    .receiverName(paymentData.getResponse().getBuyer_name())
-                    .address(paymentData.getResponse().getBuyer_addr())
-                    .tel(paymentData.getResponse().getBuyer_tel())
-                    .postcode(paymentData.getResponse().getBuyer_postcode())
+                    .receiverName(paymentData.getBuyerName())
+                    .address(paymentData.getBuyerAddress())
+                    .tel(paymentData.getBuyerTel())
+                    .postcode(paymentData.getBuyerPostCode())
                     .build()
             )
-            .deliveryMsg(customData.getDeliveryMsg())
+            .deliveryMsg(paymentData.getDeliveryMsg())
             .refundInfo(
                 RefundInfo.builder()
-                    .cancelAmount(Long.valueOf(paymentData.getResponse().getCancel_amount()))
+                    .cancelAmount(paymentData.getCancelAmount())
                     .couponInfo(couponInfo)
                     .cancelTime(cancelTime)
-                    .paymentMethod(paymentData.getResponse().getPay_method())
+                    .paymentMethod(paymentData.getPayMethod())
                     .build()
             )
             .build();
