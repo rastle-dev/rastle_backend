@@ -59,6 +59,8 @@ public class OrderDetail extends BaseTimeEntity {
     private String paymentStatus;
     @Column(name = "delivery_msg")
     private String deliveryMsg;
+    @Column(name = "tracking_number")
+    private String trackingNumber;
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;

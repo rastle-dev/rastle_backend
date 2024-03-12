@@ -11,8 +11,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import rastle.dev.rastle_backend.domain.order.dto.request.OrderCancelRequest;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentPrepareResponse;
 import rastle.dev.rastle_backend.global.cache.RedisCache;
+import rastle.dev.rastle_backend.global.component.dto.request.PortOnePaymentCancelRequest;
 import rastle.dev.rastle_backend.global.component.dto.request.PortOnePaymentRequest;
 import rastle.dev.rastle_backend.global.component.dto.request.PortOneTokenRequest;
 import rastle.dev.rastle_backend.global.component.dto.response.PaymentResponse;
@@ -32,9 +34,6 @@ import static rastle.dev.rastle_backend.global.common.constants.RedisConstant.PO
 @Slf4j
 @RequiredArgsConstructor
 public class PortOneComponent {
-    /*
-    TODO: portone accessToken redis caching 적용
-     */
     @Value("${port_one.secret}")
     private String API_SECRET;
     private final RestTemplate restTemplate;
@@ -68,6 +67,42 @@ public class PortOneComponent {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
+
+    }
+
+    public PaymentResponse cancelPayment(String impId, OrderCancelRequest orderCancelRequest) {
+        String accessToken = getAccessToken();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(singletonList(APPLICATION_JSON));
+        headers.setContentType(APPLICATION_JSON);
+        headers.set(AUTHORIZATION, accessToken);
+        PortOnePaymentCancelRequest cancelRequest = PortOnePaymentCancelRequest.builder()
+            .checksum(0L)
+            .amount(orderCancelRequest.getCancelRequestAmount())
+            .merchant_uid(orderCancelRequest.getMerchantUID())
+            .imp_uid(impId)
+            .build();
+        HttpEntity request = new HttpEntity(cancelRequest, headers);
+        ResponseEntity<String> portoneResponse = restTemplate.exchange(BASE_URL + CANCEL_URL,
+            POST,
+            request,
+            String.class);
+        try {
+            Map<String, Object> responseMap = objectMapper.readValue(portoneResponse.getBody(), new TypeReference<Map<String, Object>>() {
+            });
+            Integer code = (Integer) responseMap.get(CODE);
+            if (code != 0) {
+                throw new RuntimeException((String) responseMap.get(MESSAGE));
+            }
+
+            Map<String, Object> paymentResultmap = (Map<String, Object>) responseMap.get(RESPONSE);
+            return new PaymentResponse(paymentResultmap, objectMapper);
+        } catch (JsonProcessingException e) {
+            throw new PortOneException(e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+
 
     }
 

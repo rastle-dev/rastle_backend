@@ -11,9 +11,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rastle.dev.rastle_backend.domain.order.application.OrderService;
-import rastle.dev.rastle_backend.domain.order.dto.OrderDTO;
+import rastle.dev.rastle_backend.domain.order.dto.OrderDTO.MemberOrderInfo;
 import rastle.dev.rastle_backend.domain.order.dto.OrderDTO.OrderCreateRequest;
 import rastle.dev.rastle_backend.domain.order.dto.OrderDTO.OrderCreateResponse;
+import rastle.dev.rastle_backend.domain.order.dto.OrderDTO.OrderDetailResponse;
+import rastle.dev.rastle_backend.domain.order.dto.request.OrderCancelRequest;
+import rastle.dev.rastle_backend.domain.order.dto.response.OrderCancelResponse;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
 import rastle.dev.rastle_backend.global.util.SecurityUtil;
 
@@ -36,13 +39,15 @@ public class OrderController {
 
     @Operation(summary = "주문 상세 조회 API", description = "주문 상세 조회 API")
     @GetMapping("/{orderId}")
-    public ResponseEntity<ServerResponse<OrderDTO.OrderDetailResponse>> getOrderDetail(@PathVariable("orderId") Long orderId) {
+    public ResponseEntity<ServerResponse<OrderDetailResponse>> getOrderDetail(@PathVariable("orderId") Long orderId) {
+        // TODO : 주문 상세 본인아니면 안되게 막아야함
         Long memberId = SecurityUtil.getCurrentMemberId();
         return ResponseEntity.ok(new ServerResponse<>(orderService.getOrderDetail(memberId, orderId)));
     }
 
 
     @Operation(summary = "주문 리스트 조회 API", description = "멤버 주문 리스트 조회 API 입니다")
+    @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = MemberOrderInfo.class)))
     @GetMapping("")
     public ResponseEntity<?> getMemberOrders(
         @Parameter(name = "page", description = "페이지 번호", in = QUERY, required = false)
@@ -53,4 +58,16 @@ public class OrderController {
         Long memberId = SecurityUtil.getCurrentMemberId();
         return ResponseEntity.ok(new ServerResponse<>(orderService.getMemberOrder(memberId, PageRequest.of(page, size))));
     }
+
+    @Operation(summary = "주문 취소 API", description = "주문 취소 API입니다.")
+    @ApiResponse(responseCode = "200", description = "주문 취소 성공시", content = @Content(schema = @Schema(implementation = OrderCancelResponse.class)))
+    @PostMapping("/cancel")
+    public ResponseEntity<?> cancelOrder(
+        @RequestBody OrderCancelRequest orderCancelRequest
+        ) {
+        Long memberId = SecurityUtil.getCurrentMemberId();
+        return ResponseEntity.ok(new ServerResponse<>(orderService.cancelOrder(memberId, orderCancelRequest)));
+
+    }
+
 }
