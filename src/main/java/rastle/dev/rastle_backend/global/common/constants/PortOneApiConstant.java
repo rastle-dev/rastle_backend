@@ -8,6 +8,7 @@ public class PortOneApiConstant {
     public static final String TOKEN_URL = "/users/getToken";
     public static final String PAYMENT_URL = "/payments/";
     public static final String PREPARE_URL = "/payments/prepare";
+    public static final String CANCEL_URL = "/payments/cancel";
     public static final String AUTHORIZATION = "Authorization";
     public static final String CODE = "code";
     public static final String MESSAGE = "message";

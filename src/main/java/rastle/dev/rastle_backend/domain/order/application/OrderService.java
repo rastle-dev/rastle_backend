@@ -12,6 +12,8 @@ import rastle.dev.rastle_backend.domain.member.model.Member;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
 import rastle.dev.rastle_backend.domain.order.dto.OrderDTO.*;
 import rastle.dev.rastle_backend.domain.order.dto.OrderSimpleInfo;
+import rastle.dev.rastle_backend.domain.order.dto.request.OrderCancelRequest;
+import rastle.dev.rastle_backend.domain.order.dto.response.OrderCancelResponse;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
 import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderDetailRepository;
@@ -28,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static rastle.dev.rastle_backend.global.common.enums.DeliveryStatus.NOT_STARTED;
+import static rastle.dev.rastle_backend.global.common.enums.PaymentStatus.CANCELED;
 import static rastle.dev.rastle_backend.global.common.enums.PaymentStatus.READY;
 
 @Service
@@ -137,6 +140,21 @@ public class OrderService {
                     .paymentMethod(paymentData.getPayMethod())
                     .build()
             )
+            .build();
+    }
+    @Transactional
+    public OrderCancelResponse cancelOrder(Long memberId, OrderCancelRequest orderCancelRequest) {
+        OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(orderCancelRequest.getMerchantUID()).orElseThrow(() -> new RuntimeException("해당 주문 번호로 존재하는 주문이 없습니다. " + orderCancelRequest.getMerchantUID()));
+        PaymentResponse paymentResponse = portOneComponent.cancelPayment(orderDetail.getImpId(), orderCancelRequest);
+        orderDetail.updatePaymentStatus(CANCELED);
+
+        return OrderCancelResponse.builder()
+            .cancelledAt(paymentResponse.getCancelledAt())
+            .cancelAmount(paymentResponse.getCancelAmount())
+            .cancelHistory(paymentResponse.getCancelHistory())
+            .cancelReason(paymentResponse.getCancelReason())
+            .paymentStatus(CANCELED)
+            .merchantUID(paymentResponse.getMerchantUID())
             .build();
     }
 }
