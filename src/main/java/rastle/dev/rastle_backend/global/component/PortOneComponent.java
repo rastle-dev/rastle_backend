@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentPrepareResponse;
+import rastle.dev.rastle_backend.global.cache.RedisCache;
 import rastle.dev.rastle_backend.global.component.dto.request.PortOnePaymentRequest;
 import rastle.dev.rastle_backend.global.component.dto.request.PortOneTokenRequest;
 import rastle.dev.rastle_backend.global.component.dto.response.PaymentResponse;
@@ -25,19 +26,20 @@ import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static rastle.dev.rastle_backend.global.common.constants.PortOneApiConstant.*;
+import static rastle.dev.rastle_backend.global.common.constants.RedisConstant.PORT_ONE_ACCESS;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class PortOneComponent {
     /*
-    TODO: 결제 데이터 조회시 class 타입으로 받지 말고, string으로 받은 다음 map 리턴하도록 변경
     TODO: portone accessToken redis caching 적용
      */
     @Value("${port_one.secret}")
     private String API_SECRET;
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
+    private final RedisCache redisCache;
 
     public PaymentResponse getPaymentData(String impId) {
         String accessToken = getAccessToken();
@@ -101,24 +103,29 @@ public class PortOneComponent {
     }
 
     private String getAccessToken() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(singletonList(APPLICATION_JSON));
-        headers.setContentType(APPLICATION_JSON);
+        if (redisCache.get(PORT_ONE_ACCESS) != null) {
+            return redisCache.get(PORT_ONE_ACCESS);
+        } else {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setAccept(singletonList(APPLICATION_JSON));
+            headers.setContentType(APPLICATION_JSON);
 
-        PortOneTokenRequest portOneTokenRequest = new PortOneTokenRequest(API_KEY, API_SECRET);
+            PortOneTokenRequest portOneTokenRequest = new PortOneTokenRequest(API_KEY, API_SECRET);
 
-        try {
-            ResponseEntity<PortOneTokenResponse> tokenResponse = restTemplate.postForEntity(BASE_URL + TOKEN_URL, new HttpEntity<>(objectMapper.writeValueAsString(portOneTokenRequest),  headers), PortOneTokenResponse.class);
-            PortOneTokenResponse portOneTokenResponse = tokenResponse.getBody();
+            try {
+                ResponseEntity<PortOneTokenResponse> tokenResponse = restTemplate.postForEntity(BASE_URL + TOKEN_URL, new HttpEntity<>(objectMapper.writeValueAsString(portOneTokenRequest),  headers), PortOneTokenResponse.class);
+                PortOneTokenResponse portOneTokenResponse = tokenResponse.getBody();
 
-            return portOneTokenResponse.getResponse().getAccess_token();
-        } catch (Exception e) {
-            String message = e.getMessage();
-            String encoded = convertString(message);
-            log.info(encoded);
-            throw new PortOneException(encoded);
+                String accessToken = portOneTokenResponse.getResponse().getAccess_token();
+                redisCache.save(PORT_ONE_ACCESS, accessToken);
+                return accessToken;
+            } catch (Exception e) {
+                String message = e.getMessage();
+                String encoded = convertString(message);
+                log.info(encoded);
+                throw new PortOneException(encoded);
+            }
         }
-
     }
 
 
