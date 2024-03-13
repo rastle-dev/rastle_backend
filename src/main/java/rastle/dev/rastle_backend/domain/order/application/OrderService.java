@@ -108,6 +108,9 @@ public class OrderService {
     public OrderDetailResponse getOrderDetail(Long memberId, Long orderId) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
         OrderDetail orderDetail = orderDetailRepository.findById(orderId).orElseThrow(NotFoundByIdException::new);
+        if (!orderDetail.getMember().getId().equals(member.getId())) {
+            throw new NotAuthorizedException("권한 없는 주문 조회 요청, memberId " + member.getId() + " orderId " + orderDetail.getId());
+        }
         PaymentResponse paymentData = portOneComponent.getPaymentData(orderDetail.getImpId());
         CouponInfo couponInfo = couponRepository.findByCouponInfoById(paymentData.getCouponId()).orElse(null);
 

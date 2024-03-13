@@ -41,9 +41,9 @@ public class GlobalExceptionHandler {
         NotAuthorizedException ex, WebRequest request) {
         logException(ex);
         return new ResponseEntity<>(ErrorResponse.builder()
-            .errorCode(401L)
+            .errorCode(403L)
             .message(ex.getMessage())
-            .build(), UNAUTHORIZED);
+            .build(), FORBIDDEN);
     }
 
     @ExceptionHandler(InvalidRequestException.class)
@@ -53,7 +53,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ErrorResponse.builder()
             .errorCode(409L)
             .message(ex.getMessage())
-            .build(), UNAUTHORIZED);
+            .build(), CONFLICT);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
