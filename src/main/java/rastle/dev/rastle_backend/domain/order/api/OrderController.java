@@ -40,7 +40,6 @@ public class OrderController {
     @Operation(summary = "주문 상세 조회 API", description = "주문 상세 조회 API")
     @GetMapping("/{orderId}")
     public ResponseEntity<ServerResponse<OrderDetailResponse>> getOrderDetail(@PathVariable("orderId") Long orderId) {
-        // TODO : 주문 상세 본인아니면 안되게 막아야함
         Long memberId = SecurityUtil.getCurrentMemberId();
         return ResponseEntity.ok(new ServerResponse<>(orderService.getOrderDetail(memberId, orderId)));
     }
