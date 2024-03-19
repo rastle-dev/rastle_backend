@@ -31,7 +31,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
         if (!request.getRequestURI().equals("/actuator/prometheus")) {
             log.info(request.getMethod() + " " + request.getRequestURI());
         }
@@ -59,7 +59,7 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     private void handleErrorResponse(HttpServletRequest request, HttpServletResponse response, int statusCode, String message, long errorCode)
-            throws IOException {
+        throws IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");
         response.setStatus(statusCode);

@@ -60,13 +60,13 @@ public class MemberService {
 
         redisTemplate.delete(username);
         ResponseCookie cookie = ResponseCookie.from("refreshToken", null)
-                .maxAge(0)
-                .path("/")
-                .httpOnly(true)
-                .secure(true)
-                .domain("recordyslow.com")
-                .sameSite("Strict")
-                .build();
+            .maxAge(0)
+            .path("/")
+            .httpOnly(true)
+            .secure(true)
+            .domain("recordyslow.com")
+            .sameSite("Strict")
+            .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
         memberRepository.delete(member);

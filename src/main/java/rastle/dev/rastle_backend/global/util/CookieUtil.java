@@ -1,13 +1,11 @@
 package rastle.dev.rastle_backend.global.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.util.SerializationUtils;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Base64;
 import java.util.Optional;
@@ -57,13 +55,13 @@ public class CookieUtil {
 
     public static String serialize(Object obj) {
         return Base64.getUrlEncoder()
-                .encodeToString(SerializationUtils.serialize(obj));
+            .encodeToString(SerializationUtils.serialize(obj));
     }
 
     public static <T> T deserialize(Cookie cookie, Class<T> cls) {
         return cls.cast(
-                SerializationUtils.deserialize(
-                        Base64.getUrlDecoder().decode(cookie.getValue())));
+            SerializationUtils.deserialize(
+                Base64.getUrlDecoder().decode(cookie.getValue())));
     }
 
     // public static <T> T deserialize(Cookie cookie, Class<T> cls) {

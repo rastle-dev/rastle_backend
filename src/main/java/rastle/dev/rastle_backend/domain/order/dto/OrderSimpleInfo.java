@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import rastle.dev.rastle_backend.global.common.enums.DeliveryStatus;
+import rastle.dev.rastle_backend.global.common.enums.OrderStatus;
 
 import java.time.LocalDateTime;
 
@@ -16,5 +16,6 @@ public class OrderSimpleInfo {
     Long orderId;
     LocalDateTime orderDate;
     String orderNumber;
-    DeliveryStatus deliveryStatus;
+    OrderStatus orderStatus;
+    OrderStatus deliveryStatus;
 }

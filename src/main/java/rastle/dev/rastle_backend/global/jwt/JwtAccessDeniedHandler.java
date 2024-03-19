@@ -18,12 +18,12 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
-            AccessDeniedException accessDeniedException) throws IOException, ServletException {
+                       AccessDeniedException accessDeniedException) throws IOException, ServletException {
         sendResponse(response, accessDeniedException);
     }
 
     private void sendResponse(HttpServletResponse response, AccessDeniedException accessDeniedException)
-            throws IOException {
+        throws IOException {
         String result = objectMapper.writeValueAsString(new ErrorResponse(400L, "접근할 수 있는 권한이 없습니다."));
 
         response.setContentType("application/json");

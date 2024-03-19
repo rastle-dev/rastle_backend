@@ -22,7 +22,7 @@ public class OrderNumberComponent {
     public String createProductOrderNumber(Long orderId, Long orderProductId) {
         LocalDateTime now = LocalDateTime.now(ZoneId.of(ASIA_SEOUL));
         String orderNumber = now.toEpochSecond(ZoneOffset.UTC) + convertIdToString(orderId) + convertIdToString(orderProductId);
-        log.info("product order number "+orderNumber);
+        log.info("product order number " + orderNumber);
         return orderNumber;
     }
 

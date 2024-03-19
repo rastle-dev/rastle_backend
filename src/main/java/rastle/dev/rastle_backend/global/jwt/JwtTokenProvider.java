@@ -39,7 +39,7 @@ public class JwtTokenProvider {
     private final CustomUserDetailsService customUserDetailsService;
 
     public JwtTokenProvider(@Value("${jwt.secret}") String jwtSecret, RedisTemplate<String, String> redisTemplate,
-            CustomUserDetailsService customUserDetailsService) {
+                            CustomUserDetailsService customUserDetailsService) {
 
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
@@ -55,10 +55,10 @@ public class JwtTokenProvider {
         String refreshToken = buildToken(authentication.getName(), null, now + REFRESH_TOKEN_EXPIRE_TIME);
 
         return TokenInfoDTO.builder()
-                .grantType(BEARER_TYPE)
-                .accessToken(accessToken)
-                .accessTokenExpiresIn(now + ACCESS_TOKEN_EXPIRE_TIME)
-                .refreshToken(refreshToken).build();
+            .grantType(BEARER_TYPE)
+            .accessToken(accessToken)
+            .accessTokenExpiresIn(now + ACCESS_TOKEN_EXPIRE_TIME)
+            .refreshToken(refreshToken).build();
     }
 
     // 로그인 시 토큰 생성 메서드
@@ -74,25 +74,25 @@ public class JwtTokenProvider {
         storeRefreshTokenInCookie(response, refreshToken);
 
         return TokenInfoDTO.builder()
-                .grantType(BEARER_TYPE)
-                .accessToken(accessToken)
-                .accessTokenExpiresIn(now + ACCESS_TOKEN_EXPIRE_TIME)
-                .refreshToken(refreshToken).build();
+            .grantType(BEARER_TYPE)
+            .accessToken(accessToken)
+            .accessTokenExpiresIn(now + ACCESS_TOKEN_EXPIRE_TIME)
+            .refreshToken(refreshToken).build();
     }
 
     // 인증 객체로부터 권한 정보 추출
     private String getAuthorities(Authentication authentication) {
         return authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.joining(","));
     }
 
     // JWT 토큰 생성 로직
     private String buildToken(String subject, String authorities, long expiration) {
         JwtBuilder builder = Jwts.builder()
-                .setSubject(subject)
-                .setExpiration(new Date(expiration))
-                .signWith(key, SignatureAlgorithm.HS512);
+            .setSubject(subject)
+            .setExpiration(new Date(expiration))
+            .signWith(key, SignatureAlgorithm.HS512);
         if (authorities != null) {
             builder.claim(AUTHORITIES_KEY, authorities);
         }
@@ -142,8 +142,8 @@ public class JwtTokenProvider {
     // 권한 정보 추출
     private Collection<? extends GrantedAuthority> extractAuthorities(Claims claims) {
         return Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+            .map(SimpleGrantedAuthority::new)
+            .collect(Collectors.toList());
     }
 
     // 리프레시 토큰을 Redis에 저장
@@ -156,14 +156,14 @@ public class JwtTokenProvider {
     // 리프레시 토큰을 http only 쿠키에 저장 및 secure 설정
     private void storeRefreshTokenInCookie(HttpServletResponse response, String refreshToken) {
         ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                // .domain("recordyslow.com")
-                // .sameSite("Strict")
-                .sameSite("None")
-                .maxAge(REFRESH_TOKEN_EXPIRE_TIME / 1000)
-                .build();
+            .httpOnly(true)
+            .secure(true)
+            .path("/")
+            // .domain("recordyslow.com")
+            // .sameSite("Strict")
+            .sameSite("None")
+            .maxAge(REFRESH_TOKEN_EXPIRE_TIME / 1000)
+            .build();
         response.addHeader("Set-Cookie", cookie.toString());
     }
 
@@ -171,10 +171,10 @@ public class JwtTokenProvider {
     public String getRefreshTokenFromRequest(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         return Arrays.stream(cookies)
-                .filter(cookie -> "refreshToken".equals(cookie.getName()))
-                .findFirst()
-                .map(Cookie::getValue)
-                .orElseThrow(() -> new InvalidRequestException("리프레시 토큰이 없습니다."));
+            .filter(cookie -> "refreshToken".equals(cookie.getName()))
+            .findFirst()
+            .map(Cookie::getValue)
+            .orElseThrow(() -> new InvalidRequestException("리프레시 토큰이 없습니다."));
     }
 
     // 리프레시 토큰으로부터 인증 객체 생성

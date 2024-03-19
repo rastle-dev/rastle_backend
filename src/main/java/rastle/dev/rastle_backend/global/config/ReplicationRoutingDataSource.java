@@ -8,6 +8,7 @@ import rastle.dev.rastle_backend.global.common.enums.DataSourceType;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 @Slf4j
 public class ReplicationRoutingDataSource extends AbstractRoutingDataSource {
     private SlaveNames<String> slaveNames;
@@ -60,6 +61,7 @@ public class ReplicationRoutingDataSource extends AbstractRoutingDataSource {
 
         /**
          * slave dataSource가 호출될 때마다 index 이동
+         *
          * @Return slave dataSource명
          */
         private T getNext() {

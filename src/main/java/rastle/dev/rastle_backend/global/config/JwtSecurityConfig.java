@@ -17,6 +17,7 @@ public class JwtSecurityConfig extends SecurityConfigurerAdapter<DefaultSecurity
     private final ObjectMapper mapper;
 
     private final RedisTemplate<String, String> redisTemplate;
+
     // tokenProvider를 주입 받아서 JwtFilter를 통해 security 로직에 필터를 등록
     @Override
     public void configure(HttpSecurity httpSecurity) {

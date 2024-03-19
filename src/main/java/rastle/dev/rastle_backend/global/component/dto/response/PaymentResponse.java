@@ -239,5 +239,9 @@ public class PaymentResponse {
         return Long.valueOf((Integer) map.getOrDefault("amount", 0));
     }
 
+    public String getName() {
+        return (String) map.getOrDefault("name", "");
+    }
+
 
 }

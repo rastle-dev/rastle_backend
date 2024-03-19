@@ -63,7 +63,7 @@ public class OrderController {
     @PostMapping("/cancel")
     public ResponseEntity<?> cancelOrder(
         @RequestBody OrderCancelRequest orderCancelRequest
-        ) {
+    ) {
         Long memberId = SecurityUtil.getCurrentMemberId();
         return ResponseEntity.ok(new ServerResponse<>(orderService.cancelOrder(memberId, orderCancelRequest)));
 

@@ -18,7 +18,6 @@ import rastle.dev.rastle_backend.domain.payment.dto.PortOneWebHookRequest;
 import rastle.dev.rastle_backend.domain.payment.dto.PortOneWebHookResponse;
 import rastle.dev.rastle_backend.domain.payment.exception.PaymentException;
 import rastle.dev.rastle_backend.global.common.constants.PortOneStatusConstant;
-import rastle.dev.rastle_backend.global.common.enums.PaymentStatus;
 import rastle.dev.rastle_backend.global.component.MailComponent;
 import rastle.dev.rastle_backend.global.component.PortOneComponent;
 import rastle.dev.rastle_backend.global.component.dto.response.PaymentResponse;
@@ -31,7 +30,8 @@ import static rastle.dev.rastle_backend.global.common.constants.PortOneMessageCo
 import static rastle.dev.rastle_backend.global.common.constants.PortOneStatusConstant.*;
 import static rastle.dev.rastle_backend.global.common.enums.CouponStatus.NOT_USED;
 import static rastle.dev.rastle_backend.global.common.enums.CouponStatus.USED;
-import static rastle.dev.rastle_backend.global.common.enums.PaymentStatus.CANCELED;
+import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.CANCELLED;
+import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.FAILED;
 
 @Service
 @Slf4j
@@ -67,7 +67,6 @@ public class PaymentService {
                 Coupon referenceById = couponRepository.getReferenceById(paymentResponse.getCouponId());
                 referenceById.updateStatus(USED);
             }
-            orderDetail.updateDeliveryPrice(paymentResponse.getDeliveryPrice());
             return PaymentVerificationResponse.builder()
                 .verified(true)
                 .build();
@@ -154,7 +153,6 @@ public class PaymentService {
                         Coupon referenceById = couponRepository.getReferenceById(paymentResponse.getCouponId());
                         referenceById.updateStatus(USED);
                     }
-                    orderDetail.updateDeliveryPrice(paymentResponse.getDeliveryPrice());
                     orderDetail.paid(paymentResponse);
                     return PortOneWebHookResponse.builder()
                         .status(SUCCESS)
@@ -169,16 +167,16 @@ public class PaymentService {
                         .build();
                 }
                 case PortOneStatusConstant.FAILED -> {
-                    orderDetail.updatePaymentStatus(PaymentStatus.FAILED);
+                    orderDetail.updateOrderStatus(FAILED);
                     return PortOneWebHookResponse.builder()
                         .status(PortOneStatusConstant.FAILED)
                         .message(FAILED_MSG)
                         .build();
                 }
-                case CANCELLED -> {
-                    orderDetail.updatePaymentStatus(CANCELED);
+                case PortOneStatusConstant.CANCELLED -> {
+                    orderDetail.updateOrderStatus(CANCELLED);
                     return PortOneWebHookResponse.builder()
-                        .status(CANCELLED)
+                        .status(PortOneStatusConstant.CANCELLED)
                         .message(CANCELLED_MSG)
                         .build();
                 }

@@ -24,21 +24,21 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
-            AuthenticationException authException) throws IOException {
+                         AuthenticationException authException) throws IOException {
         log.error(String.valueOf(authException.getClass()));
         log.error(authException.getMessage());
         sendResponse(request, response, authException);
     }
 
     private void sendResponse(HttpServletRequest request, HttpServletResponse response,
-            AuthenticationException authException) throws IOException {
+                              AuthenticationException authException) throws IOException {
         String result = "서버 에러가 발생했습니다";
         if (authException instanceof BadCredentialsException) {
             result = objectMapper.writeValueAsString(new ErrorResponse(409L, "잘못된 이메일, 비밀번호 입니다."));
             response.setStatus(HttpServletResponse.SC_CONFLICT);
         } else if (authException instanceof InternalAuthenticationServiceException) {
             result = objectMapper.writeValueAsString(new ErrorResponse(404L,
-                    "존재하지 않는 멤버입니다."));
+                "존재하지 않는 멤버입니다."));
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         } else if (authException instanceof InsufficientAuthenticationException) {
             result = objectMapper.writeValueAsString(new ErrorResponse(403L, "인증 정보가 확인되지 않은 요청입니다."));

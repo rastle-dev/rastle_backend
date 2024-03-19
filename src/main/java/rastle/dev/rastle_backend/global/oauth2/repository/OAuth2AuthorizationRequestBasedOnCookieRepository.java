@@ -10,7 +10,7 @@ import rastle.dev.rastle_backend.global.util.CookieUtil;
 
 @Repository
 public class OAuth2AuthorizationRequestBasedOnCookieRepository
-        implements AuthorizationRequestRepository<OAuth2AuthorizationRequest> {
+    implements AuthorizationRequestRepository<OAuth2AuthorizationRequest> {
     public final static String OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME = "oauth2_auth_request";
     public final static String REDIRECT_URI_PARAM_COOKIE_NAME = "redirect_uri";
     private final static int cookieExpireSeconds = 180;
@@ -18,13 +18,13 @@ public class OAuth2AuthorizationRequestBasedOnCookieRepository
     @Override
     public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
         return CookieUtil.getCookie(request, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME)
-                .map(cookie -> CookieUtil.deserialize(cookie, OAuth2AuthorizationRequest.class))
-                .orElse(null);
+            .map(cookie -> CookieUtil.deserialize(cookie, OAuth2AuthorizationRequest.class))
+            .orElse(null);
     }
 
     @Override
     public void saveAuthorizationRequest(OAuth2AuthorizationRequest authorizationRequest, HttpServletRequest request,
-            HttpServletResponse response) {
+                                         HttpServletResponse response) {
         if (authorizationRequest == null) {
             CookieUtil.deleteCookie(request, response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
             CookieUtil.deleteCookie(request, response, REDIRECT_URI_PARAM_COOKIE_NAME);
@@ -32,7 +32,7 @@ public class OAuth2AuthorizationRequestBasedOnCookieRepository
         }
 
         CookieUtil.addCookie(response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME,
-                CookieUtil.serialize(authorizationRequest), cookieExpireSeconds);
+            CookieUtil.serialize(authorizationRequest), cookieExpireSeconds);
         String redirectUriAfterLogin = request.getParameter(REDIRECT_URI_PARAM_COOKIE_NAME);
         if (StringUtils.isNotBlank(redirectUriAfterLogin)) {
             CookieUtil.addCookie(response, REDIRECT_URI_PARAM_COOKIE_NAME, redirectUriAfterLogin, cookieExpireSeconds);
@@ -46,7 +46,7 @@ public class OAuth2AuthorizationRequestBasedOnCookieRepository
 
     @Override
     public OAuth2AuthorizationRequest removeAuthorizationRequest(HttpServletRequest request,
-            HttpServletResponse response) {
+                                                                 HttpServletResponse response) {
         return this.loadAuthorizationRequest(request);
     }
 

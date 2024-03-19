@@ -152,14 +152,14 @@ public class MemberAuthService {
 
     private void deleteRefreshTokenCookie(HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from("refreshToken", null)
-                .maxAge(0)
-                .path("/")
-                .httpOnly(true)
-                .secure(true)
-                // .domain("recordyslow.com")
-                // .sameSite("Strict")
-                .sameSite("None")
-                .build();
+            .maxAge(0)
+            .path("/")
+            .httpOnly(true)
+            .secure(true)
+            // .domain("recordyslow.com")
+            // .sameSite("Strict")
+            .sameSite("None")
+            .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
     }

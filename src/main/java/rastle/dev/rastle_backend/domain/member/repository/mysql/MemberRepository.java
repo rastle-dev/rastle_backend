@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
 import rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO.UserPrincipalInfoDto;
 import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.LoginMemberInfoDto;
 import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.MemberInfoDto;
@@ -27,8 +26,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     void updatePassword(@Param("memberId") Long memberId, @Param("newPassword") String newPassword);
 
     @Query("SELECT NEW rastle.dev.rastle_backend.domain.member.dto.MemberDTO$MemberInfoDto(" +
-            "m.email, m.userLoginType, m.userName, m.phoneNumber, m.recipientInfo, m.createdDate) " +
-            "FROM Member m WHERE m.id = :id")
+        "m.email, m.userLoginType, m.userName, m.phoneNumber, m.recipientInfo, m.createdDate) " +
+        "FROM Member m WHERE m.id = :id")
     MemberInfoDto findMemberInfoById(@Param("id") Long id);
 
     Optional<Member> findByEmail(String email);

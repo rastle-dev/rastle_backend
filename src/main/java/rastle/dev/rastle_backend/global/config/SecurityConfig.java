@@ -51,10 +51,10 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // CSRF 설정 Disable
         http
-                .cors().configurationSource(corsConfigurationSource())
-                .and()
-                .httpBasic().disable()
-                .csrf().disable();
+            .cors().configurationSource(corsConfigurationSource())
+            .and()
+            .httpBasic().disable()
+            .csrf().disable();
 
         // exception handling 할때 우리가 만든 클래스 추가
         http
@@ -96,28 +96,28 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/rest-docs").permitAll());
 
         http
-                .oauth2Login()
-                .authorizationEndpoint()
-                .baseUri("/oauth2/authorization") // default
-                .authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository)
-                .and()
-                .redirectionEndpoint()
-                .baseUri("/oauth2/callback/*")
-                .and()
-                .userInfoEndpoint()
-                .userService(customOAuth2UserService)
-                .and()
-                .successHandler(oAuth2AuthenticationSuccessHandler)
-                .failureHandler(oAuth2AuthenticationFailureHandler);
+            .oauth2Login()
+            .authorizationEndpoint()
+            .baseUri("/oauth2/authorization") // default
+            .authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository)
+            .and()
+            .redirectionEndpoint()
+            .baseUri("/oauth2/callback/*")
+            .and()
+            .userInfoEndpoint()
+            .userService(customOAuth2UserService)
+            .and()
+            .successHandler(oAuth2AuthenticationSuccessHandler)
+            .failureHandler(oAuth2AuthenticationFailureHandler);
 
         http
-                .apply(new JwtSecurityConfig(jwtTokenProvider, mapper, redisTemplate))
-                .and()
-                .logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/auth/logout-redirect")
-                .clearAuthentication(true)
-                .logoutSuccessHandler(customLogoutSuccessHandler);
+            .apply(new JwtSecurityConfig(jwtTokenProvider, mapper, redisTemplate))
+            .and()
+            .logout()
+            .logoutUrl("/logout")
+            .logoutSuccessUrl("/auth/logout-redirect")
+            .clearAuthentication(true)
+            .logoutSuccessHandler(customLogoutSuccessHandler);
 
         return http.build();
     }
@@ -126,16 +126,16 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-                configuration.setAllowedOrigins(
-                                Arrays.asList("http://localhost:3000", "https://localhost:3000",
-                                                "https://www.recordyslow.com", "https://recordyslow.com", "https://api.recordyslow.com", "https://optimize.d2fyka5dusxft6.amplifyapp.com", "http://localhost:8080"));
-                configuration.setAllowedMethods(
-                                Arrays.asList("HEAD", "POST", "GET", "DELETE", "PUT", "OPTIONS", "PATCH"));
-                configuration.addAllowedHeader(("*"));
-                configuration.addExposedHeader("Authorization");
-                // configuration.addExposedHeader("Set-Cookie");
-                configuration.setAllowCredentials(true);
-                configuration.setMaxAge(3600L);
+        configuration.setAllowedOrigins(
+            Arrays.asList("http://localhost:3000", "https://localhost:3000",
+                "https://www.recordyslow.com", "https://recordyslow.com", "https://api.recordyslow.com", "https://optimize.d2fyka5dusxft6.amplifyapp.com", "http://localhost:8080"));
+        configuration.setAllowedMethods(
+            Arrays.asList("HEAD", "POST", "GET", "DELETE", "PUT", "OPTIONS", "PATCH"));
+        configuration.addAllowedHeader(("*"));
+        configuration.addExposedHeader("Authorization");
+        // configuration.addExposedHeader("Set-Cookie");
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
