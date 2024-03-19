@@ -1,4 +1,5 @@
 package rastle.dev.rastle_backend.global.common.annotation;
+
 import org.springframework.security.test.context.support.WithSecurityContext;
 import rastle.dev.rastle_backend.global.util.WithMockCustomUserSecurityContextFactory;
 

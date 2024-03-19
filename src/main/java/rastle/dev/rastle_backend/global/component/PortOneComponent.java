@@ -107,7 +107,6 @@ public class PortOneComponent {
     }
 
 
-
     public PaymentPrepareResponse preparePayment(String merchantId, Long price) {
         String accessToken = getAccessToken();
         HttpHeaders headers = new HttpHeaders();
@@ -148,7 +147,7 @@ public class PortOneComponent {
             PortOneTokenRequest portOneTokenRequest = new PortOneTokenRequest(API_KEY, API_SECRET);
 
             try {
-                ResponseEntity<PortOneTokenResponse> tokenResponse = restTemplate.postForEntity(BASE_URL + TOKEN_URL, new HttpEntity<>(objectMapper.writeValueAsString(portOneTokenRequest),  headers), PortOneTokenResponse.class);
+                ResponseEntity<PortOneTokenResponse> tokenResponse = restTemplate.postForEntity(BASE_URL + TOKEN_URL, new HttpEntity<>(objectMapper.writeValueAsString(portOneTokenRequest), headers), PortOneTokenResponse.class);
                 PortOneTokenResponse portOneTokenResponse = tokenResponse.getBody();
 
                 String accessToken = portOneTokenResponse.getResponse().getAccess_token();

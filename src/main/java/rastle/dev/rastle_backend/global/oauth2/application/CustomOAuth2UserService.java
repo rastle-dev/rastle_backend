@@ -23,75 +23,75 @@ import static rastle.dev.rastle_backend.global.common.enums.CouponStatus.NOT_USE
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
-        private final MemberRepository memberRepository;
-        private final CartRepository cartRepository;
-        private final CouponRepository couponRepository;
+    private final MemberRepository memberRepository;
+    private final CartRepository cartRepository;
+    private final CouponRepository couponRepository;
 
-        @Transactional
-        @Override
-        public OAuth2User loadUser(OAuth2UserRequest userRequest)
-                        throws OAuth2AuthenticationException {
-                OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
-                OAuth2User oAuth2User = delegate.loadUser(userRequest);
+    @Transactional
+    @Override
+    public OAuth2User loadUser(OAuth2UserRequest userRequest)
+        throws OAuth2AuthenticationException {
+        OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
+        OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
-                UserLoginType loginType = UserLoginType
-                                .valueOfLabel(userRequest.getClientRegistration().getRegistrationId().toUpperCase());
+        UserLoginType loginType = UserLoginType
+            .valueOfLabel(userRequest.getClientRegistration().getRegistrationId().toUpperCase());
 
-                OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(loginType.getType(),
-                                oAuth2User.getAttributes());
+        OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(loginType.getType(),
+            oAuth2User.getAttributes());
 
-                // Member member = memberRepository.findByEmail(userInfo.getEmail())
-                // .orElseGet(() -> createUser(userInfo, loginType));
+        // Member member = memberRepository.findByEmail(userInfo.getEmail())
+        // .orElseGet(() -> createUser(userInfo, loginType));
 
-                // return UserPrincipal.create(member, oAuth2User.getAttributes());
-                UserPrincipalInfoDto userPrincipalInfoDto = memberRepository
-                                .findUserPrincipalInfoByEmail(userInfo.getEmail())
-                                .orElseGet(() -> createUser(userInfo, loginType));
+        // return UserPrincipal.create(member, oAuth2User.getAttributes());
+        UserPrincipalInfoDto userPrincipalInfoDto = memberRepository
+            .findUserPrincipalInfoByEmail(userInfo.getEmail())
+            .orElseGet(() -> createUser(userInfo, loginType));
 
-                return UserPrincipal.create(userPrincipalInfoDto); // 수정된 부분
+        return UserPrincipal.create(userPrincipalInfoDto); // 수정된 부분
+    }
+
+    private UserPrincipalInfoDto createUser(OAuth2UserInfo memberInfo, UserLoginType loginType) {
+        Member member = Member.builder()
+            .email(memberInfo.getEmail())
+            .userName(memberInfo.getName())
+            .phoneNumber(formatPhoneNumber(memberInfo.getPhoneNumber()))
+            .userLoginType(loginType)
+            .authority(Authority.ROLE_USER)
+            .build();
+
+        RecipientInfo recipientInfo = new RecipientInfo();
+        recipientInfo.setRecipientName(memberInfo.getName());
+        recipientInfo.setRecipientPhoneNumber(memberInfo.getPhoneNumber());
+        member.updateRecipientInfo(recipientInfo);
+
+        Cart build = Cart.builder().member(member).build();
+        cartRepository.save(build);
+
+        Coupon coupon = Coupon.builder().discount(3000).name("회원가입 축하 쿠폰").member(member)
+            .couponStatus(NOT_USED).build();
+        couponRepository.save(coupon);
+
+        memberRepository.save(member);
+
+        return UserPrincipalInfoDto.builder()
+            .id(member.getId())
+            .password(member.getPassword())
+            .userLoginType(member.getUserLoginType())
+            .authority(member.getAuthority())
+            .build();
+    }
+
+    private String formatPhoneNumber(String phoneNumber) {
+        if (phoneNumber == null || phoneNumber.isEmpty()) {
+            return "";
         }
 
-        private UserPrincipalInfoDto createUser(OAuth2UserInfo memberInfo, UserLoginType loginType) {
-                Member member = Member.builder()
-                                .email(memberInfo.getEmail())
-                                .userName(memberInfo.getName())
-                                .phoneNumber(formatPhoneNumber(memberInfo.getPhoneNumber()))
-                                .userLoginType(loginType)
-                                .authority(Authority.ROLE_USER)
-                                .build();
-
-                RecipientInfo recipientInfo = new RecipientInfo();
-                recipientInfo.setRecipientName(memberInfo.getName());
-                recipientInfo.setRecipientPhoneNumber(memberInfo.getPhoneNumber());
-                member.updateRecipientInfo(recipientInfo);
-
-                Cart build = Cart.builder().member(member).build();
-                cartRepository.save(build);
-
-                Coupon coupon = Coupon.builder().discount(3000).name("회원가입 축하 쿠폰").member(member)
-                                .couponStatus(NOT_USED).build();
-                couponRepository.save(coupon);
-
-                memberRepository.save(member);
-
-                return UserPrincipalInfoDto.builder()
-                                .id(member.getId())
-                                .password(member.getPassword())
-                                .userLoginType(member.getUserLoginType())
-                                .authority(member.getAuthority())
-                                .build();
+        phoneNumber = phoneNumber.replaceAll("[^0-9]", "");
+        if (phoneNumber.startsWith("82")) {
+            phoneNumber = "0" + phoneNumber.substring(2);
         }
 
-        private String formatPhoneNumber(String phoneNumber) {
-                if (phoneNumber == null || phoneNumber.isEmpty()) {
-                        return "";
-                }
-
-                phoneNumber = phoneNumber.replaceAll("[^0-9]", "");
-                if (phoneNumber.startsWith("82")) {
-                        phoneNumber = "0" + phoneNumber.substring(2);
-                }
-
-                return phoneNumber;
-        }
+        return phoneNumber;
+    }
 }

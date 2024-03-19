@@ -16,7 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-import rastle.dev.rastle_backend.domain.member.model.Member;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
 
 import java.util.Optional;
@@ -120,7 +119,7 @@ public class EmailCertificationService {
             mimeMessage.addRecipients(Message.RecipientType.TO, to);
             mimeMessage.setSubject("rastle_ 비밀번호 초기화");
             mimeMessage.setFrom(new InternetAddress("rastle.fashion@gmail.com",
-                    "rastle_admin"));
+                "rastle_admin"));
 
             Context context = new Context();
             context.setVariable("password", temporaryPassword);

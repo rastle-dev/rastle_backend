@@ -12,7 +12,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-
 import rastle.dev.rastle_backend.global.jwt.JwtTokenProvider;
 import rastle.dev.rastle_backend.global.oauth2.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import rastle.dev.rastle_backend.global.util.CookieUtil;
@@ -33,7 +32,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     @Override
     @Transactional
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-            Authentication authentication) throws IOException, ServletException {
+                                        Authentication authentication) throws IOException, ServletException {
         log.info("authentication success");
         Map<String, Object> queryParams = new HashMap<>();
 
@@ -60,8 +59,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     private String getTargetUrlFromCookie(HttpServletRequest request) {
         return CookieUtil.getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME)
-                .map(Cookie::getValue)
-                .orElse(getDefaultTargetUrl());
+            .map(Cookie::getValue)
+            .orElse(getDefaultTargetUrl());
     }
 
     private UriComponents buildUriComponents(String targetUrl, Map<String, Object> queryParams) {

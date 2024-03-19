@@ -3,7 +3,7 @@ package rastle.dev.rastle_backend.global.util;
 import java.util.List;
 
 public class CircularList<T> {
-    private List<T> list ;
+    private List<T> list;
     private Integer counter = 0;
 
 
@@ -11,8 +11,8 @@ public class CircularList<T> {
         this.list = list;
     }
 
-    public T getOne(){
-        if (counter + 1 >= list.size()){
+    public T getOne() {
+        if (counter + 1 >= list.size()) {
             counter = -1;
         }
 

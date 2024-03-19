@@ -1,16 +1,15 @@
 package rastle.dev.rastle_backend.global.security;
 
-import java.util.Optional;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import lombok.RequiredArgsConstructor;
 import rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO.UserPrincipalInfoDto;
 import rastle.dev.rastle_backend.domain.member.model.UserPrincipal;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

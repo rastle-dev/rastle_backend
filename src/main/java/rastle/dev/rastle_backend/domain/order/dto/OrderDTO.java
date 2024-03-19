@@ -3,7 +3,7 @@ package rastle.dev.rastle_backend.domain.order.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import rastle.dev.rastle_backend.domain.coupon.dto.CouponInfo;
-import rastle.dev.rastle_backend.global.common.enums.DeliveryStatus;
+import rastle.dev.rastle_backend.global.common.enums.OrderStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -103,8 +103,8 @@ public class OrderDTO {
         String orderNumber;
         String orderDate;
         String memberName;
-        DeliveryStatus deliveryStatus;
-
+        OrderStatus orderStatus;
+        OrderStatus deliveryStatus;
         List<SimpleProductOrderInfo> productOrderInfos;
         Long paymentAmount;
         Long deliveryPrice;

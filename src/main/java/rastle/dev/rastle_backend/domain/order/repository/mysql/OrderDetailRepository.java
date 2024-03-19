@@ -19,11 +19,11 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
     Optional<OrderDetail> findByOrderNumber(@Param("orderNumber") String orderNumber);
 
     @Modifying
-    @Query("DELETE FROM OrderDetail od WHERE od.paymentStatus = 'READY'")
+    @Query("DELETE FROM OrderDetail od WHERE od.orderStatus = 'READY'")
     void deleteAllReadyOrders();
 
     @Query("SELECT NEW rastle.dev.rastle_backend.domain.order.dto.OrderSimpleInfo(" +
-        "o.id, o.createdTime, o.orderNumber, o.deliveryStatus) " +
-        "FROM OrderDetail o WHERE o.member.id = :memberId AND o.paymentStatus = 'PAID' ORDER BY o.createdTime DESC")
+        "o.id, o.createdTime, o.orderNumber, o.orderStatus, o.orderStatus) " +
+        "FROM OrderDetail o WHERE o.member.id = :memberId AND o.orderStatus = 'PAID' ORDER BY o.createdTime DESC")
     Page<OrderSimpleInfo> findSimpleOrderInfoByMemberId(@Param("memberId") Long memberId, Pageable pageable);
 }

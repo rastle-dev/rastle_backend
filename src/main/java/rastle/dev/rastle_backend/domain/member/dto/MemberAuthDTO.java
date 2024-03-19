@@ -49,13 +49,13 @@ public class MemberAuthDTO {
 
         public Member toEntity() {
             return Member.builder()
-                    .email(email)
-                    .password(password)
-                    .userLoginType(UserLoginType.EMAIL)
-                    .authority(Authority.ROLE_USER)
-                    .phoneNumber(phoneNumber)
-                    .userName(username)
-                    .build();
+                .email(email)
+                .password(password)
+                .userLoginType(UserLoginType.EMAIL)
+                .authority(Authority.ROLE_USER)
+                .phoneNumber(phoneNumber)
+                .userName(username)
+                .build();
         }
     }
 

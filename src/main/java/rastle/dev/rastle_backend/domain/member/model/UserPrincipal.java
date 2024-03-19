@@ -4,14 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO.UserPrincipalInfoDto;
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO.UserPrincipalInfoDto;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -86,20 +85,20 @@ public class UserPrincipal implements UserDetails, OidcUser {
 
     public static UserPrincipal create(Member member) {
         return new UserPrincipal(
-                String.valueOf(member.getId()),
-                member.getPassword(),
-                member.getUserLoginType(),
-                member.getAuthority(),
-                Collections.singletonList(new SimpleGrantedAuthority(member.getAuthority().toString())));
+            String.valueOf(member.getId()),
+            member.getPassword(),
+            member.getUserLoginType(),
+            member.getAuthority(),
+            Collections.singletonList(new SimpleGrantedAuthority(member.getAuthority().toString())));
     }
 
     public static UserPrincipal create(UserPrincipalInfoDto userPrincipalInfoDto) {
         return new UserPrincipal(
-                String.valueOf(userPrincipalInfoDto.getId()),
-                userPrincipalInfoDto.getPassword(),
-                userPrincipalInfoDto.getUserLoginType(),
-                userPrincipalInfoDto.getAuthority(),
-                Collections.singletonList(new SimpleGrantedAuthority(userPrincipalInfoDto.getAuthority().toString())));
+            String.valueOf(userPrincipalInfoDto.getId()),
+            userPrincipalInfoDto.getPassword(),
+            userPrincipalInfoDto.getUserLoginType(),
+            userPrincipalInfoDto.getAuthority(),
+            Collections.singletonList(new SimpleGrantedAuthority(userPrincipalInfoDto.getAuthority().toString())));
     }
 
     public static UserPrincipal create(Member user, Map<String, Object> attributes) {

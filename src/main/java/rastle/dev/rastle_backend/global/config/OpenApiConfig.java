@@ -13,10 +13,10 @@ import org.springframework.context.annotation.Configuration;
         @Server(url = "https://api.recordyslow.com", description = "Server"),
         @Server(url = "http://localhost:8080", description = "local")
     },
-    info= @Info(title = "<Rastle>",
-    description = "쇼핑몰 <Rastle> API 명세서",
-    version = "1.0"
-)
+    info = @Info(title = "<Rastle>",
+        description = "쇼핑몰 <Rastle> API 명세서",
+        version = "1.0"
+    )
 
 )
 @RequiredArgsConstructor
@@ -27,10 +27,10 @@ public class OpenApiConfig {
         String[] paths = {"/**"};
 
         return GroupedOpenApi.builder()
-                .displayName("API Doc Ver 1.0")
-                .group("Rastle_v1")
-                .pathsToMatch(paths)
-                .build();
+            .displayName("API Doc Ver 1.0")
+            .group("Rastle_v1")
+            .pathsToMatch(paths)
+            .build();
     }
 
 }

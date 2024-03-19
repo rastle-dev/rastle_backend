@@ -29,9 +29,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static rastle.dev.rastle_backend.global.common.enums.DeliveryStatus.NOT_STARTED;
+import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.CANCELLED;
+import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.CREATED;
 import static rastle.dev.rastle_backend.global.common.enums.PaymentStatus.CANCELED;
-import static rastle.dev.rastle_backend.global.common.enums.PaymentStatus.READY;
 
 @Service
 @RequiredArgsConstructor
@@ -50,8 +50,7 @@ public class OrderService {
             throw new NotAuthorizedException();
         }
         OrderDetail orderDetail = OrderDetail.builder()
-            .deliveryStatus(NOT_STARTED)
-            .paymentStatus(READY)
+            .orderStatus(CREATED)
             .member(member)
             .build();
         orderDetailRepository.save(orderDetail);
@@ -121,7 +120,8 @@ public class OrderService {
             .orderNumber(orderDetail.getOrderNumber())
             .orderDate(orderDetail.getCreatedTime().toString())
             .memberName(member.getUserName())
-            .deliveryStatus(orderDetail.getDeliveryStatus())
+            .orderStatus(orderDetail.getOrderStatus())
+            .deliveryStatus(orderDetail.getOrderStatus())
             .productOrderInfos(orderProductRepository.findSimpleProductOrderInfoByOrderId(orderDetail.getId()))
             .paymentAmount(orderDetail.getPaymentPrice())
             .deliveryPrice(orderDetail.getDeliveryPrice())
@@ -145,11 +145,12 @@ public class OrderService {
             )
             .build();
     }
+
     @Transactional
     public OrderCancelResponse cancelOrder(Long memberId, OrderCancelRequest orderCancelRequest) {
         OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(orderCancelRequest.getMerchantUID()).orElseThrow(() -> new RuntimeException("해당 주문 번호로 존재하는 주문이 없습니다. " + orderCancelRequest.getMerchantUID()));
         PaymentResponse paymentResponse = portOneComponent.cancelPayment(orderDetail.getImpId(), orderCancelRequest);
-        orderDetail.updatePaymentStatus(CANCELED);
+        orderDetail.updateOrderStatus(CANCELLED);
 
         return OrderCancelResponse.builder()
             .cancelledAt(paymentResponse.getCancelledAt())

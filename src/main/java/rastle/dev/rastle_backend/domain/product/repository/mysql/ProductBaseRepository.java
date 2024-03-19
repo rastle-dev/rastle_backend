@@ -115,6 +115,7 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
         "pb.eventApplyCount) " +
         "from ProductBase pb WHERE pb.event.id = :id ORDER BY pb.displayOrder DESC")
     Page<SimpleProductInfo> getProductInfoByEventId(@Param("id") Long id, Pageable pageable);
+
     @Query(
         "select new rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo(" +
             "pb.id, " +
@@ -135,6 +136,7 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
             "ORDER BY COALESCE(COUNT(op.id), 0) DESC"
     )
     Page<SimpleProductInfo> getPopularProductInfos(Pageable pageable);
+
     @Query(
         "select new rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo(" +
             "pb.id, " +

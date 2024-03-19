@@ -15,7 +15,7 @@ public class ProfileController {
     @GetMapping("/env_profile")
     public String getProfile() {
         return Arrays.stream(env.getActiveProfiles())
-                .findFirst()
-                .orElse("");
+            .findFirst()
+            .orElse("");
     }
 }

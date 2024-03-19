@@ -28,7 +28,7 @@ public class CustomLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
     @Override
     @Transactional
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
-            throws IOException, ServletException {
+        throws IOException, ServletException {
         log.info("로그아웃 호출됐음");
         setDefaultTargetUrl("https://api.recordyslow.com/auth/logout-redirect");
         String token = request.getHeader("Authorization").split(" ")[1];
