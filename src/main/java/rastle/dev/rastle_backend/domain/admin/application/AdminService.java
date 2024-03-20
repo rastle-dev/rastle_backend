@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import rastle.dev.rastle_backend.domain.admin.dto.GetMemberOrderInfo;
 import rastle.dev.rastle_backend.domain.admin.exception.NotEmptyBundleException;
 import rastle.dev.rastle_backend.domain.admin.exception.NotEmptyCategoryException;
 import rastle.dev.rastle_backend.domain.admin.exception.NotEmptyEventException;
@@ -597,5 +598,8 @@ public class AdminService {
                 .build());
         }).collect(Collectors.toList());
     }
-
+    @Transactional(readOnly = true)
+    public Page<GetMemberOrderInfo> getMemberOrders(Pageable pageable) {
+        return null;
+    }
 }
