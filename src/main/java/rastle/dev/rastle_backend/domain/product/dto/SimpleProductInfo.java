@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 
 @Data
 @Builder
@@ -61,4 +62,23 @@ public class SimpleProductInfo implements Comparable<SimpleProductInfo>{
     public int compareTo(SimpleProductInfo compare) {
         return Long.compare(this.soldCount, compare.soldCount);
     }
+
+    public static SimpleProductInfo fromEntity(ProductBase productBase) {
+        return SimpleProductInfo.builder()
+            .id(productBase.getId())
+            .name(productBase.getName())
+            .price(productBase.getPrice())
+            .mainThumbnail(productBase.getMainThumbnailImage())
+            .subThumbnail(productBase.getSubThumbnailImage())
+            .discountPrice(productBase.getDiscountPrice())
+            .displayOrder(productBase.getDisplayOrder())
+            .visible(productBase.isVisible())
+            .categoryId(productBase.getCategory() == null ? null : productBase.getCategory().getId())
+            .bundleId(productBase.getBundle() == null ? null : productBase.getBundle().getId())
+            .eventId(productBase.getEvent() == null ? null : productBase.getEvent().getId())
+            .eventApplyCount(productBase.getEventApplyCount())
+            .soldCount(productBase.getSoldCount())
+            .build();
+    }
+
 }

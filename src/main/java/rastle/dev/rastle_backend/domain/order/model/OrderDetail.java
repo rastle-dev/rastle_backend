@@ -27,7 +27,6 @@ import static jakarta.persistence.InheritanceType.JOINED;
 @Inheritance(strategy = JOINED)
 public class OrderDetail extends BaseTimeEntity {
     /*
-    TODO 테이블 나누는게 좋을듯
     TODO 주문 상태 값 추가 필요할듯
      */
     @Id
@@ -66,7 +65,7 @@ public class OrderDetail extends BaseTimeEntity {
     private final List<OrderProduct> orderProduct = new ArrayList<>();
 
     @Builder
-    public OrderDetail(String userName, String tel, String email, String postcode, String deliveryAddress, String orderNumber, OrderStatus orderStatus, Member member, Long paymentPrice, String impId, Long deliveryPrice, String deliveryMsg, String orderName) {
+    public OrderDetail(String userName, String tel, String email, String postcode, String deliveryAddress, String orderNumber, OrderStatus orderStatus, Member member, Long paymentPrice, String impId, Long deliveryPrice, String deliveryMsg, String orderName, String trackingNumber) {
 
         this.userName = userName;
         this.tel = tel;
@@ -81,6 +80,7 @@ public class OrderDetail extends BaseTimeEntity {
         this.deliveryPrice = deliveryPrice;
         this.deliveryMsg = deliveryMsg;
         this.orderName = orderName;
+        this.trackingNumber = trackingNumber;
     }
 
     public void paid(PaymentResponse paymentResponse) {
@@ -105,6 +105,10 @@ public class OrderDetail extends BaseTimeEntity {
 
     public void updateOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+    public void updateTrackingNumber(String trackingNumber) {
+        this.trackingNumber = trackingNumber;
     }
 
 }
