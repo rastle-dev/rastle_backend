@@ -1,17 +1,18 @@
 package rastle.dev.rastle_backend.domain.product.dto;
 
+import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Schema(description = "전체 상품 조회 시 리턴 데이터")
-public class SimpleProductInfo {
+public class SimpleProductInfo implements Comparable<SimpleProductInfo>{
     @Schema(description = "상품 아이디", defaultValue = "0")
     Long id;
     @Schema(description = "상품 명", defaultValue = "멋있는 청바지")
@@ -36,4 +37,28 @@ public class SimpleProductInfo {
     Long eventId;
     @Schema(description = "상품 이벤트 참여 횟수", defaultValue = "1")
     Long eventApplyCount;
+    @Schema(description = "상품 전체 누적 판매 수", defaultValue = "1")
+    Long soldCount;
+
+    @QueryProjection
+    public SimpleProductInfo( Long id, String name, int price, String mainThumbnail, String subThumbnail, int discountPrice, Long displayOrder, boolean visible, Long categoryId, Long bundleId, Long eventId, Long eventApplyCount, Long soldCount) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.mainThumbnail = mainThumbnail;
+        this.subThumbnail = subThumbnail;
+        this.discountPrice = discountPrice;
+        this.displayOrder = displayOrder;
+        this.visible = visible;
+        this.categoryId = categoryId;
+        this.bundleId = bundleId;
+        this.eventId = eventId;
+        this.eventApplyCount = eventApplyCount;
+        this.soldCount = soldCount;
+    }
+
+    @Override
+    public int compareTo(SimpleProductInfo compare) {
+        return Long.compare(this.soldCount, compare.soldCount);
+    }
 }

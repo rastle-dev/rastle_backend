@@ -12,11 +12,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rastle.dev.rastle_backend.domain.product.application.ProductService;
-import rastle.dev.rastle_backend.domain.product.dto.BundleProductInfo;
-import rastle.dev.rastle_backend.domain.product.dto.EventProductInfo;
-import rastle.dev.rastle_backend.domain.product.dto.ProductInfo;
-import rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo;
+import rastle.dev.rastle_backend.domain.product.dto.*;
 import rastle.dev.rastle_backend.global.common.annotation.GetExecutionTime;
+import rastle.dev.rastle_backend.global.common.enums.VisibleStatus;
 import rastle.dev.rastle_backend.global.response.FailApiResponses;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
 
@@ -35,9 +33,23 @@ public class ProductController {
     @GetExecutionTime
     @GetMapping("")
     public ResponseEntity<ServerResponse<?>> getProducts(
-        @Parameter(name = "visible", description = "ALL - visible 여부 관계 없이 리턴, TRUE-true인 것만, FALSE - false인 것만") @RequestParam(name = "visible", defaultValue = ALL) String visible,
-        Pageable pageable) {
-        return ResponseEntity.ok(new ServerResponse<>(productService.getProductInfos(visible, pageable)));
+        @Parameter(name = "visible", description = "ALL - visible 여부 관계 없이 리턴, TRUE-true인 것만, FALSE - false인 것만")
+        @RequestParam(name = "visible", defaultValue = ALL) String visible,
+        Pageable pageable,
+        @Parameter(name = "bundleId", description = "세트 아이디")
+        @RequestParam(name = "bundleId", required = false)
+        Long bundleId,
+        @Parameter(name = "eventId", description = "이벤트 아이디")
+        @RequestParam(name = "eventId", required = false)
+        Long eventId
+    ) {
+        GetProductRequest getProductRequest = GetProductRequest.builder()
+            .bundleId(bundleId)
+            .eventId(eventId)
+            .visibleStatus(VisibleStatus.getById(visible))
+            .pageable(pageable)
+            .build();
+        return ResponseEntity.ok(new ServerResponse<>(productService.getProductInfos(getProductRequest)));
     }
 
     @Operation(summary = "상품 세트 관련 상품 조회 API", description = "상품 세트 관련 상품 조회 API입니다. 상품 세트 조회 API를 먼저 호출하고 사용해야합니다.")

@@ -22,7 +22,7 @@ import rastle.dev.rastle_backend.global.response.ServerResponse;
 public class CategoryController {
     private final CategoryService categoryService;
 
-    @Operation(summary = "카테고리 이미지 조회 API", description = "카테고리 이미지 조회 API입니다")
+    @Operation(summary = "카테고리 정보 조회 API", description = "카테고리 이미지 조회 API입니다")
     @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = CategoryInfo.class)))
     @FailApiResponses
     @GetMapping("")

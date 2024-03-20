@@ -14,6 +14,7 @@ import rastle.dev.rastle_backend.domain.product.dto.*;
 import rastle.dev.rastle_backend.domain.product.repository.mysql.BundleProductRepository;
 import rastle.dev.rastle_backend.domain.product.repository.mysql.EventProductRepository;
 import rastle.dev.rastle_backend.domain.product.repository.mysql.ProductBaseRepository;
+import rastle.dev.rastle_backend.domain.product.repository.mysql.ProductQRepository;
 import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
 
 import java.util.List;
@@ -29,16 +30,12 @@ public class ProductService {
     private final BundleProductRepository bundleProductRepository;
     private final EventProductRepository eventProductRepository;
     private final EventRepository eventRepository;
+    private final ProductQRepository productQRepository;
 
     @Transactional(readOnly = true)
-    public Page<SimpleProductInfo> getProductInfos(String visible, Pageable pageable) {
-        if (visible.equals(ALL)) {
-            return productBaseRepository.getProductInfos(pageable);
-        } else if (visible.equals(TRUE)) {
-            return productBaseRepository.getProductInfosByVisibility(true, pageable);
-        } else {
-            return productBaseRepository.getProductInfosByVisibility(false, pageable);
-        }
+    public Page<SimpleProductInfo> getProductInfos(GetProductRequest getProductRequest) {
+
+        return productQRepository.getProductInfos(getProductRequest);
     }
 
     @Transactional(readOnly = true)

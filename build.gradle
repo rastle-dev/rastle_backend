@@ -20,10 +20,6 @@ configurations {
     }
 }
 
-ext {
-    set('snippetsDir', file("build/generated-snippets"))
-}
-
 
 repositories {
     mavenCentral()
@@ -118,7 +114,6 @@ dependencies {
 }
 
 test {
-    outputs.dir snippetsDir
     useJUnitPlatform()
 }
 
@@ -137,28 +132,5 @@ clean.doLast {
 }
 
 
-asciidoctor.doFirst {
-    delete file('src/main/resources/templates/api_doc.html')
-}
 
-asciidoctor {
-    inputs.dir snippetsDir
-    dependsOn test
-}
 
-task copyDocument(type: Copy) {
-    dependsOn asciidoctor
-    from file("build/docs/asciidoc")
-    into file("src/main/resources/templates")
-}
-
-build {
-    dependsOn copyDocument
-}
-
-bootJar {
-    dependsOn asciidoctor
-    from ("build/docs/asciidoc") {
-        into 'src/main/resources/templates'
-    }
-}

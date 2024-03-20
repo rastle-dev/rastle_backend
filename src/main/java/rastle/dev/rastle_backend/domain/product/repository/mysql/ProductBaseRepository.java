@@ -13,38 +13,6 @@ import java.util.Optional;
 
 public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> {
 
-    @Query("select new rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo(" +
-        "pb.id, " +
-        "pb.name, " +
-        "pb.price, " +
-        "pb.mainThumbnailImage, " +
-        "pb.subThumbnailImage," +
-        "pb.discountPrice, " +
-        "pb.displayOrder, " +
-        "pb.visible, " +
-        "pb.category.id, " +
-        "pb.bundle.id, " +
-        "pb.event.id, " +
-        "pb.eventApplyCount) " +
-        "from ProductBase pb WHERE pb.event.id = null ORDER BY pb.displayOrder ASC")
-    Page<SimpleProductInfo> getProductInfos(Pageable pageable);
-
-    @Query("select new rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo(" +
-        "pb.id, " +
-        "pb.name, " +
-        "pb.price, " +
-        "pb.mainThumbnailImage, " +
-        "pb.subThumbnailImage," +
-        "pb.discountPrice, " +
-        "pb.displayOrder, " +
-        "pb.visible, " +
-        "pb.category.id, " +
-        "pb.bundle.id, " +
-        "pb.event.id, " +
-        "pb.eventApplyCount) " +
-        "from ProductBase pb WHERE pb.visible = :visible AND pb.event.id = null ORDER BY pb.displayOrder ASC")
-    Page<SimpleProductInfo> getProductInfosByVisibility(@Param("visible") boolean visible, Pageable pageable);
-
     @Query("select new rastle.dev.rastle_backend.domain.product.dto.ProductInfo(" +
         "pb.id, " +
         "pb.name, " +
