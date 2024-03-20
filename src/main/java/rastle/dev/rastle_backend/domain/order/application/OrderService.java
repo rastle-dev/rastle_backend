@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rastle.dev.rastle_backend.domain.coupon.dto.CouponInfo;
 import rastle.dev.rastle_backend.domain.coupon.repository.mysql.CouponRepository;
+import rastle.dev.rastle_backend.domain.delivery.model.Delivery;
 import rastle.dev.rastle_backend.domain.member.model.Member;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
 import rastle.dev.rastle_backend.domain.order.dto.OrderDTO.*;
@@ -18,6 +19,7 @@ import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
 import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderDetailRepository;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderProductRepository;
+import rastle.dev.rastle_backend.domain.payment.model.Payment;
 import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 import rastle.dev.rastle_backend.global.component.OrderNumberComponent;
 import rastle.dev.rastle_backend.global.component.PortOneComponent;
@@ -46,14 +48,17 @@ public class OrderService {
     @Transactional
     public OrderCreateResponse createOrderDetail(Long memberId, OrderCreateRequest orderCreateRequest) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
-        if (!(member.getId() == 11L || member.getId() == 8L || member.getId() == 92L)) {
+        if (!(member.getId() == 11L || member.getId() == 8L || member.getId() == 92L || member.getId() == 47L)) {
             throw new NotAuthorizedException();
         }
         OrderDetail orderDetail = OrderDetail.builder()
             .orderStatus(CREATED)
             .member(member)
             .build();
+
         orderDetailRepository.save(orderDetail);
+        orderDetail.setDelivery(Delivery.builder().orderDetail(orderDetail).build());
+        orderDetail.setPayment(Payment.builder().orderDetail(orderDetail).build());
         String orderNumber = orderNumberComponent.createOrderNumber(orderDetail.getId());
         orderDetail.updateOrderNumber(orderNumber);
         List<ProductOrderResponse> orderResponses = createOrderProducts(orderDetail,
@@ -110,7 +115,7 @@ public class OrderService {
         if (!orderDetail.getMember().getId().equals(member.getId())) {
             throw new NotAuthorizedException("권한 없는 주문 조회 요청, memberId " + member.getId() + " orderId " + orderDetail.getId());
         }
-        PaymentResponse paymentData = portOneComponent.getPaymentData(orderDetail.getImpId());
+        PaymentResponse paymentData = portOneComponent.getPaymentData(orderDetail.getPayment().getImpId());
         CouponInfo couponInfo = couponRepository.findByCouponInfoById(paymentData.getCouponId()).orElse(null);
 
         LocalDateTime cancelTime = paymentData.getCancelledAt();
@@ -123,8 +128,8 @@ public class OrderService {
             .orderStatus(orderDetail.getOrderStatus())
             .deliveryStatus(orderDetail.getOrderStatus())
             .productOrderInfos(orderProductRepository.findSimpleProductOrderInfoByOrderId(orderDetail.getId()))
-            .paymentAmount(orderDetail.getPaymentPrice())
-            .deliveryPrice(orderDetail.getDeliveryPrice())
+            .paymentAmount(orderDetail.getPayment().getPaymentPrice())
+            .deliveryPrice(orderDetail.getDelivery().getDeliveryPrice())
             .paymentMethod(paymentData.getPayMethod())
             .receiverInfo(
                 ReceiverInfo.builder()
@@ -149,7 +154,7 @@ public class OrderService {
     @Transactional
     public OrderCancelResponse cancelOrder(Long memberId, OrderCancelRequest orderCancelRequest) {
         OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(orderCancelRequest.getMerchantUID()).orElseThrow(() -> new RuntimeException("해당 주문 번호로 존재하는 주문이 없습니다. " + orderCancelRequest.getMerchantUID()));
-        PaymentResponse paymentResponse = portOneComponent.cancelPayment(orderDetail.getImpId(), orderCancelRequest);
+        PaymentResponse paymentResponse = portOneComponent.cancelPayment(orderDetail.getPayment().getImpId(), orderCancelRequest);
         orderDetail.updateOrderStatus(CANCELLED);
 
         return OrderCancelResponse.builder()

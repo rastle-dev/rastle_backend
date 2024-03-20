@@ -347,9 +347,14 @@ public class AdminController {
     // ==============================================================================================================
     // 주문 관련 API
     // ==============================================================================================================
-//    @Operation(summary = "괸리자 회원 주문 조회 API", description = "관리자 주문 정보 조회 API")
-//    @FailApiResponses
-//    @GetExecutionTime("/orders")
+    @Operation(summary = "괸리자 회원 주문 조회 API", description = "관리자 주문 정보 조회 API")
+    @FailApiResponses
+    @GetMapping("/orders")
+    public ResponseEntity<ServerResponse<?>> getMemberOrders(
+        Pageable pageable
+    ) {
+        return ResponseEntity.ok(new ServerResponse<>(adminService.getMemberOrders(pageable)));
+    }
 
 
     // ==============================================================================================================

@@ -105,7 +105,7 @@ public class ProductQRepositoryImpl implements ProductQRepository {
 
     private BooleanExpression event(GetProductRequest getProductRequest) {
         if (getProductRequest.getEventId() == null) {
-            return null;
+            return productBase.event.id.isNull();
         }
         return productBase.event.id.eq(getProductRequest.getEventId());
     }

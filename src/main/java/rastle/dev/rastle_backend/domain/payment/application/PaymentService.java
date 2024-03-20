@@ -63,8 +63,10 @@ public class PaymentService {
         OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(merchantUid)
             .orElseThrow(() -> new PaymentException("주문번호로 존재하는 주문이 DB에 존재하지 않는다"));
 
-        if (orderDetail.getPaymentPrice().equals(paymentResponse.getAmount())) {
+        if (orderDetail.getPayment().getPaymentPrice().equals(paymentResponse.getAmount())) {
             orderDetail.paid(paymentResponse);
+            orderDetail.getPayment().paid(paymentResponse);
+            orderDetail.getDelivery().paid(paymentResponse);
             if (paymentResponse.getCouponId() != null) {
                 Coupon referenceById = couponRepository.getReferenceById(paymentResponse.getCouponId());
                 referenceById.updateStatus(USED);
@@ -103,7 +105,7 @@ public class PaymentService {
         OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(merchantUid)
             .orElseThrow(() -> new PaymentException("주문번호로 존재하는 주문이 DB에 존재하지 않습니다."));
 
-        if (orderDetail.getPaymentPrice().equals(paymentResponse.getAmount())) {
+        if (orderDetail.getPayment().getPaymentPrice().equals(paymentResponse.getAmount())) {
             orderDetail.paid(paymentResponse);
 
             List<SelectedProductsDTO> selectedProducts = orderDetail.getOrderProduct().stream()
@@ -134,6 +136,7 @@ public class PaymentService {
         OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(orderNumber)
             .orElseThrow(() -> new PaymentException("주문 번호로 존재하는 주문이 없습니다. " + orderNumber));
         Long totalPrice = orderProductRepository.findOrderProductPriceSumByOrderNumber(orderNumber);
+        orderDetail.updateProductPrice(totalPrice);
         if (paymentPrepareRequest.getCouponId() != null) {
             Coupon coupon = couponRepository.getReferenceById(paymentPrepareRequest.getCouponId());
             if (coupon.getCouponStatus() != NOT_USED) {
@@ -142,7 +145,7 @@ public class PaymentService {
             totalPrice -= coupon.getDiscount();
         }
         totalPrice += paymentPrepareRequest.getDeliveryPrice();
-        orderDetail.updatePaymentPrice(totalPrice);
+        orderDetail.getPayment().updatePaymentPrice(totalPrice);
         return portOneComponent.preparePayment(orderNumber, totalPrice);
     }
 
@@ -153,7 +156,7 @@ public class PaymentService {
         OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(merchantUid)
             .orElseThrow(() -> new PaymentException("주문번호로 존재하는 주문이 DB에 존재하지 않는다"));
 
-        if (orderDetail.getPaymentPrice().equals(paymentResponse.getAmount())) {
+        if (orderDetail.getPayment().getPaymentPrice().equals(paymentResponse.getAmount())) {
             switch (webHookRequest.getStatus()) {
                 case PAID -> {
                     if (paymentResponse.getCouponId() != null) {

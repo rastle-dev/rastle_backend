@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import rastle.dev.rastle_backend.global.component.dto.PortOneDTO.PortOnePaymentResponse.CancelInfo;
 
 import java.time.Instant;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-
+@Slf4j
 @AllArgsConstructor
 public class PaymentResponse {
     @Getter
@@ -28,9 +29,26 @@ public class PaymentResponse {
             customData = objectMapper.readValue((String) map.getOrDefault("custom_data", ""), new TypeReference<Map<String, Object>>() {
             });
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            log.info(e.getMessage());
+            return "";
         }
         return (String) customData.getOrDefault("deliveryMsg", "");
+    }
+
+    /*
+    TODO 제주, 도서 배송비 추가됐음
+     */
+
+    public Long getIslandDeliveryPrice() {
+        Map<String, Object> customData = null;
+        try {
+            customData = objectMapper.readValue((String) map.getOrDefault("custom_data", ""), new TypeReference<Map<String, Object>>() {
+            });
+        } catch (JsonProcessingException e) {
+            log.info(e.getMessage());
+            return 0L;
+        }
+        return Long.valueOf((Integer) customData.getOrDefault("islandDeliveryPrice", 0));
     }
 
     public Long getDeliveryPrice() {
@@ -39,7 +57,8 @@ public class PaymentResponse {
             customData = objectMapper.readValue((String) map.getOrDefault("custom_data", ""), new TypeReference<Map<String, Object>>() {
             });
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            log.info(e.getMessage());
+            return 3000L;
         }
         return Long.valueOf((Integer) customData.getOrDefault("deliveryPrice", 3000));
     }
@@ -50,7 +69,8 @@ public class PaymentResponse {
             customData = objectMapper.readValue((String) map.getOrDefault("custom_data", ""), new TypeReference<Map<String, Object>>() {
             });
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            log.info(e.getMessage());
+            return null;
         }
         return Long.valueOf((Integer) customData.getOrDefault("couponId", null));
     }
