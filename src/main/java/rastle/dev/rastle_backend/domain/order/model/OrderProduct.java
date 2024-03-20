@@ -5,12 +5,16 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.product.model.ProductBase;
+import rastle.dev.rastle_backend.global.common.BaseTimeEntity;
+
+import static jakarta.persistence.InheritanceType.JOINED;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @Table(name = "order_product")
-public class OrderProduct {
+@Inheritance(strategy = JOINED)
+public class OrderProduct extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_product_id")
