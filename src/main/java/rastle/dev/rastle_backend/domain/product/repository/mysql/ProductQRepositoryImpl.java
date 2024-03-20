@@ -17,10 +17,6 @@ import rastle.dev.rastle_backend.domain.product.dto.QSimpleProductInfo;
 import rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo;
 import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-
-import static rastle.dev.rastle_backend.domain.order.model.QOrderProduct.orderProduct;
 import static rastle.dev.rastle_backend.domain.product.model.QProductBase.productBase;
 import static rastle.dev.rastle_backend.global.common.enums.VisibleStatus.FALSE;
 import static rastle.dev.rastle_backend.global.common.enums.VisibleStatus.TRUE;
@@ -52,10 +48,8 @@ public class ProductQRepositoryImpl implements ProductQRepository {
                     productBase.soldCount
                 )
             ).from(productBase)
-            .leftJoin(productBase.orderProducts, orderProduct)
             .where(
                 visible(getProductRequest),
-                period(),
                 bundle(getProductRequest),
                 event(getProductRequest)
             )
@@ -64,18 +58,12 @@ public class ProductQRepositoryImpl implements ProductQRepository {
             .limit(getProductRequest.getPageable().getPageSize());
 
         orderBy(query, getProductRequest);
-
         return new PageImpl<>(query.fetch(), getProductRequest.getPageable(), getSize(getProductRequest));
     }
 
     private void orderBy(JPAQuery<SimpleProductInfo> query, GetProductRequest getProductRequest) {
         PathBuilder entityPath = new PathBuilder(ProductBase.class, "productBase");
         for (Sort.Order order : getProductRequest.getPageable().getSort()) {
-            String property = order.getProperty();
-            log.info(String.valueOf(order.isAscending()));
-
-            log.info(order.getProperty());
-            log.info(String.valueOf(order.getDirection()));
             query.orderBy(new OrderSpecifier<>(order.isAscending() ? Order.ASC : Order.DESC, entityPath.get(order.getProperty())));
 
         }
@@ -105,14 +93,6 @@ public class ProductQRepositoryImpl implements ProductQRepository {
             }
         }
         return null;
-    }
-
-    private BooleanExpression period() {
-        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
-        LocalDateTime minusDay = now.minusDays(30);
-
-        return orderProduct.createdTime.goe(minusDay);
-
     }
 
     private BooleanExpression bundle(GetProductRequest getProductRequest) {
