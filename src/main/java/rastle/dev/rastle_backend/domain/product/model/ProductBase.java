@@ -93,4 +93,10 @@ public class ProductBase {
     public void incrementEventApplyCount() {
         this.eventApplyCount++;
     }
+
+
+    public void incrementSoldCount() {
+        this.soldCount++;
+    }
+
 }
