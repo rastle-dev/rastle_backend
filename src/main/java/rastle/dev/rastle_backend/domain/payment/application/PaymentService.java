@@ -11,12 +11,14 @@ import rastle.dev.rastle_backend.domain.coupon.exception.CouponException;
 import rastle.dev.rastle_backend.domain.coupon.model.Coupon;
 import rastle.dev.rastle_backend.domain.coupon.repository.mysql.CouponRepository;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
+import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderDetailRepository;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderProductRepository;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.*;
 import rastle.dev.rastle_backend.domain.payment.dto.PortOneWebHookRequest;
 import rastle.dev.rastle_backend.domain.payment.dto.PortOneWebHookResponse;
 import rastle.dev.rastle_backend.domain.payment.exception.PaymentException;
+import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 import rastle.dev.rastle_backend.global.common.constants.PortOneStatusConstant;
 import rastle.dev.rastle_backend.global.component.MailComponent;
 import rastle.dev.rastle_backend.global.component.PortOneComponent;
@@ -66,6 +68,11 @@ public class PaymentService {
             if (paymentResponse.getCouponId() != null) {
                 Coupon referenceById = couponRepository.getReferenceById(paymentResponse.getCouponId());
                 referenceById.updateStatus(USED);
+            }
+            List<OrderProduct> orderProducts = orderDetail.getOrderProduct();
+            for (OrderProduct orderProduct : orderProducts) {
+                ProductBase product = orderProduct.getProduct();
+                product.incrementSoldCount();
             }
             return PaymentVerificationResponse.builder()
                 .verified(true)
