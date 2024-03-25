@@ -60,8 +60,8 @@ public class OrderService {
             .build();
 
         orderDetailRepository.save(orderDetail);
-        orderDetail.setDelivery(Delivery.builder().build());
-        orderDetail.setPayment(Payment.builder().build());
+        orderDetail.setDelivery(Delivery.builder().orderDetail(orderDetail).build());
+        orderDetail.setPayment(Payment.builder().orderDetail(orderDetail).build());
         Long orderNumber = orderNumberComponent.createOrderNumber(orderDetail.getId());
         orderDetail.updateOrderNumber(orderNumber);
         OrderProductSummary orderResponses = createOrderProducts(orderDetail,
