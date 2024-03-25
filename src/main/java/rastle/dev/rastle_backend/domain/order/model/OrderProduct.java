@@ -29,6 +29,8 @@ public class OrderProduct extends BaseTimeEntity {
     @Column(name = "total_price")
     @ColumnDefault("0")
     private Long totalPrice; // 구매한 상품 총 가격
+    @Column(name = "tracking_number")
+    private String trackingNumber;
     @Column(name = "product_order_number", unique = true)
     private Long productOrderNumber;
 
@@ -41,7 +43,7 @@ public class OrderProduct extends BaseTimeEntity {
     private OrderDetail orderDetail;
 
     @Builder
-    public OrderProduct(String name, String color, String size, Long count, Long price, Long totalPrice, Long productOrderNumber, ProductBase product, OrderDetail orderDetail) {
+    public OrderProduct(String name, String color, String size, Long count, Long price, Long totalPrice, Long productOrderNumber, ProductBase product, OrderDetail orderDetail, String trackingNumber) {
         this.name = name;
         this.color = color;
         this.size = size;
@@ -51,6 +53,10 @@ public class OrderProduct extends BaseTimeEntity {
         this.productOrderNumber = productOrderNumber;
         this.product = product;
         this.orderDetail = orderDetail;
+    }
+
+    public void updateTrackingNumber(String trackingNumber) {
+        this.trackingNumber = trackingNumber;
     }
 
     public void updateProductOrderNumber(Long productOrderNumber) {
