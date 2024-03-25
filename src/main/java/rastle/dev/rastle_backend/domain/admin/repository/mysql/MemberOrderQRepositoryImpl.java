@@ -50,7 +50,7 @@ public class MemberOrderQRepositoryImpl implements MemberOrderQRepository {
                     delivery.postcode,
                     delivery.deliveryService,
                     delivery.msg,
-                    delivery.trackingNumber,
+                    orderProduct.trackingNumber,
                     payment.impId,
                     orderProduct.price,
                     orderProduct.totalPrice,

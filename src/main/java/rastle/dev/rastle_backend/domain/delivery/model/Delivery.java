@@ -36,15 +36,13 @@ public class Delivery extends BaseTimeEntity {
     @Column(name = "island_delivery_price")
     private Long islandDeliveryPrice;
     private String msg;
-    @Column(name = "tracking_number")
-    private String trackingNumber;
     private String deliveryService;
     @OneToOne
     @JoinColumn(name = "order_detail_id")
     private OrderDetail orderDetail;
 
     @Builder
-    public Delivery(String address, String postcode, String email, String tel, String userName, Long deliveryPrice, Long islandDeliveryPrice, String msg, String trackingNumber, OrderDetail orderDetail) {
+    public Delivery(String address, String postcode, String email, String tel, String userName, Long deliveryPrice, Long islandDeliveryPrice, String msg, OrderDetail orderDetail) {
 
         this.address = address;
         this.postcode = postcode;
@@ -54,7 +52,6 @@ public class Delivery extends BaseTimeEntity {
         this.deliveryPrice = deliveryPrice;
         this.islandDeliveryPrice = islandDeliveryPrice;
         this.msg = msg;
-        this.trackingNumber = trackingNumber;
         this.deliveryService = DEFAULT_DELIVERY_SERVICE;
         this.orderDetail = orderDetail;
     }
@@ -70,8 +67,5 @@ public class Delivery extends BaseTimeEntity {
         this.msg = paymentResponse.getDeliveryMsg();
     }
 
-    public void updateTrackingNumber(String trackingNumber) {
-        this.trackingNumber = trackingNumber;
-    }
 
 }
