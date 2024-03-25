@@ -39,9 +39,9 @@ public class OrderDetail extends BaseTimeEntity {
     @Column(name = "order_name")
     private String orderName;
     @Column(name = "order_number", unique = true)
-    private String orderNumber;
-    @Column(name = "product_price")
-    private Long productPrice;
+    private Long orderNumber;
+    @Column(name = "order_price")
+    private Long orderPrice;
     @Enumerated(STRING)
     @Column(name = "order_status")
     private OrderStatus orderStatus;
@@ -50,9 +50,11 @@ public class OrderDetail extends BaseTimeEntity {
     private Member member;
     @Setter
     @OneToOne(fetch = EAGER, cascade = ALL)
+    @JoinColumn(name = "delivery_id")
     private Delivery delivery;
     @Setter
     @OneToOne(fetch = EAGER, cascade = ALL)
+    @JoinColumn(name = "payment_id")
     private Payment payment;
 
     @OneToMany(mappedBy = "orderDetail", fetch = FetchType.LAZY, cascade = REMOVE)
@@ -62,10 +64,10 @@ public class OrderDetail extends BaseTimeEntity {
     private final List<OrderProduct> orderProduct = new ArrayList<>();
 
     @Builder
-    public OrderDetail(String orderName, String orderNumber, Long productPrice, OrderStatus orderStatus, Member member, Delivery delivery, Payment payment) {
+    public OrderDetail(String orderName, Long orderNumber, Long orderPrice, OrderStatus orderStatus, Member member, Delivery delivery, Payment payment) {
         this.orderName = orderName;
         this.orderNumber = orderNumber;
-        this.productPrice = productPrice;
+        this.orderPrice = orderPrice;
         this.orderStatus = orderStatus;
         this.member = member;
         this.delivery = delivery;
@@ -79,7 +81,7 @@ public class OrderDetail extends BaseTimeEntity {
     }
 
 
-    public void updateOrderNumber(String orderNumber) {
+    public void updateOrderNumber(Long orderNumber) {
         this.orderNumber = orderNumber;
     }
 
@@ -87,7 +89,7 @@ public class OrderDetail extends BaseTimeEntity {
         this.orderStatus = orderStatus;
     }
 
-    public void updateProductPrice(Long productPrice) {
-        this.productPrice = productPrice;
+    public void updateOrderPrice(Long orderPrice) {
+        this.orderPrice = orderPrice;
     }
 }

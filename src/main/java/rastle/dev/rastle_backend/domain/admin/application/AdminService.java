@@ -9,10 +9,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import rastle.dev.rastle_backend.domain.admin.dto.GetMemberOrderCondition;
 import rastle.dev.rastle_backend.domain.admin.dto.GetMemberOrderInfo;
 import rastle.dev.rastle_backend.domain.admin.exception.NotEmptyBundleException;
 import rastle.dev.rastle_backend.domain.admin.exception.NotEmptyCategoryException;
 import rastle.dev.rastle_backend.domain.admin.exception.NotEmptyEventException;
+import rastle.dev.rastle_backend.domain.admin.repository.mysql.MemberOrderQRepository;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleDTO.BundleCreateRequest;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleDTO.BundleUpdateRequest;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleInfo;
@@ -75,6 +77,7 @@ public class AdminService {
     private final MemberRepository memberRepository;
     private final OrderDetailRepository orderDetailRepository;
     private final EventProductApplyRepository eventProductApplyRepository;
+    private final MemberOrderQRepository memberOrderQRepository;
 
     // ==============================================================================================================
     // 상품 관련 서비스
@@ -599,7 +602,7 @@ public class AdminService {
         }).collect(Collectors.toList());
     }
     @Transactional(readOnly = true)
-    public Page<GetMemberOrderInfo> getMemberOrders(Pageable pageable) {
-        return null;
+    public Page<GetMemberOrderInfo> getMemberOrders(GetMemberOrderCondition getMemberOrderCondition) {
+        return memberOrderQRepository.getMemberOrderInfo(getMemberOrderCondition);
     }
 }

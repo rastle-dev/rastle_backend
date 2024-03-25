@@ -3,16 +3,20 @@ package rastle.dev.rastle_backend.domain.admin.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import rastle.dev.rastle_backend.domain.admin.application.AdminService;
+import rastle.dev.rastle_backend.domain.admin.dto.GetMemberOrderCondition;
+import rastle.dev.rastle_backend.domain.admin.dto.GetMemberOrderInfo;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleDTO.BundleCreateRequest;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleDTO.BundleUpdateRequest;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleInfo;
@@ -34,6 +38,8 @@ import rastle.dev.rastle_backend.global.response.ServerResponse;
 
 import java.util.List;
 import java.util.Map;
+
+import static io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY;
 
 @Tag(name = "관리자 기능 API", description = "관리자 기능 관련 API입니다.")
 @RestController
@@ -350,10 +356,17 @@ public class AdminController {
     @Operation(summary = "괸리자 회원 주문 조회 API", description = "관리자 주문 정보 조회 API")
     @FailApiResponses
     @GetMapping("/orders")
-    public ResponseEntity<ServerResponse<?>> getMemberOrders(
+    public ResponseEntity<ServerResponse<Page<GetMemberOrderInfo>>> getMemberOrders(
+        @Parameter(name = "orderStatus", description = "주문 상태, CREATED, PENDING, PAID, DELIVERY_STARTED, DELIVERED, COMPLETED, CANCELLED, FAILED", required = false, in = QUERY)
+        @RequestParam(name = "orderStatus", required = false)
+        String[] orderStatus,
+        @Parameter(name = "receiverName", description = "수취인명", required = false, in = QUERY)
+        @RequestParam(name = "receiverName", required = false)
+        String receiverName,
         Pageable pageable
     ) {
-        return ResponseEntity.ok(new ServerResponse<>(adminService.getMemberOrders(pageable)));
+        GetMemberOrderCondition condition = new GetMemberOrderCondition(orderStatus, receiverName, pageable);
+        return ResponseEntity.ok(new ServerResponse<>(adminService.getMemberOrders(condition)));
     }
 
 
