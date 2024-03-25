@@ -18,4 +18,12 @@ public class OrderSimpleInfo {
     String orderNumber;
     OrderStatus orderStatus;
     OrderStatus deliveryStatus;
+
+    public OrderSimpleInfo(Long orderId, LocalDateTime orderDate, Long orderNumber, OrderStatus orderStatus, OrderStatus deliveryStatus) {
+        this.orderId = orderId;
+        this.orderDate = orderDate;
+        this.orderNumber = orderNumber.toString();
+        this.orderStatus = orderStatus;
+        this.deliveryStatus = deliveryStatus;
+    }
 }
