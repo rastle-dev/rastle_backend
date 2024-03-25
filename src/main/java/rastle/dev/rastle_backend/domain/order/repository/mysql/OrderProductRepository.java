@@ -19,5 +19,5 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
         "FROM OrderProduct op LEFT OUTER JOIN OrderDetail o ON op.orderDetail.id = o.id WHERE o.orderNumber = :orderNumber GROUP BY o.id")
     Long findOrderProductPriceSumByOrderNumber(@Param("orderNumber") String orderNumber);
 
-    Optional<OrderProduct> findByOrderProductByProductOrderNumber(Long productOrderNumber);
+    Optional<OrderProduct> findByProductOrderNumber(Long productOrderNumber);
 }

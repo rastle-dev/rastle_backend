@@ -612,7 +612,7 @@ public class AdminService {
 
     @Transactional
     public String updateTrackingNumber(Long orderProductNumber, UpdateTrackingNumberRequest trackingNumberRequest) {
-        OrderProduct orderProduct = orderProductRepository.findByOrderProductByProductOrderNumber(orderProductNumber).orElseThrow(() -> new RuntimeException("상품 주문 번호로 존재하는 상품 주문이 없다. " + orderProductNumber));
+        OrderProduct orderProduct = orderProductRepository.findByProductOrderNumber(orderProductNumber).orElseThrow(() -> new RuntimeException("상품 주문 번호로 존재하는 상품 주문이 없다. " + orderProductNumber));
         orderProduct.updateTrackingNumber(trackingNumberRequest.getTrackingNumber());
         return UPDATED;
     }
