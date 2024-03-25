@@ -49,12 +49,10 @@ public class OrderDetail extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
     @Setter
-    @OneToOne(fetch = EAGER, cascade = ALL)
-    @JoinColumn(name = "delivery_id")
+    @OneToOne(mappedBy = "orderDetail", fetch = EAGER, cascade = ALL)
     private Delivery delivery;
     @Setter
-    @OneToOne(fetch = EAGER, cascade = ALL)
-    @JoinColumn(name = "payment_id")
+    @OneToOne(mappedBy = "orderDetail", fetch = EAGER, cascade = ALL)
     private Payment payment;
 
     @OneToMany(mappedBy = "orderDetail", fetch = FetchType.LAZY, cascade = REMOVE)

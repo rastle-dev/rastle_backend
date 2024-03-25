@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
 import rastle.dev.rastle_backend.global.common.BaseTimeEntity;
 import rastle.dev.rastle_backend.global.component.dto.response.PaymentResponse;
 
@@ -38,9 +39,12 @@ public class Payment extends BaseTimeEntity {
     private Long paymentPrice;
     @Column(name = "paid_at")
     private LocalDateTime paidAt;
+    @OneToOne
+    @JoinColumn(name = "order_detail_id")
+    private OrderDetail orderDetail;
 
     @Builder
-    public Payment(String impId, String paymentMethod, Long couponId, Long couponAmount, Long paymentPrice, LocalDateTime paidAt) {
+    public Payment(String impId, String paymentMethod, Long couponId, Long couponAmount, Long paymentPrice, LocalDateTime paidAt, OrderDetail orderDetail) {
 
         this.impId = impId;
         this.paymentMethod = paymentMethod;
@@ -48,6 +52,7 @@ public class Payment extends BaseTimeEntity {
         this.couponAmount = couponAmount;
         this.paymentPrice = paymentPrice;
         this.paidAt = paidAt;
+        this.orderDetail = orderDetail;
     }
 
     public void paid(PaymentResponse paymentResponse) {

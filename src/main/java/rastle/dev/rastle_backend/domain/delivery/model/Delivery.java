@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
 import rastle.dev.rastle_backend.global.common.BaseTimeEntity;
 import rastle.dev.rastle_backend.global.component.dto.response.PaymentResponse;
 
@@ -38,9 +39,13 @@ public class Delivery extends BaseTimeEntity {
     @Column(name = "tracking_number")
     private String trackingNumber;
     private String deliveryService;
+    @OneToOne
+    @JoinColumn(name = "order_detail_id")
+    private OrderDetail orderDetail;
 
     @Builder
-    public Delivery(String address, String postcode, String email, String tel, String userName, Long deliveryPrice, Long islandDeliveryPrice, String msg, String trackingNumber) {
+    public Delivery(String address, String postcode, String email, String tel, String userName, Long deliveryPrice, Long islandDeliveryPrice, String msg, String trackingNumber, OrderDetail orderDetail) {
+
         this.address = address;
         this.postcode = postcode;
         this.email = email;
@@ -51,6 +56,7 @@ public class Delivery extends BaseTimeEntity {
         this.msg = msg;
         this.trackingNumber = trackingNumber;
         this.deliveryService = DEFAULT_DELIVERY_SERVICE;
+        this.orderDetail = orderDetail;
     }
 
     public void paid(PaymentResponse paymentResponse) {
