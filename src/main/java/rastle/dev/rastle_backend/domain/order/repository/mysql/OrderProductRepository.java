@@ -7,6 +7,7 @@ import rastle.dev.rastle_backend.domain.order.dto.SimpleProductOrderInfo;
 import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface OrderProductRepository extends JpaRepository<OrderProduct, Long> {
     @Query("SELECT NEW rastle.dev.rastle_backend.domain.order.dto.SimpleProductOrderInfo(" +
@@ -17,4 +18,6 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
     @Query("SELECT CAST(COALESCE(SUM(op.totalPrice), 0) AS Long) " +
         "FROM OrderProduct op LEFT OUTER JOIN OrderDetail o ON op.orderDetail.id = o.id WHERE o.orderNumber = :orderNumber GROUP BY o.id")
     Long findOrderProductPriceSumByOrderNumber(@Param("orderNumber") String orderNumber);
+
+    Optional<OrderProduct> findByOrderProductByProductOrderNumber(Long productOrderNumber);
 }

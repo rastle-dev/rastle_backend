@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import rastle.dev.rastle_backend.domain.admin.application.AdminService;
 import rastle.dev.rastle_backend.domain.admin.dto.GetMemberOrderCondition;
 import rastle.dev.rastle_backend.domain.admin.dto.GetMemberOrderInfo;
+import rastle.dev.rastle_backend.domain.admin.dto.UpdateTrackingNumberRequest;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleDTO.BundleCreateRequest;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleDTO.BundleUpdateRequest;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleInfo;
@@ -39,6 +40,7 @@ import rastle.dev.rastle_backend.global.response.ServerResponse;
 import java.util.List;
 import java.util.Map;
 
+import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY;
 
 @Tag(name = "관리자 기능 API", description = "관리자 기능 관련 API입니다.")
@@ -354,6 +356,7 @@ public class AdminController {
     // 주문 관련 API
     // ==============================================================================================================
     @Operation(summary = "괸리자 회원 주문 조회 API", description = "관리자 주문 정보 조회 API")
+    @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = GetMemberOrderInfo.class)))
     @FailApiResponses
     @GetMapping("/orders")
     public ResponseEntity<ServerResponse<Page<GetMemberOrderInfo>>> getMemberOrders(
@@ -369,7 +372,18 @@ public class AdminController {
         return ResponseEntity.ok(new ServerResponse<>(adminService.getMemberOrders(condition)));
     }
 
-    
+    @Operation(summary = "송장 번호 설정", description = "송장 번호 설정 API")
+    @PatchMapping("/orders/{orderProductNumber}/trackingNumber")
+    public ResponseEntity<ServerResponse<String>> updateOrderTrackingNumber(
+        @Parameter(name = "orderProductNumber", description = "송장 번호 업데이트할 상품 주문 번호", required = true, in = PATH)
+        @PathVariable(name = "orderProductNumber")
+        Long orderProductNumber,
+        @RequestBody
+        UpdateTrackingNumberRequest trackingNumberRequest
+    ) {
+
+        return ResponseEntity.ok(new ServerResponse<>(adminService.updateTrackingNumber(orderProductNumber, trackingNumberRequest)));
+    }
 
 
     // ==============================================================================================================

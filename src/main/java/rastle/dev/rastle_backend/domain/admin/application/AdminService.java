@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import rastle.dev.rastle_backend.domain.admin.dto.GetMemberOrderCondition;
 import rastle.dev.rastle_backend.domain.admin.dto.GetMemberOrderInfo;
+import rastle.dev.rastle_backend.domain.admin.dto.UpdateTrackingNumberRequest;
 import rastle.dev.rastle_backend.domain.admin.exception.NotEmptyBundleException;
 import rastle.dev.rastle_backend.domain.admin.exception.NotEmptyCategoryException;
 import rastle.dev.rastle_backend.domain.admin.exception.NotEmptyEventException;
@@ -37,7 +38,9 @@ import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.MemberInfoDto.Order
 import rastle.dev.rastle_backend.domain.member.model.Member;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
+import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderDetailRepository;
+import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderProductRepository;
 import rastle.dev.rastle_backend.domain.product.dto.ProductDTO.ProductCreateRequest;
 import rastle.dev.rastle_backend.domain.product.dto.ProductDTO.ProductCreateResult;
 import rastle.dev.rastle_backend.domain.product.dto.ProductDTO.ProductUpdateRequest;
@@ -78,6 +81,7 @@ public class AdminService {
     private final OrderDetailRepository orderDetailRepository;
     private final EventProductApplyRepository eventProductApplyRepository;
     private final MemberOrderQRepository memberOrderQRepository;
+    private final OrderProductRepository orderProductRepository;
 
     // ==============================================================================================================
     // 상품 관련 서비스
@@ -604,5 +608,12 @@ public class AdminService {
     @Transactional(readOnly = true)
     public Page<GetMemberOrderInfo> getMemberOrders(GetMemberOrderCondition getMemberOrderCondition) {
         return memberOrderQRepository.getMemberOrderInfo(getMemberOrderCondition);
+    }
+
+    @Transactional
+    public String updateTrackingNumber(Long orderProductNumber, UpdateTrackingNumberRequest trackingNumberRequest) {
+        OrderProduct orderProduct = orderProductRepository.findByOrderProductByProductOrderNumber(orderProductNumber).orElseThrow(() -> new RuntimeException("상품 주문 번호로 존재하는 상품 주문이 없다. " + orderProductNumber));
+        orderProduct.updateTrackingNumber(trackingNumberRequest.getTrackingNumber());
+        return UPDATED;
     }
 }
