@@ -64,20 +64,7 @@ public class PaymentService {
             .orElseThrow(() -> new PaymentException("주문번호로 존재하는 주문이 DB에 존재하지 않는다"));
 
         if (orderDetail.getPayment().getPaymentPrice().equals(paymentResponse.getAmount())) {
-            orderDetail.paid(paymentResponse);
-            orderDetail.getPayment().paid(paymentResponse);
-            orderDetail.getDelivery().paid(paymentResponse);
-            if (paymentResponse.getCouponId() != null) {
-                Coupon referenceById = couponRepository.getReferenceById(paymentResponse.getCouponId());
-                referenceById.updateStatus(USED);
-                orderDetail.getPayment().updateCouponAmount((long) referenceById.getDiscount());
-
-            }
-            List<OrderProduct> orderProducts = orderDetail.getOrderProduct();
-            for (OrderProduct orderProduct : orderProducts) {
-                ProductBase product = orderProduct.getProduct();
-                product.incrementSoldCount();
-            }
+            handlePayment(paymentResponse, orderDetail);
             return PaymentVerificationResponse.builder()
                 .verified(true)
                 .build();
@@ -108,7 +95,7 @@ public class PaymentService {
             .orElseThrow(() -> new PaymentException("주문번호로 존재하는 주문이 DB에 존재하지 않습니다."));
 
         if (orderDetail.getPayment().getPaymentPrice().equals(paymentResponse.getAmount())) {
-            orderDetail.paid(paymentResponse);
+            handlePayment(paymentResponse, orderDetail);
 
             List<SelectedProductsDTO> selectedProducts = orderDetail.getOrderProduct().stream()
                 .map(orderProduct -> SelectedProductsDTO.builder()
@@ -129,6 +116,23 @@ public class PaymentService {
             return URI.create(builder.toUriString());
         } else {
             throw new PaymentException("결제 금액이 일치하지 않습니다.");
+        }
+    }
+
+    private void handlePayment(PaymentResponse paymentResponse, OrderDetail orderDetail) {
+        orderDetail.paid(paymentResponse);
+        orderDetail.getPayment().paid(paymentResponse);
+        orderDetail.getDelivery().paid(paymentResponse);
+        if (paymentResponse.getCouponId() != null) {
+            Coupon referenceById = couponRepository.getReferenceById(paymentResponse.getCouponId());
+            referenceById.updateStatus(USED);
+            orderDetail.getPayment().updateCouponAmount((long) referenceById.getDiscount());
+
+        }
+        List<OrderProduct> orderProducts = orderDetail.getOrderProduct();
+        for (OrderProduct orderProduct : orderProducts) {
+            ProductBase product = orderProduct.getProduct();
+            product.incrementSoldCount();
         }
     }
 
