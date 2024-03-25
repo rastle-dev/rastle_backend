@@ -4,12 +4,13 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
+import org.hibernate.annotations.ColumnDefault;
 import rastle.dev.rastle_backend.global.common.BaseTimeEntity;
 import rastle.dev.rastle_backend.global.component.dto.response.PaymentResponse;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static jakarta.persistence.InheritanceType.JOINED;
+import static rastle.dev.rastle_backend.global.common.constants.DeliveryConstant.DEFAULT_DELIVERY_SERVICE;
 
 @Entity
 @Getter
@@ -27,19 +28,19 @@ public class Delivery extends BaseTimeEntity {
     private String tel;
     @Column(name = "user_name")
     private String userName;
+    @ColumnDefault("0")
     @Column(name = "delivery_price")
     private Long deliveryPrice;
+    @ColumnDefault("0")
     @Column(name = "island_delivery_price")
     private Long islandDeliveryPrice;
     private String msg;
     @Column(name = "tracking_number")
     private String trackingNumber;
-    @OneToOne
-    @JoinColumn(name = "order_detail_id")
-    private OrderDetail orderDetail;
+    private String deliveryService;
 
     @Builder
-    public Delivery(String address, String postcode, String email, String tel, String userName, Long deliveryPrice, Long islandDeliveryPrice, String msg, String trackingNumber, OrderDetail orderDetail) {
+    public Delivery(String address, String postcode, String email, String tel, String userName, Long deliveryPrice, Long islandDeliveryPrice, String msg, String trackingNumber) {
         this.address = address;
         this.postcode = postcode;
         this.email = email;
@@ -49,7 +50,7 @@ public class Delivery extends BaseTimeEntity {
         this.islandDeliveryPrice = islandDeliveryPrice;
         this.msg = msg;
         this.trackingNumber = trackingNumber;
-        this.orderDetail = orderDetail;
+        this.deliveryService = DEFAULT_DELIVERY_SERVICE;
     }
 
     public void paid(PaymentResponse paymentResponse) {

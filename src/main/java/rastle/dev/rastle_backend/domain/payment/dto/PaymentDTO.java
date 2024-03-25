@@ -44,6 +44,7 @@ public class PaymentDTO {
         String merchant_uid;
         Long couponId;
         Long deliveryPrice;
+        Long islandDeliveryPrice;
     }
 
     @Getter

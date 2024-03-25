@@ -12,6 +12,7 @@ import rastle.dev.rastle_backend.domain.delivery.model.Delivery;
 import rastle.dev.rastle_backend.domain.member.model.Member;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
 import rastle.dev.rastle_backend.domain.order.dto.OrderDTO.*;
+import rastle.dev.rastle_backend.domain.order.dto.OrderProductSummary;
 import rastle.dev.rastle_backend.domain.order.dto.OrderSimpleInfo;
 import rastle.dev.rastle_backend.domain.order.dto.request.OrderCancelRequest;
 import rastle.dev.rastle_backend.domain.order.dto.response.OrderCancelResponse;
@@ -21,6 +22,7 @@ import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderDetailReposi
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderProductRepository;
 import rastle.dev.rastle_backend.domain.payment.model.Payment;
 import rastle.dev.rastle_backend.domain.product.model.ProductBase;
+import rastle.dev.rastle_backend.domain.product.repository.mysql.ProductBaseRepository;
 import rastle.dev.rastle_backend.global.component.OrderNumberComponent;
 import rastle.dev.rastle_backend.global.component.PortOneComponent;
 import rastle.dev.rastle_backend.global.component.dto.response.PaymentResponse;
@@ -44,6 +46,7 @@ public class OrderService {
     private final CouponRepository couponRepository;
     private final OrderNumberComponent orderNumberComponent;
     private final PortOneComponent portOneComponent;
+    private final ProductBaseRepository productBaseRepository;
 
     @Transactional
     public OrderCreateResponse createOrderDetail(Long memberId, OrderCreateRequest orderCreateRequest) {
@@ -57,25 +60,27 @@ public class OrderService {
             .build();
 
         orderDetailRepository.save(orderDetail);
-        orderDetail.setDelivery(Delivery.builder().orderDetail(orderDetail).build());
-        orderDetail.setPayment(Payment.builder().orderDetail(orderDetail).build());
-        String orderNumber = orderNumberComponent.createOrderNumber(orderDetail.getId());
+        orderDetail.setDelivery(Delivery.builder().build());
+        orderDetail.setPayment(Payment.builder().build());
+        Long orderNumber = orderNumberComponent.createOrderNumber(orderDetail.getId());
         orderDetail.updateOrderNumber(orderNumber);
-        List<ProductOrderResponse> orderResponses = createOrderProducts(orderDetail,
+        OrderProductSummary orderResponses = createOrderProducts(orderDetail,
             orderCreateRequest.getOrderProducts());
+        orderDetail.updateOrderPrice(orderResponses.getOrderPrice());
 
         return OrderCreateResponse.builder()
             .orderDetailId(orderDetail.getId())
-            .orderNumber(orderNumber)
-            .orderProducts(orderResponses)
+            .orderNumber(orderNumber.toString())
+            .orderProducts(orderResponses.getProductOrderResponses())
             .build();
     }
 
-    private List<ProductOrderResponse> createOrderProducts(OrderDetail orderDetail,
-                                                           List<ProductOrderRequest> productOrderRequests) {
+    private OrderProductSummary createOrderProducts(OrderDetail orderDetail,
+                                                    List<ProductOrderRequest> productOrderRequests) {
+        Long orderPrice = 0L;
         List<ProductOrderResponse> orderResponses = new ArrayList<>();
-
         for (ProductOrderRequest productOrderRequest : productOrderRequests) {
+            ProductBase productBase = productBaseRepository.getReferenceById(productOrderRequest.getProductId());
             OrderProduct orderProduct = OrderProduct.builder()
                 .orderDetail(orderDetail)
                 .product(ProductBase.builder().id(productOrderRequest.getProductId()).build())
@@ -83,18 +88,20 @@ public class OrderService {
                 .color(productOrderRequest.getColor())
                 .size(productOrderRequest.getSize())
                 .count(productOrderRequest.getCount())
-                .totalPrice(productOrderRequest.getTotalPrice())
+                .price((long) productBase.getDiscountPrice())
+                .totalPrice(productBase.getDiscountPrice() * productOrderRequest.getCount())
                 .build();
             orderProductRepository.save(orderProduct);
+            orderPrice += orderProduct.getTotalPrice();
 
-            String productOrderNumber = orderNumberComponent.createProductOrderNumber(orderDetail.getId(),
+            Long productOrderNumber = orderNumberComponent.createProductOrderNumber(orderDetail.getId(),
                 orderProduct.getId());
 
             orderProduct.updateProductOrderNumber(productOrderNumber);
-            orderResponses.add(ProductOrderRequest.toResponse(productOrderRequest, productOrderNumber));
+            orderResponses.add(ProductOrderRequest.toResponse(productOrderRequest, productOrderNumber.toString()));
         }
 
-        return orderResponses;
+        return new OrderProductSummary(orderPrice, orderResponses);
     }
 
     @Transactional(readOnly = true)
@@ -122,7 +129,7 @@ public class OrderService {
 
 
         return OrderDetailResponse.builder()
-            .orderNumber(orderDetail.getOrderNumber())
+            .orderNumber(orderDetail.getOrderNumber().toString())
             .orderDate(orderDetail.getCreatedTime().toString())
             .memberName(member.getUserName())
             .orderStatus(orderDetail.getOrderStatus())

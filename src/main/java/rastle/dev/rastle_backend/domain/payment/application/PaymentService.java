@@ -70,6 +70,8 @@ public class PaymentService {
             if (paymentResponse.getCouponId() != null) {
                 Coupon referenceById = couponRepository.getReferenceById(paymentResponse.getCouponId());
                 referenceById.updateStatus(USED);
+                orderDetail.getPayment().updateCouponAmount((long) referenceById.getDiscount());
+
             }
             List<OrderProduct> orderProducts = orderDetail.getOrderProduct();
             for (OrderProduct orderProduct : orderProducts) {
@@ -135,18 +137,25 @@ public class PaymentService {
         String orderNumber = paymentPrepareRequest.getMerchant_uid();
         OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(orderNumber)
             .orElseThrow(() -> new PaymentException("주문 번호로 존재하는 주문이 없습니다. " + orderNumber));
-        Long totalPrice = orderProductRepository.findOrderProductPriceSumByOrderNumber(orderNumber);
-        orderDetail.updateProductPrice(totalPrice);
+        Long orderPrice = orderDetail.getOrderPrice();
+        Long paymentPrice = orderPrice;
         if (paymentPrepareRequest.getCouponId() != null) {
             Coupon coupon = couponRepository.getReferenceById(paymentPrepareRequest.getCouponId());
             if (coupon.getCouponStatus() != NOT_USED) {
                 throw new CouponException("이미 사용한 쿠폰");
             }
-            totalPrice -= coupon.getDiscount();
+            paymentPrice -= coupon.getDiscount();
         }
-        totalPrice += paymentPrepareRequest.getDeliveryPrice();
-        orderDetail.getPayment().updatePaymentPrice(totalPrice);
-        return portOneComponent.preparePayment(orderNumber, totalPrice);
+        Long islandDeliveryPrice = paymentPrepareRequest.getIslandDeliveryPrice();
+        if (islandDeliveryPrice == null) {
+            islandDeliveryPrice = 0L;
+        }
+        orderPrice += paymentPrepareRequest.getDeliveryPrice();
+        orderPrice += islandDeliveryPrice;
+        paymentPrice += paymentPrepareRequest.getDeliveryPrice();
+        paymentPrice += islandDeliveryPrice;
+        orderDetail.getPayment().updatePaymentPrice(paymentPrice);
+        return portOneComponent.preparePayment(orderNumber, orderPrice);
     }
 
     @Transactional

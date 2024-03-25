@@ -12,18 +12,16 @@ import static rastle.dev.rastle_backend.global.common.constants.TimeConstants.AS
 @Component
 @Slf4j
 public class OrderNumberComponent {
-    public String createOrderNumber(Long orderId) {
+    public Long createOrderNumber(Long orderId) {
         LocalDateTime now = LocalDateTime.now(ZoneId.of(ASIA_SEOUL));
         String orderNumber = now.toEpochSecond(ZoneOffset.UTC) + convertIdToString(orderId);
-        log.info("orderNumber " + orderNumber);
-        return orderNumber;
+        return Long.parseLong(orderNumber);
     }
 
-    public String createProductOrderNumber(Long orderId, Long orderProductId) {
+    public Long createProductOrderNumber(Long orderId, Long orderProductId) {
         LocalDateTime now = LocalDateTime.now(ZoneId.of(ASIA_SEOUL));
         String orderNumber = now.toEpochSecond(ZoneOffset.UTC) + convertIdToString(orderId) + convertIdToString(orderProductId);
-        log.info("product order number " + orderNumber);
-        return orderNumber;
+        return Long.parseLong(orderNumber);
     }
 
     private String convertIdToString(Long id) {

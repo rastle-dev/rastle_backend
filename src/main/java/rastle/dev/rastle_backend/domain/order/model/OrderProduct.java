@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 import rastle.dev.rastle_backend.global.common.BaseTimeEntity;
 
@@ -23,10 +24,13 @@ public class OrderProduct extends BaseTimeEntity {
     private String color;
     private String size;
     private Long count;
+    @ColumnDefault("0")
+    private Long price;
     @Column(name = "total_price")
+    @ColumnDefault("0")
     private Long totalPrice; // 구매한 상품 총 가격
-    @Column(name = "product_order_number")
-    private String productOrderNumber;
+    @Column(name = "product_order_number", unique = true)
+    private Long productOrderNumber;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
@@ -37,18 +41,19 @@ public class OrderProduct extends BaseTimeEntity {
     private OrderDetail orderDetail;
 
     @Builder
-    public OrderProduct(String name, String color, String size, Long count, Long totalPrice, String productOrderNumber, ProductBase product, OrderDetail orderDetail) {
+    public OrderProduct(String name, String color, String size, Long count, Long price, Long totalPrice, Long productOrderNumber, ProductBase product, OrderDetail orderDetail) {
         this.name = name;
         this.color = color;
         this.size = size;
         this.count = count;
+        this.price = price;
         this.totalPrice = totalPrice;
         this.productOrderNumber = productOrderNumber;
         this.product = product;
         this.orderDetail = orderDetail;
     }
 
-    public void updateProductOrderNumber(String productOrderNumber) {
+    public void updateProductOrderNumber(Long productOrderNumber) {
         this.productOrderNumber = productOrderNumber;
     }
 }

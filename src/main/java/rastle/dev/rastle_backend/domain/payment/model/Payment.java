@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
+import org.hibernate.annotations.ColumnDefault;
 import rastle.dev.rastle_backend.global.common.BaseTimeEntity;
 import rastle.dev.rastle_backend.global.component.dto.response.PaymentResponse;
+
+import java.time.LocalDateTime;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static jakarta.persistence.InheritanceType.JOINED;
@@ -29,20 +31,23 @@ public class Payment extends BaseTimeEntity {
     private String paymentMethod;
     @Column(name = "coupon_id")
     private Long couponId;
+    @ColumnDefault("0")
+    @Column(name = "coupon_amount")
+    private Long couponAmount;
     @Column(name = "payment_price")
     private Long paymentPrice;
+    @Column(name = "paid_at")
+    private LocalDateTime paidAt;
 
-    @OneToOne
-    @JoinColumn(name = "order_detail_id")
-    private OrderDetail orderDetail;
     @Builder
-    public Payment(String impId, String paymentMethod, Long couponId, Long paymentPrice, OrderDetail orderDetail) {
+    public Payment(String impId, String paymentMethod, Long couponId, Long couponAmount, Long paymentPrice, LocalDateTime paidAt) {
 
         this.impId = impId;
         this.paymentMethod = paymentMethod;
         this.couponId = couponId;
+        this.couponAmount = couponAmount;
         this.paymentPrice = paymentPrice;
-        this.orderDetail = orderDetail;
+        this.paidAt = paidAt;
     }
 
     public void paid(PaymentResponse paymentResponse) {
@@ -50,9 +55,14 @@ public class Payment extends BaseTimeEntity {
         this.paymentMethod = paymentResponse.getPayMethod();
         this.couponId = paymentResponse.getCouponId();
         this.paymentPrice = paymentResponse.getAmount();
+        this.paidAt = paymentResponse.getPaidAt();
     }
 
     public void updatePaymentPrice(Long paymentPrice) {
         this.paymentPrice = paymentPrice;
+    }
+
+    public void updateCouponAmount(Long couponAmount) {
+        this.couponAmount = couponAmount;
     }
 }
