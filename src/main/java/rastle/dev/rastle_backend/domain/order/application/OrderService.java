@@ -160,9 +160,19 @@ public class OrderService {
 
     @Transactional
     public OrderCancelResponse cancelOrder(Long memberId, OrderCancelRequest orderCancelRequest) {
-        OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(orderCancelRequest.getMerchantUID()).orElseThrow(() -> new RuntimeException("해당 주문 번호로 존재하는 주문이 없습니다. " + orderCancelRequest.getMerchantUID()));
-        PaymentResponse paymentResponse = portOneComponent.cancelPayment(orderDetail.getPayment().getImpId(), orderCancelRequest);
+        OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(orderCancelRequest.getOrderNumber()).orElseThrow(() -> new RuntimeException("해당 주문 번호로 존재하는 주문이 없습니다. " + orderCancelRequest.getOrderNumber()));
+
+        Long cancelAmount = 0L;
+        for (Long productOrderNumber : orderCancelRequest.getProductOrderNumber()) {
+            OrderProduct orderProduct = orderProductRepository.findByProductOrderNumber(productOrderNumber
+            ).orElseThrow(() -> new RuntimeException("해당 상품 주문번호로 존재하는 상품 주문이 없다. " + productOrderNumber));
+            cancelAmount += orderProduct.getTotalPrice();
+
+        }
+
+        PaymentResponse paymentResponse = portOneComponent.cancelPayment(orderDetail.getPayment().getImpId(), cancelAmount, orderDetail);
         orderDetail.updateOrderStatus(CANCELLED);
+        orderDetail.getPayment().addCancelledSum(cancelAmount);
 
         return OrderCancelResponse.builder()
             .cancelledAt(paymentResponse.getCancelledAt())

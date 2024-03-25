@@ -60,7 +60,7 @@ public class PaymentService {
         if (!merchantUid.equals(paymentVerificationRequest.getMerchant_uid())) {
             throw new PaymentException("포트원에서 전달받은 주문번호와, 브라우저에서 넘어온 주문번호가 다릅니다.");
         }
-        OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(merchantUid)
+        OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(Long.parseLong(merchantUid))
             .orElseThrow(() -> new PaymentException("주문번호로 존재하는 주문이 DB에 존재하지 않는다"));
 
         if (orderDetail.getPayment().getPaymentPrice().equals(paymentResponse.getAmount())) {
@@ -104,7 +104,7 @@ public class PaymentService {
             throw new PaymentException("포트원에서 전달받은 주문번호와, 브라우저에서 넘어온 주문번호가 다릅니다.");
         }
 
-        OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(merchantUid)
+        OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(Long.parseLong(merchantUid))
             .orElseThrow(() -> new PaymentException("주문번호로 존재하는 주문이 DB에 존재하지 않습니다."));
 
         if (orderDetail.getPayment().getPaymentPrice().equals(paymentResponse.getAmount())) {
@@ -135,7 +135,7 @@ public class PaymentService {
     @Transactional
     public PaymentPrepareResponse preparePayment(PaymentPrepareRequest paymentPrepareRequest) {
         String orderNumber = paymentPrepareRequest.getMerchant_uid();
-        OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(orderNumber)
+        OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(Long.parseLong(orderNumber))
             .orElseThrow(() -> new PaymentException("주문 번호로 존재하는 주문이 없습니다. " + orderNumber));
         Long orderPrice = orderDetail.getOrderPrice();
         Long paymentPrice = orderPrice;
@@ -162,7 +162,7 @@ public class PaymentService {
     public PortOneWebHookResponse webhook(PortOneWebHookRequest webHookRequest) {
         PaymentResponse paymentResponse = portOneComponent.getPaymentData(webHookRequest.getImp_uid());
         String merchantUid = paymentResponse.getMerchantUID();
-        OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(merchantUid)
+        OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(Long.parseLong(merchantUid))
             .orElseThrow(() -> new PaymentException("주문번호로 존재하는 주문이 DB에 존재하지 않는다"));
 
         if (orderDetail.getPayment().getPaymentPrice().equals(paymentResponse.getAmount())) {

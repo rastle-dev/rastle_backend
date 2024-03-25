@@ -87,6 +87,8 @@ public class OrderDetail extends BaseTimeEntity {
         this.orderStatus = orderStatus;
     }
 
+
+
     public void updateOrderPrice(Long orderPrice) {
         this.orderPrice = orderPrice;
     }

@@ -10,10 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 public class OrderCancelRequest {
-    String merchantUID;
-    Long cancelRequestAmount;
+    Long orderNumber;
+    Long[] productOrderNumber;
     String reason;
-    String refundHolder;
-    String refundBank;
-    String refundAccount;
 }

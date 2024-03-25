@@ -35,8 +35,12 @@ public class Payment extends BaseTimeEntity {
     @ColumnDefault("0")
     @Column(name = "coupon_amount")
     private Long couponAmount;
+    @ColumnDefault("0")
     @Column(name = "payment_price")
     private Long paymentPrice;
+    @ColumnDefault("0")
+    @Column(name = "cancelled_sum")
+    private Long cancelledSum;
     @Column(name = "paid_at")
     private LocalDateTime paidAt;
     @OneToOne
@@ -44,7 +48,7 @@ public class Payment extends BaseTimeEntity {
     private OrderDetail orderDetail;
 
     @Builder
-    public Payment(String impId, String paymentMethod, Long couponId, Long couponAmount, Long paymentPrice, LocalDateTime paidAt, OrderDetail orderDetail) {
+    public Payment(String impId, String paymentMethod, Long couponId, Long couponAmount, Long paymentPrice, LocalDateTime paidAt, OrderDetail orderDetail, Long cancelledSum) {
 
         this.impId = impId;
         this.paymentMethod = paymentMethod;
@@ -53,6 +57,7 @@ public class Payment extends BaseTimeEntity {
         this.paymentPrice = paymentPrice;
         this.paidAt = paidAt;
         this.orderDetail = orderDetail;
+        this.cancelledSum = cancelledSum;
     }
 
     public void paid(PaymentResponse paymentResponse) {
@@ -69,5 +74,9 @@ public class Payment extends BaseTimeEntity {
 
     public void updateCouponAmount(Long couponAmount) {
         this.couponAmount = couponAmount;
+    }
+
+    public void addCancelledSum(Long cancelledSum) {
+        this.cancelledSum += cancelledSum;
     }
 }

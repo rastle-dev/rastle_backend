@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import rastle.dev.rastle_backend.domain.admin.dto.GetCancelRequestCondition;
 import rastle.dev.rastle_backend.domain.admin.dto.GetMemberOrderCondition;
 import rastle.dev.rastle_backend.domain.admin.dto.GetMemberOrderInfo;
 import rastle.dev.rastle_backend.domain.admin.dto.UpdateTrackingNumberRequest;
@@ -615,5 +616,9 @@ public class AdminService {
         OrderProduct orderProduct = orderProductRepository.findByProductOrderNumber(orderProductNumber).orElseThrow(() -> new RuntimeException("상품 주문 번호로 존재하는 상품 주문이 없다. " + orderProductNumber));
         orderProduct.updateTrackingNumber(trackingNumberRequest.getTrackingNumber());
         return UPDATED;
+    }
+    @Transactional(readOnly = true)
+    public Object getCancelRequest(GetCancelRequestCondition cancelRequestCondition) {
+        return null;
     }
 }
