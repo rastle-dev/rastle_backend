@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import rastle.dev.rastle_backend.domain.admin.application.AdminService;
+import rastle.dev.rastle_backend.domain.admin.dto.GetCancelRequestCondition;
 import rastle.dev.rastle_backend.domain.admin.dto.GetMemberOrderCondition;
 import rastle.dev.rastle_backend.domain.admin.dto.GetMemberOrderInfo;
 import rastle.dev.rastle_backend.domain.admin.dto.UpdateTrackingNumberRequest;
@@ -373,18 +374,32 @@ public class AdminController {
     }
 
     @Operation(summary = "송장 번호 설정", description = "송장 번호 설정 API")
-    @PatchMapping("/orders/{orderProductNumber}/trackingNumber")
+    @PatchMapping("/orders/{productOrderNumber}/trackingNumber")
     public ResponseEntity<ServerResponse<String>> updateOrderTrackingNumber(
-        @Parameter(name = "orderProductNumber", description = "송장 번호 업데이트할 상품 주문 번호", required = true, in = PATH)
-        @PathVariable(name = "orderProductNumber")
-        Long orderProductNumber,
+        @Parameter(name = "productOrderNumber", description = "송장 번호 업데이트할 상품 주문 번호", required = true, in = PATH)
+        @PathVariable(name = "productOrderNumber")
+        Long productOrderNumber,
         @RequestBody
         UpdateTrackingNumberRequest trackingNumberRequest
     ) {
 
-        return ResponseEntity.ok(new ServerResponse<>(adminService.updateTrackingNumber(orderProductNumber, trackingNumberRequest)));
+        return ResponseEntity.ok(new ServerResponse<>(adminService.updateTrackingNumber(productOrderNumber, trackingNumberRequest)));
     }
 
+    @Operation(summary = "관리자 주문 취소 요청 조회", description = "주문 취소 요청 조회 API")
+    @GetMapping("/cancelRequest")
+    public ResponseEntity<ServerResponse<?>> getCancelRequest(
+        @Parameter(name = "orderNumber", description = "주문번호", required = false, in = QUERY)
+        @RequestParam(name = "orderNumber", required = false)
+        Long orderNumber,
+        @Parameter(name = "receiverName", description = "수취인명", required = false, in = QUERY)
+        @RequestParam(name = "receiverName", required = false)
+        String receiverName,
+        Pageable pageable) {
+        GetCancelRequestCondition cancelRequestCondition = new GetCancelRequestCondition(orderNumber, receiverName, pageable);
+        return ResponseEntity.ok(new ServerResponse<>(adminService.getCancelRequest(cancelRequestCondition)));
+
+    }
 
     // ==============================================================================================================
     // 결제 관련 API

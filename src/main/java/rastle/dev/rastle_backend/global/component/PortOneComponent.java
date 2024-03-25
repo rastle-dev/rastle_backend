@@ -11,7 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import rastle.dev.rastle_backend.domain.order.dto.request.OrderCancelRequest;
+import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentPrepareResponse;
 import rastle.dev.rastle_backend.global.cache.RedisCache;
 import rastle.dev.rastle_backend.global.component.dto.request.PortOnePaymentCancelRequest;
@@ -70,16 +70,16 @@ public class PortOneComponent {
 
     }
 
-    public PaymentResponse cancelPayment(String impId, OrderCancelRequest orderCancelRequest) {
+    public PaymentResponse cancelPayment(String impId, Long cancelAmount, OrderDetail orderDetail) {
         String accessToken = getAccessToken();
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(singletonList(APPLICATION_JSON));
         headers.setContentType(APPLICATION_JSON);
         headers.set(AUTHORIZATION, accessToken);
         PortOnePaymentCancelRequest cancelRequest = PortOnePaymentCancelRequest.builder()
-            .checksum(0L)
-            .amount(orderCancelRequest.getCancelRequestAmount())
-            .merchant_uid(orderCancelRequest.getMerchantUID())
+            .checksum(orderDetail.getPayment().getPaymentPrice() - orderDetail.getPayment().getCancelledSum())
+            .amount(cancelAmount)
+            .merchant_uid(Long.toString(orderDetail.getOrderNumber()))
             .imp_uid(impId)
             .build();
         HttpEntity request = new HttpEntity(cancelRequest, headers);

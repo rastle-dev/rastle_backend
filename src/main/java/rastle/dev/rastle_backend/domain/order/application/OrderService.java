@@ -119,9 +119,8 @@ public class OrderService {
     public OrderDetailResponse getOrderDetail(Long memberId, Long orderId) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
         OrderDetail orderDetail = orderDetailRepository.findById(orderId).orElseThrow(NotFoundByIdException::new);
-        if (!orderDetail.getMember().getId().equals(member.getId())) {
-            throw new NotAuthorizedException("권한 없는 주문 조회 요청, memberId " + member.getId() + " orderId " + orderDetail.getId());
-        }
+        validateMemberOrder(member, orderDetail);
+
         PaymentResponse paymentData = portOneComponent.getPaymentData(orderDetail.getPayment().getImpId());
         CouponInfo couponInfo = couponRepository.findByCouponInfoById(paymentData.getCouponId()).orElse(null);
 
@@ -158,11 +157,27 @@ public class OrderService {
             .build();
     }
 
+    private void validateMemberOrder(Member member, OrderDetail orderDetail) {
+        if (!orderDetail.getMember().getId().equals(member.getId())) {
+            throw new NotAuthorizedException("권한 없는 주문 조회 요청, memberId " + member.getId() + " orderId " + orderDetail.getId());
+        }
+    }
+
     @Transactional
     public OrderCancelResponse cancelOrder(Long memberId, OrderCancelRequest orderCancelRequest) {
-        OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(orderCancelRequest.getMerchantUID()).orElseThrow(() -> new RuntimeException("해당 주문 번호로 존재하는 주문이 없습니다. " + orderCancelRequest.getMerchantUID()));
-        PaymentResponse paymentResponse = portOneComponent.cancelPayment(orderDetail.getPayment().getImpId(), orderCancelRequest);
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+        OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(orderCancelRequest.getOrderNumber()).orElseThrow(() -> new RuntimeException("해당 주문 번호로 존재하는 주문이 없습니다. " + orderCancelRequest.getOrderNumber()));
+        validateMemberOrder(member, orderDetail);
+        Long cancelAmount = 0L;
+        for (Long productOrderNumber : orderCancelRequest.getProductOrderNumber()) {
+            OrderProduct orderProduct = orderProductRepository.findByProductOrderNumber(productOrderNumber
+            ).orElseThrow(() -> new RuntimeException("해당 상품 주문번호로 존재하는 상품 주문이 없다. " + productOrderNumber));
+            cancelAmount += orderProduct.getTotalPrice();
+        }
+
+        PaymentResponse paymentResponse = portOneComponent.cancelPayment(orderDetail.getPayment().getImpId(), cancelAmount, orderDetail);
         orderDetail.updateOrderStatus(CANCELLED);
+        orderDetail.getPayment().addCancelledSum(cancelAmount);
 
         return OrderCancelResponse.builder()
             .cancelledAt(paymentResponse.getCancelledAt())

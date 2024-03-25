@@ -11,6 +11,7 @@ import static jakarta.persistence.InheritanceType.JOINED;
 @Entity
 @Getter
 @NoArgsConstructor
+@Table(name = "cancel_request")
 @Inheritance(strategy = JOINED)
 public class CancelRequest extends BaseTimeEntity {
     @Id
@@ -19,6 +20,8 @@ public class CancelRequest extends BaseTimeEntity {
     private Long id;
 
     private String reason;
+    @Column(name = "product_order_number")
+    private Long productOrderNumber;
 
     @ManyToOne
     @JoinColumn(name = "order_detail_id")
