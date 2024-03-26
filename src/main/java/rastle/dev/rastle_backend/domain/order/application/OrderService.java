@@ -16,8 +16,10 @@ import rastle.dev.rastle_backend.domain.order.dto.OrderProductSummary;
 import rastle.dev.rastle_backend.domain.order.dto.OrderSimpleInfo;
 import rastle.dev.rastle_backend.domain.order.dto.request.OrderCancelRequest;
 import rastle.dev.rastle_backend.domain.order.dto.response.OrderCancelResponse;
+import rastle.dev.rastle_backend.domain.order.model.CancelRequest;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
 import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
+import rastle.dev.rastle_backend.domain.order.repository.mysql.CancelRequestRepository;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderDetailRepository;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderProductRepository;
 import rastle.dev.rastle_backend.domain.payment.model.Payment;
@@ -47,6 +49,7 @@ public class OrderService {
     private final OrderNumberComponent orderNumberComponent;
     private final PortOneComponent portOneComponent;
     private final ProductBaseRepository productBaseRepository;
+    private final CancelRequestRepository cancelRequestRepository;
 
     @Transactional
     public OrderCreateResponse createOrderDetail(Long memberId, OrderCreateRequest orderCreateRequest) {
@@ -163,29 +166,36 @@ public class OrderService {
         }
     }
 
+    // TODO 주문 취소 요청이 왔을 때, 주문 상태에 따른 서비스 로직 분기 처리를 해야함
+
     @Transactional
     public OrderCancelResponse cancelOrder(Long memberId, OrderCancelRequest orderCancelRequest) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
         OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(orderCancelRequest.getOrderNumber()).orElseThrow(() -> new RuntimeException("해당 주문 번호로 존재하는 주문이 없습니다. " + orderCancelRequest.getOrderNumber()));
         validateMemberOrder(member, orderDetail);
-        Long cancelAmount = 0L;
+        // cancel request 만 생성하면될듯??
+        List<CancelRequest> toSave = new ArrayList<>();
+
         for (Long productOrderNumber : orderCancelRequest.getProductOrderNumber()) {
-            OrderProduct orderProduct = orderProductRepository.findByProductOrderNumber(productOrderNumber
-            ).orElseThrow(() -> new RuntimeException("해당 상품 주문번호로 존재하는 상품 주문이 없다. " + productOrderNumber));
-            cancelAmount += orderProduct.getTotalPrice();
+            CancelRequest cancelRequest = CancelRequest.builder().orderDetail(orderDetail).reason(orderCancelRequest.getReason()).productOrderNumber(productOrderNumber).build();
+            toSave.add(cancelRequest);
         }
 
-        PaymentResponse paymentResponse = portOneComponent.cancelPayment(orderDetail.getPayment().getImpId(), cancelAmount, orderDetail);
-        orderDetail.updateOrderStatus(CANCELLED);
-        orderDetail.getPayment().addCancelledSum(cancelAmount);
+        cancelRequestRepository.saveAll(toSave);
+
+        // Long cancelAmount = 0L;
+        // for (Long productOrderNumber : orderCancelRequest.getProductOrderNumber()) {
+        //     OrderProduct orderProduct = orderProductRepository.findByProductOrderNumber(productOrderNumber
+        //     ).orElseThrow(() -> new RuntimeException("해당 상품 주문번호로 존재하는 상품 주문이 없다. " + productOrderNumber));
+        //     cancelAmount += orderProduct.getTotalPrice();
+        // }
+
+        // PaymentResponse paymentResponse = portOneComponent.cancelPayment(orderDetail.getPayment().getImpId(), cancelAmount, orderDetail);
+        // orderDetail.updateOrderStatus(CANCELLED);
+        // orderDetail.getPayment().addCancelledSum(cancelAmount);
 
         return OrderCancelResponse.builder()
-            .cancelledAt(paymentResponse.getCancelledAt())
-            .cancelAmount(paymentResponse.getCancelAmount())
-            .cancelHistory(paymentResponse.getCancelHistory())
-            .cancelReason(paymentResponse.getCancelReason())
-            .paymentStatus(CANCELED)
-            .merchantUID(paymentResponse.getMerchantUID())
+            .cancelProductOrderNumber(orderCancelRequest.getProductOrderNumber())
             .build();
     }
 }

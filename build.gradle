@@ -132,5 +132,8 @@ clean.doLast {
 }
 
 
+bootJar {
+    archiveFileName = "backend_app.jar"
+}
 
 

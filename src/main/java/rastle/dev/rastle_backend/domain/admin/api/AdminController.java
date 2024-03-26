@@ -361,7 +361,7 @@ public class AdminController {
     @FailApiResponses
     @GetMapping("/orders")
     public ResponseEntity<ServerResponse<Page<GetMemberOrderInfo>>> getMemberOrders(
-        @Parameter(name = "orderStatus", description = "주문 상태, CREATED, PENDING, PAID, DELIVERY_STARTED, DELIVERED, COMPLETED, CANCELLED, FAILED", required = false, in = QUERY)
+        @Parameter(name = "orderStatus", description = "주문 상태 아무것도 입력안하면 전체 상태 조회되고, 보고싶은 상태만 설정 가능 (CREATED, PENDING, PAID, DELIVERY_STARTED, DELIVERED, COMPLETED, CANCELLED, RETURNED, FAILED )", required = false, in = QUERY)
         @RequestParam(name = "orderStatus", required = false)
         String[] orderStatus,
         @Parameter(name = "receiverName", description = "수취인명", required = false, in = QUERY)
