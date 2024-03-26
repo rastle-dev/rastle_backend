@@ -13,11 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class OrderCancelResponse {
-    String merchantUID;
-    PaymentStatus paymentStatus;
-    Long cancelAmount;
-    String cancelReason;
-    LocalDateTime cancelledAt;
-    List<CancelInfo> cancelHistory;
+    Long[] cancelProductOrderNumber;
 
 }

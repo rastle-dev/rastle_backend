@@ -1,6 +1,7 @@
 package rastle.dev.rastle_backend.domain.order.model;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.global.common.BaseTimeEntity;
@@ -26,4 +27,12 @@ public class CancelRequest extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name = "order_detail_id")
     private OrderDetail orderDetail;
+
+
+    @Builder
+    public CancelRequest(String reason, Long productOrderNumber, OrderDetail orderDetail) {
+        this.reason = reason;
+        this.productOrderNumber = productOrderNumber;
+        this.orderDetail = orderDetail;
+    }
 }
