@@ -78,7 +78,7 @@ dependencies {
     // boot pay
     implementation 'io.github.bootpay:backend:2.2.1'
     // batch
-    implementation 'org.springframework.boot:spring-boot-starter-batch'
+//    implementation 'org.springframework.boot:spring-boot-starter-batch'
 
     // MySql
     runtimeOnly 'mysql:mysql-connector-java'
