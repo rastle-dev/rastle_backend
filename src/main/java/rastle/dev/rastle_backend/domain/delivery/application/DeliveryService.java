@@ -19,7 +19,7 @@ public class DeliveryService {
 
     @Transactional(readOnly = true)
     public String registerWebHook(String trackingNumber) {
-        return null;
+        return trackingNumber;
     }
 
     @Transactional(readOnly = true)

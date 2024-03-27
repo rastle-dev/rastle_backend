@@ -35,9 +35,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.CANCELLED;
 import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.CREATED;
-import static rastle.dev.rastle_backend.global.common.enums.PaymentStatus.CANCELED;
 
 @Service
 @RequiredArgsConstructor
@@ -86,6 +84,7 @@ public class OrderService {
             ProductBase productBase = productBaseRepository.getReferenceById(productOrderRequest.getProductId());
             OrderProduct orderProduct = OrderProduct.builder()
                 .orderDetail(orderDetail)
+                .orderStatus(CREATED)
                 .product(ProductBase.builder().id(productOrderRequest.getProductId()).build())
                 .name(productOrderRequest.getName())
                 .color(productOrderRequest.getColor())
