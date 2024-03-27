@@ -1,10 +1,10 @@
 package rastle.dev.rastle_backend.domain.admin.exception.handler;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
 import rastle.dev.rastle_backend.domain.admin.exception.InvalidImageUrlException;
 import rastle.dev.rastle_backend.domain.admin.exception.NotEmptyBundleException;
 import rastle.dev.rastle_backend.domain.admin.exception.NotEmptyCategoryException;
@@ -18,15 +18,17 @@ import static org.springframework.http.HttpStatus.CONFLICT;
 @RestControllerAdvice
 public class AdminExceptionHandler {
 
-    private void logException(Exception exception) {
+    private void logException(Exception exception, HttpServletRequest webRequest) {
+        log.warn("{} {}", webRequest.getMethod(), webRequest.getRequestURI());
+
         StackTraceElement[] stackTrace = exception.getStackTrace();
         log.warn(exception.getMessage(), stackTrace[0]);
     }
 
     @ExceptionHandler(InvalidImageUrlException.class)
     protected final ResponseEntity<ErrorResponse> handleS3ImageException(
-        S3ImageUploadException ex, WebRequest request) {
-        log.warn(ex.getMessage());
+        S3ImageUploadException ex, HttpServletRequest request) {
+        logException(ex, request);
         return new ResponseEntity<>(ErrorResponse.builder()
             .errorCode(409L)
             .message(ex.getMessage())
@@ -36,9 +38,9 @@ public class AdminExceptionHandler {
 
     @ExceptionHandler(NotEmptyBundleException.class)
     protected final ResponseEntity<ErrorResponse> handleNotEmptyBundleException(
-        NotEmptyBundleException ex, WebRequest request
+        NotEmptyBundleException ex, HttpServletRequest request
     ) {
-        log.warn(ex.getMessage());
+        logException(ex, request);
         return new ResponseEntity<>(ErrorResponse.builder()
             .errorCode(409L)
             .message(ex.getMessage())
@@ -48,9 +50,9 @@ public class AdminExceptionHandler {
 
     @ExceptionHandler(NotEmptyCategoryException.class)
     protected final ResponseEntity<ErrorResponse> handleNotEmptyCategoryException(
-        NotEmptyCategoryException ex, WebRequest request
+        NotEmptyCategoryException ex, HttpServletRequest request
     ) {
-        log.warn(ex.getMessage());
+        logException(ex, request);
         return new ResponseEntity<>(ErrorResponse.builder()
             .errorCode(409L)
             .message(ex.getMessage())
@@ -60,9 +62,9 @@ public class AdminExceptionHandler {
 
     @ExceptionHandler(NotEmptyEventException.class)
     protected final ResponseEntity<ErrorResponse> handleNotEmptyEventException(
-        NotEmptyEventException ex, WebRequest request
+        NotEmptyEventException ex, HttpServletRequest request
     ) {
-        log.warn(ex.getMessage());
+        logException(ex, request);
         return new ResponseEntity<>(ErrorResponse.builder()
             .errorCode(409L)
             .message(ex.getMessage())
