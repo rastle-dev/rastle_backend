@@ -14,7 +14,8 @@ import static jakarta.persistence.InheritanceType.JOINED;
 @Getter
 @NoArgsConstructor
 @Table(name = "order_product", indexes = {
-    @Index(name = "idx_product_order_number", columnList = "product_order_number", unique = true)
+    @Index(name = "idx_product_order_number", columnList = "product_order_number", unique = true),
+    @Index(name = "idx_tracking_number", columnList = "tracking_number")
 })
 @Inheritance(strategy = JOINED)
 public class OrderProduct extends BaseTimeEntity {
