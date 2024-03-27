@@ -60,6 +60,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private void handleErrorResponse(HttpServletRequest request, HttpServletResponse response, int statusCode, String message, long errorCode)
         throws IOException {
+        log.warn("{} {}", request.getMethod(), request.getRequestURI());
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");
         response.setStatus(statusCode);

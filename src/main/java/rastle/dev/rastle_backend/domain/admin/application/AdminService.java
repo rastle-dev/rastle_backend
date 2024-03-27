@@ -233,10 +233,14 @@ public class AdminService {
             Bundle bundle = bundleRepository.findById(updateRequest.getBundleId())
                 .orElseThrow(NotFoundByIdException::new);
             productBase.setBundle(bundle);
+        } else {
+            productBase.setBundle(null);
         }
         if (updateRequest.getEventId() != null) {
             Event event = eventRepository.findById(updateRequest.getEventId()).orElseThrow(NotFoundByIdException::new);
             productBase.setEvent(event);
+        } else {
+            productBase.setEvent(null);
         }
 
         return updateRequest;
