@@ -42,7 +42,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
                     User user = (User) authentication.getPrincipal();
                     if (user.getUsername() != null) {
-                        log.info("memberId : " + user.getUsername());
+//                        log.info("memberId : " + user.getUsername());
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                     }
                 } else {
@@ -78,7 +78,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             String actualToken = bearerToken.substring(7);
-            log.info("Extracted Access Token: " + actualToken);
+//            log.info("Extracted Access Token: " + actualToken);
             return actualToken;
         }
         return null;
