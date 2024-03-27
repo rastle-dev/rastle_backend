@@ -11,7 +11,6 @@ import rastle.dev.rastle_backend.domain.bundle.repository.mysql.BundleRepository
 import rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo;
 import rastle.dev.rastle_backend.domain.product.repository.mysql.BundleProductRepository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.ALL;
@@ -26,8 +25,6 @@ public class BundleService {
 
     @Transactional(readOnly = true)
     public Page<BundleInfo> getBundles(String visible, Pageable pageable) {
-        LocalDateTime current = LocalDateTime.now();
-        log.info(current.toString());
         if (visible.equals(ALL)) {
             return bundleRepository.getBundles(pageable);
 
