@@ -1,6 +1,7 @@
 package rastle.dev.rastle_backend.global.error.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -8,7 +9,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
 import rastle.dev.rastle_backend.global.error.exception.InvalidRequestException;
 import rastle.dev.rastle_backend.global.error.exception.NotAuthorizedException;
 import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
@@ -20,8 +20,8 @@ import static org.springframework.http.HttpStatus.*;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    private void logException(Exception exception, WebRequest webRequest) {
-        log.warn(webRequest.getContextPath());
+    private void logException(Exception exception,HttpServletRequest webRequest) {
+        log.warn("{} {}", webRequest.getMethod(), webRequest.getRequestURI());
         StackTraceElement[] stackTrace = exception.getStackTrace();
         log.warn(exception.getClass().getName(), stackTrace[0]);
         log.warn(exception.getMessage(), stackTrace[0]);
@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundByIdException.class)
     protected final ResponseEntity<ErrorResponse> handleNotFoundByIdException(
-        NotFoundByIdException ex, WebRequest request) {
+        NotFoundByIdException ex, HttpServletRequest request) {
         logException(ex, request);
         return new ResponseEntity<>(ErrorResponse.builder()
             .errorCode(409L)
@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotAuthorizedException.class)
     protected final ResponseEntity<ErrorResponse> handleNotAuthorizedException(
-        NotAuthorizedException ex, WebRequest request) {
+        NotAuthorizedException ex, HttpServletRequest request) {
         logException(ex, request);
 
         return new ResponseEntity<>(ErrorResponse.builder()
@@ -50,7 +50,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidRequestException.class)
     protected final ResponseEntity<ErrorResponse> handleInvalidRequestException(
-        InvalidRequestException ex, WebRequest request) {
+        InvalidRequestException ex, HttpServletRequest request) {
         logException(ex, request);
 
         return new ResponseEntity<>(ErrorResponse.builder()
@@ -61,7 +61,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     protected final ResponseEntity<ErrorResponse> handleIllegalArgumentException(
-        IllegalArgumentException ex, WebRequest request) {
+        IllegalArgumentException ex, HttpServletRequest request) {
         logException(ex, request);
         return new ResponseEntity<>(ErrorResponse.builder()
             .errorCode(400L)
@@ -71,7 +71,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected final ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
-        MethodArgumentNotValidException ex, WebRequest request) {
+        MethodArgumentNotValidException ex, HttpServletRequest request) {
         logException(ex, request);
         BindingResult bindingResult = ex.getBindingResult();
         StringBuilder builder = new StringBuilder();
@@ -95,7 +95,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(JsonProcessingException.class)
     protected final ResponseEntity<ErrorResponse> handleJsonException(
-        JsonProcessingException ex, WebRequest request
+        JsonProcessingException ex, HttpServletRequest request
     ) {
         logException(ex, request);
         return new ResponseEntity<>(ErrorResponse.builder()
@@ -107,7 +107,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(S3ImageUploadException.class)
     protected final ResponseEntity<ErrorResponse> handleS3ImageException(
-        S3ImageUploadException ex, WebRequest request) {
+        S3ImageUploadException ex, HttpServletRequest request) {
         logException(ex, request);
         return new ResponseEntity<>(ErrorResponse.builder()
             .errorCode(409L)
@@ -118,7 +118,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     protected final ResponseEntity<ErrorResponse> handleException(
-        Exception ex, WebRequest request
+        Exception ex, HttpServletRequest request
     ) {
         logException(ex, request);
         return new ResponseEntity<>(ErrorResponse.builder()
@@ -130,7 +130,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     protected final ResponseEntity<ErrorResponse> handleRuntimeException(
-        RuntimeException ex, WebRequest request
+        RuntimeException ex, HttpServletRequest request
     ) {
         logException(ex, request);
         return new ResponseEntity<>(ErrorResponse.builder()
