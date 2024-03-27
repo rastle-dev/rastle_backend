@@ -40,10 +40,8 @@ public class ReplicationRoutingDataSource extends AbstractRoutingDataSource {
 
         if (isReadOnly) {
             String nextSlaveName = slaveNames.getNext();
-            log.info("Slave connected: {}", nextSlaveName);
             return nextSlaveName;
         }
-        log.info("Master connected");
         return DataSourceType.MASTER.getName();
     }
 

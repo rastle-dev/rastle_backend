@@ -20,7 +20,8 @@ import static org.springframework.http.HttpStatus.*;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    private void logException(Exception exception) {
+    private void logException(Exception exception, WebRequest webRequest) {
+        log.warn(webRequest.getContextPath());
         StackTraceElement[] stackTrace = exception.getStackTrace();
         log.warn(exception.getClass().getName(), stackTrace[0]);
         log.warn(exception.getMessage(), stackTrace[0]);
@@ -29,7 +30,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotFoundByIdException.class)
     protected final ResponseEntity<ErrorResponse> handleNotFoundByIdException(
         NotFoundByIdException ex, WebRequest request) {
-        logException(ex);
+        logException(ex, request);
         return new ResponseEntity<>(ErrorResponse.builder()
             .errorCode(409L)
             .message(ex.getMessage())
@@ -39,7 +40,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotAuthorizedException.class)
     protected final ResponseEntity<ErrorResponse> handleNotAuthorizedException(
         NotAuthorizedException ex, WebRequest request) {
-        logException(ex);
+        logException(ex, request);
+
         return new ResponseEntity<>(ErrorResponse.builder()
             .errorCode(403L)
             .message(ex.getMessage())
@@ -49,7 +51,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidRequestException.class)
     protected final ResponseEntity<ErrorResponse> handleInvalidRequestException(
         InvalidRequestException ex, WebRequest request) {
-        logException(ex);
+        logException(ex, request);
+
         return new ResponseEntity<>(ErrorResponse.builder()
             .errorCode(409L)
             .message(ex.getMessage())
@@ -59,7 +62,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     protected final ResponseEntity<ErrorResponse> handleIllegalArgumentException(
         IllegalArgumentException ex, WebRequest request) {
-        log.warn(ex.getMessage());
+        logException(ex, request);
         return new ResponseEntity<>(ErrorResponse.builder()
             .errorCode(400L)
             .message(ex.getMessage())
@@ -69,7 +72,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected final ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
         MethodArgumentNotValidException ex, WebRequest request) {
-        logException(ex);
+        logException(ex, request);
         BindingResult bindingResult = ex.getBindingResult();
         StringBuilder builder = new StringBuilder();
         for (FieldError fieldError : bindingResult.getFieldErrors()) {
@@ -94,7 +97,7 @@ public class GlobalExceptionHandler {
     protected final ResponseEntity<ErrorResponse> handleJsonException(
         JsonProcessingException ex, WebRequest request
     ) {
-        logException(ex);
+        logException(ex, request);
         return new ResponseEntity<>(ErrorResponse.builder()
             .errorCode(409L)
             .message(ex.getMessage())
@@ -105,7 +108,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(S3ImageUploadException.class)
     protected final ResponseEntity<ErrorResponse> handleS3ImageException(
         S3ImageUploadException ex, WebRequest request) {
-        logException(ex);
+        logException(ex, request);
         return new ResponseEntity<>(ErrorResponse.builder()
             .errorCode(409L)
             .message(ex.getMessage())
@@ -117,7 +120,7 @@ public class GlobalExceptionHandler {
     protected final ResponseEntity<ErrorResponse> handleException(
         Exception ex, WebRequest request
     ) {
-        logException(ex);
+        logException(ex, request);
         return new ResponseEntity<>(ErrorResponse.builder()
             .errorCode(500L)
             .message(ex.getMessage())
@@ -129,7 +132,7 @@ public class GlobalExceptionHandler {
     protected final ResponseEntity<ErrorResponse> handleRuntimeException(
         RuntimeException ex, WebRequest request
     ) {
-        logException(ex);
+        logException(ex, request);
         return new ResponseEntity<>(ErrorResponse.builder()
             .errorCode(500L)
             .message(ex.getMessage())
