@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 import rastle.dev.rastle_backend.global.common.BaseTimeEntity;
+import rastle.dev.rastle_backend.global.common.enums.OrderStatus;
 
+import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.InheritanceType.JOINED;
 
 @Entity
@@ -23,6 +25,9 @@ public class OrderProduct extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_product_id")
     private Long id;
+    @Column(name = "order_status")
+    @Enumerated(STRING)
+    private OrderStatus orderStatus;
     private String name; // 주문 당시 구매한 상품 이름
     private String color;
     private String size;
@@ -46,7 +51,8 @@ public class OrderProduct extends BaseTimeEntity {
     private OrderDetail orderDetail;
 
     @Builder
-    public OrderProduct(String name, String color, String size, Long count, Long price, Long totalPrice, Long productOrderNumber, ProductBase product, OrderDetail orderDetail, String trackingNumber) {
+    public OrderProduct(String name, String color, String size, Long count, Long price, Long totalPrice, Long productOrderNumber, ProductBase product, OrderDetail orderDetail, String trackingNumber, OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
         this.name = name;
         this.color = color;
         this.size = size;
