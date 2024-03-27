@@ -72,7 +72,11 @@ public class PaymentResponse {
             log.info(e.getMessage());
             return null;
         }
-        return Long.valueOf((Integer) customData.getOrDefault("couponId", null));
+        Object couponId = customData.getOrDefault("couponId", null);
+        if (couponId == null) {
+            return null;
+        }
+        return Long.valueOf((Integer) couponId);
     }
 
     public String getVbankNum() {
