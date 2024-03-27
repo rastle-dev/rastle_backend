@@ -56,7 +56,6 @@ public class PaymentService {
         PaymentResponse paymentResponse = portOneComponent
             .getPaymentData(paymentVerificationRequest.getImp_uid());
         String merchantUid = paymentResponse.getMerchantUID();
-        log.info(merchantUid);
         if (!merchantUid.equals(paymentVerificationRequest.getMerchant_uid())) {
             throw new PaymentException("포트원에서 전달받은 주문번호와, 브라우저에서 넘어온 주문번호가 다릅니다.");
         }
@@ -123,6 +122,7 @@ public class PaymentService {
         orderDetail.paid(paymentResponse);
         orderDetail.getPayment().paid(paymentResponse);
         orderDetail.getDelivery().paid(paymentResponse);
+
         if (paymentResponse.getCouponId() != null) {
             Coupon referenceById = couponRepository.getReferenceById(paymentResponse.getCouponId());
             referenceById.updateStatus(USED);
