@@ -1,5 +1,5 @@
 ### admin 로그인
-POST http://localhost:7777/auth/login
+POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
@@ -7,6 +7,11 @@ Content-Type: application/json
   "password" : "1234"
 }
 > {% client.global.set("auth_token", response.headers.valueOf("Authorization")); %}
+
+### 관리자 주문 조회
+GET http://localhost:8080/admin/orders?page=0&size=20
+Content-Type: application/json
+Authorization: {{auth_token}}
 
 ### 상품 삭제 테스트
 DELETE http://localhost:8080/admin/product/3
