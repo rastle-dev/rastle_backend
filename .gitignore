@@ -7,6 +7,7 @@ build/
 
 .http/img
 .http/PortOne.http
+.http/DeliveryTracker.http
 .DS_Store
 ### config file
 docker/**

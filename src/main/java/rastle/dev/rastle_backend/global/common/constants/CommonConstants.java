@@ -11,4 +11,5 @@ public class CommonConstants {
     public static final String BUNDLE_IMAGE = "bundle/";
     public static final String EVENT_IMAGE = "event/";
     public static final String UPDATED = "updated";
+    public static final String HANDLED = "handled";
 }
