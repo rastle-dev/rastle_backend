@@ -5,7 +5,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.global.common.BaseTimeEntity;
+import rastle.dev.rastle_backend.global.common.enums.CancelRequestStatus;
 
+import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static jakarta.persistence.InheritanceType.JOINED;
 
@@ -23,6 +25,9 @@ public class CancelRequest extends BaseTimeEntity {
     private String reason;
     @Column(name = "product_order_number")
     private Long productOrderNumber;
+    @Column(name = "cancel_request_status")
+    @Enumerated(STRING)
+    private CancelRequestStatus cancelRequestStatus;
 
     @ManyToOne
     @JoinColumn(name = "order_detail_id")
@@ -30,9 +35,15 @@ public class CancelRequest extends BaseTimeEntity {
 
 
     @Builder
-    public CancelRequest(String reason, Long productOrderNumber, OrderDetail orderDetail) {
+    public CancelRequest(String reason, Long productOrderNumber, OrderDetail orderDetail, CancelRequestStatus cancelRequestStatus) {
         this.reason = reason;
         this.productOrderNumber = productOrderNumber;
         this.orderDetail = orderDetail;
+        this.cancelRequestStatus = cancelRequestStatus;
+    }
+
+    public void updateStatus(CancelRequestStatus cancelRequestStatus) {
+        this.cancelRequestStatus = cancelRequestStatus;
+
     }
 }

@@ -35,6 +35,7 @@ import static rastle.dev.rastle_backend.global.common.enums.CouponStatus.USED;
 import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.CANCELLED;
 import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.FAILED;
 
+
 @Service
 @Slf4j
 @RequiredArgsConstructor

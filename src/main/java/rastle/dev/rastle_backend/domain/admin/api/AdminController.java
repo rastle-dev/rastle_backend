@@ -40,6 +40,7 @@ import java.util.Map;
 
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY;
+import static rastle.dev.rastle_backend.global.common.enums.CancelRequestStatus.getFromIndex;
 
 @Tag(name = "관리자 기능 API", description = "관리자 기능 관련 API입니다.")
 @RestController
@@ -383,6 +384,10 @@ public class AdminController {
         return ResponseEntity.ok(new ServerResponse<>(adminService.updateTrackingNumber(productOrderNumber, trackingNumberRequest)));
     }
 
+    // ==============================================================================================================
+    // 주문 취소 요청 관련 API
+    // ==============================================================================================================
+
     @Operation(summary = "관리자 주문 취소 요청 조회", description = "주문 취소 요청 조회 API")
     @ApiResponse(responseCode = "200", description = "정보 조회 성공시", content = @Content(schema = @Schema(implementation = GetCancelRequestInfo.class)))
     @GetMapping("/cancelRequest")
@@ -393,10 +398,20 @@ public class AdminController {
         @Parameter(name = "receiverName", description = "수취인명", required = false, in = QUERY)
         @RequestParam(name = "receiverName", required = false)
         String receiverName,
+        @Parameter(name = "cancelRequestStats", description = "주문 취소 요청 상태", required = false, in = QUERY)
+        String cancelRequestStatus,
         Pageable pageable) {
-        GetCancelRequestCondition cancelRequestCondition = new GetCancelRequestCondition(orderNumber, receiverName, pageable);
+        GetCancelRequestCondition cancelRequestCondition = new GetCancelRequestCondition(orderNumber, receiverName, getFromIndex(cancelRequestStatus), pageable);
         return ResponseEntity.ok(new ServerResponse<>(adminService.getCancelRequest(cancelRequestCondition)));
+    }
 
+    @Operation(summary = "주문 취소 요청 수락", description = "주문 취소 요청 수락, 주문 취소되는 API")
+    @PostMapping("/cancelRequest")
+    public ResponseEntity<ServerResponse<?>> cancelOrder(
+        @RequestBody
+        CancelOrderRequest cancelOrderRequest
+    ) {
+        return ResponseEntity.ok(new ServerResponse<>(adminService.cancelOrder(cancelOrderRequest)));
     }
 
     // ==============================================================================================================

@@ -71,4 +71,8 @@ public class OrderProduct extends BaseTimeEntity {
     public void updateProductOrderNumber(Long productOrderNumber) {
         this.productOrderNumber = productOrderNumber;
     }
+
+    public void updateOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
 }

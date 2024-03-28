@@ -31,9 +31,10 @@ public class CancelRequestQRepositoryImpl implements CancelRequestQRepository {
         JPAQuery<GetCancelRequestInfo> query = jpaQueryFactory.select(
                 new QGetCancelRequestInfo(
                     payment.impId,
+                    cancelRequest.id,
                     orderDetail.orderNumber,
                     orderProduct.productOrderNumber,
-                    orderDetail.orderStatus,
+                    orderProduct.orderStatus,
                     orderProduct.totalPrice,
                     orderProduct.name,
                     orderProduct.color,
@@ -53,7 +54,8 @@ public class CancelRequestQRepositoryImpl implements CancelRequestQRepository {
             .leftJoin(orderDetail.delivery, delivery)
             .where(
                 orderNumber(condition),
-                receiverName(condition)
+                receiverName(condition),
+                status(condition)
             )
             .orderBy(orderByOrderNumber())
             .offset(condition.getPageable().getOffset())
@@ -78,6 +80,13 @@ public class CancelRequestQRepositoryImpl implements CancelRequestQRepository {
             )
             .groupBy(cancelRequest);
         return countQuery.fetchOne();
+    }
+
+    private BooleanExpression status(GetCancelRequestCondition condition) {
+        if (condition.getCancelRequestStatus() == null) {
+            return null;
+        }
+        return cancelRequest.cancelRequestStatus.eq(condition.getCancelRequestStatus());
     }
 
     private BooleanExpression orderNumber(GetCancelRequestCondition condition) {
