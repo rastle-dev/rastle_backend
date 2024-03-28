@@ -54,6 +54,7 @@ import rastle.dev.rastle_backend.domain.product.repository.mysql.BundleProductRe
 import rastle.dev.rastle_backend.domain.product.repository.mysql.EventProductRepository;
 import rastle.dev.rastle_backend.domain.product.repository.mysql.ProductBaseRepository;
 import rastle.dev.rastle_backend.domain.product.repository.mysql.ProductDetailRepository;
+import rastle.dev.rastle_backend.global.component.DeliveryTracker;
 import rastle.dev.rastle_backend.global.component.PortOneComponent;
 import rastle.dev.rastle_backend.global.component.S3Component;
 import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
@@ -89,6 +90,7 @@ public class AdminService {
     private final CancelRequestQRepository cancelRequestQRepository;
     private final PortOneComponent portOneComponent;
     private final CancelRequestRepository cancelRequestRepository;
+    private final DeliveryTracker deliveryTracker;
 
     // ==============================================================================================================
     // 상품 관련 서비스
@@ -620,11 +622,12 @@ public class AdminService {
     public Page<GetMemberOrderInfo> getMemberOrders(GetMemberOrderCondition getMemberOrderCondition) {
         return memberOrderQRepository.getMemberOrderInfo(getMemberOrderCondition);
     }
-
+    // TODO 여기서 웹훅 등록하는 요청도 보내야할듯
     @Transactional
     public String updateTrackingNumber(Long orderProductNumber, UpdateTrackingNumberRequest trackingNumberRequest) {
         OrderProduct orderProduct = orderProductRepository.findByProductOrderNumber(orderProductNumber).orElseThrow(() -> new RuntimeException("상품 주문 번호로 존재하는 상품 주문이 없다. " + orderProductNumber));
         orderProduct.updateTrackingNumber(trackingNumberRequest.getTrackingNumber());
+        deliveryTracker.registerWebHook(trackingNumberRequest.getTrackingNumber());
         return UPDATED;
     }
     @Transactional(readOnly = true)

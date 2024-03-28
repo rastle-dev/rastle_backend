@@ -380,7 +380,6 @@ public class AdminController {
         @RequestBody
         UpdateTrackingNumberRequest trackingNumberRequest
     ) {
-
         return ResponseEntity.ok(new ServerResponse<>(adminService.updateTrackingNumber(productOrderNumber, trackingNumberRequest)));
     }
 
@@ -398,7 +397,7 @@ public class AdminController {
         @Parameter(name = "receiverName", description = "수취인명", required = false, in = QUERY)
         @RequestParam(name = "receiverName", required = false)
         String receiverName,
-        @Parameter(name = "cancelRequestStats", description = "주문 취소 요청 상태", required = false, in = QUERY)
+        @Parameter(name = "cancelRequestStatus", description = "주문 취소 요청 상태, PENDING, DENIED, COMPLETED", required = false, in = QUERY)
         String cancelRequestStatus,
         Pageable pageable) {
         GetCancelRequestCondition cancelRequestCondition = new GetCancelRequestCondition(orderNumber, receiverName, getFromIndex(cancelRequestStatus), pageable);

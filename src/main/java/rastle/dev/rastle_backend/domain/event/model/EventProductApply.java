@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import rastle.dev.rastle_backend.domain.member.model.Member;
 import rastle.dev.rastle_backend.domain.product.model.ProductBase;
@@ -32,8 +31,7 @@ public class EventProductApply {
     @Column(name = "instagram_id")
     private String instagramId;
 
-    @CreatedDate
-    @Column(name = "apply_date", updatable = false)
+    @Column(name = "apply_date")
     private LocalDateTime applyDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -46,10 +44,12 @@ public class EventProductApply {
         this.phoneNumber = phoneNumber;
         this.instagramId = instagramId;
         this.eventApplyProduct = eventApplyProduct;
+        this.applyDate = LocalDateTime.now();
     }
 
     public void update(String phoneNumber, String instagramId) {
         this.phoneNumber = phoneNumber;
+        this.applyDate = LocalDateTime.now();
         this.instagramId = instagramId;
     }
 }
