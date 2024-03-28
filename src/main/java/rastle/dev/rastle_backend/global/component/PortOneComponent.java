@@ -8,8 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
 import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
@@ -41,6 +43,22 @@ public class PortOneComponent {
     private final ObjectMapper objectMapper;
     private final RedisCache redisCache;
 
+    private ResponseEntity<String> getServerResponse(String url, HttpMethod method, HttpEntity request) {
+        try {
+            return restTemplate.exchange(url, method, request, String.class);
+        } catch (RestClientException exception) {
+            String accessToken = getAccessFromServer();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setAccept(singletonList(APPLICATION_JSON));
+            headers.setContentType(APPLICATION_JSON);
+            headers.set(AUTHORIZATION, accessToken);
+
+            HttpEntity newRequest = new HttpEntity(request.getBody(), headers);
+            return restTemplate.exchange(url, method, newRequest, String.class);
+
+        }
+    }
+
     public PaymentResponse getPaymentData(String impId) {
         String accessToken = getAccessToken();
         HttpHeaders headers = new HttpHeaders();
@@ -49,15 +67,14 @@ public class PortOneComponent {
         headers.set(AUTHORIZATION, accessToken);
 
         HttpEntity request = new HttpEntity(headers);
-        ResponseEntity<String> portoneResponse = restTemplate.exchange(BASE_URL + PAYMENT_URL + impId,
-            GET,
-            request,
-            String.class);
+
+        ResponseEntity<String> portOneResponse = getServerResponse(BASE_URL + PAYMENT_URL + impId, GET, request);
         try {
-            Map<String, Object> responseMap = objectMapper.readValue(portoneResponse.getBody(), new TypeReference<Map<String, Object>>() {
+            Map<String, Object> responseMap = objectMapper.readValue(portOneResponse.getBody(), new TypeReference<Map<String, Object>>() {
             });
             Integer code = (Integer) responseMap.get(CODE);
             if (code != 0) {
+                log.info("msg : {}", (String) responseMap.get(MESSAGE));
                 throw new RuntimeException((String) responseMap.get(MESSAGE));
             }
 
@@ -85,12 +102,9 @@ public class PortOneComponent {
             .imp_uid(impId)
             .build();
         HttpEntity request = new HttpEntity(cancelRequest, headers);
-        ResponseEntity<String> portoneResponse = restTemplate.exchange(BASE_URL + CANCEL_URL,
-            POST,
-            request,
-            String.class);
+        ResponseEntity<String> portOneResponse = getServerResponse(BASE_URL + CANCEL_URL, POST, request);
         try {
-            Map<String, Object> responseMap = objectMapper.readValue(portoneResponse.getBody(), new TypeReference<Map<String, Object>>() {
+            Map<String, Object> responseMap = objectMapper.readValue(portOneResponse.getBody(), new TypeReference<Map<String, Object>>() {
             });
             Integer code = (Integer) responseMap.get(CODE);
             if (code != 0) {
@@ -119,7 +133,7 @@ public class PortOneComponent {
         PortOnePaymentRequest paymentRequest = new PortOnePaymentRequest(merchantId, price);
 
         HttpEntity request = new HttpEntity(paymentRequest, headers);
-        ResponseEntity<String> response = restTemplate.exchange(BASE_URL + PREPARE_URL, POST, request, String.class);
+        ResponseEntity<String> response = getServerResponse(BASE_URL + PREPARE_URL, POST, request);
         try {
             Map<String, Object> responseMap = objectMapper.readValue(response.getBody(), new TypeReference<Map<String, Object>>() {
             });
@@ -142,26 +156,31 @@ public class PortOneComponent {
         if (redisCache.get(PORT_ONE_ACCESS) != null) {
             return redisCache.get(PORT_ONE_ACCESS);
         } else {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setAccept(singletonList(APPLICATION_JSON));
-            headers.setContentType(APPLICATION_JSON);
-
-            PortOneTokenRequest portOneTokenRequest = new PortOneTokenRequest(API_KEY, API_SECRET);
-
-            try {
-                ResponseEntity<PortOneTokenResponse> tokenResponse = restTemplate.postForEntity(BASE_URL + TOKEN_URL, new HttpEntity<>(objectMapper.writeValueAsString(portOneTokenRequest), headers), PortOneTokenResponse.class);
-                PortOneTokenResponse portOneTokenResponse = tokenResponse.getBody();
-
-                String accessToken = portOneTokenResponse.getResponse().getAccess_token();
-                redisCache.save(PORT_ONE_ACCESS, accessToken);
-                return accessToken;
-            } catch (Exception e) {
-                String message = e.getMessage();
-                String encoded = convertString(message);
-                log.info(encoded);
-                throw new PortOneException(encoded);
-            }
+            return getAccessFromServer();
         }
+    }
+
+    private String getAccessFromServer() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(singletonList(APPLICATION_JSON));
+        headers.setContentType(APPLICATION_JSON);
+
+        PortOneTokenRequest portOneTokenRequest = new PortOneTokenRequest(API_KEY, API_SECRET);
+
+        try {
+            ResponseEntity<PortOneTokenResponse> tokenResponse = restTemplate.postForEntity(BASE_URL + TOKEN_URL, new HttpEntity<>(objectMapper.writeValueAsString(portOneTokenRequest), headers), PortOneTokenResponse.class);
+            PortOneTokenResponse portOneTokenResponse = tokenResponse.getBody();
+
+            String accessToken = portOneTokenResponse.getResponse().getAccess_token();
+            redisCache.save(PORT_ONE_ACCESS, accessToken);
+            return accessToken;
+        } catch (Exception e) {
+            String message = e.getMessage();
+            String encoded = convertString(message);
+            log.info(encoded);
+            throw new PortOneException(encoded);
+        }
+
     }
 
 
