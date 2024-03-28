@@ -35,7 +35,7 @@ public class CancelRequestQRepositoryImpl implements CancelRequestQRepository {
                     orderDetail.orderNumber,
                     orderProduct.productOrderNumber,
                     orderProduct.orderStatus,
-                    orderProduct.totalPrice,
+                    orderProduct.price,
                     orderProduct.name,
                     orderProduct.color,
                     orderProduct.size,

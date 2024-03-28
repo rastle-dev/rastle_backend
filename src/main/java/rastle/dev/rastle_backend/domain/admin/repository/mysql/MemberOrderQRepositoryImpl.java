@@ -53,7 +53,6 @@ public class MemberOrderQRepositoryImpl implements MemberOrderQRepository {
                     orderProduct.trackingNumber,
                     payment.impId,
                     orderProduct.price,
-                    orderProduct.totalPrice,
                     orderDetail.orderPrice,
                     payment.paymentPrice,
                     delivery.deliveryPrice,

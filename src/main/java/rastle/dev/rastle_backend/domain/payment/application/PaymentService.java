@@ -100,7 +100,7 @@ public class PaymentService {
             List<SelectedProductsDTO> selectedProducts = orderDetail.getOrderProduct().stream()
                 .map(orderProduct -> SelectedProductsDTO.builder()
                     .title(orderProduct.getName())
-                    .price(orderProduct.getTotalPrice())
+                    .price(orderProduct.getPrice())
                     .color(orderProduct.getColor())
                     .size(orderProduct.getSize())
                     .count(orderProduct.getCount())

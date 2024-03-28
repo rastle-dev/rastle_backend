@@ -34,9 +34,6 @@ public class OrderProduct extends BaseTimeEntity {
     private Long count;
     @ColumnDefault("0")
     private Long price;
-    @Column(name = "total_price")
-    @ColumnDefault("0")
-    private Long totalPrice; // 구매한 상품 총 가격
     @Column(name = "tracking_number")
     private String trackingNumber;
     @Column(name = "product_order_number", unique = true)
@@ -51,14 +48,13 @@ public class OrderProduct extends BaseTimeEntity {
     private OrderDetail orderDetail;
 
     @Builder
-    public OrderProduct(String name, String color, String size, Long count, Long price, Long totalPrice, Long productOrderNumber, ProductBase product, OrderDetail orderDetail, String trackingNumber, OrderStatus orderStatus) {
+    public OrderProduct(String name, String color, String size, Long count, Long price, Long productOrderNumber, ProductBase product, OrderDetail orderDetail, String trackingNumber, OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
         this.name = name;
         this.color = color;
         this.size = size;
         this.count = count;
         this.price = price;
-        this.totalPrice = totalPrice;
         this.productOrderNumber = productOrderNumber;
         this.product = product;
         this.orderDetail = orderDetail;
