@@ -165,14 +165,11 @@ public class OrderService {
         }
     }
 
-    // TODO 주문 취소 요청이 왔을 때, 주문 상태에 따른 서비스 로직 분기 처리를 해야함
-
     @Transactional
     public OrderCancelResponse cancelOrder(Long memberId, OrderCancelRequest orderCancelRequest) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
         OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(orderCancelRequest.getOrderNumber()).orElseThrow(() -> new RuntimeException("해당 주문 번호로 존재하는 주문이 없습니다. " + orderCancelRequest.getOrderNumber()));
         validateMemberOrder(member, orderDetail);
-        // cancel request 만 생성하면될듯??
         List<CancelRequest> toSave = new ArrayList<>();
 
         for (Long productOrderNumber : orderCancelRequest.getProductOrderNumber()) {
@@ -182,16 +179,6 @@ public class OrderService {
 
         cancelRequestRepository.saveAll(toSave);
 
-        // Long cancelAmount = 0L;
-        // for (Long productOrderNumber : orderCancelRequest.getProductOrderNumber()) {
-        //     OrderProduct orderProduct = orderProductRepository.findByProductOrderNumber(productOrderNumber
-        //     ).orElseThrow(() -> new RuntimeException("해당 상품 주문번호로 존재하는 상품 주문이 없다. " + productOrderNumber));
-        //     cancelAmount += orderProduct.getTotalPrice();
-        // }
-
-        // PaymentResponse paymentResponse = portOneComponent.cancelPayment(orderDetail.getPayment().getImpId(), cancelAmount, orderDetail);
-        // orderDetail.updateOrderStatus(CANCELLED);
-        // orderDetail.getPayment().addCancelledSum(cancelAmount);
 
         return OrderCancelResponse.builder()
             .cancelProductOrderNumber(orderCancelRequest.getProductOrderNumber())

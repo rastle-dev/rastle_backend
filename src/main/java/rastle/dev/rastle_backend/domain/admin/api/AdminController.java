@@ -15,10 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import rastle.dev.rastle_backend.domain.admin.application.AdminService;
-import rastle.dev.rastle_backend.domain.admin.dto.GetCancelRequestCondition;
-import rastle.dev.rastle_backend.domain.admin.dto.GetMemberOrderCondition;
-import rastle.dev.rastle_backend.domain.admin.dto.GetMemberOrderInfo;
-import rastle.dev.rastle_backend.domain.admin.dto.UpdateTrackingNumberRequest;
+import rastle.dev.rastle_backend.domain.admin.dto.*;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleDTO.BundleCreateRequest;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleDTO.BundleUpdateRequest;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleInfo;
@@ -387,6 +384,7 @@ public class AdminController {
     }
 
     @Operation(summary = "관리자 주문 취소 요청 조회", description = "주문 취소 요청 조회 API")
+    @ApiResponse(responseCode = "200", description = "정보 조회 성공시", content = @Content(schema = @Schema(implementation = GetCancelRequestInfo.class)))
     @GetMapping("/cancelRequest")
     public ResponseEntity<ServerResponse<?>> getCancelRequest(
         @Parameter(name = "orderNumber", description = "주문번호", required = false, in = QUERY)
