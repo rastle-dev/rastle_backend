@@ -65,8 +65,6 @@ public class JwtTokenProvider {
     public TokenInfoDTO generateTokenDto(Authentication authentication, HttpServletResponse response) {
         long now = (new Date()).getTime();
         String authorities = getAuthorities(authentication);
-        log.info("User ID: " + authentication.getName()); // 유저 id
-        log.info("Authorities: " + authentication.getAuthorities().toString()); // 유저 권한
         String accessToken = buildToken(authentication.getName(), authorities, now + ACCESS_TOKEN_EXPIRE_TIME);
         String refreshToken = buildToken(authentication.getName(), null, now + REFRESH_TOKEN_EXPIRE_TIME);
 
