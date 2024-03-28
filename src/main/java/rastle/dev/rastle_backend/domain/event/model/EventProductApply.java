@@ -44,6 +44,7 @@ public class EventProductApply {
         this.phoneNumber = phoneNumber;
         this.instagramId = instagramId;
         this.eventApplyProduct = eventApplyProduct;
+        this.applyDate = LocalDateTime.now();
     }
 
     public void update(String phoneNumber, String instagramId) {
