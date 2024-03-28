@@ -47,4 +47,9 @@ public class EventProductApply {
         this.instagramId = instagramId;
         this.eventApplyProduct = eventApplyProduct;
     }
+
+    public void update(String phoneNumber, String instagramId) {
+        this.phoneNumber = phoneNumber;
+        this.instagramId = instagramId;
+    }
 }

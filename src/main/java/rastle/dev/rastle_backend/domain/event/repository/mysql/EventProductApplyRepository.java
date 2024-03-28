@@ -8,7 +8,10 @@ import org.springframework.data.repository.query.Param;
 import rastle.dev.rastle_backend.domain.event.dto.EventProductApplyDTO.MemberEventApplyHistoryDTO;
 import rastle.dev.rastle_backend.domain.event.dto.EventProductApplyDTO.ProductEventApplyHistoryDTO;
 import rastle.dev.rastle_backend.domain.event.model.EventProductApply;
+import rastle.dev.rastle_backend.domain.member.model.Member;
 import rastle.dev.rastle_backend.domain.product.model.ProductBase;
+
+import java.util.Optional;
 
 public interface EventProductApplyRepository extends JpaRepository<EventProductApply, Long> {
     boolean existsByMemberIdAndEventApplyProduct(Long memberId, ProductBase eventProduct);
@@ -32,5 +35,7 @@ public interface EventProductApplyRepository extends JpaRepository<EventProductA
         "WHERE epa.eventApplyProduct.id = :productId")
     Page<ProductEventApplyHistoryDTO> getProductEventApplyHistoryDTOs(@Param("productId") Long productId,
                                                                       Pageable pageable);
+
+    Optional<EventProductApply> findByMemberAndEventApplyProduct(Member member, ProductBase productBase);
 
 }
