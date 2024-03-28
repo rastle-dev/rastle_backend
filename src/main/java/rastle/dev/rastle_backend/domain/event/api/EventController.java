@@ -14,6 +14,7 @@ import rastle.dev.rastle_backend.domain.event.application.EventService;
 import rastle.dev.rastle_backend.domain.event.dto.EventInfo;
 import rastle.dev.rastle_backend.domain.event.dto.EventProductApplyDTO;
 import rastle.dev.rastle_backend.domain.event.dto.EventProductApplyDTO.MemberEventApplyHistoryDTO;
+import rastle.dev.rastle_backend.domain.event.model.EventProductApply;
 import rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo;
 import rastle.dev.rastle_backend.global.response.FailApiResponses;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
@@ -53,8 +54,8 @@ public class EventController {
     public ResponseEntity<ServerResponse<?>> applyEventProduct(
         @RequestBody EventProductApplyDTO eventProductApplyDTO) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        eventService.applyEventProduct(currentMemberId, eventProductApplyDTO);
-        return ResponseEntity.ok(new ServerResponse<>("이벤트 응모 신청이 완료되었습니다."));
+        EventProductApply eventProductApply = eventService.applyEventProduct(currentMemberId, eventProductApplyDTO);
+        return ResponseEntity.ok(new ServerResponse<>("이벤트 응모 신청이 완료되었습니다. "+eventProductApply.getId()));
     }
 
     @Operation(summary = "회원 이벤트 응모 신청 내역 조회 API", description = "회원의 이벤트 응모 신청 내역을 조회합니다.")

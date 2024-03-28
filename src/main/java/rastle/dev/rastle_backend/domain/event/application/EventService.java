@@ -52,7 +52,7 @@ public class EventService {
     }
 
     @Transactional
-    public void applyEventProduct(Long currentMemberId, EventProductApplyDTO eventProductApplyDTO) {
+    public EventProductApply applyEventProduct(Long currentMemberId, EventProductApplyDTO eventProductApplyDTO) {
         ProductBase productBase = productBaseRepository.findById(eventProductApplyDTO.getEventProductId())
             .orElseThrow(NotFoundByIdException::new);
         if (productBase.getEvent() == null) {
@@ -64,9 +64,7 @@ public class EventService {
         EventProductApply eventProductApply;
         if (eventApplyProductId.isPresent()) {
             eventProductApply = eventApplyProductId.get();
-
             eventProductApply.update(eventProductApply.getPhoneNumber(), eventProductApply.getInstagramId());
-
         } else {
             eventProductApply = EventProductApply.builder()
                 .member(member)
@@ -78,6 +76,7 @@ public class EventService {
 
         }
         eventProductApplyRepository.save(eventProductApply);
+        return eventProductApply;
     }
 
     @Transactional(readOnly = true)
