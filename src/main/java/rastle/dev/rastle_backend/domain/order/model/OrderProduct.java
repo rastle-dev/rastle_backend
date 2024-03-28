@@ -34,10 +34,16 @@ public class OrderProduct extends BaseTimeEntity {
     private Long count;
     @ColumnDefault("0")
     private Long price;
+    @ColumnDefault("0")
+    @Column(name = "total_price")
+    private Long totalPrice;
     @Column(name = "tracking_number")
     private String trackingNumber;
     @Column(name = "product_order_number", unique = true)
     private Long productOrderNumber;
+    @ColumnDefault("0")
+    @Column(name = "cancel_amount")
+    private Long cancelAmount;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
@@ -48,13 +54,14 @@ public class OrderProduct extends BaseTimeEntity {
     private OrderDetail orderDetail;
 
     @Builder
-    public OrderProduct(String name, String color, String size, Long count, Long price, Long productOrderNumber, ProductBase product, OrderDetail orderDetail, String trackingNumber, OrderStatus orderStatus) {
+    public OrderProduct(String name, String color, String size, Long count, Long price, Long totalPrice, Long productOrderNumber, ProductBase product, OrderDetail orderDetail, String trackingNumber, OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
         this.name = name;
         this.color = color;
         this.size = size;
         this.count = count;
         this.price = price;
+        this.totalPrice = totalPrice;
         this.productOrderNumber = productOrderNumber;
         this.product = product;
         this.orderDetail = orderDetail;
@@ -70,5 +77,9 @@ public class OrderProduct extends BaseTimeEntity {
 
     public void updateOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+    public void addCancelAmount(Long cancelAmount) {
+        this.cancelAmount += cancelAmount;
     }
 }

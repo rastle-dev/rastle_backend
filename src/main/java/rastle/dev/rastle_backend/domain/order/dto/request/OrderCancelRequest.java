@@ -11,6 +11,6 @@ import lombok.Setter;
 @Setter
 public class OrderCancelRequest {
     Long orderNumber;
-    Long[] productOrderNumber;
+    ProductOrderCancelRequest[] productOrderCancelRequests;
     String reason;
 }

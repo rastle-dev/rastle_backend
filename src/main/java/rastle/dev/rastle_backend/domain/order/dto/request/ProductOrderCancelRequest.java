@@ -1,4 +1,4 @@
-package rastle.dev.rastle_backend.domain.admin.dto;
+package rastle.dev.rastle_backend.domain.order.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CancelOrderRequest {
-    String impId;
+public class ProductOrderCancelRequest {
     Long productOrderNumber;
-    Long cancelRequestId;
+    Long cancelAmount;
 }

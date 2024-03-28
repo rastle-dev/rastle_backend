@@ -25,6 +25,8 @@ public class CancelRequest extends BaseTimeEntity {
     private String reason;
     @Column(name = "product_order_number")
     private Long productOrderNumber;
+    @Column(name = "cancel_amount")
+    private Long cancelAmount;
     @Column(name = "cancel_request_status")
     @Enumerated(STRING)
     private CancelRequestStatus cancelRequestStatus;
@@ -35,11 +37,12 @@ public class CancelRequest extends BaseTimeEntity {
 
 
     @Builder
-    public CancelRequest(String reason, Long productOrderNumber, OrderDetail orderDetail, CancelRequestStatus cancelRequestStatus) {
+    public CancelRequest(String reason, Long productOrderNumber, OrderDetail orderDetail, CancelRequestStatus cancelRequestStatus, Long cancelAmount) {
         this.reason = reason;
         this.productOrderNumber = productOrderNumber;
         this.orderDetail = orderDetail;
         this.cancelRequestStatus = cancelRequestStatus;
+        this.cancelAmount = cancelAmount;
     }
 
     public void updateStatus(CancelRequestStatus cancelRequestStatus) {
