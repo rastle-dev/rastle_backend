@@ -35,6 +35,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static rastle.dev.rastle_backend.global.common.enums.CancelRequestStatus.PENDING;
 import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.CREATED;
 
 @Service
@@ -173,7 +174,7 @@ public class OrderService {
         List<CancelRequest> toSave = new ArrayList<>();
 
         for (Long productOrderNumber : orderCancelRequest.getProductOrderNumber()) {
-            CancelRequest cancelRequest = CancelRequest.builder().orderDetail(orderDetail).reason(orderCancelRequest.getReason()).productOrderNumber(productOrderNumber).build();
+            CancelRequest cancelRequest = CancelRequest.builder().orderDetail(orderDetail).reason(orderCancelRequest.getReason()).productOrderNumber(productOrderNumber).cancelRequestStatus(PENDING).build();
             toSave.add(cancelRequest);
         }
 

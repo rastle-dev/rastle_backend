@@ -15,9 +15,6 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
         "FROM OrderProduct op LEFT OUTER JOIN ProductBase p ON op.product.id = p.id WHERE op.orderDetail.id = :orderId")
     List<SimpleProductOrderInfo> findSimpleProductOrderInfoByOrderId(@Param("orderId") Long orderId);
 
-    @Query("SELECT CAST(COALESCE(SUM(op.totalPrice), 0) AS Long) " +
-        "FROM OrderProduct op LEFT OUTER JOIN OrderDetail o ON op.orderDetail.id = o.id WHERE o.orderNumber = :orderNumber GROUP BY o.id")
-    Long findOrderProductPriceSumByOrderNumber(@Param("orderNumber") String orderNumber);
-
-    Optional<OrderProduct> findByProductOrderNumber(Long productOrderNumber);
+    @Query("SELECT op FROM OrderProduct op JOIN FETCH op.orderDetail JOIN FETCH op.orderDetail.payment WHERE op.productOrderNumber=:productOrderNumber")
+    Optional<OrderProduct> findByProductOrderNumber(@Param("productOrderNumber") Long productOrderNumber);
 }

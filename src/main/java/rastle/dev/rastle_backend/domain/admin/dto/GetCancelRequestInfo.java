@@ -11,6 +11,7 @@ import rastle.dev.rastle_backend.global.common.enums.OrderStatus;
 @NoArgsConstructor
 public class GetCancelRequestInfo {
     String impId;
+    Long cancelRequestId;
     Long orderNumber;
     Long productOrderNumber;
     OrderStatus orderStatus;
@@ -27,8 +28,9 @@ public class GetCancelRequestInfo {
     String userPostCode;
 
     @QueryProjection
-    public GetCancelRequestInfo(String impId, Long orderNumber, Long productOrderNumber, OrderStatus orderStatus, Long cancelPrice, String productName, String productColor, String productSize, Long productCount, String reason, String userName, String userTel, String userEmail, String userAddress, String userPostCode) {
+    public GetCancelRequestInfo(String impId, Long cancelRequestId, Long orderNumber, Long productOrderNumber, OrderStatus orderStatus, Long cancelPrice, String productName, String productColor, String productSize, Long productCount, String reason, String userName, String userTel, String userEmail, String userAddress, String userPostCode) {
         this.impId = impId;
+        this.cancelRequestId = cancelRequestId;
         this.orderNumber = orderNumber;
         this.productOrderNumber = productOrderNumber;
         this.orderStatus = orderStatus;

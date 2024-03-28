@@ -35,7 +35,7 @@ public class MemberOrderQRepositoryImpl implements MemberOrderQRepository {
     public Page<GetMemberOrderInfo> getMemberOrderInfo(GetMemberOrderCondition condition) {
         JPAQuery<GetMemberOrderInfo> query = jpaQueryFactory.select(
                 new QGetMemberOrderInfo(
-                    orderDetail.orderStatus,
+                    orderProduct.orderStatus,
                     payment.paidAt,
                     orderDetail.orderNumber,
                     orderProduct.productOrderNumber,

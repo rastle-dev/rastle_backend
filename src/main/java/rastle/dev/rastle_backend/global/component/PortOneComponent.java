@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
+import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentPrepareResponse;
 import rastle.dev.rastle_backend.global.cache.RedisCache;
 import rastle.dev.rastle_backend.global.component.dto.request.PortOnePaymentCancelRequest;
@@ -70,7 +71,8 @@ public class PortOneComponent {
 
     }
 
-    public PaymentResponse cancelPayment(String impId, Long cancelAmount, OrderDetail orderDetail) {
+    public PaymentResponse cancelPayment(String impId, Long cancelAmount, OrderProduct orderProduct) {
+        OrderDetail orderDetail = orderProduct.getOrderDetail();
         String accessToken = getAccessToken();
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(singletonList(APPLICATION_JSON));

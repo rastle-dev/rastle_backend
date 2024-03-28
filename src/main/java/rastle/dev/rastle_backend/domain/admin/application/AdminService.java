@@ -36,8 +36,10 @@ import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.MemberInfoDto;
 import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.MemberInfoDto.OrderProductDetail;
 import rastle.dev.rastle_backend.domain.member.model.Member;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
+import rastle.dev.rastle_backend.domain.order.model.CancelRequest;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
 import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
+import rastle.dev.rastle_backend.domain.order.repository.mysql.CancelRequestRepository;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderDetailRepository;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderProductRepository;
 import rastle.dev.rastle_backend.domain.product.dto.ProductDTO.ProductCreateRequest;
@@ -52,6 +54,7 @@ import rastle.dev.rastle_backend.domain.product.repository.mysql.BundleProductRe
 import rastle.dev.rastle_backend.domain.product.repository.mysql.EventProductRepository;
 import rastle.dev.rastle_backend.domain.product.repository.mysql.ProductBaseRepository;
 import rastle.dev.rastle_backend.domain.product.repository.mysql.ProductDetailRepository;
+import rastle.dev.rastle_backend.global.component.PortOneComponent;
 import rastle.dev.rastle_backend.global.component.S3Component;
 import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
 import rastle.dev.rastle_backend.global.util.TimeUtil;
@@ -62,6 +65,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.*;
+import static rastle.dev.rastle_backend.global.common.enums.CancelRequestStatus.COMPLETED;
+import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.CANCELLED;
 
 @Slf4j
 @Service
@@ -82,6 +87,8 @@ public class AdminService {
     private final MemberOrderQRepository memberOrderQRepository;
     private final OrderProductRepository orderProductRepository;
     private final CancelRequestQRepository cancelRequestQRepository;
+    private final PortOneComponent portOneComponent;
+    private final CancelRequestRepository cancelRequestRepository;
 
     // ==============================================================================================================
     // 상품 관련 서비스
@@ -623,5 +630,17 @@ public class AdminService {
     @Transactional(readOnly = true)
     public Page<GetCancelRequestInfo> getCancelRequest(GetCancelRequestCondition cancelRequestCondition) {
         return cancelRequestQRepository.getCancelRequestInfo(cancelRequestCondition);
+    }
+    @Transactional
+    public CancelOrderResult cancelOrder(CancelOrderRequest cancelOrderRequest) {
+        OrderProduct orderProduct = orderProductRepository.findByProductOrderNumber(cancelOrderRequest.getProductOrderNumber()).orElseThrow(() -> new RuntimeException("해당 상풍 주문 번호로 존재하는 상품 주문이 없다."));
+        CancelRequest cancelRequest = cancelRequestRepository.findById(cancelOrderRequest.getCancelRequestId()).orElseThrow(() -> new RuntimeException("해당 아이디로 존재하는 취소 요청이 없습니다. " + cancelOrderRequest.getCancelRequestId()));
+
+        portOneComponent.cancelPayment(cancelOrderRequest.getImpId(), cancelOrderRequest.getCancelAmount(), orderProduct);
+        orderProduct.updateOrderStatus(CANCELLED);
+        orderProduct.getOrderDetail().updateOrderStatus(CANCELLED);
+        orderProduct.getOrderDetail().getPayment().addCancelledSum(cancelOrderRequest.getCancelAmount());
+        cancelRequest.updateStatus(COMPLETED);
+        return new CancelOrderResult(cancelOrderRequest.getImpId(), cancelOrderRequest.getProductOrderNumber(), cancelOrderRequest.getCancelAmount(), cancelOrderRequest.getCancelRequestId());
     }
 }
