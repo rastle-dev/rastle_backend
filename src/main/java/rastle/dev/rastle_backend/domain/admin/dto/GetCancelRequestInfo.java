@@ -15,12 +15,14 @@ public class GetCancelRequestInfo {
     Long orderNumber;
     Long productOrderNumber;
     OrderStatus orderStatus;
-    Long cancelPrice;
+    Long price;
+    Long productOrderTotalPrice;
     String productName;
     String productColor;
     String productSize;
     Long productCount;
     String reason;
+    Long cancelAmount;
     String userName;
     String userTel;
     String userEmail;
@@ -28,18 +30,20 @@ public class GetCancelRequestInfo {
     String userPostCode;
 
     @QueryProjection
-    public GetCancelRequestInfo(String impId, Long cancelRequestId, Long orderNumber, Long productOrderNumber, OrderStatus orderStatus, Long cancelPrice, String productName, String productColor, String productSize, Long productCount, String reason, String userName, String userTel, String userEmail, String userAddress, String userPostCode) {
+    public GetCancelRequestInfo(String impId, Long cancelRequestId, Long orderNumber, Long productOrderNumber, OrderStatus orderStatus, Long price, Long productOrderTotalPrice, String productName, String productColor, String productSize, Long productCount, String reason, Long cancelAmount, String userName, String userTel, String userEmail, String userAddress, String userPostCode) {
         this.impId = impId;
         this.cancelRequestId = cancelRequestId;
         this.orderNumber = orderNumber;
         this.productOrderNumber = productOrderNumber;
         this.orderStatus = orderStatus;
-        this.cancelPrice = cancelPrice;
+        this.price = price;
+        this.productOrderTotalPrice = productOrderTotalPrice;
         this.productName = productName;
         this.productColor = productColor;
         this.productSize = productSize;
         this.productCount = productCount;
         this.reason = reason;
+        this.cancelAmount = cancelAmount;
         this.userName = userName;
         this.userTel = userTel;
         this.userEmail = userEmail;

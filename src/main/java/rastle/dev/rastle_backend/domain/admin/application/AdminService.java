@@ -639,11 +639,12 @@ public class AdminService {
         OrderProduct orderProduct = orderProductRepository.findByProductOrderNumber(cancelOrderRequest.getProductOrderNumber()).orElseThrow(() -> new RuntimeException("해당 상풍 주문 번호로 존재하는 상품 주문이 없다."));
         CancelRequest cancelRequest = cancelRequestRepository.findById(cancelOrderRequest.getCancelRequestId()).orElseThrow(() -> new RuntimeException("해당 아이디로 존재하는 취소 요청이 없습니다. " + cancelOrderRequest.getCancelRequestId()));
 
-        portOneComponent.cancelPayment(cancelOrderRequest.getImpId(), cancelOrderRequest.getCancelAmount(), orderProduct);
+        portOneComponent.cancelPayment(cancelOrderRequest.getImpId(), cancelRequest, orderProduct);
         orderProduct.updateOrderStatus(CANCELLED);
         orderProduct.getOrderDetail().updateOrderStatus(CANCELLED);
-        orderProduct.getOrderDetail().getPayment().addCancelledSum(cancelOrderRequest.getCancelAmount());
+        orderProduct.addCancelAmount(cancelRequest.getCancelAmount());
+        orderProduct.getOrderDetail().getPayment().addCancelledSum(orderProduct.getPrice() * cancelRequest.getCancelAmount());
         cancelRequest.updateStatus(COMPLETED);
-        return new CancelOrderResult(cancelOrderRequest.getImpId(), cancelOrderRequest.getProductOrderNumber(), cancelOrderRequest.getCancelAmount(), cancelOrderRequest.getCancelRequestId());
+        return new CancelOrderResult(cancelOrderRequest.getImpId(), cancelOrderRequest.getProductOrderNumber(), orderProduct.getPrice() * cancelRequest.getCancelAmount(), cancelOrderRequest.getCancelRequestId());
     }
 }

@@ -15,6 +15,7 @@ import rastle.dev.rastle_backend.domain.order.dto.OrderDTO.*;
 import rastle.dev.rastle_backend.domain.order.dto.OrderProductSummary;
 import rastle.dev.rastle_backend.domain.order.dto.OrderSimpleInfo;
 import rastle.dev.rastle_backend.domain.order.dto.request.OrderCancelRequest;
+import rastle.dev.rastle_backend.domain.order.dto.request.ProductOrderCancelRequest;
 import rastle.dev.rastle_backend.domain.order.dto.response.OrderCancelResponse;
 import rastle.dev.rastle_backend.domain.order.model.CancelRequest;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
@@ -83,25 +84,27 @@ public class OrderService {
         List<ProductOrderResponse> orderResponses = new ArrayList<>();
         for (ProductOrderRequest productOrderRequest : productOrderRequests) {
             ProductBase productBase = productBaseRepository.getReferenceById(productOrderRequest.getProductId());
+            OrderProduct orderProduct = OrderProduct.builder()
+                .orderDetail(orderDetail)
+                .orderStatus(CREATED)
+                .product(ProductBase.builder().id(productOrderRequest.getProductId()).build())
+                .name(productOrderRequest.getName())
+                .color(productOrderRequest.getColor())
+                .size(productOrderRequest.getSize())
+                .count(productOrderRequest.getCount())
+                .price((long) productBase.getDiscountPrice())
+                .totalPrice((long) productBase.getDiscountPrice() * productOrderRequest.getCount())
+                .build();
+            orderProductRepository.save(orderProduct);
+            orderPrice += orderProduct.getPrice();
+
+            Long productOrderNumber = orderNumberComponent.createProductOrderNumber(orderDetail.getId(),
+                orderProduct.getId());
+
+            orderProduct.updateProductOrderNumber(productOrderNumber);
+            orderResponses.add(ProductOrderRequest.toResponse(productOrderRequest, productOrderNumber.toString()));
             for (int count = 0; count < productOrderRequest.getCount(); count++) {
-                OrderProduct orderProduct = OrderProduct.builder()
-                    .orderDetail(orderDetail)
-                    .orderStatus(CREATED)
-                    .product(ProductBase.builder().id(productOrderRequest.getProductId()).build())
-                    .name(productOrderRequest.getName())
-                    .color(productOrderRequest.getColor())
-                    .size(productOrderRequest.getSize())
-                    .count(1L)
-                    .price((long) productBase.getDiscountPrice())
-                    .build();
-                orderProductRepository.save(orderProduct);
-                orderPrice += orderProduct.getPrice();
 
-                Long productOrderNumber = orderNumberComponent.createProductOrderNumber(orderDetail.getId(),
-                    orderProduct.getId());
-
-                orderProduct.updateProductOrderNumber(productOrderNumber);
-                orderResponses.add(ProductOrderRequest.toResponse(productOrderRequest, productOrderNumber.toString()));
             }
 
         }
@@ -175,8 +178,8 @@ public class OrderService {
         validateMemberOrder(member, orderDetail);
         List<CancelRequest> toSave = new ArrayList<>();
 
-        for (Long productOrderNumber : orderCancelRequest.getProductOrderNumber()) {
-            CancelRequest cancelRequest = CancelRequest.builder().orderDetail(orderDetail).reason(orderCancelRequest.getReason()).productOrderNumber(productOrderNumber).cancelRequestStatus(PENDING).build();
+        for (ProductOrderCancelRequest productOrderCancelRequest : orderCancelRequest.getProductOrderCancelRequests()) {
+            CancelRequest cancelRequest = CancelRequest.builder().orderDetail(orderDetail).reason(orderCancelRequest.getReason()).productOrderNumber(productOrderCancelRequest.getProductOrderNumber()).cancelAmount(productOrderCancelRequest.getCancelAmount()).cancelRequestStatus(PENDING).build();
             toSave.add(cancelRequest);
         }
 
@@ -184,7 +187,7 @@ public class OrderService {
 
 
         return OrderCancelResponse.builder()
-            .cancelProductOrderNumber(orderCancelRequest.getProductOrderNumber())
+            .cancelProductOrders(orderCancelRequest.getProductOrderCancelRequests())
             .build();
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import rastle.dev.rastle_backend.domain.order.model.CancelRequest;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
 import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentPrepareResponse;
@@ -88,7 +89,8 @@ public class PortOneComponent {
 
     }
 
-    public PaymentResponse cancelPayment(String impId, Long cancelAmount, OrderProduct orderProduct) {
+    public PaymentResponse cancelPayment(String impId, CancelRequest productOrderCancelRequest, OrderProduct orderProduct) {
+
         OrderDetail orderDetail = orderProduct.getOrderDetail();
         String accessToken = getAccessToken();
         HttpHeaders headers = new HttpHeaders();
@@ -97,7 +99,7 @@ public class PortOneComponent {
         headers.set(AUTHORIZATION, accessToken);
         PortOnePaymentCancelRequest cancelRequest = PortOnePaymentCancelRequest.builder()
             .checksum(orderDetail.getPayment().getPaymentPrice() - orderDetail.getPayment().getCancelledSum())
-            .amount(cancelAmount)
+            .amount(orderProduct.getPrice() * productOrderCancelRequest.getCancelAmount())
             .merchant_uid(Long.toString(orderDetail.getOrderNumber()))
             .imp_uid(impId)
             .build();

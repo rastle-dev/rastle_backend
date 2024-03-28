@@ -29,6 +29,7 @@ public class GetMemberOrderInfo {
     String trackingNumber;
     String impId;
     Long productPrice;
+    Long productOrderTotalPrice;
     Long orderPrice;
     Long paymentPrice;
     Long deliveryPrice;
@@ -36,7 +37,7 @@ public class GetMemberOrderInfo {
     String paymentMethod;
     Long couponAmount;
     @QueryProjection
-    public GetMemberOrderInfo(OrderStatus orderStatus, LocalDateTime paidAt, Long orderNumber, Long productOrderNumber, String productName, String color, String size, Long count, String receiverName, String receiverTel, String receiverEmail, String receiverAddress, String receiverPostCode, String deliveryService, String deliveryMsg, String trackingNumber, String impId, Long productPrice,  Long orderPrice, Long paymentPrice, Long deliveryPrice, Long additionalDeliveryPrice, String paymentMethod, Long couponAmount) {
+    public GetMemberOrderInfo(OrderStatus orderStatus, LocalDateTime paidAt, Long orderNumber, Long productOrderNumber, String productName, String color, String size, Long count, String receiverName, String receiverTel, String receiverEmail, String receiverAddress, String receiverPostCode, String deliveryService, String deliveryMsg, String trackingNumber, String impId, Long productPrice, Long productOrderTotalPrice,  Long orderPrice, Long paymentPrice, Long deliveryPrice, Long additionalDeliveryPrice, String paymentMethod, Long couponAmount) {
         this.orderStatus = orderStatus;
         this.paidAt = paidAt;
         this.orderNumber = orderNumber;
@@ -54,6 +55,7 @@ public class GetMemberOrderInfo {
         this.trackingNumber = trackingNumber;
         this.impId = impId;
         this.productPrice = productPrice;
+        this.productOrderTotalPrice = productOrderTotalPrice;
         this.orderPrice = orderPrice;
         this.paymentPrice = paymentPrice;
         this.deliveryPrice = deliveryPrice;
