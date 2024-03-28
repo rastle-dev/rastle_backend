@@ -9,13 +9,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import rastle.dev.rastle_backend.domain.admin.dto.GetCancelRequestCondition;
-import rastle.dev.rastle_backend.domain.admin.dto.GetMemberOrderCondition;
-import rastle.dev.rastle_backend.domain.admin.dto.GetMemberOrderInfo;
-import rastle.dev.rastle_backend.domain.admin.dto.UpdateTrackingNumberRequest;
+import rastle.dev.rastle_backend.domain.admin.dto.*;
 import rastle.dev.rastle_backend.domain.admin.exception.NotEmptyBundleException;
 import rastle.dev.rastle_backend.domain.admin.exception.NotEmptyCategoryException;
 import rastle.dev.rastle_backend.domain.admin.exception.NotEmptyEventException;
+import rastle.dev.rastle_backend.domain.admin.repository.mysql.CancelRequestQRepository;
 import rastle.dev.rastle_backend.domain.admin.repository.mysql.MemberOrderQRepository;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleDTO.BundleCreateRequest;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleDTO.BundleUpdateRequest;
@@ -83,6 +81,7 @@ public class AdminService {
     private final EventProductApplyRepository eventProductApplyRepository;
     private final MemberOrderQRepository memberOrderQRepository;
     private final OrderProductRepository orderProductRepository;
+    private final CancelRequestQRepository cancelRequestQRepository;
 
     // ==============================================================================================================
     // 상품 관련 서비스
@@ -622,7 +621,7 @@ public class AdminService {
         return UPDATED;
     }
     @Transactional(readOnly = true)
-    public Object getCancelRequest(GetCancelRequestCondition cancelRequestCondition) {
-        return null;
+    public Page<GetCancelRequestInfo> getCancelRequest(GetCancelRequestCondition cancelRequestCondition) {
+        return cancelRequestQRepository.getCancelRequestInfo(cancelRequestCondition);
     }
 }
