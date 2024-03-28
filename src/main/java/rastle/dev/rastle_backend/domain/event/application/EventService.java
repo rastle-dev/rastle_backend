@@ -8,8 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import rastle.dev.rastle_backend.domain.event.dto.EventInfo;
 import rastle.dev.rastle_backend.domain.event.dto.EventProductApplyDTO;
 import rastle.dev.rastle_backend.domain.event.dto.EventProductApplyDTO.MemberEventApplyHistoryDTO;
-import rastle.dev.rastle_backend.domain.event.exception.handler.EventExceptionHandler.AlreadyAppliedException;
-import rastle.dev.rastle_backend.domain.event.exception.handler.EventExceptionHandler.NotEventProductException;
+import rastle.dev.rastle_backend.domain.event.exception.handler.EventExceptionHandler;
 import rastle.dev.rastle_backend.domain.event.model.EventProductApply;
 import rastle.dev.rastle_backend.domain.event.repository.mysql.EventProductApplyRepository;
 import rastle.dev.rastle_backend.domain.event.repository.mysql.EventRepository;
@@ -61,24 +60,31 @@ public class EventService {
     public void applyEventProduct(Long currentMemberId, EventProductApplyDTO eventProductApplyDTO) {
         ProductBase productBase = productBaseRepository.findById(eventProductApplyDTO.getEventProductId())
             .orElseThrow(NotFoundByIdException::new);
-        if (eventProductApplyRepository.existsByMemberIdAndEventApplyProduct(currentMemberId, productBase)) {
-            throw new AlreadyAppliedException();
-        }
         if (productBase.getEvent() == null) {
-            throw new NotEventProductException();
+            throw new EventExceptionHandler.NotEventProductException();
         }
         Member member = memberRepository.findById(currentMemberId)
             .orElseThrow(NotFoundByIdException::new);
+        if (eventProductApplyRepository.existsByMemberIdAndEventApplyProduct(currentMemberId, productBase)) {
+            EventProductApply eventProductApply = eventProductApplyRepository.findByMemberAndEventApplyProduct(member, productBase).orElseThrow(() -> new RuntimeException("해당 멤버와 이벤트 관련 디비를 확인해주세요 memberId " + currentMemberId + " productId " + eventProductApplyDTO.getEventProductId()));
 
-        EventProductApply eventProductApply = EventProductApply.builder()
-            .member(member)
-            .phoneNumber(eventProductApplyDTO.getEventPhoneNumber())
-            .instagramId(eventProductApplyDTO.getInstagramId())
-            .eventApplyProduct(productBase)
-            .build();
-        productBase.incrementEventApplyCount();
+            eventProductApply.update(eventProductApply.getPhoneNumber(), eventProductApply.getInstagramId());
 
-        eventProductApplyRepository.save(eventProductApply);
+        } else {
+            EventProductApply eventProductApply = EventProductApply.builder()
+                .member(member)
+                .phoneNumber(eventProductApplyDTO.getEventPhoneNumber())
+                .instagramId(eventProductApplyDTO.getInstagramId())
+                .eventApplyProduct(productBase)
+                .build();
+            productBase.incrementEventApplyCount();
+
+            eventProductApplyRepository.save(eventProductApply);
+        }
+
+
+
+
     }
 
     /**
