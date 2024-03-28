@@ -176,10 +176,6 @@ public class MemberAuthService {
         Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(refreshToken);
         String username = authentication.getName();
         String storedToken = redisTemplate.opsForValue().get(username);
-        log.info("Username: " + username);
-        log.info("Refresh Token: " + refreshToken);
-        log.info("Stored Token: " + storedToken);
-
         if (storedToken != null && storedToken.equals(refreshToken)) {
             String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
 
