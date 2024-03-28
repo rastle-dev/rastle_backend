@@ -21,6 +21,7 @@ import rastle.dev.rastle_backend.domain.product.repository.mysql.ProductBaseRepo
 import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
 
 import java.util.List;
+import java.util.Optional;
 
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.ALL;
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.TRUE;
@@ -53,7 +54,7 @@ public class EventService {
     /**
      * 이벤트 응모 신청
      *
-     * @param memberId
+     * @param currentMemberId
      * @param eventProductApplyDTO
      */
     @Transactional
@@ -65,8 +66,9 @@ public class EventService {
         }
         Member member = memberRepository.findById(currentMemberId)
             .orElseThrow(NotFoundByIdException::new);
-        if (eventProductApplyRepository.existsByMemberIdAndEventApplyProduct(currentMemberId, productBase)) {
-            EventProductApply eventProductApply = eventProductApplyRepository.findByMemberAndEventApplyProduct(member, productBase).orElseThrow(() -> new RuntimeException("해당 멤버와 이벤트 관련 디비를 확인해주세요 memberId " + currentMemberId + " productId " + eventProductApplyDTO.getEventProductId()));
+        Optional<EventProductApply> eventApplyProductId = eventProductApplyRepository.findByMemberIdAndEventApplyProductId(currentMemberId, eventProductApplyDTO.getEventProductId());
+        if (eventApplyProductId.isPresent()) {
+            EventProductApply eventProductApply = eventApplyProductId.get();
 
             eventProductApply.update(eventProductApply.getPhoneNumber(), eventProductApply.getInstagramId());
 
@@ -81,10 +83,6 @@ public class EventService {
 
             eventProductApplyRepository.save(eventProductApply);
         }
-
-
-
-
     }
 
     /**
