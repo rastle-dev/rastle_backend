@@ -27,7 +27,7 @@ public class OrderNumberComponent {
     private String convertIdToString(Long id) {
         int length = Long.toString(id).length();
         StringBuilder sb = new StringBuilder();
-        while (length < 5) {
+        while (length < 4) {
             sb.append(0);
             length += 1;
         }
