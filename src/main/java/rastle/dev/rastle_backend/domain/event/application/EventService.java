@@ -51,12 +51,6 @@ public class EventService {
         return eventProductRepository.getEventProductInfosByEventId(id);
     }
 
-    /**
-     * 이벤트 응모 신청
-     *
-     * @param currentMemberId
-     * @param eventProductApplyDTO
-     */
     @Transactional
     public void applyEventProduct(Long currentMemberId, EventProductApplyDTO eventProductApplyDTO) {
         ProductBase productBase = productBaseRepository.findById(eventProductApplyDTO.getEventProductId())
@@ -67,13 +61,14 @@ public class EventService {
         Member member = memberRepository.findById(currentMemberId)
             .orElseThrow(NotFoundByIdException::new);
         Optional<EventProductApply> eventApplyProductId = eventProductApplyRepository.findByMemberIdAndEventApplyProductId(currentMemberId, eventProductApplyDTO.getEventProductId());
+        EventProductApply eventProductApply;
         if (eventApplyProductId.isPresent()) {
-            EventProductApply eventProductApply = eventApplyProductId.get();
+            eventProductApply = eventApplyProductId.get();
 
             eventProductApply.update(eventProductApply.getPhoneNumber(), eventProductApply.getInstagramId());
 
         } else {
-            EventProductApply eventProductApply = EventProductApply.builder()
+            eventProductApply = EventProductApply.builder()
                 .member(member)
                 .phoneNumber(eventProductApplyDTO.getEventPhoneNumber())
                 .instagramId(eventProductApplyDTO.getInstagramId())
@@ -81,15 +76,10 @@ public class EventService {
                 .build();
             productBase.incrementEventApplyCount();
 
-            eventProductApplyRepository.save(eventProductApply);
         }
+        eventProductApplyRepository.save(eventProductApply);
     }
 
-    /**
-     * 회원 이벤트 응모 신청 내역 조회
-     *
-     * @param memberId
-     */
     @Transactional(readOnly = true)
     public Page<MemberEventApplyHistoryDTO> getMemberEventApplyHistoryDTOs(Long memberId, Pageable pageable) {
         return eventProductApplyRepository.getMemberEventApplyHistoryDTOs(memberId, pageable);
