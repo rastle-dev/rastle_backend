@@ -83,25 +83,27 @@ public class OrderService {
         List<ProductOrderResponse> orderResponses = new ArrayList<>();
         for (ProductOrderRequest productOrderRequest : productOrderRequests) {
             ProductBase productBase = productBaseRepository.getReferenceById(productOrderRequest.getProductId());
-            OrderProduct orderProduct = OrderProduct.builder()
-                .orderDetail(orderDetail)
-                .orderStatus(CREATED)
-                .product(ProductBase.builder().id(productOrderRequest.getProductId()).build())
-                .name(productOrderRequest.getName())
-                .color(productOrderRequest.getColor())
-                .size(productOrderRequest.getSize())
-                .count(productOrderRequest.getCount())
-                .price((long) productBase.getDiscountPrice())
-                .totalPrice(productBase.getDiscountPrice() * productOrderRequest.getCount())
-                .build();
-            orderProductRepository.save(orderProduct);
-            orderPrice += orderProduct.getTotalPrice();
+            for (int count = 0; count < productOrderRequest.getCount(); count++) {
+                OrderProduct orderProduct = OrderProduct.builder()
+                    .orderDetail(orderDetail)
+                    .orderStatus(CREATED)
+                    .product(ProductBase.builder().id(productOrderRequest.getProductId()).build())
+                    .name(productOrderRequest.getName())
+                    .color(productOrderRequest.getColor())
+                    .size(productOrderRequest.getSize())
+                    .count(1L)
+                    .price((long) productBase.getDiscountPrice())
+                    .build();
+                orderProductRepository.save(orderProduct);
+                orderPrice += orderProduct.getPrice();
 
-            Long productOrderNumber = orderNumberComponent.createProductOrderNumber(orderDetail.getId(),
-                orderProduct.getId());
+                Long productOrderNumber = orderNumberComponent.createProductOrderNumber(orderDetail.getId(),
+                    orderProduct.getId());
 
-            orderProduct.updateProductOrderNumber(productOrderNumber);
-            orderResponses.add(ProductOrderRequest.toResponse(productOrderRequest, productOrderNumber.toString()));
+                orderProduct.updateProductOrderNumber(productOrderNumber);
+                orderResponses.add(ProductOrderRequest.toResponse(productOrderRequest, productOrderNumber.toString()));
+            }
+
         }
 
         return new OrderProductSummary(orderPrice, orderResponses);

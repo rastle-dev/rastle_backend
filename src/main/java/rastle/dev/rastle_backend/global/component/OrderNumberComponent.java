@@ -27,11 +27,12 @@ public class OrderNumberComponent {
     private String convertIdToString(Long id) {
         int length = Long.toString(id).length();
         StringBuilder sb = new StringBuilder();
-        while (length < 4) {
+        while (length < 5) {
             sb.append(0);
             length += 1;
         }
         sb.append(id);
         return sb.toString();
     }
+
 }

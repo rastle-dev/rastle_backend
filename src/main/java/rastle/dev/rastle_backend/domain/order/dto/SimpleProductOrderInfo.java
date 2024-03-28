@@ -23,9 +23,9 @@ public class SimpleProductOrderInfo {
     String color;
     @Schema(description = "상품 사이즈", defaultValue = "M")
     String size;
-    @Schema(description = "상품 구매 수량", defaultValue = "2")
+    @Schema(description = "상품 구매 수량", defaultValue = "1")
     Long count;
-    @Schema(description = "상품 총 구매 금액", defaultValue = "60000 // 상품 1개 금액 X 상품 구매 수량")
-    Long totalPrice;
+    @Schema(description = "상품 총 구매 금액", defaultValue = "60000")
+    Long price;
 
 }
