@@ -21,7 +21,6 @@ import rastle.dev.rastle_backend.domain.product.repository.mysql.ProductBaseRepo
 import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
 
 import java.util.List;
-import java.util.Optional;
 
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.ALL;
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.TRUE;
@@ -52,7 +51,7 @@ public class EventService {
     }
 
     @Transactional
-    public EventProductApply applyEventProduct(Long currentMemberId, EventProductApplyDTO eventProductApplyDTO) {
+    public void applyEventProduct(Long currentMemberId, EventProductApplyDTO eventProductApplyDTO) {
         ProductBase productBase = productBaseRepository.findById(eventProductApplyDTO.getEventProductId())
             .orElseThrow(NotFoundByIdException::new);
         if (productBase.getEvent() == null) {
@@ -60,23 +59,15 @@ public class EventService {
         }
         Member member = memberRepository.findById(currentMemberId)
             .orElseThrow(NotFoundByIdException::new);
-        Optional<EventProductApply> eventApplyProductId = eventProductApplyRepository.findByMemberIdAndEventApplyProductId(currentMemberId, eventProductApplyDTO.getEventProductId());
-        EventProductApply eventProductApply;
-        if (eventApplyProductId.isPresent()) {
-            eventProductApply = eventApplyProductId.get();
-            eventProductApply.update(eventProductApply.getPhoneNumber(), eventProductApply.getInstagramId());
-        } else {
-            eventProductApply = EventProductApply.builder()
-                .member(member)
-                .phoneNumber(eventProductApplyDTO.getEventPhoneNumber())
-                .instagramId(eventProductApplyDTO.getInstagramId())
-                .eventApplyProduct(productBase)
-                .build();
-            productBase.incrementEventApplyCount();
+        EventProductApply eventApplyProduct = eventProductApplyRepository.findByMemberIdAndEventApplyProductId(currentMemberId, eventProductApplyDTO.getEventProductId()).orElse(EventProductApply.builder()
+            .member(member)
+            .phoneNumber(eventProductApplyDTO.getEventPhoneNumber())
+            .instagramId(eventProductApplyDTO.getInstagramId())
+            .eventApplyProduct(productBase)
+            .build());
+        eventApplyProduct.update(eventProductApplyDTO.getEventPhoneNumber(), eventProductApplyDTO.getInstagramId());
+        eventProductApplyRepository.save(eventApplyProduct);
 
-        }
-        eventProductApplyRepository.save(eventProductApply);
-        return eventProductApply;
     }
 
     @Transactional(readOnly = true)
