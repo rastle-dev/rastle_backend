@@ -65,6 +65,7 @@ public class OrderProduct extends BaseTimeEntity {
         this.productOrderNumber = productOrderNumber;
         this.product = product;
         this.orderDetail = orderDetail;
+        this.trackingNumber = trackingNumber;
     }
 
     public void updateTrackingNumber(String trackingNumber) {
