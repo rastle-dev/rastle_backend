@@ -17,4 +17,6 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
 
     @Query("SELECT op FROM OrderProduct op JOIN FETCH op.orderDetail JOIN FETCH op.orderDetail.payment WHERE op.productOrderNumber=:productOrderNumber")
     Optional<OrderProduct> findByProductOrderNumber(@Param("productOrderNumber") Long productOrderNumber);
+
+    Optional<OrderProduct> findByTrackingNumber(String trackingNumber);
 }
