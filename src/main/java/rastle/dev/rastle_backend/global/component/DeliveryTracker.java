@@ -16,6 +16,9 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import rastle.dev.rastle_backend.global.cache.RedisCache;
+import rastle.dev.rastle_backend.global.common.enums.DeliveryTrackerStatus;
+import rastle.dev.rastle_backend.global.component.dto.DeliveryTrackerResponse;
+import rastle.dev.rastle_backend.global.component.dto.request.GetDeliveryStatusRequest;
 import rastle.dev.rastle_backend.global.component.dto.request.WebHookRegisterRequest;
 
 import java.time.LocalDateTime;
@@ -57,6 +60,31 @@ public class DeliveryTracker {
         }
     }
 
+    public DeliveryTrackerStatus getDeliveryStatus(String trackingNumber) {
+        String accessToken = getAccessToken();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(singletonList(APPLICATION_JSON));
+        headers.setContentType(APPLICATION_JSON);
+        headers.set(AUTHORIZATION, accessToken);
+        GetDeliveryStatusRequest deliveryStatusRequest = GetDeliveryStatusRequest.builder()
+            .query(SEARCH_TRACKING_NUMBER_QUERY)
+            .carrierId(CARRIER_ID)
+            .trackingNumber(trackingNumber)
+            .build();
+
+        HttpEntity request = new HttpEntity(deliveryStatusRequest, headers);
+        ResponseEntity<String> serverResponse = getServerResponse(BASE_URL + GRAPH_QL, POST, request);
+        try {
+            Map<String, Object> responseMap = objectMapper.readValue(serverResponse.getBody(), new TypeReference<Map<String, Object>>() {
+            });
+            DeliveryTrackerResponse trackerResponse = new DeliveryTrackerResponse(responseMap, objectMapper);
+            return trackerResponse.getLastEventStatus();
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+
+    }
+
     public void registerWebHook(String trackingNumber) {
         String accessToken = getAccessToken();
         HttpHeaders headers = new HttpHeaders();
@@ -76,10 +104,11 @@ public class DeliveryTracker {
         try {
             Map<String, Object> responseMap = objectMapper.readValue(serverResponse.getBody(), new TypeReference<Map<String, Object>>() {
             });
-            for (String key : responseMap.keySet()) {
-                log.info(key);
+            Map<String, Object> responseData = (Map<String, Object>) responseMap.get("data");
+            if (!(boolean) responseData.get("registerTrackWebhook")) {
+                throw new RuntimeException("webhook not registered successfully");
             }
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
 
