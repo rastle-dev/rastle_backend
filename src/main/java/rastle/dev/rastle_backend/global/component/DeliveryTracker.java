@@ -1,18 +1,24 @@
 package rastle.dev.rastle_backend.global.component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import rastle.dev.rastle_backend.global.cache.RedisCache;
+import rastle.dev.rastle_backend.global.component.dto.request.WebHookRegisterRequest;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import static java.util.Collections.singletonList;
@@ -20,8 +26,10 @@ import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static rastle.dev.rastle_backend.global.common.constants.DeliveryTrackerConstant.*;
+import static rastle.dev.rastle_backend.global.common.constants.PortOneApiConstant.AUTHORIZATION;
 import static rastle.dev.rastle_backend.global.common.constants.RedisConstant.DELIVER_TRACKER_ACCESS;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class DeliveryTracker {
@@ -33,9 +41,48 @@ public class DeliveryTracker {
     private final ObjectMapper objectMapper;
     private final RedisCache redisCache;
 
-    public String registerWebHook(String trackingNumber) {
-        String access = getAccessToken();
-        return access;
+    private ResponseEntity<String> getServerResponse(String url, HttpMethod method, HttpEntity request) {
+        try {
+            return restTemplate.exchange(url, method, request, String.class);
+        } catch (RestClientException exception) {
+            String accessToken = getAccessFromServer();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setAccept(singletonList(APPLICATION_JSON));
+            headers.setContentType(APPLICATION_JSON);
+            headers.set(AUTHORIZATION, accessToken);
+
+            HttpEntity newRequest = new HttpEntity(request.getBody(), headers);
+            return restTemplate.exchange(url, method, newRequest, String.class);
+
+        }
+    }
+
+    public void registerWebHook(String trackingNumber) {
+        String accessToken = getAccessToken();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(singletonList(APPLICATION_JSON));
+        headers.setContentType(APPLICATION_JSON);
+        headers.set(AUTHORIZATION, accessToken);
+        WebHookRegisterRequest webHookRegisterRequest = WebHookRegisterRequest.builder()
+            .callbackUrl(CALLBACK_URL)
+            .carrierId(CARRIER_ID)
+            .expirationTime(LocalDateTime.now().plusDays(2))
+            .trackingNumber(trackingNumber)
+            .query(REGISTER_WEB_HOOK_QUERY)
+            .build();
+
+        HttpEntity request = new HttpEntity(webHookRegisterRequest, headers);
+        ResponseEntity<String> serverResponse = getServerResponse(BASE_URL + GRAPH_QL, POST, request);
+        try {
+            Map<String, Object> responseMap = objectMapper.readValue(serverResponse.getBody(), new TypeReference<Map<String, Object>>() {
+            });
+            for (String key : responseMap.keySet()) {
+                log.info(key);
+            }
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+
     }
 
     private MultiValueMap<String, String> initParams() {
@@ -50,28 +97,32 @@ public class DeliveryTracker {
         if (redisCache.get(DELIVER_TRACKER_ACCESS) != null) {
             return redisCache.get(DELIVER_TRACKER_ACCESS);
         } else {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setAccept(singletonList(APPLICATION_JSON));
-            headers.setContentType(APPLICATION_FORM_URLENCODED);
-            HttpEntity request = new HttpEntity(initParams(), headers);
-            ResponseEntity<String> responseEntity = restTemplate.exchange(BASE_URL + TOKEN_URI, POST, request, String.class);
-            try {
-                Map<String, Object> responseMap = objectMapper.readValue(responseEntity.getBody(), new TypeReference<Map<String, Object>>() {
-                });
-                if (responseMap.containsKey("access_token")) {
-                    String accessToken = (String) responseMap.get("access_token");
-                    redisCache.save(DELIVER_TRACKER_ACCESS, accessToken);
-                    return accessToken;
-                } else {
-                    throw new RuntimeException("cant get access token from delivery tracker api server");
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e.getMessage());
-            }
+            return getAccessFromServer();
 
         }
 
     }
 
+    private String getAccessFromServer() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(singletonList(APPLICATION_JSON));
+        headers.setContentType(APPLICATION_FORM_URLENCODED);
+        HttpEntity request = new HttpEntity(initParams(), headers);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(TOKEN_URL, POST, request, String.class);
+        try {
+            Map<String, Object> responseMap = objectMapper.readValue(responseEntity.getBody(), new TypeReference<Map<String, Object>>() {
+            });
+            if (responseMap.containsKey("access_token")) {
+                String accessToken = (String) responseMap.get("access_token");
+                accessToken = "Bearer " + accessToken;
+                redisCache.save(DELIVER_TRACKER_ACCESS, accessToken);
+                return accessToken;
+            } else {
+                throw new RuntimeException("cant get access token from delivery tracker api server");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
 
 }

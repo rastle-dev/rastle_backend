@@ -10,6 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WebHookRequest {
-     private String carrierId;
+    private String carrierId;
     private String trackingNumber;
 }
