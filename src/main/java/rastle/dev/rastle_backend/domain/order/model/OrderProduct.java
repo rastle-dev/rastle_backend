@@ -54,7 +54,7 @@ public class OrderProduct extends BaseTimeEntity {
     private OrderDetail orderDetail;
 
     @Builder
-    public OrderProduct(String name, String color, String size, Long count, Long price, Long totalPrice, Long productOrderNumber, ProductBase product, OrderDetail orderDetail, String trackingNumber, OrderStatus orderStatus) {
+    public OrderProduct(String name, String color, String size, Long count, Long price, Long totalPrice, Long productOrderNumber, ProductBase product, OrderDetail orderDetail, String trackingNumber, OrderStatus orderStatus, Long cancelAmount) {
         this.orderStatus = orderStatus;
         this.name = name;
         this.color = color;
@@ -66,6 +66,7 @@ public class OrderProduct extends BaseTimeEntity {
         this.product = product;
         this.orderDetail = orderDetail;
         this.trackingNumber = trackingNumber;
+        this.cancelAmount = cancelAmount;
     }
 
     public void updateTrackingNumber(String trackingNumber) {

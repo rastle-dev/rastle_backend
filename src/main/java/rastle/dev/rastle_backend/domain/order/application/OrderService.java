@@ -94,6 +94,7 @@ public class OrderService {
                 .count(productOrderRequest.getCount())
                 .price((long) productBase.getDiscountPrice())
                 .totalPrice((long) productBase.getDiscountPrice() * productOrderRequest.getCount())
+                .cancelAmount(0L)
                 .build();
             orderProductRepository.save(orderProduct);
             orderPrice += orderProduct.getPrice();
