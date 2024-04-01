@@ -12,7 +12,11 @@ public enum OrderStatus {
     DELIVERED("DELIVERED", 5),
     COMPLETED("COMPLETED", 6),
     RETURNED("RETURNED", 7),
-    FAILED("FAILED", 8);
+    FAILED("FAILED", 8),
+    DELIVERY_FAILED("DELIVERY_FAILED", 9),
+    DELIVERY_EXCEPTION("DELIVERY_EXCEPTION", 10),
+    DELIVERY_UNKNOWN("DELIVERY_UNKNOWN", 11);
+
     private final String status;
     private final int index;
     OrderStatus(String status, int index) {

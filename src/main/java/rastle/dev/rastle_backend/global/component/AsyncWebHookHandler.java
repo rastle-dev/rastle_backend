@@ -29,12 +29,23 @@ public class AsyncWebHookHandler {
                 orderProduct.updateOrderStatus(OrderStatus.DELIVERED);
             }
             if (deliveryStatus.equals(DeliveryTrackerStatus.IN_TRANSIT)
-            || deliveryStatus.equals(DeliveryTrackerStatus.OUT_FOR_DELIVERY)
-            || deliveryStatus.equals(DeliveryTrackerStatus.AT_PICKUP)
-            || deliveryStatus.equals(DeliveryTrackerStatus.AVAILABLE_FOR_PICKUP)) {
+                || deliveryStatus.equals(DeliveryTrackerStatus.OUT_FOR_DELIVERY)
+                || deliveryStatus.equals(DeliveryTrackerStatus.AT_PICKUP)
+                || deliveryStatus.equals(DeliveryTrackerStatus.AVAILABLE_FOR_PICKUP)
+                || deliveryStatus.equals(DeliveryTrackerStatus.INFORMATION_RECEIVED)) {
                 orderProduct.updateOrderStatus(OrderStatus.DELIVERY_STARTED);
+            }
+            if (deliveryStatus.equals(DeliveryTrackerStatus.UNKNOWN)) {
+                orderProduct.updateOrderStatus(OrderStatus.DELIVERY_UNKNOWN);
+            }
+            if (deliveryStatus.equals(DeliveryTrackerStatus.EXCEPTION)) {
+                orderProduct.updateOrderStatus(OrderStatus.DELIVERY_EXCEPTION);
+            }
+            if (deliveryStatus.equals(DeliveryTrackerStatus.ATTEMPT_FAIL)) {
+                orderProduct.updateOrderStatus(OrderStatus.DELIVERY_FAILED);
             }
 
         }
     }
+
 }

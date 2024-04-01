@@ -108,6 +108,7 @@ public class DeliveryTracker {
             if (!(boolean) responseData.get("registerTrackWebhook")) {
                 throw new RuntimeException("webhook not registered successfully");
             }
+            log.info("{} delivery tracker webhook registered", trackingNumber);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
