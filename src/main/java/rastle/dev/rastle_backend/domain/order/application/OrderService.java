@@ -35,8 +35,10 @@ import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static rastle.dev.rastle_backend.global.common.enums.CancelRequestStatus.PENDING;
+import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.CANCEL_REQUESTED;
 import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.CREATED;
 
 @Service
@@ -180,6 +182,11 @@ public class OrderService {
         List<CancelRequest> toSave = new ArrayList<>();
 
         for (ProductOrderCancelRequest productOrderCancelRequest : orderCancelRequest.getProductOrderCancelRequests()) {
+            Optional<OrderProduct> byProductOrderNumber = orderProductRepository.findByProductOrderNumber(productOrderCancelRequest.getProductOrderNumber());
+            if (byProductOrderNumber.isPresent()) {
+                OrderProduct orderProduct = byProductOrderNumber.get();
+                orderProduct.updateOrderStatus(CANCEL_REQUESTED);
+            }
             CancelRequest cancelRequest = CancelRequest.builder().orderDetail(orderDetail).reason(orderCancelRequest.getReason()).productOrderNumber(productOrderCancelRequest.getProductOrderNumber()).cancelAmount(productOrderCancelRequest.getCancelAmount()).cancelRequestStatus(PENDING).build();
             toSave.add(cancelRequest);
         }
