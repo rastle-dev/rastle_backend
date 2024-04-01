@@ -17,13 +17,6 @@ public class OrderNumberComponent {
         String orderNumber = now.toEpochSecond(ZoneOffset.UTC) + convertIdToString(orderId);
         return Long.parseLong(orderNumber);
     }
-
-    public Long createProductOrderNumber(Long orderId, Long orderProductId) {
-        LocalDateTime now = LocalDateTime.now(ZoneId.of(ASIA_SEOUL));
-        String orderNumber = now.toEpochSecond(ZoneOffset.UTC) + convertIdToString(orderId) + convertIdToString(orderProductId);
-        return Long.parseLong(orderNumber);
-    }
-
     private String convertIdToString(Long id) {
         int length = Long.toString(id).length();
         StringBuilder sb = new StringBuilder();

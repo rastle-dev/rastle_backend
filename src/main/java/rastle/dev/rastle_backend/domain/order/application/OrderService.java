@@ -98,7 +98,7 @@ public class OrderService {
             orderProductRepository.save(orderProduct);
             orderPrice += orderProduct.getPrice();
 
-            Long productOrderNumber = orderNumberComponent.createProductOrderNumber(orderDetail.getId(),
+            Long productOrderNumber = orderNumberComponent.createOrderNumber(
                 orderProduct.getId());
 
             orderProduct.updateProductOrderNumber(productOrderNumber);
