@@ -19,4 +19,6 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
     Optional<OrderProduct> findByProductOrderNumber(@Param("productOrderNumber") Long productOrderNumber);
 
     Optional<OrderProduct> findByTrackingNumber(String trackingNumber);
+    @Query("SELECT op.trackingNumber FROM OrderProduct op WHERE op.orderStatus = 'DELIVERY_STARTED'")
+    List<String> findTrackingNumberOfNotDelivered();
 }
