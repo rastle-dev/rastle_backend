@@ -42,7 +42,7 @@ public class EmailCertificationService {
      * @param to 수신자 이메일
      * @throws Exception 발송 실패 예외
      */
-    public String sendConfirmMessage(String to) throws Exception {
+    public void sendConfirmMessage(String to) throws Exception {
         ePw = RandomStringUtils.randomNumeric(6);
         MimeMessage mimeMessage = emailSender.createMimeMessage();
         try {
@@ -64,8 +64,6 @@ public class EmailCertificationService {
         } catch (MailException es) {
             throw new IllegalArgumentException(es.getMessage());
         }
-
-        return ePw;
     }
 
     /**
@@ -119,7 +117,7 @@ public class EmailCertificationService {
             mimeMessage.addRecipients(Message.RecipientType.TO, to);
             mimeMessage.setSubject("rastle_ 비밀번호 초기화");
             mimeMessage.setFrom(new InternetAddress("rastle.fashion@gmail.com",
-                "rastle_admin"));
+                    "rastle_admin"));
 
             Context context = new Context();
             context.setVariable("password", temporaryPassword);

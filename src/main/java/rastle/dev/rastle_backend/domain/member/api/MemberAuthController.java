@@ -64,8 +64,8 @@ public class MemberAuthController {
     @FailApiResponses
     @PostMapping(value = "/login")
     public ResponseEntity<ServerResponse<String>> login(@RequestBody LoginDto loginDto,
-                                                        HttpServletRequest request,
-                                                        HttpServletResponse response) {
+            HttpServletRequest request,
+            HttpServletResponse response) {
         ResponseEntity<String> loginResponse = memberAuthService.login(loginDto, request, response);
         HttpHeaders headers = loginResponse.getHeaders(); // 기존 헤더 가져오기
         ServerResponse<String> serverResponse = new ServerResponse<>(loginResponse.getBody());
@@ -88,10 +88,9 @@ public class MemberAuthController {
     @FailApiResponses
     @PostMapping(value = "/emailCertification")
     public ResponseEntity<ServerResponse<String>> emailCertification(
-        @RequestBody EmailCertificationDto emailCertificationDto) throws Exception {
-        String emailResponse = emailCertificationService.sendConfirmMessage(emailCertificationDto.getEmail());
-        ServerResponse<String> serverResponse = new ServerResponse<>(emailResponse);
-        return ResponseEntity.ok(serverResponse);
+            @RequestBody EmailCertificationDto emailCertificationDto) throws Exception {
+        emailCertificationService.sendConfirmMessage(emailCertificationDto.getEmail());
+        return ResponseEntity.ok(new ServerResponse<>("이메일 인증 메일 전송 완료"));
     }
 
     @Operation(summary = "이메일 인증 번호 확인", description = "이메일 인증 번호를 확인합니다.")
@@ -99,9 +98,9 @@ public class MemberAuthController {
     @FailApiResponses
     @PostMapping(value = "/emailCertificationCheck")
     public ResponseEntity<ServerResponse<Boolean>> emailCertificationCheck(
-        @RequestBody EmailCertificationCheckDto emailCertificationCheckDto) throws Exception {
+            @RequestBody EmailCertificationCheckDto emailCertificationCheckDto) throws Exception {
         Boolean checkResponse = emailCertificationService.checkEmailCertification(
-            emailCertificationCheckDto.getEmail(), emailCertificationCheckDto.getCode());
+                emailCertificationCheckDto.getEmail(), emailCertificationCheckDto.getCode());
         ServerResponse<Boolean> serverResponse = new ServerResponse<>(checkResponse);
         return ResponseEntity.ok(serverResponse);
     }
@@ -111,9 +110,9 @@ public class MemberAuthController {
     @FailApiResponses
     @PostMapping(value = "/resetPassword")
     public ResponseEntity<ServerResponse<String>> resetPassword(
-        @RequestBody PasswordResetRequestDto passwordResetRequestDto) throws Exception {
+            @RequestBody PasswordResetRequestDto passwordResetRequestDto) throws Exception {
         String resetResponse = emailCertificationService
-            .sendPasswordResetMessage(passwordResetRequestDto.getEmail());
+                .sendPasswordResetMessage(passwordResetRequestDto.getEmail());
         ServerResponse<String> serverResponse = new ServerResponse<>(resetResponse);
         return ResponseEntity.ok(serverResponse);
     }
