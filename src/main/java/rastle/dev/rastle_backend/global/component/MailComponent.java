@@ -21,7 +21,7 @@ public class MailComponent {
         MimeMessage mimeMessage = emailSender.createMimeMessage();
         try {
             mimeMessage.addRecipients(Message.RecipientType.TO, paymentResponse.getBuyerEmail());
-            mimeMessage.setSubject("rastle_ 가상계좌 발급 안내");
+            mimeMessage.setSubject("recordy slow 가상계좌 발급 안내");
             mimeMessage.setFrom(new InternetAddress("rastle.fashion@gmail.com", "rastle_admin"));
 
             Context context = new Context();
