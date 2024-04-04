@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import rastle.dev.rastle_backend.global.common.enums.OrderStatus;
 
 @Getter
 @NoArgsConstructor
@@ -29,4 +30,8 @@ public class SimpleProductOrderInfo {
     Long price;
     @Schema(description = "상품 구매 총 금액", defaultValue = "30000")
     Long totalPrice;
+    @Schema(description = "상품 상태", defaultValue = "CREATED")
+    OrderStatus status;
+    @Schema(description = "취소 수량", defaultValue = "1")
+    Long cancelAmount;
 }
