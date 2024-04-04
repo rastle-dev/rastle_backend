@@ -36,7 +36,7 @@ public class PaymentController {
     @ApiResponse(responseCode = "200", description = "검증 성공시", content = @Content(schema = @Schema(implementation = PaymentVerificationResponse.class)))
     @PostMapping("/complete")
     public ResponseEntity<?> verifyPaymentCompletion(
-        @RequestBody PaymentVerificationRequest paymentVerificationRequest) {
+            @RequestBody PaymentVerificationRequest paymentVerificationRequest) {
         return ResponseEntity.ok(new ServerResponse<>(paymentService.verifyPayment(paymentVerificationRequest)));
     }
 
@@ -44,11 +44,11 @@ public class PaymentController {
     @ApiResponse(responseCode = "200", description = "검증 성공")
     @GetMapping("/completeMobile")
     public ResponseEntity<Object> verifyMobilePaymentCompletion(@RequestParam("imp_uid") String impUid,
-                                                                @RequestParam("merchant_uid") String merchantUid, @RequestParam("imp_success") boolean impSuccess,
-                                                                @RequestParam(value = "error_code", required = false) String errorCode,
-                                                                @RequestParam(value = "error_msg", required = false) String errorMsg,
-                                                                UriComponentsBuilder uriComponentsBuilder) throws JsonProcessingException {
-        URI redirectUri = paymentService.verifyMobilePayment(impUid, merchantUid, impSuccess, errorCode, errorMsg);
+            @RequestParam("merchant_uid") String merchantUid,
+            @RequestParam(value = "error_code", required = false) String errorCode,
+            @RequestParam(value = "error_msg", required = false) String errorMsg,
+            UriComponentsBuilder uriComponentsBuilder) throws JsonProcessingException {
+        URI redirectUri = paymentService.verifyMobilePayment(impUid, merchantUid, errorCode, errorMsg);
         log.info("redirectUri: {}", redirectUri);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(redirectUri);
