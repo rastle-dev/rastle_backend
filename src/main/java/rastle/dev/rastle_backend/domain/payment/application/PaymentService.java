@@ -20,6 +20,7 @@ import rastle.dev.rastle_backend.domain.payment.dto.PortOneWebHookResponse;
 import rastle.dev.rastle_backend.domain.payment.exception.PaymentException;
 import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 import rastle.dev.rastle_backend.global.common.constants.PortOneStatusConstant;
+import rastle.dev.rastle_backend.global.common.enums.OrderStatus;
 import rastle.dev.rastle_backend.global.component.MailComponent;
 import rastle.dev.rastle_backend.global.component.PortOneComponent;
 import rastle.dev.rastle_backend.global.component.dto.response.PaymentResponse;
@@ -133,6 +134,7 @@ public class PaymentService {
         List<OrderProduct> orderProducts = orderDetail.getOrderProduct();
         for (OrderProduct orderProduct : orderProducts) {
             ProductBase product = orderProduct.getProduct();
+            orderProduct.updateOrderStatus(OrderStatus.PAID);
             product.incrementSoldCount();
         }
     }
