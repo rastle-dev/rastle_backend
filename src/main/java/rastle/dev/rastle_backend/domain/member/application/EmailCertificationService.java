@@ -47,7 +47,7 @@ public class EmailCertificationService {
         MimeMessage mimeMessage = emailSender.createMimeMessage();
         try {
             mimeMessage.addRecipients(Message.RecipientType.TO, to);
-            mimeMessage.setSubject("rastle_ 이메일 인증");
+            mimeMessage.setSubject("recordy slow 이메일 인증");
             mimeMessage.setFrom(new InternetAddress("rastle.fashion@gmail.com", "rastle_admin"));
 
             Context context = new Context();
@@ -115,7 +115,7 @@ public class EmailCertificationService {
         MimeMessage mimeMessage = emailSender.createMimeMessage();
         try {
             mimeMessage.addRecipients(Message.RecipientType.TO, to);
-            mimeMessage.setSubject("rastle_ 비밀번호 초기화");
+            mimeMessage.setSubject("recordy slow 비밀번호 초기화");
             mimeMessage.setFrom(new InternetAddress("rastle.fashion@gmail.com",
                     "rastle_admin"));
 
