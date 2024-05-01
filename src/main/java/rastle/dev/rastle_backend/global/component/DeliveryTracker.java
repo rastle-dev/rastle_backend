@@ -77,7 +77,7 @@ public class DeliveryTracker {
         try {
             Map<String, Object> responseMap = objectMapper.readValue(serverResponse.getBody(), new TypeReference<Map<String, Object>>() {
             });
-            DeliveryTrackerResponse trackerResponse = new DeliveryTrackerResponse(responseMap, objectMapper);
+            DeliveryTrackerResponse trackerResponse = new DeliveryTrack"erResponse(responseMap, objectMapper);
             return trackerResponse.getLastEventStatus();
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e.getMessage());

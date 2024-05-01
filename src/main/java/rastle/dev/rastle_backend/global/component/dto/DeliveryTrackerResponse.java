@@ -17,10 +17,17 @@ public class DeliveryTrackerResponse {
 
     public DeliveryTrackerStatus getLastEventStatus() {
         Map<String, Object> trackMap = (Map<String, Object>) map.get("data");
+        logMap(trackMap);
         Map<String, Object> eventMap = (Map<String, Object>) trackMap.get("track");
         Map<String, Object> lastEventMap = (Map<String, Object>) eventMap.get("lastEvent");
         Map<String, Object> statusMap = (Map<String, Object>) lastEventMap.get("status");
 
         return DeliveryTrackerStatus.getFromStatus((String) statusMap.get("code"));
+    }
+
+    private void logMap(Map<String, Object> map) {
+        for (String key : map.keySet()) {
+            log.info("key : {} value : {}", key, map.get(key).toString());
+        }
     }
 }
