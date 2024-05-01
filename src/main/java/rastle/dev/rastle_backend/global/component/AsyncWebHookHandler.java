@@ -23,6 +23,7 @@ public class AsyncWebHookHandler {
     public void handleWebHook(WebHookRequest webHookRequest) {
         DeliveryTrackerStatus deliveryStatus = deliveryTracker.getDeliveryStatus(webHookRequest.getTrackingNumber());
         Optional<OrderProduct> byTrackingNumber = orderProductRepository.findByTrackingNumber(webHookRequest.getTrackingNumber());
+        log.info("handle webhook request {}", webHookRequest.getTrackingNumber());
         if (byTrackingNumber.isPresent()) {
             OrderProduct orderProduct = byTrackingNumber.get();
             if (deliveryStatus.equals(DeliveryTrackerStatus.DELIVERED)) {
