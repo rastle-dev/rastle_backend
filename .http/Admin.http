@@ -14,7 +14,7 @@ Content-Type: application/json
 Authorization: {{auth_token}}
 
 {
-  "trackingNumber": "6844-3515-9956"
+  "trackingNumber": "684435159956"
 }
 
 ### 관리자 주문 조회
