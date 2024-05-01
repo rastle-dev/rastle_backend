@@ -1,5 +1,5 @@
 ### admin 로그인
-POST http://localhost:8080/auth/login
+POST https://api.recordyslow.com/auth/login
 Content-Type: application/json
 
 {
@@ -7,6 +7,15 @@ Content-Type: application/json
   "password" : "1234"
 }
 > {% client.global.set("auth_token", response.headers.valueOf("Authorization")); %}
+
+### 송장 번호 설정
+PATCH https://api.recordyslow.com/admin/orders/17122635640523/trackingNumber
+Content-Type: application/json
+Authorization: {{auth_token}}
+
+{
+  "trackingNumber": "6844-3515-9956"
+}
 
 ### 관리자 주문 조회
 GET http://localhost:8080/admin/orders?page=0&size=20
