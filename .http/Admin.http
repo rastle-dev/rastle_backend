@@ -9,7 +9,7 @@ Content-Type: application/json
 > {% client.global.set("auth_token", response.headers.valueOf("Authorization")); %}
 
 ### 송장 번호 설정
-PATCH https://api.recordyslow.com/admin/orders/17122635640523/trackingNumber
+PATCH https://api.recordyslow.com/admin/orders/17122490070512/trackingNumber
 Content-Type: application/json
 Authorization: {{auth_token}}
 
