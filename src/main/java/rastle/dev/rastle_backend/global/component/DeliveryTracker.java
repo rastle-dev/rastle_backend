@@ -75,6 +75,7 @@ public class DeliveryTracker {
         HttpEntity request = new HttpEntity(deliveryStatusRequest, headers);
         ResponseEntity<String> serverResponse = getServerResponse(BASE_URL + GRAPH_QL, POST, request);
         try {
+            log.info(serverResponse.getBody());
             Map<String, Object> responseMap = objectMapper.readValue(serverResponse.getBody(), new TypeReference<Map<String, Object>>() {
             });
             DeliveryTrackerResponse trackerResponse = new DeliveryTrackerResponse(responseMap, objectMapper);
