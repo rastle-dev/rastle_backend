@@ -625,11 +625,19 @@ public class AdminService {
     // TODO 여기서 웹훅 등록하는 요청도 보내야할듯
     @Transactional
     public String updateTrackingNumber(Long orderProductNumber, UpdateTrackingNumberRequest trackingNumberRequest) {
+        validateTrackingNumber(trackingNumberRequest);
         OrderProduct orderProduct = orderProductRepository.findByProductOrderNumber(orderProductNumber).orElseThrow(() -> new RuntimeException("상품 주문 번호로 존재하는 상품 주문이 없다. " + orderProductNumber));
         orderProduct.updateTrackingNumber(trackingNumberRequest.getTrackingNumber());
         deliveryTracker.registerWebHook(trackingNumberRequest.getTrackingNumber());
         return UPDATED;
     }
+
+    private void validateTrackingNumber(UpdateTrackingNumberRequest trackingNumberRequest) {
+        if (trackingNumberRequest.getTrackingNumber() == null || trackingNumberRequest.getTrackingNumber().length() < 10 || trackingNumberRequest.getTrackingNumber().length() > 12) {
+            throw new RuntimeException("유효하지 않은 운송장 번호 입니다. 운송장 번호는 10 ~ 12자리 문자열이어야합니다. - 같은 특수 문자 제거 필요");
+        }
+    }
+
     @Transactional(readOnly = true)
     public Page<GetCancelRequestInfo> getCancelRequest(GetCancelRequestCondition cancelRequestCondition) {
         return cancelRequestQRepository.getCancelRequestInfo(cancelRequestCondition);
