@@ -13,7 +13,7 @@ import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.
 public class DeliveryService {
     private final AsyncWebHookHandler asyncWebHookHandler;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public String handleWebHook(WebHookRequest webHookRequest) {
         asyncWebHookHandler.handleWebHook(webHookRequest);
         return HANDLED;
