@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import rastle.dev.rastle_backend.domain.delivery.dto.request.WebHookRequest;
 import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderProductRepository;
@@ -20,6 +21,7 @@ public class AsyncWebHookHandler {
     private final OrderProductRepository orderProductRepository;
 
     @Async("webhookTaskExecutor")
+    @Transactional
     public void handleWebHook(WebHookRequest webHookRequest) {
         log.info("handle webhook request {}", webHookRequest.getTrackingNumber());
         DeliveryTrackerStatus deliveryStatus = deliveryTracker.getDeliveryStatus(webHookRequest.getTrackingNumber());
