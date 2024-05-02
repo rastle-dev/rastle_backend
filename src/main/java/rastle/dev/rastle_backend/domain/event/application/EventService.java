@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import rastle.dev.rastle_backend.domain.event.dto.EventInfo;
 import rastle.dev.rastle_backend.domain.event.dto.EventProductApplyDTO;
 import rastle.dev.rastle_backend.domain.event.dto.EventProductApplyDTO.MemberEventApplyHistoryDTO;
-import rastle.dev.rastle_backend.domain.event.exception.handler.EventExceptionHandler;
+import rastle.dev.rastle_backend.domain.event.exception.NotEventProductException;
 import rastle.dev.rastle_backend.domain.event.model.EventProductApply;
 import rastle.dev.rastle_backend.domain.event.repository.mysql.EventProductApplyRepository;
 import rastle.dev.rastle_backend.domain.event.repository.mysql.EventRepository;
@@ -55,7 +55,7 @@ public class EventService {
         ProductBase productBase = productBaseRepository.findById(eventProductApplyDTO.getEventProductId())
             .orElseThrow(NotFoundByIdException::new);
         if (productBase.getEvent() == null) {
-            throw new EventExceptionHandler.NotEventProductException();
+            throw new NotEventProductException();
         }
         Member member = memberRepository.findById(currentMemberId)
             .orElseThrow(NotFoundByIdException::new);
