@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
-import rastle.dev.rastle_backend.domain.coupon.exception.CouponException;
+import rastle.dev.rastle_backend.domain.coupon.exception.AlreadyUsedCouponException;
 import rastle.dev.rastle_backend.domain.coupon.model.Coupon;
 import rastle.dev.rastle_backend.domain.coupon.repository.mysql.CouponRepository;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
@@ -147,7 +147,7 @@ public class PaymentService {
         if (paymentPrepareRequest.getCouponId() != null) {
             Coupon coupon = couponRepository.getReferenceById(paymentPrepareRequest.getCouponId());
             if (coupon.getCouponStatus() != NOT_USED) {
-                throw new CouponException("이미 사용한 쿠폰");
+                throw new AlreadyUsedCouponException("이미 사용한 쿠폰");
             }
             paymentPrice -= coupon.getDiscount();
         }

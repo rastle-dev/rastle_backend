@@ -9,13 +9,11 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import rastle.dev.rastle_backend.global.error.exception.InvalidRequestException;
-import rastle.dev.rastle_backend.global.error.exception.NotAuthorizedException;
-import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
-import rastle.dev.rastle_backend.global.error.exception.S3ImageUploadException;
+import rastle.dev.rastle_backend.global.error.exception.GlobalException;
 import rastle.dev.rastle_backend.global.error.response.ErrorResponse;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @Slf4j
 @RestControllerAdvice
@@ -27,47 +25,18 @@ public class GlobalExceptionHandler {
         log.warn(exception.getMessage(), stackTrace[0]);
     }
 
-    @ExceptionHandler(NotFoundByIdException.class)
-    protected final ResponseEntity<ErrorResponse> handleNotFoundByIdException(
-        NotFoundByIdException ex, HttpServletRequest request) {
+    @ExceptionHandler(GlobalException.class)
+    protected final ResponseEntity<ErrorResponse> handleGlobalException(
+        GlobalException ex, HttpServletRequest request
+    ) {
         logException(ex, request);
         return new ResponseEntity<>(ErrorResponse.builder()
-            .errorCode(409L)
+            .errorCode((long) ex.getStatus().value())
             .message(ex.getMessage())
-            .build(), NOT_FOUND);
+            .build(), ex.getStatus());
     }
 
-    @ExceptionHandler(NotAuthorizedException.class)
-    protected final ResponseEntity<ErrorResponse> handleNotAuthorizedException(
-        NotAuthorizedException ex, HttpServletRequest request) {
-        logException(ex, request);
 
-        return new ResponseEntity<>(ErrorResponse.builder()
-            .errorCode(403L)
-            .message(ex.getMessage())
-            .build(), FORBIDDEN);
-    }
-
-    @ExceptionHandler(InvalidRequestException.class)
-    protected final ResponseEntity<ErrorResponse> handleInvalidRequestException(
-        InvalidRequestException ex, HttpServletRequest request) {
-        logException(ex, request);
-
-        return new ResponseEntity<>(ErrorResponse.builder()
-            .errorCode(409L)
-            .message(ex.getMessage())
-            .build(), CONFLICT);
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    protected final ResponseEntity<ErrorResponse> handleIllegalArgumentException(
-        IllegalArgumentException ex, HttpServletRequest request) {
-        logException(ex, request);
-        return new ResponseEntity<>(ErrorResponse.builder()
-            .errorCode(400L)
-            .message(ex.getMessage())
-            .build(), BAD_REQUEST);
-    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected final ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
@@ -105,16 +74,6 @@ public class GlobalExceptionHandler {
             CONFLICT);
     }
 
-    @ExceptionHandler(S3ImageUploadException.class)
-    protected final ResponseEntity<ErrorResponse> handleS3ImageException(
-        S3ImageUploadException ex, HttpServletRequest request) {
-        logException(ex, request);
-        return new ResponseEntity<>(ErrorResponse.builder()
-            .errorCode(409L)
-            .message(ex.getMessage())
-            .build(),
-            CONFLICT);
-    }
 
     @ExceptionHandler(Exception.class)
     protected final ResponseEntity<ErrorResponse> handleException(

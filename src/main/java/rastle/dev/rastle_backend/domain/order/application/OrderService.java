@@ -53,6 +53,8 @@ public class OrderService {
     private final ProductBaseRepository productBaseRepository;
     private final CancelRequestRepository cancelRequestRepository;
 
+    // TODO 주문 상태 completed로 변환되게 구현해야함
+
     @Transactional
     public OrderCreateResponse createOrderDetail(Long memberId, OrderCreateRequest orderCreateRequest) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
