@@ -108,8 +108,8 @@ public class PaymentService {
                     .collect(Collectors.toList());
             UriComponentsBuilder builder = UriComponentsBuilder
                     // .fromUriString("https://www.recordyslow.com/orderConfirmMobile")
-                    // .fromUriString("https://www.recordyslow.com/orderConfirm")
-                    .fromUriString("http://localhost:3000/orderConfirm")
+                    .fromUriString("https://www.recordyslow.com/orderConfirm")
+                    // .fromUriString("http://localhost:3000/orderConfirm")
                     .queryParam("selectedProducts", objectMapper.writeValueAsString(selectedProducts))
                     .queryParam("orderInfo", objectMapper.writeValueAsString(paymentResponse.getMap()));
 
