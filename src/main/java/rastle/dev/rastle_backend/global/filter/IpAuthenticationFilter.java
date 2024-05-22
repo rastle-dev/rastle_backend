@@ -3,6 +3,8 @@ package rastle.dev.rastle_backend.global.filter;
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,20 +28,29 @@ public class IpAuthenticationFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        filter((HttpServletRequest) request, (HttpServletResponse) response, chain);
+
+
+    }
+
+    public void filter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         String ipAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         InetAddress inetAddress = InetAddress.getByName(ipAddress);
         String country = null;
-        try {
-            country = databaseReader.country(inetAddress).getCountry().getName();
-        } catch (GeoIp2Exception e) {
-            log.warn(e.getMessage());
+        if (request.getRequestURI().equals("/env_profile") || ipAddress.equals("127.0.0.1")) {
+            chain.doFilter(request, response);
+        } else {
+            try {
+                country = databaseReader.country(inetAddress).getCountry().getName();
+            } catch (GeoIp2Exception e) {
+                log.warn(e.getMessage());
+            }
+            if (country == null || !country.equals("South Korea")) {
+                log.warn("Access Rejected : {}, {}", ipAddress, country);
+                return;
+            }
+            chain.doFilter(request, response);
         }
-        if(country == null || !country.equals("South Korea")){
-            log.warn("Access Rejected : {}, {}", ipAddress, country);
-            return;
-        }
-        chain.doFilter(request, response);
-
     }
 
     @Override
