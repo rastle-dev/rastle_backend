@@ -50,6 +50,8 @@ public class AdminController {
     private final AdminService adminService;
     private final ObjectMapper objectMapper;
 
+    // TODO 주문 조회에 cancel amount 리턴 해주기
+
     // ==============================================================================================================
     // 상품 관련 API
     // ==============================================================================================================

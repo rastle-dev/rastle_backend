@@ -29,6 +29,8 @@ import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository
 import rastle.dev.rastle_backend.domain.token.dto.TokenDTO.TokenInfoDTO;
 import rastle.dev.rastle_backend.global.error.exception.InvalidRequestException;
 import rastle.dev.rastle_backend.global.jwt.JwtTokenProvider;
+import rastle.dev.rastle_backend.global.util.KeyUtil;
+import rastle.dev.rastle_backend.global.util.WebUtil;
 
 import java.util.Collection;
 
@@ -106,7 +108,7 @@ public class MemberAuthService {
     @Transactional
     public ResponseEntity<String> login(LoginDto loginDto, HttpServletRequest request, HttpServletResponse response) {
         Authentication authentication = authenticate(loginDto);
-        TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authentication, response);
+        TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authentication, request, response);
         HttpHeaders responseHeaders = createAuthorizationHeader(request, tokenInfoDTO.getAccessToken());
         return new ResponseEntity<>("로그인 성공", responseHeaders, HttpStatus.OK);
     }
@@ -174,10 +176,12 @@ public class MemberAuthService {
     public ResponseEntity<String> refreshAccessToken(HttpServletRequest request) {
         String refreshToken = jwtTokenProvider.getRefreshTokenFromRequest(request);
         Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(refreshToken);
-        String username = authentication.getName();
-        String storedToken = redisTemplate.opsForValue().get(username);
+        String storedToken = redisTemplate.opsForValue().get(KeyUtil.toRedisKey(
+            authentication.getName(),
+            WebUtil.getUserAgent(request),
+            WebUtil.getClientIp(request)));
         if (storedToken != null && storedToken.equals(refreshToken)) {
-            String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
+            String newAccessToken = jwtTokenProvider.generateAccessToken(request, authentication);
 
             HttpHeaders responseHeaders = createAuthorizationHeader(request, newAccessToken);
             return new ResponseEntity<>("액세스 토큰 재발급 성공", responseHeaders, HttpStatus.OK);
