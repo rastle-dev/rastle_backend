@@ -37,7 +37,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         Map<String, Object> queryParams = new HashMap<>();
 
         String targetUrl = getTargetUrlFromCookie(request);
-        jwtTokenProvider.generateTokenDto(authentication, response);
+        jwtTokenProvider.generateTokenDto(authentication, request, response);
 
         if (response.isCommitted()) {
             logger.debug("Response has already been committed. Unable to redirect to " + targetUrl);
