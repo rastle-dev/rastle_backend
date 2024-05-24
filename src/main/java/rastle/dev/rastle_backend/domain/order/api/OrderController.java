@@ -44,6 +44,12 @@ public class OrderController {
         return ResponseEntity.ok(new ServerResponse<>(orderService.getOrderDetail(memberId, orderId)));
     }
 
+    @Operation(summary = "주문 상세 조회 (주문 번호 사용)", description = "주문 번호 사용해서 주문 상세 조회 API")
+    @GetMapping("/merchantId/{merchantId}")
+    public ResponseEntity<ServerResponse<OrderDetailResponse>> getOrderDetailByMerchantId(@PathVariable("merchantId") String merchantId) {
+        Long memberId = SecurityUtil.getCurrentMemberId();
+        return ResponseEntity.ok(new ServerResponse<>(orderService.getOrderDetail(memberId, merchantId)));
+    }
 
     @Operation(summary = "주문 리스트 조회 API", description = "멤버 주문 리스트 조회 API 입니다")
     @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = MemberOrderInfo.class)))
