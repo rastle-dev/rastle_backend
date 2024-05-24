@@ -134,6 +134,10 @@ public class OrderService {
     public OrderDetailResponse getOrderDetail(Long memberId, Long orderId) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
         OrderDetail orderDetail = orderDetailRepository.findById(orderId).orElseThrow(NotFoundByIdException::new);
+        return getOrderDetailResponse(member, orderDetail);
+    }
+
+    private OrderDetailResponse getOrderDetailResponse(Member member, OrderDetail orderDetail) {
         validateMemberOrder(member, orderDetail);
 
         PaymentResponse paymentData = portOneComponent.getPaymentData(orderDetail.getPayment().getImpId());
@@ -170,6 +174,13 @@ public class OrderService {
                     .build()
             )
             .build();
+    }
+
+    @Transactional(readOnly = true)
+    public OrderDetailResponse getOrderDetail(Long memberId, String merchantId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+        OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(Long.parseLong(merchantId)).orElseThrow(NotFoundByIdException::new);
+        return getOrderDetailResponse(member, orderDetail);
     }
 
     private void validateMemberOrder(Member member, OrderDetail orderDetail) {
