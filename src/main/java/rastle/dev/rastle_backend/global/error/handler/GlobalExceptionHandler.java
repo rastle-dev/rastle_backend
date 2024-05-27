@@ -9,6 +9,10 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import rastle.dev.rastle_backend.domain.payment.exception.PaymentErrorException;
 import rastle.dev.rastle_backend.global.error.exception.GlobalException;
 import rastle.dev.rastle_backend.global.error.response.ErrorResponse;
 
@@ -18,7 +22,7 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    private void logException(Exception exception,HttpServletRequest webRequest) {
+    private void logException(Exception exception, HttpServletRequest webRequest) {
         log.warn("{} {}", webRequest.getMethod(), webRequest.getRequestURI());
         StackTraceElement[] stackTrace = exception.getStackTrace();
         log.warn(exception.getClass().getName(), stackTrace[0]);
@@ -27,20 +31,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(GlobalException.class)
     protected final ResponseEntity<ErrorResponse> handleGlobalException(
-        GlobalException ex, HttpServletRequest request
-    ) {
+            GlobalException ex, HttpServletRequest request) {
         logException(ex, request);
         return new ResponseEntity<>(ErrorResponse.builder()
-            .errorCode((long) ex.getStatus().value())
-            .message(ex.getMessage())
-            .build(), ex.getStatus());
+                .errorCode((long) ex.getStatus().value())
+                .message(ex.getMessage())
+                .build(), ex.getStatus());
     }
-
-
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected final ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
-        MethodArgumentNotValidException ex, HttpServletRequest request) {
+            MethodArgumentNotValidException ex, HttpServletRequest request) {
         logException(ex, request);
         BindingResult bindingResult = ex.getBindingResult();
         StringBuilder builder = new StringBuilder();
@@ -55,49 +56,57 @@ public class GlobalExceptionHandler {
         }
 
         return new ResponseEntity<>(
-            ErrorResponse.builder()
-                .errorCode(409L)
-                .message(builder.toString()).build(),
-            CONFLICT);
+                ErrorResponse.builder()
+                        .errorCode(409L)
+                        .message(builder.toString()).build(),
+                CONFLICT);
 
     }
 
     @ExceptionHandler(JsonProcessingException.class)
     protected final ResponseEntity<ErrorResponse> handleJsonException(
-        JsonProcessingException ex, HttpServletRequest request
-    ) {
+            JsonProcessingException ex, HttpServletRequest request) {
         logException(ex, request);
         return new ResponseEntity<>(ErrorResponse.builder()
-            .errorCode(409L)
-            .message(ex.getMessage())
-            .build(),
-            CONFLICT);
+                .errorCode(409L)
+                .message(ex.getMessage())
+                .build(),
+                CONFLICT);
     }
-
 
     @ExceptionHandler(Exception.class)
     protected final ResponseEntity<ErrorResponse> handleException(
-        Exception ex, HttpServletRequest request
-    ) {
+            Exception ex, HttpServletRequest request) {
         logException(ex, request);
         return new ResponseEntity<>(ErrorResponse.builder()
-            .errorCode(500L)
-            .message(ex.getMessage())
-            .build(),
-            INTERNAL_SERVER_ERROR);
+                .errorCode(500L)
+                .message(ex.getMessage())
+                .build(),
+                INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(RuntimeException.class)
     protected final ResponseEntity<ErrorResponse> handleRuntimeException(
-        RuntimeException ex, HttpServletRequest request
-    ) {
+            RuntimeException ex, HttpServletRequest request) {
         logException(ex, request);
         return new ResponseEntity<>(ErrorResponse.builder()
-            .errorCode(500L)
-            .message(ex.getMessage())
-            .build(),
-            INTERNAL_SERVER_ERROR);
+                .errorCode(500L)
+                .message(ex.getMessage())
+                .build(),
+                INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(PaymentErrorException.class)
+    public RedirectView handleSpecificPaymentException(PaymentErrorException ex) {
+        // 쿼리스트링으로 에러 메시지와 에러 코드를 전달
+        String redirectUrl = UriComponentsBuilder
+                .fromUriString("https://www.recordyslow.com/orderConfirm")
+                // .fromUriString("http://localhost:3000/orderConfirm")
+                .queryParam("error", ex.getMessage())
+                .queryParam("errorCode", ex.getErrorCode())
+                .build()
+                .toUriString();
 
+        return new RedirectView(redirectUrl);
+    }
 }
