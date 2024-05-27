@@ -10,7 +10,7 @@ Content-Type: application/json
 }
 
 ### 멤버 로그인
-POST https://rastledev.site/auth/login
+POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
@@ -23,6 +23,6 @@ Content-Type: application/json
 
 
 ### 로그인한 멤버 정보 조회
-GET http://localhost:8080/member
+GET https://api.recordyslow.com/member
 Content-Type: application/json
 Authorization: {{auth_token}}

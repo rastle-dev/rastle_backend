@@ -14,6 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import rastle.dev.rastle_backend.global.filter.IpAuthenticationFilter;
 import rastle.dev.rastle_backend.global.jwt.JwtAccessDeniedHandler;
 import rastle.dev.rastle_backend.global.jwt.JwtAuthenticationEntryPoint;
 import rastle.dev.rastle_backend.global.jwt.JwtTokenProvider;
@@ -40,6 +41,7 @@ public class SecurityConfig {
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2AuthorizationRequestBasedOnCookieRepository oAuth2AuthorizationRequestBasedOnCookieRepository;
+    private final IpAuthenticationFilter ipAuthenticationFilter;
     private final ObjectMapper mapper;
 
     @Bean
@@ -112,7 +114,7 @@ public class SecurityConfig {
             .failureHandler(oAuth2AuthenticationFailureHandler);
 
         http
-            .apply(new JwtSecurityConfig(jwtTokenProvider, mapper, redisTemplate))
+            .apply(new JwtSecurityConfig(jwtTokenProvider, mapper, redisTemplate, ipAuthenticationFilter))
             .and()
             .logout()
             .logoutUrl("/logout")

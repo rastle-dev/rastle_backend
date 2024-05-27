@@ -53,7 +53,7 @@ public class OrderService {
     private final ProductBaseRepository productBaseRepository;
     private final CancelRequestRepository cancelRequestRepository;
 
-    // TODO 주문 상태 completed로 변환되게 구현해야함
+    // TODO 스케줄러 사용해서 주문 상태 completed로 변환되게 구현해야함
 
     @Transactional
     public OrderCreateResponse createOrderDetail(Long memberId, OrderCreateRequest orderCreateRequest) {
@@ -67,8 +67,8 @@ public class OrderService {
             .build();
 
         orderDetailRepository.save(orderDetail);
-        orderDetail.setDelivery(Delivery.builder().orderDetail(orderDetail).build());
-        orderDetail.setPayment(Payment.builder().orderDetail(orderDetail).build());
+        setDeliveryAndPayment(orderDetail);
+
         Long orderNumber = orderNumberComponent.createOrderNumber(orderDetail.getId());
         orderDetail.updateOrderNumber(orderNumber);
         OrderProductSummary orderResponses = createOrderProducts(orderDetail,
@@ -80,6 +80,11 @@ public class OrderService {
             .orderNumber(orderNumber.toString())
             .orderProducts(orderResponses.getProductOrderResponses())
             .build();
+    }
+
+    private void setDeliveryAndPayment(OrderDetail orderDetail) {
+        orderDetail.setDelivery(Delivery.builder().orderDetail(orderDetail).build());
+        orderDetail.setPayment(Payment.builder().orderDetail(orderDetail).build());
     }
 
     private OrderProductSummary createOrderProducts(OrderDetail orderDetail,
@@ -101,16 +106,13 @@ public class OrderService {
                 .cancelAmount(0L)
                 .build();
             orderProductRepository.save(orderProduct);
-            orderPrice += orderProduct.getPrice();
+            orderPrice += orderProduct.getTotalPrice();
 
             Long productOrderNumber = orderNumberComponent.createOrderNumber(
                 orderProduct.getId());
 
             orderProduct.updateProductOrderNumber(productOrderNumber);
             orderResponses.add(ProductOrderRequest.toResponse(productOrderRequest, productOrderNumber.toString()));
-            for (int count = 0; count < productOrderRequest.getCount(); count++) {
-
-            }
 
         }
 
@@ -132,6 +134,10 @@ public class OrderService {
     public OrderDetailResponse getOrderDetail(Long memberId, Long orderId) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
         OrderDetail orderDetail = orderDetailRepository.findById(orderId).orElseThrow(NotFoundByIdException::new);
+        return getOrderDetailResponse(member, orderDetail);
+    }
+
+    private OrderDetailResponse getOrderDetailResponse(Member member, OrderDetail orderDetail) {
         validateMemberOrder(member, orderDetail);
 
         PaymentResponse paymentData = portOneComponent.getPaymentData(orderDetail.getPayment().getImpId());
@@ -168,6 +174,13 @@ public class OrderService {
                     .build()
             )
             .build();
+    }
+
+    @Transactional(readOnly = true)
+    public OrderDetailResponse getOrderDetail(Long memberId, String merchantId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+        OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(Long.parseLong(merchantId)).orElseThrow(NotFoundByIdException::new);
+        return getOrderDetailResponse(member, orderDetail);
     }
 
     private void validateMemberOrder(Member member, OrderDetail orderDetail) {
