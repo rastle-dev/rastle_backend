@@ -12,4 +12,5 @@ public class PaymentException extends GlobalException {
     public PaymentException(String s) {
         super(s, CONFLICT);
     }
+
 }

@@ -13,10 +13,10 @@ import rastle.dev.rastle_backend.domain.coupon.repository.mysql.CouponRepository
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
 import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderDetailRepository;
-import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderProductRepository;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.*;
 import rastle.dev.rastle_backend.domain.payment.dto.PortOneWebHookRequest;
 import rastle.dev.rastle_backend.domain.payment.dto.PortOneWebHookResponse;
+import rastle.dev.rastle_backend.domain.payment.exception.PaymentErrorException;
 import rastle.dev.rastle_backend.domain.payment.exception.PaymentException;
 import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 import rastle.dev.rastle_backend.global.common.constants.PortOneStatusConstant;
@@ -42,7 +42,6 @@ import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.FAILED;
 public class PaymentService {
     private final CouponRepository couponRepository;
     private final OrderDetailRepository orderDetailRepository;
-    private final OrderProductRepository orderProductRepository;
     private final PortOneComponent portOneComponent;
     private final ObjectMapper objectMapper;
     private final MailComponent mailComponent;
@@ -79,7 +78,7 @@ public class PaymentService {
     public URI verifyMobilePayment(String impUid, String merchantUid, String errorCode, String errorMsg)
             throws JsonProcessingException {
         if (errorCode != null) {
-            throw new PaymentException("결제 실패, errorCode: " + errorCode + ", errorMsg: " + errorMsg);
+            throw new PaymentErrorException("결제 실패, errorMsg: " + errorMsg, errorCode);
         }
 
         PaymentResponse paymentResponse = portOneComponent.getPaymentData(impUid);
