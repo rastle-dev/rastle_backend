@@ -18,6 +18,7 @@ import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentPrepareReq
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentVerificationRequest;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentVerificationResponse;
 import rastle.dev.rastle_backend.domain.payment.dto.PortOneWebHookRequest;
+import rastle.dev.rastle_backend.domain.payment.exception.PaymentErrorException;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
 
 import java.net.URI;
@@ -48,6 +49,11 @@ public class PaymentController {
             @RequestParam(value = "error_code", required = false) String errorCode,
             @RequestParam(value = "error_msg", required = false) String errorMsg,
             UriComponentsBuilder uriComponentsBuilder) throws JsonProcessingException {
+        if (errorCode != null) {
+            log.info("컨트롤러 PaymentErrorException 진입");
+            throw new PaymentErrorException("결제 실패, errorMsg: " + errorMsg, errorCode);
+        }
+
         URI redirectUri = paymentService.verifyMobilePayment(impUid, merchantUid, errorCode, errorMsg);
         log.info("redirectUri: {}", redirectUri);
         HttpHeaders httpHeaders = new HttpHeaders();
