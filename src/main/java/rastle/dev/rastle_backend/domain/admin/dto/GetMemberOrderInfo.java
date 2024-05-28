@@ -19,6 +19,8 @@ public class GetMemberOrderInfo {
     String productName;
     String option;
     Long count;
+    Long cancelAmount;
+    Long cancelRequestAmount;
     String receiverName;
     String receiverTel;
     String receiverEmail;
@@ -37,7 +39,7 @@ public class GetMemberOrderInfo {
     String paymentMethod;
     Long couponAmount;
     @QueryProjection
-    public GetMemberOrderInfo(OrderStatus orderStatus, LocalDateTime paidAt, Long orderNumber, Long productOrderNumber, String productName, String color, String size, Long count, String receiverName, String receiverTel, String receiverEmail, String receiverAddress, String receiverPostCode, String deliveryService, String deliveryMsg, String trackingNumber, String impId, Long productPrice, Long productOrderTotalPrice,  Long orderPrice, Long paymentPrice, Long deliveryPrice, Long additionalDeliveryPrice, String paymentMethod, Long couponAmount) {
+    public GetMemberOrderInfo(OrderStatus orderStatus, LocalDateTime paidAt, Long orderNumber, Long productOrderNumber, String productName, String color, String size, Long count, String receiverName, String receiverTel, String receiverEmail, String receiverAddress, String receiverPostCode, String deliveryService, String deliveryMsg, String trackingNumber, String impId, Long productPrice, Long productOrderTotalPrice,  Long orderPrice, Long paymentPrice, Long deliveryPrice, Long additionalDeliveryPrice, String paymentMethod, Long couponAmount, Long cancelAmount, Long cancelRequestAmount) {
         this.orderStatus = orderStatus;
         this.paidAt = paidAt;
         this.orderNumber = orderNumber;
@@ -62,6 +64,8 @@ public class GetMemberOrderInfo {
         this.additionalDeliveryPrice = additionalDeliveryPrice;
         this.paymentMethod = paymentMethod;
         this.couponAmount = couponAmount;
+        this.cancelAmount = cancelAmount;
+        this.cancelRequestAmount = cancelRequestAmount;
     }
 
     private String colorSizeToOption(String color, String size) {

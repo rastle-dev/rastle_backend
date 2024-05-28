@@ -17,7 +17,6 @@ import rastle.dev.rastle_backend.domain.order.dto.OrderSimpleInfo;
 import rastle.dev.rastle_backend.domain.order.dto.request.OrderCancelRequest;
 import rastle.dev.rastle_backend.domain.order.dto.request.ProductOrderCancelRequest;
 import rastle.dev.rastle_backend.domain.order.dto.response.OrderCancelResponse;
-import rastle.dev.rastle_backend.domain.order.model.CancelRequest;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
 import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.CancelRequestRepository;
@@ -29,6 +28,7 @@ import rastle.dev.rastle_backend.domain.product.repository.mysql.ProductBaseRepo
 import rastle.dev.rastle_backend.global.component.OrderNumberComponent;
 import rastle.dev.rastle_backend.global.component.PortOneComponent;
 import rastle.dev.rastle_backend.global.component.dto.response.PaymentResponse;
+import rastle.dev.rastle_backend.global.error.exception.GlobalException;
 import rastle.dev.rastle_backend.global.error.exception.NotAuthorizedException;
 import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
 
@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static rastle.dev.rastle_backend.global.common.enums.CancelRequestStatus.PENDING;
+import static org.springframework.http.HttpStatus.CONFLICT;
 import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.CANCEL_REQUESTED;
 import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.CREATED;
 
@@ -194,19 +194,20 @@ public class OrderService {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
         OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(orderCancelRequest.getOrderNumber()).orElseThrow(() -> new RuntimeException("해당 주문 번호로 존재하는 주문이 없습니다. " + orderCancelRequest.getOrderNumber()));
         validateMemberOrder(member, orderDetail);
-        List<CancelRequest> toSave = new ArrayList<>();
 
         for (ProductOrderCancelRequest productOrderCancelRequest : orderCancelRequest.getProductOrderCancelRequests()) {
             Optional<OrderProduct> byProductOrderNumber = orderProductRepository.findByProductOrderNumber(productOrderCancelRequest.getProductOrderNumber());
+            // TODO 취소 수량 여부 확인해야함
             if (byProductOrderNumber.isPresent()) {
                 OrderProduct orderProduct = byProductOrderNumber.get();
+                if (orderProduct.getCount() < orderProduct.getCancelAmount() + productOrderCancelRequest.getCancelAmount()) {
+                    throw new GlobalException("유효하지 않은 취소 수량으로 인한 요청 처리 실패", CONFLICT);
+                }
                 orderProduct.updateOrderStatus(CANCEL_REQUESTED);
             }
-            CancelRequest cancelRequest = CancelRequest.builder().orderDetail(orderDetail).reason(orderCancelRequest.getReason()).productOrderNumber(productOrderCancelRequest.getProductOrderNumber()).cancelAmount(productOrderCancelRequest.getCancelAmount()).cancelRequestStatus(PENDING).build();
-            toSave.add(cancelRequest);
-        }
 
-        cancelRequestRepository.saveAll(toSave);
+        }
+        orderDetail.updateOrderStatus(CANCEL_REQUESTED);
 
 
         return OrderCancelResponse.builder()

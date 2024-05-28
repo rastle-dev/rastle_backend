@@ -13,5 +13,4 @@ public class CancelOrderResult {
     String impId;
     Long productOrderNumber;
     Long cancelAmount;
-    Long cancelRequestId;
 }

@@ -12,5 +12,4 @@ import lombok.Setter;
 public class CancelOrderRequest {
     String impId;
     Long productOrderNumber;
-    Long cancelRequestId;
 }
