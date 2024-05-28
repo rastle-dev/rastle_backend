@@ -204,7 +204,9 @@ public class OrderService {
             }
             CancelRequest cancelRequest = CancelRequest.builder().orderDetail(orderDetail).reason(orderCancelRequest.getReason()).productOrderNumber(productOrderCancelRequest.getProductOrderNumber()).cancelAmount(productOrderCancelRequest.getCancelAmount()).cancelRequestStatus(PENDING).build();
             toSave.add(cancelRequest);
+
         }
+        orderDetail.updateOrderStatus(CANCEL_REQUESTED);
 
         cancelRequestRepository.saveAll(toSave);
 

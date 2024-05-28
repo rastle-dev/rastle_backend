@@ -57,6 +57,7 @@ import rastle.dev.rastle_backend.domain.product.repository.mysql.ProductDetailRe
 import rastle.dev.rastle_backend.global.component.DeliveryTracker;
 import rastle.dev.rastle_backend.global.component.PortOneComponent;
 import rastle.dev.rastle_backend.global.component.S3Component;
+import rastle.dev.rastle_backend.global.component.dto.response.PaymentResponse;
 import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
 import rastle.dev.rastle_backend.global.util.TimeUtil;
 
@@ -68,6 +69,7 @@ import java.util.stream.Stream;
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.*;
 import static rastle.dev.rastle_backend.global.common.enums.CancelRequestStatus.COMPLETED;
 import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.CANCELLED;
+import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.PARTIALLY_CANCELLED;
 
 @Slf4j
 @Service
@@ -645,14 +647,25 @@ public class AdminService {
     @Transactional
     public CancelOrderResult cancelOrder(CancelOrderRequest cancelOrderRequest) {
         OrderProduct orderProduct = orderProductRepository.findByProductOrderNumber(cancelOrderRequest.getProductOrderNumber()).orElseThrow(() -> new RuntimeException("해당 상풍 주문 번호로 존재하는 상품 주문이 없다."));
+        OrderDetail orderDetail = orderProduct.getOrderDetail();
         CancelRequest cancelRequest = cancelRequestRepository.findById(cancelOrderRequest.getCancelRequestId()).orElseThrow(() -> new RuntimeException("해당 아이디로 존재하는 취소 요청이 없습니다. " + cancelOrderRequest.getCancelRequestId()));
 
-        portOneComponent.cancelPayment(cancelOrderRequest.getImpId(), cancelRequest, orderProduct);
-        orderProduct.updateOrderStatus(CANCELLED);
-        orderProduct.getOrderDetail().updateOrderStatus(CANCELLED);
+        PaymentResponse cancelResponse = portOneComponent.cancelPayment(cancelOrderRequest.getImpId(), cancelRequest, orderProduct);
+        if (cancelResponse.getCancelAmount().equals(cancelResponse.getAmount())) {
+            orderDetail.updateOrderStatus(CANCELLED);
+        } else {
+            orderDetail.updateOrderStatus(PARTIALLY_CANCELLED);
+        }
         orderProduct.addCancelAmount(cancelRequest.getCancelAmount());
+        orderProduct.initCancelRequestAmount();
         orderProduct.getOrderDetail().getPayment().addCancelledSum(orderProduct.getPrice() * cancelRequest.getCancelAmount());
         cancelRequest.updateStatus(COMPLETED);
+        if (orderProduct.getCount().equals(orderProduct.getCancelAmount())) {
+            orderProduct.updateOrderStatus(CANCELLED);
+        } else {
+            orderProduct.updateOrderStatus(PARTIALLY_CANCELLED);
+        }
+
         return new CancelOrderResult(cancelOrderRequest.getImpId(), cancelOrderRequest.getProductOrderNumber(), orderProduct.getPrice() * cancelRequest.getCancelAmount(), cancelOrderRequest.getCancelRequestId());
     }
 }

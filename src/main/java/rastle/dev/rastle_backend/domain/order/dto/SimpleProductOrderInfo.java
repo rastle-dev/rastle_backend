@@ -34,6 +34,8 @@ public class SimpleProductOrderInfo {
     OrderStatus status;
     @Schema(description = "취소 수량", defaultValue = "1")
     Long cancelAmount;
+    @Schema(description = "취소 요청 수량", defaultValue = "0")
+    Long cancelRequestAmount;
     @Schema(description = "송장 번호", defaultValue = "23404321~")
     String trackingNumber;
 }
