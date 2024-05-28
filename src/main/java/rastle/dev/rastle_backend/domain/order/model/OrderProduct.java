@@ -89,6 +89,10 @@ public class OrderProduct extends BaseTimeEntity {
         this.cancelAmount += cancelAmount;
     }
 
+    public void addCancelRequestAmount(Long cancelRequestAmount) {
+        this.cancelRequestAmount += cancelRequestAmount;
+    }
+
     public void initCancelRequestAmount() {
         this.cancelRequestAmount = 0L;
     }
