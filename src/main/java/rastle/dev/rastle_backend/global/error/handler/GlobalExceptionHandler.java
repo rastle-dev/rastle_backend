@@ -103,7 +103,7 @@ public class GlobalExceptionHandler {
         @ExceptionHandler(PaymentErrorException.class)
         public ResponseEntity<Object> handlePaymentErrorException(PaymentErrorException ex,
                         UriComponentsBuilder uriComponentsBuilder) {
-                String redirectUrl = uriComponentsBuilder
+                String redirectUrl = UriComponentsBuilder
                                 .fromUriString("https://www.recordyslow.com/orderConfirm")
                                 .queryParam("error", ex.getMessage())
                                 .queryParam("errorCode", ex.getErrorCode())

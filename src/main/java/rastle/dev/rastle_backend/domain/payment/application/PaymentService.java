@@ -78,6 +78,7 @@ public class PaymentService {
     public URI verifyMobilePayment(String impUid, String merchantUid, String errorCode, String errorMsg)
             throws JsonProcessingException {
         if (errorCode != null) {
+            log.info("서비스 PaymentErrorException 진입");
             throw new PaymentErrorException("결제 실패, errorMsg: " + errorMsg, errorCode);
         }
 
