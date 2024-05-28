@@ -24,6 +24,6 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
 
     @Query("SELECT NEW rastle.dev.rastle_backend.domain.order.dto.OrderSimpleInfo(" +
         "o.id, o.createdTime, o.orderNumber, o.orderStatus, o.orderStatus) " +
-        "FROM OrderDetail o WHERE o.member.id = :memberId AND o.orderStatus = 'PAID' ORDER BY o.createdTime DESC")
+        "FROM OrderDetail o WHERE o.member.id = :memberId AND o.orderStatus != 'CREATED' ORDER BY o.createdTime DESC")
     Page<OrderSimpleInfo> findSimpleOrderInfoByMemberId(@Param("memberId") Long memberId, Pageable pageable);
 }
