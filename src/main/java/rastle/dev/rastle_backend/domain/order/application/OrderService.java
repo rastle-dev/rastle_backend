@@ -19,7 +19,6 @@ import rastle.dev.rastle_backend.domain.order.dto.request.ProductOrderCancelRequ
 import rastle.dev.rastle_backend.domain.order.dto.response.OrderCancelResponse;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
 import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
-import rastle.dev.rastle_backend.domain.order.repository.mysql.CancelRequestRepository;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderDetailRepository;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderProductRepository;
 import rastle.dev.rastle_backend.domain.payment.model.Payment;
@@ -51,8 +50,6 @@ public class OrderService {
     private final OrderNumberComponent orderNumberComponent;
     private final PortOneComponent portOneComponent;
     private final ProductBaseRepository productBaseRepository;
-    private final CancelRequestRepository cancelRequestRepository;
-
     // TODO 스케줄러 사용해서 주문 상태 completed로 변환되게 구현해야함
 
     @Transactional
