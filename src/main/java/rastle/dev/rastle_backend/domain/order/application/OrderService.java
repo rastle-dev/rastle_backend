@@ -198,7 +198,7 @@ public class OrderService {
             // TODO 취소 수량 여부 확인해야함
             if (byProductOrderNumber.isPresent()) {
                 OrderProduct orderProduct = byProductOrderNumber.get();
-                if (orderProduct.getCount() < orderProduct.getCancelAmount() + orderProduct.getCancelRequestAmount()+ productOrderCancelRequest.getCancelAmount()) {
+                if (orderProduct.getCount() < orderProduct.getCancelAmount() + orderProduct.getCancelRequestAmount()+ productOrderCancelRequest.getCancelAmount() || productOrderCancelRequest.getCancelAmount() < 0) {
                     throw new GlobalException("유효하지 않은 취소 수량으로 인한 요청 처리 실패", CONFLICT);
                 }
                 orderProduct.updateOrderStatus(CANCEL_REQUESTED);
