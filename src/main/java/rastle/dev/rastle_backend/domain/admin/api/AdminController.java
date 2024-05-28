@@ -15,7 +15,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import rastle.dev.rastle_backend.domain.admin.application.AdminService;
-import rastle.dev.rastle_backend.domain.admin.dto.*;
+import rastle.dev.rastle_backend.domain.admin.dto.CancelOrderRequest;
+import rastle.dev.rastle_backend.domain.admin.dto.GetMemberOrderCondition;
+import rastle.dev.rastle_backend.domain.admin.dto.GetMemberOrderInfo;
+import rastle.dev.rastle_backend.domain.admin.dto.UpdateTrackingNumberRequest;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleDTO.BundleCreateRequest;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleDTO.BundleUpdateRequest;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleInfo;
@@ -40,7 +43,6 @@ import java.util.Map;
 
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY;
-import static rastle.dev.rastle_backend.global.common.enums.CancelRequestStatus.getFromIndex;
 
 @Tag(name = "관리자 기능 API", description = "관리자 기능 관련 API입니다.")
 @RestController
@@ -389,25 +391,9 @@ public class AdminController {
     // 주문 취소 요청 관련 API
     // ==============================================================================================================
 
-    @Operation(summary = "관리자 주문 취소 요청 조회", description = "주문 취소 요청 조회 API")
-    @ApiResponse(responseCode = "200", description = "정보 조회 성공시", content = @Content(schema = @Schema(implementation = GetCancelRequestInfo.class)))
-    @GetMapping("/cancelRequest")
-    public ResponseEntity<ServerResponse<?>> getCancelRequest(
-        @Parameter(name = "orderNumber", description = "주문번호", required = false, in = QUERY)
-        @RequestParam(name = "orderNumber", required = false)
-        Long orderNumber,
-        @Parameter(name = "receiverName", description = "수취인명", required = false, in = QUERY)
-        @RequestParam(name = "receiverName", required = false)
-        String receiverName,
-        @Parameter(name = "cancelRequestStatus", description = "주문 취소 요청 상태, PENDING, DENIED, COMPLETED", required = false, in = QUERY)
-        String cancelRequestStatus,
-        Pageable pageable) {
-        GetCancelRequestCondition cancelRequestCondition = new GetCancelRequestCondition(orderNumber, receiverName, getFromIndex(cancelRequestStatus), pageable);
-        return ResponseEntity.ok(new ServerResponse<>(adminService.getCancelRequest(cancelRequestCondition)));
-    }
 
     @Operation(summary = "주문 취소 요청 수락", description = "주문 취소 요청 수락, 주문 취소되는 API")
-    @PostMapping("/cancelRequest")
+    @PostMapping("/cancelOrder")
     public ResponseEntity<ServerResponse<?>> cancelOrder(
         @RequestBody
         CancelOrderRequest cancelOrderRequest
