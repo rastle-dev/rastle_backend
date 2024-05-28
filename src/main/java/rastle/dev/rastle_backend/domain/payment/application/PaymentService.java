@@ -83,10 +83,10 @@ public class PaymentService {
         }
 
         PaymentResponse paymentResponse = portOneComponent.getPaymentData(impUid);
-        String portoneMerchantUid = paymentResponse.getMerchantUID();
+        String portOneMerchantUid = paymentResponse.getMerchantUID();
         log.info(merchantUid);
 
-        if (!portoneMerchantUid.equals(merchantUid)) {
+        if (!portOneMerchantUid.equals(merchantUid)) {
             throw new PaymentException("포트원에서 전달받은 주문번호와, 브라우저에서 넘어온 주문번호가 다릅니다.");
         }
 
@@ -128,7 +128,6 @@ public class PaymentService {
             Coupon referenceById = couponRepository.getReferenceById(paymentResponse.getCouponId());
             referenceById.updateStatus(USED);
             orderDetail.getPayment().updateCouponAmount((long) referenceById.getDiscount());
-
         }
         List<OrderProduct> orderProducts = orderDetail.getOrderProduct();
         for (OrderProduct orderProduct : orderProducts) {
@@ -174,11 +173,7 @@ public class PaymentService {
         if (orderDetail.getPayment().getPaymentPrice().equals(paymentResponse.getAmount())) {
             switch (webHookRequest.getStatus()) {
                 case PAID -> {
-                    if (paymentResponse.getCouponId() != null) {
-                        Coupon referenceById = couponRepository.getReferenceById(paymentResponse.getCouponId());
-                        referenceById.updateStatus(USED);
-                    }
-                    orderDetail.paid(paymentResponse);
+                    handlePayment(paymentResponse, orderDetail);
                     return PortOneWebHookResponse.builder()
                             .status(SUCCESS)
                             .message(SUCCESS_MSG)
