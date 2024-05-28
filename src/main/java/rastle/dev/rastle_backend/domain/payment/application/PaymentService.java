@@ -77,9 +77,18 @@ public class PaymentService {
     @Transactional
     public URI verifyMobilePayment(String impUid, String merchantUid, String errorCode, String errorMsg)
             throws JsonProcessingException {
-        if (errorCode != null) {
-            log.info("서비스 PaymentErrorException 진입");
-            throw new PaymentErrorException("결제 실패, errorMsg: " + errorMsg, errorCode);
+        try {
+            if (errorCode != null) {
+                throw new PaymentErrorException("결제 실패, errorMsg: " + errorMsg, errorCode);
+            }
+        } catch (PaymentErrorException e) {
+            log.error("Payment error occurred: " + e.getMessage(), e);
+            UriComponentsBuilder builder = UriComponentsBuilder
+                    .fromUriString("https://www.recordyslow.com/orderConfirm")
+                    .queryParam("errorMsg", objectMapper.writeValueAsString(e.getMessage()))
+                    .queryParam("errorCode", objectMapper.writeValueAsString(e.getErrorCode()));
+
+            return URI.create(builder.toUriString());
         }
 
         PaymentResponse paymentResponse = portOneComponent.getPaymentData(impUid);
@@ -107,7 +116,6 @@ public class PaymentService {
                             .build())
                     .collect(Collectors.toList());
             UriComponentsBuilder builder = UriComponentsBuilder
-                    // .fromUriString("https://www.recordyslow.com/orderConfirmMobile")
                     .fromUriString("https://www.recordyslow.com/orderConfirm")
                     // .fromUriString("http://localhost:3000/orderConfirm")
                     .queryParam("selectedProducts", objectMapper.writeValueAsString(selectedProducts))

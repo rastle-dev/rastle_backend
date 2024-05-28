@@ -100,18 +100,19 @@ public class GlobalExceptionHandler {
                                 INTERNAL_SERVER_ERROR);
         }
 
-        @ExceptionHandler(PaymentErrorException.class)
-        public ResponseEntity<Object> handlePaymentErrorException(PaymentErrorException ex,
-                        UriComponentsBuilder uriComponentsBuilder) {
-                String redirectUrl = UriComponentsBuilder
-                                .fromUriString("https://www.recordyslow.com/orderConfirm")
-                                .queryParam("error", ex.getMessage())
-                                .queryParam("errorCode", ex.getErrorCode())
-                                .build()
-                                .toUriString();
+        // @ExceptionHandler(PaymentErrorException.class)
+        // public ResponseEntity<Object>
+        // handlePaymentErrorException(PaymentErrorException ex,
+        // UriComponentsBuilder uriComponentsBuilder) {
+        // String redirectUrl = UriComponentsBuilder
+        // .fromUriString("https://www.recordyslow.com/orderConfirm")
+        // .queryParam("error", ex.getMessage())
+        // .queryParam("errorCode", ex.getErrorCode())
+        // .build()
+        // .toUriString();
 
-                HttpHeaders httpHeaders = new HttpHeaders();
-                httpHeaders.setLocation(URI.create(redirectUrl));
-                return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
-        }
+        // HttpHeaders httpHeaders = new HttpHeaders();
+        // httpHeaders.setLocation(URI.create(redirectUrl));
+        // return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
+        // }
 }
