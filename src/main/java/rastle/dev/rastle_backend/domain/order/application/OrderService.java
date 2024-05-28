@@ -81,7 +81,7 @@ public class OrderService {
 
     private void setDeliveryAndPayment(OrderDetail orderDetail) {
         orderDetail.setDelivery(Delivery.builder().orderDetail(orderDetail).build());
-        orderDetail.setPayment(Payment.builder().orderDetail(orderDetail).build());
+        orderDetail.setPayment(Payment.builder().orderDetail(orderDetail).cancelledSum(0L).couponAmount(0L).build());
     }
 
     private OrderProductSummary createOrderProducts(OrderDetail orderDetail,
