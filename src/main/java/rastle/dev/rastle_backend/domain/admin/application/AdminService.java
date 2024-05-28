@@ -638,10 +638,6 @@ public class AdminService {
         }
     }
 
-    @Transactional(readOnly = true)
-    public Page<GetCancelRequestInfo> getCancelRequest(GetCancelRequestCondition cancelRequestCondition) {
-        return cancelRequestQRepository.getCancelRequestInfo(cancelRequestCondition);
-    }
     @Transactional
     public CancelOrderResult cancelOrder(CancelOrderRequest cancelOrderRequest) {
         OrderProduct orderProduct = orderProductRepository.findByProductOrderNumber(cancelOrderRequest.getProductOrderNumber()).orElseThrow(() -> new RuntimeException("해당 상풍 주문 번호로 존재하는 상품 주문이 없다."));
