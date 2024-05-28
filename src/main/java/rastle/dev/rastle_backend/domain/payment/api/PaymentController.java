@@ -49,10 +49,6 @@ public class PaymentController {
             @RequestParam(value = "error_code", required = false) String errorCode,
             @RequestParam(value = "error_msg", required = false) String errorMsg,
             UriComponentsBuilder uriComponentsBuilder) throws JsonProcessingException {
-        if (errorCode != null) {
-            log.info("컨트롤러 PaymentErrorException 진입");
-            throw new PaymentErrorException("결제 실패, errorMsg: " + errorMsg, errorCode);
-        }
 
         URI redirectUri = paymentService.verifyMobilePayment(impUid, merchantUid, errorCode, errorMsg);
         log.info("redirectUri: {}", redirectUri);
