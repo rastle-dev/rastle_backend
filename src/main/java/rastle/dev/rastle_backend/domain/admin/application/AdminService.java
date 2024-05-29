@@ -646,11 +646,9 @@ public class AdminService {
         PaymentResponse cancelResponse;
 
         if (isOrderEntirelyCancelled(orderDetail, orderProduct, cancelAmount)) {
-            log.info("entirely cancel");
-            cancelResponse = portOneComponent.cancelPayment(cancelOrderRequest.getImpId(), orderProduct);
+            cancelResponse = portOneComponent.cancelPayment(cancelOrderRequest.getImpId(), orderDetail);
             orderDetail.updateOrderStatus(CANCELLED);
         } else {
-            log.info("partially cancel");
             cancelResponse = portOneComponent.cancelPayment(cancelOrderRequest.getImpId(), cancelAmount, orderProduct);
             orderDetail.updateOrderStatus(PARTIALLY_CANCELLED);
         }

@@ -88,14 +88,14 @@ public class PortOneComponent {
 
     }
 
-    public PaymentResponse cancelPayment(String impId, OrderProduct orderProduct) {
-        OrderDetail orderDetail = orderProduct.getOrderDetail();
+    public PaymentResponse cancelPayment(String impId, OrderDetail orderDetail) {
         String accessToken = getAccessToken();
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(singletonList(APPLICATION_JSON));
         headers.setContentType(APPLICATION_JSON);
         headers.set(AUTHORIZATION, accessToken);
         PortOnePaymentCancelRequest cancelRequest = PortOnePaymentCancelRequest.builder()
+            .amount(orderDetail.getPayment().getPaymentPrice() - orderDetail.getPayment().getCancelledSum())
             .merchant_uid(Long.toString(orderDetail.getOrderNumber()))
             .imp_uid(impId)
             .build();
