@@ -31,8 +31,6 @@ import java.net.URI;
 public class PaymentController {
     private final PaymentService paymentService;
 
-    // TODO : 사후 검증, webhook에 주문자 == 본인인지 검증 추가해야함
-    // TODO : 결제내역 디비에도 남겨야할듯??
     @Operation(summary = "결제 사후 검증 및 생성 API", description = "포트원 API에서 발생한 결제 요청을 검증하고, memberOrder를 생성하는 API입니다.")
     @ApiResponse(responseCode = "200", description = "검증 성공시", content = @Content(schema = @Schema(implementation = PaymentVerificationResponse.class)))
     @PostMapping("/complete")
