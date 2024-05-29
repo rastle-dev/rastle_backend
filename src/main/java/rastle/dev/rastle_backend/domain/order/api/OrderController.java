@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import rastle.dev.rastle_backend.domain.cart.dto.CartOrderRequest;
 import rastle.dev.rastle_backend.domain.order.application.OrderService;
 import rastle.dev.rastle_backend.domain.order.dto.OrderDTO.MemberOrderInfo;
 import rastle.dev.rastle_backend.domain.order.dto.OrderDTO.OrderCreateRequest;
@@ -35,6 +36,13 @@ public class OrderController {
     public ResponseEntity<?> createOrderDetail(@RequestBody OrderCreateRequest orderCreateRequest) {
         Long memberId = SecurityUtil.getCurrentMemberId();
         return ResponseEntity.ok(new ServerResponse<>(orderService.createOrderDetail(memberId, orderCreateRequest)));
+    }
+
+    @Operation(summary = "장바구니 상품 주문 등록 API", description = "장바구니에서 주문하기 버튼을 눌러서 주문을 생성하는 API")
+    @PostMapping("/cart")
+    public ResponseEntity<ServerResponse<OrderCreateResponse>> createCartOrder(@RequestBody CartOrderRequest cartOrderRequest) {
+        Long memberId = SecurityUtil.getCurrentMemberId();
+        return ResponseEntity.ok(new ServerResponse<>(orderService.createCartOrder(memberId, cartOrderRequest)));
     }
 
     @Operation(summary = "주문 상세 조회 API", description = "주문 상세 조회 API")

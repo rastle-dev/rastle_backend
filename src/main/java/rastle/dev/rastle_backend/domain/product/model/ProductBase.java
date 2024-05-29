@@ -3,6 +3,7 @@ package rastle.dev.rastle_backend.domain.product.model;
 import jakarta.persistence.*;
 import lombok.*;
 import rastle.dev.rastle_backend.domain.bundle.model.Bundle;
+import rastle.dev.rastle_backend.domain.cart.model.CartProduct;
 import rastle.dev.rastle_backend.domain.category.model.Category;
 import rastle.dev.rastle_backend.domain.event.model.Event;
 import rastle.dev.rastle_backend.domain.event.model.EventProductApply;

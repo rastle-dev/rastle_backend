@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.member.model.Member;
-import rastle.dev.rastle_backend.domain.product.model.CartProduct;
 
 import java.util.ArrayList;
 import java.util.List;
