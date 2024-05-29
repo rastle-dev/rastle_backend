@@ -195,7 +195,6 @@ public class OrderService {
 
         for (ProductOrderCancelRequest productOrderCancelRequest : orderCancelRequest.getProductOrderCancelRequests()) {
             Optional<OrderProduct> byProductOrderNumber = orderProductRepository.findByProductOrderNumber(productOrderCancelRequest.getProductOrderNumber());
-            // TODO 취소 수량 여부 확인해야함
             if (byProductOrderNumber.isPresent()) {
                 OrderProduct orderProduct = byProductOrderNumber.get();
                 if (orderProduct.getCount() < orderProduct.getCancelAmount() + orderProduct.getCancelRequestAmount()+ productOrderCancelRequest.getCancelAmount() || productOrderCancelRequest.getCancelAmount() < 0) {

@@ -88,8 +88,7 @@ public class PortOneComponent {
 
     }
 
-    public PaymentResponse cancelPayment(String impId, Long cancelAmount, OrderProduct orderProduct) {
-
+    public PaymentResponse cancelPayment(String impId, OrderProduct orderProduct) {
         OrderDetail orderDetail = orderProduct.getOrderDetail();
         String accessToken = getAccessToken();
         HttpHeaders headers = new HttpHeaders();
@@ -97,11 +96,14 @@ public class PortOneComponent {
         headers.setContentType(APPLICATION_JSON);
         headers.set(AUTHORIZATION, accessToken);
         PortOnePaymentCancelRequest cancelRequest = PortOnePaymentCancelRequest.builder()
-            .checksum(orderDetail.getPayment().getPaymentPrice() - orderDetail.getPayment().getCancelledSum())
-            .amount(orderProduct.getPrice() * cancelAmount)
+            .amount(0)
             .merchant_uid(Long.toString(orderDetail.getOrderNumber()))
             .imp_uid(impId)
             .build();
+        return getCancelResponse(headers, cancelRequest);
+    }
+
+    private PaymentResponse getCancelResponse(HttpHeaders headers, PortOnePaymentCancelRequest cancelRequest) {
         HttpEntity request = new HttpEntity(cancelRequest, headers);
         ResponseEntity<String> portOneResponse = getServerResponse(BASE_URL + CANCEL_URL, POST, request);
         try {
@@ -119,6 +121,23 @@ public class PortOneComponent {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    public PaymentResponse cancelPayment(String impId, Long cancelAmount, OrderProduct orderProduct) {
+
+        OrderDetail orderDetail = orderProduct.getOrderDetail();
+        String accessToken = getAccessToken();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(singletonList(APPLICATION_JSON));
+        headers.setContentType(APPLICATION_JSON);
+        headers.set(AUTHORIZATION, accessToken);
+        PortOnePaymentCancelRequest cancelRequest = PortOnePaymentCancelRequest.builder()
+            .checksum(orderDetail.getPayment().getPaymentPrice() - orderDetail.getPayment().getCancelledSum())
+            .amount(orderProduct.getPrice() * cancelAmount)
+            .merchant_uid(Long.toString(orderDetail.getOrderNumber()))
+            .imp_uid(impId)
+            .build();
+        return getCancelResponse(headers, cancelRequest);
 
 
     }

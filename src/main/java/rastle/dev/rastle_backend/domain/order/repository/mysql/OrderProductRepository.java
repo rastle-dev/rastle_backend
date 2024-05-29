@@ -15,7 +15,7 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
         "FROM OrderProduct op LEFT OUTER JOIN ProductBase p ON op.product.id = p.id WHERE op.orderDetail.id = :orderId")
     List<SimpleProductOrderInfo> findSimpleProductOrderInfoByOrderId(@Param("orderId") Long orderId);
 
-    @Query("SELECT op FROM OrderProduct op JOIN FETCH op.orderDetail JOIN FETCH op.orderDetail.payment WHERE op.productOrderNumber=:productOrderNumber")
+    @Query("SELECT op FROM OrderProduct op JOIN FETCH op.orderDetail JOIN FETCH op.orderDetail.payment JOIN FETCH op.orderDetail.delivery WHERE op.productOrderNumber=:productOrderNumber")
     Optional<OrderProduct> findByProductOrderNumber(@Param("productOrderNumber") Long productOrderNumber);
 
     Optional<OrderProduct> findByTrackingNumber(String trackingNumber);

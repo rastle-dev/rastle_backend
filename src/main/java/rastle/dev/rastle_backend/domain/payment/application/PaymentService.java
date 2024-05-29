@@ -63,7 +63,6 @@ public class PaymentService {
                 .orElseThrow(() -> new PaymentException("주문번호로 존재하는 주문이 DB에 존재하지 않는다"));
 
         if (orderDetail.getPayment().getPaymentPrice().equals(paymentResponse.getAmount())) {
-            handlePayment(paymentResponse, orderDetail);
             return PaymentVerificationResponse.builder()
                     .verified(true)
                     .build();

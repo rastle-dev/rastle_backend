@@ -13,7 +13,6 @@ import rastle.dev.rastle_backend.domain.admin.dto.*;
 import rastle.dev.rastle_backend.domain.admin.exception.NotEmptyBundleException;
 import rastle.dev.rastle_backend.domain.admin.exception.NotEmptyCategoryException;
 import rastle.dev.rastle_backend.domain.admin.exception.NotEmptyEventException;
-import rastle.dev.rastle_backend.domain.admin.repository.mysql.CancelRequestQRepository;
 import rastle.dev.rastle_backend.domain.admin.repository.mysql.MemberOrderQRepository;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleDTO.BundleCreateRequest;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleDTO.BundleUpdateRequest;
@@ -25,6 +24,8 @@ import rastle.dev.rastle_backend.domain.category.dto.CategoryDto.CategoryUpdateR
 import rastle.dev.rastle_backend.domain.category.dto.CategoryInfo;
 import rastle.dev.rastle_backend.domain.category.model.Category;
 import rastle.dev.rastle_backend.domain.category.repository.mysql.CategoryRepository;
+import rastle.dev.rastle_backend.domain.coupon.model.Coupon;
+import rastle.dev.rastle_backend.domain.coupon.repository.mysql.CouponRepository;
 import rastle.dev.rastle_backend.domain.event.dto.EventDTO.EventCreateRequest;
 import rastle.dev.rastle_backend.domain.event.dto.EventDTO.EventUpdateRequest;
 import rastle.dev.rastle_backend.domain.event.dto.EventInfo;
@@ -38,7 +39,6 @@ import rastle.dev.rastle_backend.domain.member.model.Member;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
 import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
-import rastle.dev.rastle_backend.domain.order.repository.mysql.CancelRequestRepository;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderDetailRepository;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderProductRepository;
 import rastle.dev.rastle_backend.domain.product.dto.ProductDTO.ProductCreateRequest;
@@ -66,6 +66,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.*;
+import static rastle.dev.rastle_backend.global.common.enums.CouponStatus.NOT_USED;
 import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.CANCELLED;
 import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.PARTIALLY_CANCELLED;
 
@@ -87,10 +88,9 @@ public class AdminService {
     private final EventProductApplyRepository eventProductApplyRepository;
     private final MemberOrderQRepository memberOrderQRepository;
     private final OrderProductRepository orderProductRepository;
-    private final CancelRequestQRepository cancelRequestQRepository;
     private final PortOneComponent portOneComponent;
-    private final CancelRequestRepository cancelRequestRepository;
     private final DeliveryTracker deliveryTracker;
+    private final CouponRepository couponRepository;
 
     // ==============================================================================================================
     // 상품 관련 서비스
@@ -643,13 +643,28 @@ public class AdminService {
         OrderProduct orderProduct = orderProductRepository.findByProductOrderNumber(cancelOrderRequest.getProductOrderNumber()).orElseThrow(() -> new RuntimeException("해당 상풍 주문 번호로 존재하는 상품 주문이 없다."));
         OrderDetail orderDetail = orderProduct.getOrderDetail();
         Long cancelAmount = orderProduct.getCancelRequestAmount();
+        PaymentResponse cancelResponse;
 
-        PaymentResponse cancelResponse = portOneComponent.cancelPayment(cancelOrderRequest.getImpId(), cancelAmount, orderProduct);
-        if (cancelResponse.getCancelAmount().equals(cancelResponse.getAmount())) {
+        if (isOrderEntirelyCancelled(orderDetail, orderProduct, cancelAmount)) {
+            cancelResponse = portOneComponent.cancelPayment(cancelOrderRequest.getImpId(), orderProduct);
             orderDetail.updateOrderStatus(CANCELLED);
         } else {
+            cancelResponse = portOneComponent.cancelPayment(cancelOrderRequest.getImpId(), cancelAmount, orderProduct);
             orderDetail.updateOrderStatus(PARTIALLY_CANCELLED);
         }
+
+        handleCancelEvent(orderProduct, cancelAmount);
+        restoreCouponStatus(cancelResponse.getCouponId());
+
+
+        return new CancelOrderResult(cancelOrderRequest.getImpId(), cancelOrderRequest.getProductOrderNumber(), orderProduct.getPrice() * cancelAmount);
+    }
+
+    private boolean isOrderEntirelyCancelled(OrderDetail orderDetail, OrderProduct orderProduct, Long cancelAmount) {
+        return orderDetail.getOrderPrice() == orderDetail.getPayment().getCancelledSum() + orderProduct.getPrice() * cancelAmount + orderDetail.getDelivery().getDeliveryPrice() + orderDetail.getDelivery().getIslandDeliveryPrice() + orderDetail.getPayment().getCouponAmount();
+    }
+
+    private void handleCancelEvent(OrderProduct orderProduct, Long cancelAmount) {
         orderProduct.addCancelAmount(cancelAmount);
         orderProduct.initCancelRequestAmount();
         orderProduct.getOrderDetail().getPayment().addCancelledSum(orderProduct.getPrice() * cancelAmount);
@@ -658,7 +673,15 @@ public class AdminService {
         } else {
             orderProduct.updateOrderStatus(PARTIALLY_CANCELLED);
         }
+    }
 
-        return new CancelOrderResult(cancelOrderRequest.getImpId(), cancelOrderRequest.getProductOrderNumber(), orderProduct.getPrice() * cancelAmount);
+    private void restoreCouponStatus(Long couponId) {
+        if (couponId != null) {
+            Optional<Coupon> couponOptional = couponRepository.findById(couponId);
+            if (couponOptional.isPresent()) {
+                Coupon coupon = couponOptional.get();
+                coupon.updateStatus(NOT_USED);
+            }
+        }
     }
 }
