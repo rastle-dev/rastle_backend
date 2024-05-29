@@ -96,7 +96,6 @@ public class PortOneComponent {
         headers.setContentType(APPLICATION_JSON);
         headers.set(AUTHORIZATION, accessToken);
         PortOnePaymentCancelRequest cancelRequest = PortOnePaymentCancelRequest.builder()
-            .amount(0)
             .merchant_uid(Long.toString(orderDetail.getOrderNumber()))
             .imp_uid(impId)
             .build();
