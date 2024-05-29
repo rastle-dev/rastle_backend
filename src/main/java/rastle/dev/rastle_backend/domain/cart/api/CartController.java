@@ -64,5 +64,4 @@ public class CartController {
         ServerResponse<String> response = new ServerResponse<>("장바구니에서 선택한 상품이 삭제되었습니다.");
         return ResponseEntity.ok(response);
     }
-
 }

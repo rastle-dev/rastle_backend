@@ -8,11 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 import rastle.dev.rastle_backend.domain.cart.dto.CartDTO.CartProductInfoDto;
 import rastle.dev.rastle_backend.domain.cart.dto.CartDTO.CreateCartProductDto;
 import rastle.dev.rastle_backend.domain.cart.model.Cart;
+import rastle.dev.rastle_backend.domain.cart.model.CartProduct;
 import rastle.dev.rastle_backend.domain.cart.repository.mysql.CartProductRepository;
 import rastle.dev.rastle_backend.domain.cart.repository.mysql.CartRepository;
 import rastle.dev.rastle_backend.domain.member.model.Member;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
-import rastle.dev.rastle_backend.domain.product.model.CartProduct;
 import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 import rastle.dev.rastle_backend.domain.product.repository.mysql.ProductBaseRepository;
 import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
@@ -92,9 +92,7 @@ public class CartService {
     public Page<CartProductInfoDto> getCartProducts(Pageable pageable) {
         Long memberId = SecurityUtil.getCurrentMemberId();
 
-        Page<CartProductInfoDto> cartItems = cartProductRepository.getCartProducts(memberId, pageable);
-
-        return cartItems;
+        return cartProductRepository.getCartProducts(memberId, pageable);
     }
 
     /*
@@ -131,4 +129,5 @@ public class CartService {
         cartProductRepository.deleteByIdIn(deleteCartProductIdList);
         cartRepository.save(cart);
     }
+
 }

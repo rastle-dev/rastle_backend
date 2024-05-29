@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
+import rastle.dev.rastle_backend.domain.cart.repository.mysql.CartProductRepository;
 import rastle.dev.rastle_backend.domain.coupon.exception.AlreadyUsedCouponException;
 import rastle.dev.rastle_backend.domain.coupon.model.Coupon;
 import rastle.dev.rastle_backend.domain.coupon.repository.mysql.CouponRepository;
@@ -41,6 +42,7 @@ import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.FAILED;
 @RequiredArgsConstructor
 public class PaymentService {
     private final CouponRepository couponRepository;
+    private final CartProductRepository cartProductRepository;
     private final OrderDetailRepository orderDetailRepository;
     private final PortOneComponent portOneComponent;
     private final ObjectMapper objectMapper;
@@ -142,6 +144,9 @@ public class PaymentService {
             ProductBase product = orderProduct.getProduct();
             orderProduct.updateOrderStatus(OrderStatus.PAID);
             product.incrementSoldCount();
+            if (orderProduct.getCartProductId() != null) {
+                cartProductRepository.updateCartProductStatus(orderProduct.getCartProductId());
+            }
         }
     }
 

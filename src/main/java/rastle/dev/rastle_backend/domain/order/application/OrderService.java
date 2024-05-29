@@ -6,13 +6,15 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import rastle.dev.rastle_backend.domain.cart.dto.CartOrderRequest;
+import rastle.dev.rastle_backend.domain.cart.model.CartProduct;
+import rastle.dev.rastle_backend.domain.cart.repository.mysql.CartProductRepository;
 import rastle.dev.rastle_backend.domain.coupon.dto.CouponInfo;
 import rastle.dev.rastle_backend.domain.coupon.repository.mysql.CouponRepository;
 import rastle.dev.rastle_backend.domain.delivery.model.Delivery;
 import rastle.dev.rastle_backend.domain.member.model.Member;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
 import rastle.dev.rastle_backend.domain.order.dto.OrderDTO.*;
-import rastle.dev.rastle_backend.domain.order.dto.OrderProductSummary;
 import rastle.dev.rastle_backend.domain.order.dto.OrderSimpleInfo;
 import rastle.dev.rastle_backend.domain.order.dto.request.OrderCancelRequest;
 import rastle.dev.rastle_backend.domain.order.dto.request.ProductOrderCancelRequest;
@@ -44,6 +46,7 @@ import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.CREATED;
 @RequiredArgsConstructor
 public class OrderService {
     private final MemberRepository memberRepository;
+    private final CartProductRepository cartProductRepository;
     private final OrderDetailRepository orderDetailRepository;
     private final OrderProductRepository orderProductRepository;
     private final CouponRepository couponRepository;
@@ -55,28 +58,37 @@ public class OrderService {
     @Transactional
     public OrderCreateResponse createOrderDetail(Long memberId, OrderCreateRequest orderCreateRequest) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+        verifyTestMember(member);
+        OrderDetail orderDetail = createNewOrder(member);
+        setOrderNumber(orderDetail);
+
+        return OrderCreateResponse.builder()
+            .orderDetailId(orderDetail.getId())
+            .orderNumber(orderDetail.getOrderNumber().toString())
+            .orderProducts(createOrderProducts(orderDetail,
+                orderCreateRequest.getOrderProducts()))
+            .build();
+    }
+
+    private void verifyTestMember(Member member) {
         if (!(member.getId() == 11L || member.getId() == 8L || member.getId() == 92L || member.getId() == 47L)) {
             throw new NotAuthorizedException();
         }
+    }
+
+    private OrderDetail createNewOrder(Member member) {
         OrderDetail orderDetail = OrderDetail.builder()
             .orderStatus(CREATED)
             .member(member)
             .build();
-
         orderDetailRepository.save(orderDetail);
         setDeliveryAndPayment(orderDetail);
+        return orderDetail;
+    }
 
+    private void setOrderNumber(OrderDetail orderDetail) {
         Long orderNumber = orderNumberComponent.createOrderNumber(orderDetail.getId());
         orderDetail.updateOrderNumber(orderNumber);
-        OrderProductSummary orderResponses = createOrderProducts(orderDetail,
-            orderCreateRequest.getOrderProducts());
-        orderDetail.updateOrderPrice(orderResponses.getOrderPrice());
-
-        return OrderCreateResponse.builder()
-            .orderDetailId(orderDetail.getId())
-            .orderNumber(orderNumber.toString())
-            .orderProducts(orderResponses.getProductOrderResponses())
-            .build();
     }
 
     private void setDeliveryAndPayment(OrderDetail orderDetail) {
@@ -84,7 +96,7 @@ public class OrderService {
         orderDetail.setPayment(Payment.builder().orderDetail(orderDetail).cancelledSum(0L).couponAmount(0L).build());
     }
 
-    private OrderProductSummary createOrderProducts(OrderDetail orderDetail,
+    private List<ProductOrderResponse> createOrderProducts(OrderDetail orderDetail,
                                                     List<ProductOrderRequest> productOrderRequests) {
         Long orderPrice = 0L;
         List<ProductOrderResponse> orderResponses = new ArrayList<>();
@@ -110,11 +122,11 @@ public class OrderService {
                 orderProduct.getId());
 
             orderProduct.updateProductOrderNumber(productOrderNumber);
-            orderResponses.add(ProductOrderRequest.toResponse(productOrderRequest, productOrderNumber.toString()));
+            orderResponses.add(toProductOrderResponse(orderProduct));
 
         }
-
-        return new OrderProductSummary(orderPrice, orderResponses);
+        orderDetail.updateOrderPrice(orderPrice);
+        return orderResponses;
     }
 
     @Transactional(readOnly = true)
@@ -210,6 +222,68 @@ public class OrderService {
 
         return OrderCancelResponse.builder()
             .cancelProductOrders(orderCancelRequest.getProductOrderCancelRequests())
+            .build();
+    }
+
+    @Transactional
+    public OrderCreateResponse createCartOrder(Long memberId, CartOrderRequest cartOrderRequest) {
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+        verifyTestMember(member);
+        OrderDetail orderDetail = createNewOrder(member);
+        setOrderNumber(orderDetail);
+        return OrderCreateResponse.builder()
+            .orderDetailId(orderDetail.getId())
+            .orderNumber(orderDetail.getOrderNumber().toString())
+            .orderProducts(createOrderProductsFromCart(orderDetail,
+                cartOrderRequest))
+            .build();
+    }
+
+    private List<ProductOrderResponse> createOrderProductsFromCart(OrderDetail orderDetail, CartOrderRequest cartOrderRequest) {
+        Long orderPrice = 0L;
+        List<ProductOrderResponse> orderResponses = new ArrayList<>();
+        for (Long cartProductId : cartOrderRequest.getCartProductIds()) {
+            Optional<CartProduct> cartProductOptional = cartProductRepository.findCartProductAndProductById(cartProductId);
+            if (cartProductOptional.isPresent()) {
+                CartProduct cartProduct = cartProductOptional.get();
+                ProductBase productBase = cartProduct.getProduct();
+                OrderProduct orderProduct = OrderProduct.builder()
+                    .orderDetail(orderDetail)
+                    .orderStatus(CREATED)
+                    .product(ProductBase.builder().id(productBase.getId()).build())
+                    .name(productBase.getName())
+                    .color(cartProduct.getColor())
+                    .size(cartProduct.getSize())
+                    .count((long) cartProduct.getCount())
+                    .price((long) productBase.getDiscountPrice())
+                    .totalPrice((long) productBase.getDiscountPrice() * cartProduct.getCount())
+                    .cancelAmount(0L)
+                    .cancelRequestAmount(0L)
+                    .cartProductId(cartProductId)
+                    .build();
+                orderProductRepository.save(orderProduct);
+                orderPrice += orderProduct.getTotalPrice();
+
+                Long productOrderNumber = orderNumberComponent.createOrderNumber(
+                    orderProduct.getId());
+
+                orderProduct.updateProductOrderNumber(productOrderNumber);
+                orderResponses.add(toProductOrderResponse(orderProduct));
+            }
+        }
+        orderDetail.updateOrderPrice(orderPrice);
+        return orderResponses;
+    }
+
+    private ProductOrderResponse toProductOrderResponse(OrderProduct orderProduct) {
+        return ProductOrderResponse.builder()
+            .productId(orderProduct.getProduct().getId())
+            .name(orderProduct.getName())
+            .color(orderProduct.getColor())
+            .size(orderProduct.getSize())
+            .count(orderProduct.getCount())
+            .totalPrice(orderProduct.getTotalPrice())
+            .productOrderNumber(String.valueOf(orderProduct.getProductOrderNumber()))
             .build();
     }
 }
