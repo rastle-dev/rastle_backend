@@ -175,6 +175,7 @@ public class OrderService {
                     .build()
             )
             .deliveryMsg(paymentData.getDeliveryMsg())
+            .couponAmount(orderDetail.getPayment().getCouponAmount())
             .refundInfo(
                 RefundInfo.builder()
                     .cancelAmount(paymentData.getCancelAmount())

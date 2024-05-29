@@ -109,7 +109,7 @@ public class OrderDTO {
         Long paymentAmount;
         Long deliveryPrice;
         String deliveryMsg;
-
+        Long couponAmount;
         String paymentMethod;
 
         ReceiverInfo receiverInfo;

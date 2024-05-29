@@ -14,7 +14,7 @@ public class DeliveryScheduler {
     private final DeliveryTracker deliveryTracker;
     private final OrderProductRepository orderProductRepository;
 
-    @Scheduled(cron = "0 0 3 ? * *")
+    @Scheduled(cron = "0 0 3 * * ?")
     public void updateWebHook() {
         List<String> trackingNumberOfNotDelivered = orderProductRepository.findTrackingNumberOfNotDelivered();
         for (String trackingNumber : trackingNumberOfNotDelivered) {
