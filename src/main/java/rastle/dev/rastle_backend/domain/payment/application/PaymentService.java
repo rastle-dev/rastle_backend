@@ -83,9 +83,10 @@ public class PaymentService {
         } catch (PaymentErrorException e) {
             log.error("Payment error occurred: " + e.getMessage(), e);
             UriComponentsBuilder builder = UriComponentsBuilder
-                    .fromUriString("https://www.recordyslow.com/orderConfirm")
-                    .queryParam("errorMsg", objectMapper.writeValueAsString(e.getMessage()))
-                    .queryParam("errorCode", objectMapper.writeValueAsString(e.getErrorCode()));
+                .fromUriString("https://www.recordyslow.com/orderConfirm")
+                .queryParam("errorMsg", objectMapper.writeValueAsString(e.getMessage()))
+                .queryParam("errorCode", objectMapper.writeValueAsString(e.getErrorCode()))
+                .queryParam("merchantUid", objectMapper.writeValueAsString(merchantUid));
 
             return URI.create(builder.toUriString());
         }
