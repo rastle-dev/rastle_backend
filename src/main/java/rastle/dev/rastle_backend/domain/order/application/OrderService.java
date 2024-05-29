@@ -53,7 +53,6 @@ public class OrderService {
     private final OrderNumberComponent orderNumberComponent;
     private final PortOneComponent portOneComponent;
     private final ProductBaseRepository productBaseRepository;
-    // TODO 스케줄러 사용해서 주문 상태 completed로 변환되게 구현해야함
 
     @Transactional
     public OrderCreateResponse createOrderDetail(Long memberId, OrderCreateRequest orderCreateRequest) {
