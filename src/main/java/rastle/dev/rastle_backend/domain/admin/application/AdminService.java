@@ -618,11 +618,12 @@ public class AdminService {
                 .build());
         }).collect(Collectors.toList());
     }
+
     @Transactional(readOnly = true)
     public Page<GetMemberOrderInfo> getMemberOrders(GetMemberOrderCondition getMemberOrderCondition) {
         return memberOrderQRepository.getMemberOrderInfo(getMemberOrderCondition);
     }
-    // TODO 여기서 웹훅 등록하는 요청도 보내야할듯
+
     @Transactional
     public String updateTrackingNumber(Long orderProductNumber, UpdateTrackingNumberRequest trackingNumberRequest) {
         validateTrackingNumber(trackingNumberRequest);
@@ -631,6 +632,13 @@ public class AdminService {
         deliveryTracker.registerWebHook(trackingNumberRequest.getTrackingNumber());
         return UPDATED;
     }
+
+    @Transactional
+    public String deleteTrackingNumber(Long orderProductNumber) {
+        orderProductRepository.deleteTrackingNumberByProductOrderNumber(orderProductNumber);
+        return DELETED;
+    }
+
 
     private void validateTrackingNumber(UpdateTrackingNumberRequest trackingNumberRequest) {
         if (trackingNumberRequest.getTrackingNumber() == null || trackingNumberRequest.getTrackingNumber().length() < 10 || trackingNumberRequest.getTrackingNumber().length() > 12) {

@@ -10,7 +10,7 @@ import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderProductRepos
 import rastle.dev.rastle_backend.global.common.enums.DeliveryTrackerStatus;
 import rastle.dev.rastle_backend.global.common.enums.OrderStatus;
 
-import java.util.Optional;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -24,9 +24,8 @@ public class AsyncWebHookHandler {
         log.info("handle webhook request {}", webHookRequest.getTrackingNumber());
         DeliveryTrackerStatus deliveryStatus = deliveryTracker.getDeliveryStatus(webHookRequest.getTrackingNumber());
         log.info("delivery status : {}", deliveryStatus.getStatus());
-        Optional<OrderProduct> byTrackingNumber = orderProductRepository.findByTrackingNumber(webHookRequest.getTrackingNumber());
-        if (byTrackingNumber.isPresent()) {
-            OrderProduct orderProduct = byTrackingNumber.get();
+        List<OrderProduct> byTrackingNumber = orderProductRepository.findByTrackingNumber(webHookRequest.getTrackingNumber());
+        for (OrderProduct orderProduct : byTrackingNumber) {
             if (deliveryStatus.equals(DeliveryTrackerStatus.DELIVERED)) {
                 orderProduct.updateOrderStatus(OrderStatus.DELIVERED);
             }
