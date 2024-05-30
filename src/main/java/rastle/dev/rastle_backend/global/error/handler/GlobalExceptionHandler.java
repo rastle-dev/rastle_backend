@@ -9,28 +9,26 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import rastle.dev.rastle_backend.domain.payment.exception.PaymentErrorException;
 import rastle.dev.rastle_backend.global.error.exception.GlobalException;
 import rastle.dev.rastle_backend.global.error.response.ErrorResponse;
 
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
-import java.net.URI;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
         private void logException(Exception exception, HttpServletRequest webRequest) {
                 log.warn("{} {}", webRequest.getMethod(), webRequest.getRequestURI());
-                StackTraceElement[] stackTrace = exception.getStackTrace();
-                log.warn(exception.getClass().getName(), stackTrace[0]);
-                log.warn(exception.getMessage(), stackTrace[0]);
+                log.warn("{} {}", exception.getClass().getName(), exception.getMessage());
+        }
+
+        private void logExceptionDetail(Exception exception, HttpServletRequest webRequest) {
+                log.warn("{} {}", webRequest.getMethod(), webRequest.getRequestURI());
+                log.warn("{} {}", exception.getClass().getName(), exception.getMessage());
+                for (StackTraceElement element : exception.getStackTrace()) {
+                        log.warn("{} {} {}", element.getClassName(), element.getMethodName(), element.getLineNumber());
+                }
         }
 
         @ExceptionHandler(GlobalException.class)
@@ -81,7 +79,7 @@ public class GlobalExceptionHandler {
         @ExceptionHandler(Exception.class)
         protected final ResponseEntity<ErrorResponse> handleException(
                         Exception ex, HttpServletRequest request) {
-                logException(ex, request);
+                logExceptionDetail(ex, request);
                 return new ResponseEntity<>(ErrorResponse.builder()
                                 .errorCode(500L)
                                 .message(ex.getMessage())
@@ -92,7 +90,7 @@ public class GlobalExceptionHandler {
         @ExceptionHandler(RuntimeException.class)
         protected final ResponseEntity<ErrorResponse> handleRuntimeException(
                         RuntimeException ex, HttpServletRequest request) {
-                logException(ex, request);
+                logExceptionDetail(ex, request);
                 return new ResponseEntity<>(ErrorResponse.builder()
                                 .errorCode(500L)
                                 .message(ex.getMessage())
