@@ -387,6 +387,17 @@ public class AdminController {
         return ResponseEntity.ok(new ServerResponse<>(adminService.updateTrackingNumber(productOrderNumber, trackingNumberRequest)));
     }
 
+    @Operation(summary = "송장 번호 삭제", description = "송장 번호 삭제 API")
+    @DeleteMapping("/orders/{productOrderNumber}/trackingNumber")
+    public ResponseEntity<ServerResponse<String>> deleteTrackingNumber(
+        @Parameter(name = "productOrderNumber", description = "송장 번호 삭제할 상품 주문 번호", required = true, in = PATH)
+        @PathVariable(name = "productOrderNumber")
+        Long productOrderNumber
+    ) {
+        return ResponseEntity.ok(new ServerResponse<>(adminService.deleteTrackingNumber(productOrderNumber)));
+
+    }
+
     // ==============================================================================================================
     // 주문 취소 요청 관련 API
     // ==============================================================================================================

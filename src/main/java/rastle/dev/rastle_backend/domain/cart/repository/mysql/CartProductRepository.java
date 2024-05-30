@@ -29,6 +29,6 @@ public interface CartProductRepository extends JpaRepository<CartProduct, Long> 
         +
         "FROM CartProduct cp " +
         "JOIN cp.product p " +
-        "WHERE cp.cart.member.id = :memberId AND cp.cartProductStatus='NOT_ORDERED'")
+        "WHERE cp.cart.member.id = :memberId AND cp.cartProductStatus=rastle.dev.rastle_backend.global.common.enums.CartProductStatus.NOT_ORDERED")
     Page<CartProductInfoDto> getCartProducts(@Param("memberId") Long memberId, Pageable pageable);
 }
