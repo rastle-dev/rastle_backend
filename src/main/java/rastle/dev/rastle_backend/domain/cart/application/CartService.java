@@ -21,6 +21,8 @@ import rastle.dev.rastle_backend.global.util.SecurityUtil;
 import java.util.List;
 import java.util.Optional;
 
+import static rastle.dev.rastle_backend.global.common.enums.CartProductStatus.NOT_ORDERED;
+
 @Service
 @RequiredArgsConstructor
 public class CartService {
@@ -75,6 +77,7 @@ public class CartService {
                     .size(createCartProductDto.getSize())
                     .cart(cart)
                     .product(product)
+                    .cartProductStatus(NOT_ORDERED)
                     .build();
                 cartProductRepository.save(cartProduct);
             }
