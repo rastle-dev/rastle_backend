@@ -657,7 +657,7 @@ public class AdminService {
         restoreCouponStatus(cancelResponse.getCouponId());
 
 
-        return new CancelOrderResult(cancelOrderRequest.getImpId(), cancelOrderRequest.getProductOrderNumber(), orderProduct.getPrice() * cancelAmount);
+        return new CancelOrderResult(cancelOrderRequest.getImpId(), cancelOrderRequest.getProductOrderNumber(), cancelAmount);
     }
 
     private boolean isOrderEntirelyCancelled(OrderDetail orderDetail, OrderProduct orderProduct, Long cancelAmount) {
