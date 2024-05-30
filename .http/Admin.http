@@ -8,6 +8,17 @@ Content-Type: application/json
 }
 > {% client.global.set("auth_token", response.headers.valueOf("Authorization")); %}
 
+
+### 주문 취소
+POST https://api.recordyslow.com/admin/cancelOrder
+Content-Type: application/json
+Authorization: {{auth_token}}
+
+{
+  "impId": "imp_758537410183",
+  "productOrderNumber": 2024052900887
+}
+
 ### 송장 번호 설정
 PATCH https://api.recordyslow.com/admin/orders/17122490070512/trackingNumber
 Content-Type: application/json

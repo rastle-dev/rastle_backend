@@ -26,7 +26,8 @@ public class GlobalExceptionHandler {
         private void logExceptionDetail(Exception exception, HttpServletRequest webRequest) {
                 log.warn("{} {}", webRequest.getMethod(), webRequest.getRequestURI());
                 log.warn("{} {}", exception.getClass().getName(), exception.getMessage());
-                for (StackTraceElement element : exception.getStackTrace()) {
+                for (int i = exception.getStackTrace().length-3; i < exception.getStackTrace().length; i++) {
+                        StackTraceElement element = exception.getStackTrace()[i];
                         log.warn("{} {} {}", element.getClassName(), element.getMethodName(), element.getLineNumber());
                 }
         }
