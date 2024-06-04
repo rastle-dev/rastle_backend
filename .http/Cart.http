@@ -1,0 +1,15 @@
+### 멤버 로그인
+POST https://api.recordyslow.com/auth/login
+Content-Type: application/json
+
+{
+  "email": "test1@gmail.com",
+  "password": "a123456!"
+}
+
+> {% client.global.set("auth_token", response.headers.valueOf("Authorization")); %}
+
+### 장바구니 상품 조회
+GET https://api.recordyslow.com/cart
+Content-Type: application/json
+Authorization: {{auth_token}}

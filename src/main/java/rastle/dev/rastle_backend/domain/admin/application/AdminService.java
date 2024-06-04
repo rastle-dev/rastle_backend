@@ -53,6 +53,7 @@ import rastle.dev.rastle_backend.domain.product.repository.mysql.BundleProductRe
 import rastle.dev.rastle_backend.domain.product.repository.mysql.EventProductRepository;
 import rastle.dev.rastle_backend.domain.product.repository.mysql.ProductBaseRepository;
 import rastle.dev.rastle_backend.domain.product.repository.mysql.ProductDetailRepository;
+import rastle.dev.rastle_backend.global.common.enums.OrderStatus;
 import rastle.dev.rastle_backend.global.component.DeliveryTracker;
 import rastle.dev.rastle_backend.global.component.PortOneComponent;
 import rastle.dev.rastle_backend.global.component.S3Component;
@@ -67,8 +68,7 @@ import java.util.stream.Stream;
 
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.*;
 import static rastle.dev.rastle_backend.global.common.enums.CouponStatus.NOT_USED;
-import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.CANCELLED;
-import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.PARTIALLY_CANCELLED;
+import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.*;
 
 @Slf4j
 @Service
@@ -629,6 +629,9 @@ public class AdminService {
         validateTrackingNumber(trackingNumberRequest);
         OrderProduct orderProduct = orderProductRepository.findByProductOrderNumber(orderProductNumber).orElseThrow(() -> new RuntimeException("상품 주문 번호로 존재하는 상품 주문이 없다. " + orderProductNumber));
         orderProduct.updateTrackingNumber(trackingNumberRequest.getTrackingNumber());
+        if (orderProduct.getOrderStatus().getIndex() < OrderStatus.DELIVERY_READY.getIndex()) {
+            orderProduct.updateOrderStatus(DELIVERY_READY);
+        }
         deliveryTracker.registerWebHook(trackingNumberRequest.getTrackingNumber());
         return UPDATED;
     }
