@@ -48,7 +48,8 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
         "pb.category.id, " +
         "pb.bundle.id, " +
         "pb.event.id, " +
-        "pb.eventApplyCount) " +
+        "pb.eventApplyCount," +
+        "pb.soldCount) " +
         "from ProductBase pb WHERE pb.event.id = :id ORDER BY pb.displayOrder DESC")
     Page<SimpleProductInfo> getProductInfoByBundleId(@Param("id") Long id, Pageable pageable);
 
@@ -64,7 +65,8 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
         "pb.category.id, " +
         "pb.bundle.id, " +
         "pb.event.id, " +
-        "pb.eventApplyCount) " +
+        "pb.eventApplyCount, " +
+        "pb.soldCount) " +
         "from ProductBase pb WHERE pb.category.id = :id ORDER BY pb.displayOrder DESC")
     Page<SimpleProductInfo> getProductInfoByCategoryId(@Param("id") Long id, Pageable pageable);
 
@@ -80,7 +82,8 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
         "pb.category.id, " +
         "pb.bundle.id, " +
         "pb.event.id, " +
-        "pb.eventApplyCount) " +
+        "pb.eventApplyCount, " +
+        "pb.soldCount) " +
         "from ProductBase pb WHERE pb.event.id = :id ORDER BY pb.displayOrder DESC")
     Page<SimpleProductInfo> getProductInfoByEventId(@Param("id") Long id, Pageable pageable);
 
@@ -97,7 +100,8 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
             "pb.category.id, " +
             "pb.bundle.id, " +
             "pb.event.id, " +
-            "pb.eventApplyCount) " +
+            "pb.eventApplyCount, " +
+            "pb.soldCount) " +
             "from ProductBase pb " +
             "LEFT OUTER JOIN OrderProduct op ON pb.id = op.product.id " +
             "GROUP BY pb.id " +
@@ -118,7 +122,8 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
             "pb.category.id, " +
             "pb.bundle.id, " +
             "pb.event.id, " +
-            "pb.eventApplyCount) " +
+            "pb.eventApplyCount, " +
+            "pb.soldCount) " +
             "from ProductBase pb " +
             "LEFT OUTER JOIN OrderProduct op ON pb.id = op.product.id " +
             "WHERE pb.visible = :visible " +
