@@ -57,10 +57,10 @@ public class CartService {
             // 해당 상품이 장바구니에 이미 있는지 확인
             Optional<CartProduct> existingCartProduct = cart.getCartProducts().stream()
                 .filter(cp -> cp.getProduct().getId()
-                    .equals(createCartProductDto.getProductId())
-                    &&
+                    .equals(createCartProductDto.getProductId()) &&
                     cp.getColor().equals(createCartProductDto.getColor()) &&
-                    cp.getSize().equals(createCartProductDto.getSize()))
+                    cp.getSize().equals(createCartProductDto.getSize()) &&
+                    cp.getCartProductStatus() == NOT_ORDERED)
                 .findFirst();
 
             if (existingCartProduct.isPresent()) {
