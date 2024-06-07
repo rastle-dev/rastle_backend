@@ -18,6 +18,9 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
 
     List<OrderDetail> findByMemberId(Long memberId);
 
+    @Query("SELECT od FROM OrderDetail od JOIN FETCH od.orderProduct JOIN FETCH od.member WHERE od.orderNumber = :orderNumber")
+    Optional<OrderDetail> findByOrderNumber(@Param("orderNumber") Long orderNumber);
+
     @Query("SELECT od FROM OrderDetail od JOIN FETCH od.orderProduct JOIN FETCH od.member WHERE od.orderNumber = :orderNumber AND od.member.id = :memberId")
     Optional<OrderDetail> findByOrderNumberAndMemberId(@Param("orderNumber") Long orderNumber, @Param("memberId") Long memberId);
 
