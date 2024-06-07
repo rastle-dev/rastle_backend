@@ -16,6 +16,7 @@ import rastle.dev.rastle_backend.domain.member.model.Member;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
 import rastle.dev.rastle_backend.domain.order.dto.OrderDTO.*;
 import rastle.dev.rastle_backend.domain.order.dto.OrderSimpleInfo;
+import rastle.dev.rastle_backend.domain.order.dto.SimpleProductOrderInfo;
 import rastle.dev.rastle_backend.domain.order.dto.request.OrderCancelRequest;
 import rastle.dev.rastle_backend.domain.order.dto.request.ProductOrderCancelRequest;
 import rastle.dev.rastle_backend.domain.order.dto.response.OrderCancelResponse;
@@ -133,7 +134,9 @@ public class OrderService {
         Page<OrderSimpleInfo> simpleOrderInfoByMemberId = orderDetailRepository.findSimpleOrderInfoByMemberId(memberId, pageable);
         List<MemberOrderInfo> memberOrderInfos = new ArrayList<>();
         for (OrderSimpleInfo orderSimpleInfo : simpleOrderInfoByMemberId) {
-            memberOrderInfos.add(new MemberOrderInfo(orderSimpleInfo, orderProductRepository.findSimpleProductOrderInfoByOrderId(orderSimpleInfo.getOrderId())));
+            memberOrderInfos.add(new MemberOrderInfo(orderSimpleInfo, orderProductRepository.findSimpleProductOrderInfoByOrderId(orderSimpleInfo.getOrderId()).stream().map(
+                SimpleProductOrderInfo::fromInterface
+            ).toList()));
         }
         return new PageImpl<>(memberOrderInfos, pageable, simpleOrderInfoByMemberId.getTotalElements());
 
@@ -159,7 +162,7 @@ public class OrderService {
             .memberName(orderDetail.getMember().getUserName())
             .orderStatus(orderDetail.getOrderStatus())
             .deliveryStatus(orderDetail.getOrderStatus())
-            .productOrderInfos(orderProductRepository.findSimpleProductOrderInfoByOrderId(orderDetail.getId()))
+            .productOrderInfos(orderProductRepository.findSimpleProductOrderInfoByOrderId(orderDetail.getId()).stream().map(SimpleProductOrderInfo::fromInterface).toList())
             .paymentAmount(orderDetail.getPayment().getPaymentPrice())
             .deliveryPrice(orderDetail.getDelivery().getDeliveryPrice())
             .paymentMethod(paymentData.getPayMethod())

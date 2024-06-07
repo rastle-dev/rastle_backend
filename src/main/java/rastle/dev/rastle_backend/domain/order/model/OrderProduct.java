@@ -50,11 +50,11 @@ public class OrderProduct extends BaseTimeEntity {
     @Column(name = "cart_product_id")
     private Long cartProductId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private ProductBase product;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_detail_id")
     private OrderDetail orderDetail;
 

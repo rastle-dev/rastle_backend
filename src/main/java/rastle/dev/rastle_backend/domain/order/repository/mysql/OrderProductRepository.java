@@ -4,17 +4,44 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import rastle.dev.rastle_backend.domain.order.dto.SimpleProductOrderInfo;
 import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface OrderProductRepository extends JpaRepository<OrderProduct, Long> {
-    @Query("SELECT NEW rastle.dev.rastle_backend.domain.order.dto.SimpleProductOrderInfo(" +
-        "p.mainThumbnailImage, p.id, op.productOrderNumber, p.name, op.color, op.size, op.count, op.price, op.totalPrice, op.orderStatus, op.cancelAmount, op.cancelRequestAmount, op.trackingNumber) " +
-        "FROM OrderProduct op LEFT OUTER JOIN ProductBase p ON op.product.id = p.id WHERE op.orderDetail.id = :orderId")
-    List<SimpleProductOrderInfo> findSimpleProductOrderInfoByOrderId(@Param("orderId") Long orderId);
+    @Query(value = "SELECT " +
+        "p.main_thumbnail_image as mainThumbnailImage, " +
+        "p.product_id as productId, " +
+        "op.product_order_number as productOrderNumber, " +
+        "p.name as name, " +
+        "op.color as color, " +
+        "op.size as size, " +
+        "op.count as count, " +
+        "op.price as price, " +
+        "op.total_price as totalPrice, " +
+        "op.order_status as status, " +
+        "op.cancel_amount as cancelAmount, " +
+        "op.cancel_request_amount as cancelRequestAmount, " +
+        "op.tracking_number as trackingNumber " +
+        "FROM order_product op LEFT OUTER JOIN product_base p ON op.product_id = p.product_id WHERE op.order_detail_id = :orderId", nativeQuery = true)
+    List<SimpleProductOrderInterface> findSimpleProductOrderInfoByOrderId(@Param("orderId") Long orderId);
+
+    public static interface SimpleProductOrderInterface {
+        String getThumbnailUrl();
+        Long getProductId();
+        Long getProductOrderNumber();
+        String getName();
+        String getColor();
+        String getSize();
+        Long getCount();
+        Long getPrice();
+        Long getTotalPrice();
+        String getStatus();
+        Long getCancelAmount();
+        Long getCancelRequestAmount();
+        String getTrackingNumber();
+    }
 
     @Query("SELECT op FROM OrderProduct op JOIN FETCH op.orderDetail JOIN FETCH op.orderDetail.payment JOIN FETCH op.orderDetail.delivery WHERE op.productOrderNumber=:productOrderNumber")
     Optional<OrderProduct> findByProductOrderNumber(@Param("productOrderNumber") Long productOrderNumber);
@@ -24,6 +51,7 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
     void deleteTrackingNumberByProductOrderNumber(@Param("productOrderNumber") Long productOrderNumber);
 
     List<OrderProduct> findByTrackingNumber(String trackingNumber);
+
     @Query("SELECT op.trackingNumber FROM OrderProduct op WHERE op.orderStatus = 'DELIVERY_STARTED'")
     List<String> findTrackingNumberOfNotDelivered();
 }

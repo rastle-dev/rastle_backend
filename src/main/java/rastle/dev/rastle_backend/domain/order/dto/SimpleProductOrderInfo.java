@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderProductRepository.SimpleProductOrderInterface;
 import rastle.dev.rastle_backend.global.common.enums.OrderStatus;
 
 @Getter
@@ -38,4 +39,22 @@ public class SimpleProductOrderInfo {
     Long cancelRequestAmount;
     @Schema(description = "송장 번호", defaultValue = "23404321~")
     String trackingNumber;
+
+    public static SimpleProductOrderInfo fromInterface(SimpleProductOrderInterface simpleProductOrderInterface) {
+        return new SimpleProductOrderInfo(
+            simpleProductOrderInterface.getThumbnailUrl(),
+            simpleProductOrderInterface.getProductId(),
+            simpleProductOrderInterface.getProductOrderNumber(),
+            simpleProductOrderInterface.getName(),
+            simpleProductOrderInterface.getColor(),
+            simpleProductOrderInterface.getSize(),
+            simpleProductOrderInterface.getCount(),
+            simpleProductOrderInterface.getPrice(),
+            simpleProductOrderInterface.getTotalPrice(),
+            OrderStatus.getFromStatus(simpleProductOrderInterface.getStatus()),
+            simpleProductOrderInterface.getCancelAmount(),
+            simpleProductOrderInterface.getCancelRequestAmount(),
+            simpleProductOrderInterface.getTrackingNumber()
+        );
+    }
 }
