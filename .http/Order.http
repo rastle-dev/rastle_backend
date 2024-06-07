@@ -33,3 +33,8 @@ Authorization: {{auth_token}}
 GET http://localhost:8080/orders/827
 Content-Type: application/json
 Authorization: {{auth_token}}
+
+### 주문 번호로 조회
+GET https://api.recordyslow.com/orders/merchantId/2024060700901
+Content-Type: application/json
+Authorization: {{auth_token}}
