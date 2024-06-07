@@ -672,7 +672,7 @@ public class AdminService {
     }
 
     private boolean isOrderEntirelyCancelled(OrderDetail orderDetail, OrderProduct orderProduct, Long cancelAmount) {
-        return orderDetail.getPayment().getPaymentPrice() == orderDetail.getPayment().getCancelledSum() + orderProduct.getPrice() * cancelAmount + orderDetail.getDelivery().getDeliveryPrice() + orderDetail.getDelivery().getIslandDeliveryPrice() + orderDetail.getPayment().getCouponAmount();
+        return orderDetail.getPayment().getPaymentPrice() == orderDetail.getPayment().getCancelledSum() + orderProduct.getPrice() * cancelAmount + orderDetail.getDelivery().getDeliveryPrice() + orderDetail.getDelivery().getIslandDeliveryPrice() - orderDetail.getPayment().getCouponAmount();
     }
 
     private void handleCancelEvent(OrderProduct orderProduct, Long cancelAmount) {
