@@ -26,7 +26,7 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
         "op.cancel_request_amount as cancelRequestAmount, " +
         "op.tracking_number as trackingNumber " +
         "FROM order_product op " +
-        "LEFT OUTER JOIN order_detail od ON op.order_detail_id = od.order_detail_id" +
+        "LEFT OUTER JOIN order_detail od ON op.order_detail_id = od.order_detail_id " +
         "LEFT OUTER JOIN product_base p ON op.product_id = p.product_id " +
         "WHERE op.order_detail_id = :orderId", nativeQuery = true)
     List<SimpleProductOrderInterface> findSimpleProductOrderInfoByOrderId(@Param("orderId") Long orderId);
