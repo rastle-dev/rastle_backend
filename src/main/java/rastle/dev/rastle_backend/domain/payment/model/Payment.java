@@ -45,7 +45,7 @@ public class Payment extends BaseTimeEntity {
     private Long cancelledSum;
     @Column(name = "paid_at")
     private LocalDateTime paidAt;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_detail_id")
     private OrderDetail orderDetail;
 

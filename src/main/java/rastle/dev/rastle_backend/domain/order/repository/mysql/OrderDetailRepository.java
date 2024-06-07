@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> {
-    @Query("SELECT od FROM OrderDetail od JOIN FETCH od.member WHERE od.id = :orderId AND od.member.id = :memberId")
+    @Query("SELECT od FROM OrderDetail od JOIN FETCH od.orderProduct JOIN FETCH od.member WHERE od.id = :orderId AND od.member.id = :memberId")
     Optional<OrderDetail> findByIdAndMemberId(@Param("orderId") Long orderId, @Param("memberId") Long memberId);
 
     List<OrderDetail> findByMemberId(Long memberId);
