@@ -27,7 +27,7 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
         "FROM order_product op LEFT OUTER JOIN product_base p ON op.product_id = p.product_id WHERE op.order_detail_id = :orderId", nativeQuery = true)
     List<SimpleProductOrderInterface> findSimpleProductOrderInfoByOrderId(@Param("orderId") Long orderId);
 
-    public static interface SimpleProductOrderInterface {
+    interface SimpleProductOrderInterface {
         String getThumbnailUrl();
         Long getProductId();
         Long getProductOrderNumber();
@@ -47,7 +47,7 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
     Optional<OrderProduct> findByProductOrderNumber(@Param("productOrderNumber") Long productOrderNumber);
 
     @Modifying
-    @Query("UPDATE OrderProduct op SET op.trackingNumber=null WHERE op.productOrderNumber=:productOrderNumber")
+    @Query("UPDATE OrderProduct op SET op.trackingNumber=null, op.orderStatus=rastle.dev.rastle_backend.global.common.enums.OrderStatus.PAID WHERE op.productOrderNumber=:productOrderNumber")
     void deleteTrackingNumberByProductOrderNumber(@Param("productOrderNumber") Long productOrderNumber);
 
     List<OrderProduct> findByTrackingNumber(String trackingNumber);
