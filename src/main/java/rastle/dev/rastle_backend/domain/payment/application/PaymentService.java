@@ -155,8 +155,7 @@ public class PaymentService {
         String orderNumber = paymentPrepareRequest.getMerchant_uid();
         OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(Long.parseLong(orderNumber))
                 .orElseThrow(() -> new PaymentException("주문 번호로 존재하는 주문이 없습니다. " + orderNumber));
-        Long orderPrice = orderDetail.getOrderPrice();
-        Long paymentPrice = orderPrice;
+        Long paymentPrice = orderDetail.getOrderPrice();
         if (paymentPrepareRequest.getCouponId() != null) {
             Coupon coupon = couponRepository.getReferenceById(paymentPrepareRequest.getCouponId());
             if (coupon.getCouponStatus() != NOT_USED) {
@@ -168,12 +167,10 @@ public class PaymentService {
         if (islandDeliveryPrice == null) {
             islandDeliveryPrice = 0L;
         }
-        orderPrice += paymentPrepareRequest.getDeliveryPrice();
-        orderPrice += islandDeliveryPrice;
-        paymentPrice += paymentPrepareRequest.getDeliveryPrice();
         paymentPrice += islandDeliveryPrice;
+        paymentPrice += paymentPrepareRequest.getDeliveryPrice();
         orderDetail.getPayment().updatePaymentPrice(paymentPrice);
-        return portOneComponent.preparePayment(orderNumber, orderPrice);
+        return portOneComponent.preparePayment(orderNumber, paymentPrice);
     }
 
     @Transactional
