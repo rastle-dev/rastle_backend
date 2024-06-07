@@ -37,7 +37,7 @@ public class Delivery extends BaseTimeEntity {
     private Long islandDeliveryPrice;
     private String msg;
     private String deliveryService;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_detail_id")
     private OrderDetail orderDetail;
 

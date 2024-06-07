@@ -12,8 +12,8 @@ import java.util.Optional;
 
 public interface OrderProductRepository extends JpaRepository<OrderProduct, Long> {
     @Query("SELECT NEW rastle.dev.rastle_backend.domain.order.dto.SimpleProductOrderInfo(" +
-        "p.mainThumbnailImage, p.id, op.productOrderNumber, p.name, op.color, op.size, op.count, op.price, op.totalPrice, op.orderStatus, op.cancelAmount, op.cancelRequestAmount, op.trackingNumber) " +
-        "FROM OrderProduct op LEFT OUTER JOIN ProductBase p ON op.product.id = p.id WHERE op.orderDetail.id = :orderId")
+        "op.product.mainThumbnailImage, op.product.id, op.productOrderNumber, op.product.name, op.color, op.size, op.count, op.price, op.totalPrice, op.orderStatus, op.cancelAmount, op.cancelRequestAmount, op.trackingNumber) " +
+        "FROM OrderProduct op JOIN FETCH op.product WHERE op.orderDetail.id = :orderId")
     List<SimpleProductOrderInfo> findSimpleProductOrderInfoByOrderId(@Param("orderId") Long orderId);
 
     @Query("SELECT op FROM OrderProduct op JOIN FETCH op.orderDetail JOIN FETCH op.orderDetail.payment JOIN FETCH op.orderDetail.delivery WHERE op.productOrderNumber=:productOrderNumber")

@@ -14,8 +14,8 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-  "email": "testest21@email.com",
-  "password": "12341234@"
+  "email": "test1@gmail.com",
+  "password": "a123456!"
 }
 
 > {% client.global.set("auth_token", response.headers.valueOf("Authorization")); %}
@@ -23,6 +23,6 @@ Content-Type: application/json
 
 
 ### 로그인한 멤버 정보 조회
-GET https://api.recordyslow.com/member
+GET http://localhost:8080/member
 Content-Type: application/json
 Authorization: {{auth_token}}
