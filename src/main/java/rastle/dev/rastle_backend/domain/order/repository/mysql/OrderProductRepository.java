@@ -13,6 +13,7 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
     @Query(value = "SELECT " +
         "p.main_thumbnail_image as mainThumbnailImage, " +
         "p.product_id as productId, " +
+        "od.order_number as orderNumber, " +
         "op.product_order_number as productOrderNumber, " +
         "p.name as name, " +
         "op.color as color, " +
@@ -24,12 +25,38 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
         "op.cancel_amount as cancelAmount, " +
         "op.cancel_request_amount as cancelRequestAmount, " +
         "op.tracking_number as trackingNumber " +
-        "FROM order_product op LEFT OUTER JOIN product_base p ON op.product_id = p.product_id WHERE op.order_detail_id = :orderId", nativeQuery = true)
+        "FROM order_product op " +
+        "LEFT OUTER JOIN order_detail od ON op.order_detail_id = od.order_detail_id" +
+        "LEFT OUTER JOIN product_base p ON op.product_id = p.product_id " +
+        "WHERE op.order_detail_id = :orderId", nativeQuery = true)
     List<SimpleProductOrderInterface> findSimpleProductOrderInfoByOrderId(@Param("orderId") Long orderId);
+
+
+    @Query(value = "SELECT " +
+        "p.main_thumbnail_image as mainThumbnailImage, " +
+        "p.product_id as productId, " +
+        "od.order_number as orderNumber, " +
+        "op.product_order_number as productOrderNumber, " +
+        "p.name as name, " +
+        "op.color as color, " +
+        "op.size as size, " +
+        "op.count as count, " +
+        "op.price as price, " +
+        "op.total_price as totalPrice, " +
+        "op.order_status as status, " +
+        "op.cancel_amount as cancelAmount, " +
+        "op.cancel_request_amount as cancelRequestAmount, " +
+        "op.tracking_number as trackingNumber " +
+        "FROM order_product op " +
+        "LEFT OUTER JOIN product_base p ON op.product_id = p.product_id " +
+        "LEFT OUTER JOIN order_detail od ON op.order_detail_id = od.order_detail_id " +
+        "WHERE od.member_id = :memberId", nativeQuery = true)
+    List<SimpleProductOrderInterface> findSimpleProductOrderInfoByMemberId(@Param("memberId") Long memberId);
 
     interface SimpleProductOrderInterface {
         String getThumbnailUrl();
         Long getProductId();
+        Long getOrderNumber();
         Long getProductOrderNumber();
         String getName();
         String getColor();

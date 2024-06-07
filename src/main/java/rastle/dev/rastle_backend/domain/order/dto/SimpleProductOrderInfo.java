@@ -17,6 +17,8 @@ public class SimpleProductOrderInfo {
     String thumbnailUrl;
     @Schema(description = "상품 아이디", defaultValue = "1")
     Long productId;
+    @Schema(description = "주문 번호", defaultValue = "135")
+    Long orderNumber;
     @Schema(description = "상품 주문 번호", defaultValue = "11234~~")
     Long productOrderNumber;
     @Schema(description = "상품 이름", defaultValue = "연그레이 와이드 팬츠")
@@ -44,6 +46,7 @@ public class SimpleProductOrderInfo {
         return new SimpleProductOrderInfo(
             simpleProductOrderInterface.getThumbnailUrl(),
             simpleProductOrderInterface.getProductId(),
+            simpleProductOrderInterface.getOrderNumber(),
             simpleProductOrderInterface.getProductOrderNumber(),
             simpleProductOrderInterface.getName(),
             simpleProductOrderInterface.getColor(),
