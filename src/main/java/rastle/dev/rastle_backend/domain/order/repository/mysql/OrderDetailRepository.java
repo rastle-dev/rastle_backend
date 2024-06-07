@@ -30,7 +30,7 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
 
     @Query(value = "SELECT " +
         "o.order_detail_id as orderId, " +
-        "o.created_time as createdTime, " +
+        "o.created_time as orderDate, " +
         "o.order_number as orderNumber, " +
         "o.order_status as orderStatus, " +
         "o.order_status as deliveryStatus " +
