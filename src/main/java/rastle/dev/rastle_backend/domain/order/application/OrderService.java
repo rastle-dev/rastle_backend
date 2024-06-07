@@ -132,11 +132,16 @@ public class OrderService {
     @Transactional(readOnly = true)
     public Page<?> getMemberOrder(Long memberId, Pageable pageable) {
         List<OrderSimpleInfo> orderSimpleInfos = orderDetailRepository.findSimpleOrderInfoByMemberId(memberId, (long) pageable.getPageSize(), pageable.getOffset()).stream().map(OrderSimpleInfo::fromInterface).toList();
+        List<SimpleProductOrderInfo> simpleProductOrderInfos = orderProductRepository.findSimpleProductOrderInfoByMemberId(memberId).stream().map(SimpleProductOrderInfo::fromInterface).toList();
         List<MemberOrderInfo> memberOrderInfos = new ArrayList<>();
         for (OrderSimpleInfo orderSimpleInfo : orderSimpleInfos) {
-            memberOrderInfos.add(new MemberOrderInfo(orderSimpleInfo, orderProductRepository.findSimpleProductOrderInfoByOrderId(orderSimpleInfo.getOrderId()).stream().map(
-                SimpleProductOrderInfo::fromInterface
-            ).toList()));
+            List<SimpleProductOrderInfo> orderProducts = new ArrayList<>();
+            for (SimpleProductOrderInfo productOrderInfo : simpleProductOrderInfos) {
+                if (productOrderInfo.getOrderNumber().toString().equals(orderSimpleInfo.getOrderNumber())) {
+                    orderProducts.add(productOrderInfo);
+                }
+            }
+            memberOrderInfos.add(new MemberOrderInfo(orderSimpleInfo, orderProducts));
         }
         return new PageImpl<>(memberOrderInfos, pageable, orderDetailRepository.countSimpleOrderInfoByMemberId(memberId));
 
