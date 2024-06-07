@@ -131,14 +131,14 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public Page<?> getMemberOrder(Long memberId, Pageable pageable) {
-        Page<OrderSimpleInfo> simpleOrderInfoByMemberId = orderDetailRepository.findSimpleOrderInfoByMemberId(memberId, pageable);
+        List<OrderSimpleInfo> orderSimpleInfos = orderDetailRepository.findSimpleOrderInfoByMemberId(memberId, (long) pageable.getPageSize(), pageable.getOffset()).stream().map(OrderSimpleInfo::fromInterface).toList();
         List<MemberOrderInfo> memberOrderInfos = new ArrayList<>();
-        for (OrderSimpleInfo orderSimpleInfo : simpleOrderInfoByMemberId) {
+        for (OrderSimpleInfo orderSimpleInfo : orderSimpleInfos) {
             memberOrderInfos.add(new MemberOrderInfo(orderSimpleInfo, orderProductRepository.findSimpleProductOrderInfoByOrderId(orderSimpleInfo.getOrderId()).stream().map(
                 SimpleProductOrderInfo::fromInterface
             ).toList()));
         }
-        return new PageImpl<>(memberOrderInfos, pageable, simpleOrderInfoByMemberId.getTotalElements());
+        return new PageImpl<>(memberOrderInfos, pageable, orderDetailRepository.countSimpleOrderInfoByMemberId(memberId));
 
     }
 
@@ -193,17 +193,10 @@ public class OrderService {
         return getOrderDetailResponse(orderDetail);
     }
 
-    private void validateMemberOrder(Member member, OrderDetail orderDetail) {
-        if (!orderDetail.getMember().getId().equals(member.getId())) {
-            throw new NotAuthorizedException("권한 없는 주문 조회 요청, memberId " + member.getId() + " orderId " + orderDetail.getId());
-        }
-    }
 
     @Transactional
     public OrderCancelResponse cancelOrder(Long memberId, OrderCancelRequest orderCancelRequest) {
-        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
         OrderDetail orderDetail = orderDetailRepository.findByOrderNumberAndMemberId(orderCancelRequest.getOrderNumber(), memberId).orElseThrow(() -> new RuntimeException("해당 주문 번호로 존재하는 주문이 없습니다. " + orderCancelRequest.getOrderNumber()));
-        validateMemberOrder(member, orderDetail);
 
         for (ProductOrderCancelRequest productOrderCancelRequest : orderCancelRequest.getProductOrderCancelRequests()) {
             Optional<OrderProduct> byProductOrderNumber = orderProductRepository.findByProductOrderNumber(productOrderCancelRequest.getProductOrderNumber());

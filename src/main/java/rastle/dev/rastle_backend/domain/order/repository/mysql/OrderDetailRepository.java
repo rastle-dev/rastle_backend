@@ -1,14 +1,12 @@
 package rastle.dev.rastle_backend.domain.order.repository.mysql;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import rastle.dev.rastle_backend.domain.order.dto.OrderSimpleInfo;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,8 +28,24 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
     @Query("SELECT od FROM OrderDetail od ")
     List<OrderDetail> findDeliveredOrders();
 
-    @Query("SELECT NEW rastle.dev.rastle_backend.domain.order.dto.OrderSimpleInfo(" +
-        "o.id, o.createdTime, o.orderNumber, o.orderStatus, o.orderStatus) " +
-        "FROM OrderDetail o WHERE o.member.id = :memberId AND o.orderStatus != 'CREATED' ORDER BY o.createdTime DESC")
-    Page<OrderSimpleInfo> findSimpleOrderInfoByMemberId(@Param("memberId") Long memberId, Pageable pageable);
+    @Query(value = "SELECT " +
+        "o.order_detail_id as orderId, " +
+        "o.created_time as createdTime, " +
+        "o.order_number as orderNumber, " +
+        "o.order_status as orderStatus, " +
+        "o.order_status as deliveryStatus " +
+        "FROM order_detail o WHERE o.member_id = :memberId AND o.order_status != 'CREATED' ORDER BY o.created_time DESC LIMIT :limit OFFSET :offset", nativeQuery = true)
+    List<OrderSimpleInterface> findSimpleOrderInfoByMemberId(@Param("memberId") Long memberId, @Param("limit") Long limit, @Param("offset") Long offset);
+
+    interface OrderSimpleInterface {
+        Long getOrderId();
+        LocalDateTime getOrderDate();
+        String getOrderNumber();
+        String getOrderStatus();
+        String getDeliveryStatus();
+    }
+
+    @Query("SELECT COUNT(od.id) FROM OrderDetail od WHERE od.member.id = :memberId GROUP BY od.member.id")
+    Long countSimpleOrderInfoByMemberId(@Param("memberId") Long memberId);
+
 }
