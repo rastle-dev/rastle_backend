@@ -33,7 +33,7 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
 
 
     @Query(value = "SELECT " +
-        "p.main_thumbnail_image as mainThumbnailImage, " +
+        "p.main_thumbnail_image as thumbnailUrl, " +
         "p.product_id as productId, " +
         "od.order_number as orderNumber, " +
         "op.product_order_number as productOrderNumber, " +
