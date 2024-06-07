@@ -183,49 +183,43 @@ public class PaymentService {
         OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(Long.parseLong(merchantUid))
                 .orElseThrow(() -> new PaymentException("주문번호로 존재하는 주문이 DB에 존재하지 않는다"));
 
-        if (orderDetail.getPayment().getPaymentPrice().equals(paymentResponse.getAmount())) {
-            switch (webHookRequest.getStatus()) {
-                case PAID -> {
-                    handlePayment(paymentResponse, orderDetail);
-                    return PortOneWebHookResponse.builder()
-                            .status(SUCCESS)
-                            .message(SUCCESS_MSG)
-                            .build();
-                }
-                case READY -> {
-                    mailComponent.sendBankIssueMessage(paymentResponse);
-                    return PortOneWebHookResponse.builder()
-                            .status(VBANK_ISSUED)
-                            .message(VBANK_ISSUED_MSG)
-                            .build();
-                }
-                case PortOneStatusConstant.FAILED -> {
-                    orderDetail.updateOrderStatus(FAILED);
-                    return PortOneWebHookResponse.builder()
-                            .status(PortOneStatusConstant.FAILED)
-                            .message(FAILED_MSG)
-                            .build();
-                }
-                case PortOneStatusConstant.CANCELLED -> {
-                    orderDetail.updateOrderStatus(CANCELLED);
-                    return PortOneWebHookResponse.builder()
-                            .status(PortOneStatusConstant.CANCELLED)
-                            .message(CANCELLED_MSG)
-                            .build();
-                }
-                default -> {
-                    return PortOneWebHookResponse.builder()
-                            .status("undefined")
-                            .message("undefined")
-                            .build();
-                }
-
-            }
-        } else {
-            return PortOneWebHookResponse.builder()
-                    .status(FORGERY)
-                    .message(FORGERY_MSG)
+        switch (webHookRequest.getStatus()) {
+            case PAID -> {
+                handlePayment(paymentResponse, orderDetail);
+                return PortOneWebHookResponse.builder()
+                    .status(SUCCESS)
+                    .message(SUCCESS_MSG)
                     .build();
+            }
+            case READY -> {
+                mailComponent.sendBankIssueMessage(paymentResponse);
+                return PortOneWebHookResponse.builder()
+                    .status(VBANK_ISSUED)
+                    .message(VBANK_ISSUED_MSG)
+                    .build();
+            }
+            case PortOneStatusConstant.FAILED -> {
+                orderDetail.updateOrderStatus(FAILED);
+                return PortOneWebHookResponse.builder()
+                    .status(PortOneStatusConstant.FAILED)
+                    .message(FAILED_MSG)
+                    .build();
+            }
+            case PortOneStatusConstant.CANCELLED -> {
+                orderDetail.updateOrderStatus(CANCELLED);
+                return PortOneWebHookResponse.builder()
+                    .status(PortOneStatusConstant.CANCELLED)
+                    .message(CANCELLED_MSG)
+                    .build();
+            }
+            default -> {
+                return PortOneWebHookResponse.builder()
+                    .status("undefined")
+                    .message("undefined")
+                    .build();
+            }
+
         }
+
     }
 }
