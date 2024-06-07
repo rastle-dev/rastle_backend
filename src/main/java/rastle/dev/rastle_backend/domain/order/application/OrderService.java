@@ -135,19 +135,17 @@ public class OrderService {
         for (OrderSimpleInfo orderSimpleInfo : simpleOrderInfoByMemberId) {
             memberOrderInfos.add(new MemberOrderInfo(orderSimpleInfo, orderProductRepository.findSimpleProductOrderInfoByOrderId(orderSimpleInfo.getOrderId())));
         }
-        return new PageImpl<MemberOrderInfo>(memberOrderInfos, pageable, simpleOrderInfoByMemberId.getTotalElements());
+        return new PageImpl<>(memberOrderInfos, pageable, simpleOrderInfoByMemberId.getTotalElements());
 
     }
 
     @Transactional(readOnly = true)
     public OrderDetailResponse getOrderDetail(Long memberId, Long orderId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
-        OrderDetail orderDetail = orderDetailRepository.findById(orderId).orElseThrow(NotFoundByIdException::new);
-        return getOrderDetailResponse(member, orderDetail);
+        OrderDetail orderDetail = orderDetailRepository.findByIdAndMemberId(orderId, memberId).orElseThrow(NotFoundByIdException::new);
+        return getOrderDetailResponse(orderDetail);
     }
 
-    private OrderDetailResponse getOrderDetailResponse(Member member, OrderDetail orderDetail) {
-        validateMemberOrder(member, orderDetail);
+    private OrderDetailResponse getOrderDetailResponse(OrderDetail orderDetail) {
 
         PaymentResponse paymentData = portOneComponent.getPaymentData(orderDetail.getPayment().getImpId());
         CouponInfo couponInfo = couponRepository.findByCouponInfoById(paymentData.getCouponId()).orElse(null);
@@ -158,7 +156,7 @@ public class OrderService {
         return OrderDetailResponse.builder()
             .orderNumber(orderDetail.getOrderNumber().toString())
             .orderDate(orderDetail.getCreatedTime().toString())
-            .memberName(member.getUserName())
+            .memberName(orderDetail.getMember().getUserName())
             .orderStatus(orderDetail.getOrderStatus())
             .deliveryStatus(orderDetail.getOrderStatus())
             .productOrderInfos(orderProductRepository.findSimpleProductOrderInfoByOrderId(orderDetail.getId()))
@@ -188,9 +186,8 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public OrderDetailResponse getOrderDetail(Long memberId, String merchantId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
-        OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(Long.parseLong(merchantId)).orElseThrow(NotFoundByIdException::new);
-        return getOrderDetailResponse(member, orderDetail);
+        OrderDetail orderDetail = orderDetailRepository.findByOrderNumberAndMemberId(Long.parseLong(merchantId), memberId).orElseThrow(NotFoundByIdException::new);
+        return getOrderDetailResponse(orderDetail);
     }
 
     private void validateMemberOrder(Member member, OrderDetail orderDetail) {
@@ -202,7 +199,7 @@ public class OrderService {
     @Transactional
     public OrderCancelResponse cancelOrder(Long memberId, OrderCancelRequest orderCancelRequest) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
-        OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(orderCancelRequest.getOrderNumber()).orElseThrow(() -> new RuntimeException("해당 주문 번호로 존재하는 주문이 없습니다. " + orderCancelRequest.getOrderNumber()));
+        OrderDetail orderDetail = orderDetailRepository.findByOrderNumberAndMemberId(orderCancelRequest.getOrderNumber(), memberId).orElseThrow(() -> new RuntimeException("해당 주문 번호로 존재하는 주문이 없습니다. " + orderCancelRequest.getOrderNumber()));
         validateMemberOrder(member, orderDetail);
 
         for (ProductOrderCancelRequest productOrderCancelRequest : orderCancelRequest.getProductOrderCancelRequests()) {

@@ -1,6 +1,7 @@
 ### 주문 생성
-POST https://api.recordyslow.com/orders
+POST http://localhost:8080/orders
 Content-Type: application/json
+Authorization: {{auth_token}}
 
 {
   "orderProducts": [
@@ -23,3 +24,12 @@ Content-Type: application/json
   ]
 }
 
+### 주문 조회
+GET http://localhost:8080/orders
+Content-Type: application/json
+Authorization: {{auth_token}}
+
+### 주문 상세 조회
+GET http://localhost:8080/orders/827
+Content-Type: application/json
+Authorization: {{auth_token}}
