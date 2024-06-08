@@ -45,7 +45,7 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
         String getDeliveryStatus();
     }
 
-    @Query("SELECT COUNT(od.id) FROM OrderDetail od WHERE od.member.id = :memberId GROUP BY od.member.id")
+    @Query("SELECT COALESCE(COUNT(od.id), 0) FROM OrderDetail od WHERE od.member.id = :memberId GROUP BY od.member.id")
     Long countSimpleOrderInfoByMemberId(@Param("memberId") Long memberId);
 
 }

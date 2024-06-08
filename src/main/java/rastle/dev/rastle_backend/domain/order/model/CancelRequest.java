@@ -31,7 +31,7 @@ public class CancelRequest extends BaseTimeEntity {
     @Enumerated(STRING)
     private CancelRequestStatus cancelRequestStatus;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_detail_id")
     private OrderDetail orderDetail;
 
