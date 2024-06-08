@@ -21,10 +21,10 @@ public class CartProduct {
     private int count;
     private String color;
     private String size;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id")
     private Cart cart;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private ProductBase product;
     @Column(name = "cart_product_status")
