@@ -53,7 +53,6 @@ import rastle.dev.rastle_backend.domain.product.repository.mysql.BundleProductRe
 import rastle.dev.rastle_backend.domain.product.repository.mysql.EventProductRepository;
 import rastle.dev.rastle_backend.domain.product.repository.mysql.ProductBaseRepository;
 import rastle.dev.rastle_backend.domain.product.repository.mysql.ProductDetailRepository;
-import rastle.dev.rastle_backend.global.common.enums.OrderStatus;
 import rastle.dev.rastle_backend.global.component.DeliveryTracker;
 import rastle.dev.rastle_backend.global.component.PortOneComponent;
 import rastle.dev.rastle_backend.global.component.S3Component;
@@ -68,7 +67,8 @@ import java.util.stream.Stream;
 
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.*;
 import static rastle.dev.rastle_backend.global.common.enums.CouponStatus.NOT_USED;
-import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.*;
+import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.CANCELLED;
+import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.PARTIALLY_CANCELLED;
 
 @Slf4j
 @Service
@@ -158,24 +158,20 @@ public class AdminService {
 
     @Transactional
     public ProductImageInfo uploadMainThumbnail(Long id, MultipartFile mainThumbnail) {
-        ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         String mainThumbnailUrl = s3Component.uploadSingleImageToS3(MAIN_THUMBNAIL, mainThumbnail);
-        productBase.setMainThumbnailImage(mainThumbnailUrl);
-
+        productBaseRepository.updateProductBaseMainThumbnail(id, mainThumbnailUrl);
         return ProductImageInfo.builder()
-            .productBaseId(productBase.getId())
+            .productBaseId(id)
             .imageUrls(List.of(mainThumbnailUrl))
             .build();
     }
 
     @Transactional
     public ProductImageInfo uploadSubThumbnail(Long id, MultipartFile subThumbnail) {
-        ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         String subThumbnailUrl = s3Component.uploadSingleImageToS3(SUB_THUMBNAIL, subThumbnail);
-        productBase.setSubThumbnailImage(subThumbnailUrl);
-
+        productBaseRepository.updateProductBaseSubThumbnail(id, subThumbnailUrl);
         return ProductImageInfo.builder()
-            .productBaseId(productBase.getId())
+            .productBaseId(id)
             .imageUrls(List.of(subThumbnailUrl))
             .build();
     }
@@ -256,26 +252,24 @@ public class AdminService {
 
     @Transactional
     public ProductImageInfo updateMainThumbnail(Long id, MultipartFile mainThumbnail) {
-        ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         // s3Component.deleteImageByUrl(productBase.getMainThumbnailImage());
         String mainThumbnailUrl = s3Component.uploadSingleImageToS3(MAIN_THUMBNAIL, mainThumbnail);
-        productBase.setMainThumbnailImage(mainThumbnailUrl);
+        productBaseRepository.updateProductBaseMainThumbnail(id, mainThumbnailUrl);
 
         return ProductImageInfo.builder()
-            .productBaseId(productBase.getId())
+            .productBaseId(id)
             .imageUrls(List.of(mainThumbnailUrl))
             .build();
     }
 
     @Transactional
     public ProductImageInfo updateSubThumbnail(Long id, MultipartFile subThumbnail) {
-        ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         // s3Component.deleteImageByUrl(productBase.getSubThumbnailImage());
         String subThumbnailUrl = s3Component.uploadSingleImageToS3(SUB_THUMBNAIL, subThumbnail);
-        productBase.setSubThumbnailImage(subThumbnailUrl);
+        productBaseRepository.updateProductBaseSubThumbnail(id, subThumbnailUrl);
 
         return ProductImageInfo.builder()
-            .productBaseId(productBase.getId())
+            .productBaseId(id)
             .imageUrls(List.of(subThumbnailUrl))
             .build();
     }
@@ -627,11 +621,7 @@ public class AdminService {
     @Transactional
     public String updateTrackingNumber(Long orderProductNumber, UpdateTrackingNumberRequest trackingNumberRequest) {
         validateTrackingNumber(trackingNumberRequest);
-        OrderProduct orderProduct = orderProductRepository.findByProductOrderNumber(orderProductNumber).orElseThrow(() -> new RuntimeException("상품 주문 번호로 존재하는 상품 주문이 없다. " + orderProductNumber));
-        orderProduct.updateTrackingNumber(trackingNumberRequest.getTrackingNumber());
-        if (orderProduct.getOrderStatus().getIndex() < OrderStatus.DELIVERY_READY.getIndex()) {
-            orderProduct.updateOrderStatus(DELIVERY_READY);
-        }
+        orderProductRepository.updateOrderProductTrackingNumber(trackingNumberRequest.getTrackingNumber(), orderProductNumber);
         deliveryTracker.registerWebHook(trackingNumberRequest.getTrackingNumber());
         return UPDATED;
     }

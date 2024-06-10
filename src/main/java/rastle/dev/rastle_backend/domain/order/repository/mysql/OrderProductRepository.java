@@ -78,6 +78,10 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
     Optional<OrderProduct> findByProductOrderNumber(@Param("productOrderNumber") Long productOrderNumber);
 
     @Modifying
+    @Query("UPDATE OrderProduct op SET op.trackingNumber=:trackingNumber, op.orderStatus=rastle.dev.rastle_backend.global.common.enums.OrderStatus.DELIVERY_READY WHERE op.productOrderNumber=:productOrderNumber")
+    void updateOrderProductTrackingNumber(@Param("trackingNumber") String trackingNumber, @Param("productOrderNumber") Long productOrderNumber);
+
+    @Modifying
     @Query("UPDATE OrderProduct op SET op.trackingNumber=null, op.orderStatus=rastle.dev.rastle_backend.global.common.enums.OrderStatus.PAID WHERE op.productOrderNumber=:productOrderNumber")
     void deleteTrackingNumberByProductOrderNumber(@Param("productOrderNumber") Long productOrderNumber);
 
