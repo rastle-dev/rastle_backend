@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import rastle.dev.rastle_backend.domain.cart.model.CartProduct;
 import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 import rastle.dev.rastle_backend.global.common.BaseTimeEntity;
 import rastle.dev.rastle_backend.global.common.enums.OrderStatus;
@@ -49,8 +50,9 @@ public class OrderProduct extends BaseTimeEntity {
     @ColumnDefault("0")
     @Column(name = "cancel_request_amount")
     private Long cancelRequestAmount;
-    @Column(name = "cart_product_id")
-    private Long cartProductId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cart_product_id")
+    private CartProduct cartProduct;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
@@ -64,7 +66,7 @@ public class OrderProduct extends BaseTimeEntity {
     private LocalDateTime deliveryTime;
 
     @Builder
-    public OrderProduct(String name, String color, String size, Long count, Long price, Long totalPrice, Long productOrderNumber, ProductBase product, OrderDetail orderDetail, String trackingNumber, OrderStatus orderStatus, Long cancelAmount, Long cancelRequestAmount, Long cartProductId, LocalDateTime deliveryTime) {
+    public OrderProduct(String name, String color, String size, Long count, Long price, Long totalPrice, Long productOrderNumber, ProductBase product, OrderDetail orderDetail, String trackingNumber, OrderStatus orderStatus, Long cancelAmount, Long cancelRequestAmount, CartProduct cartProduct, LocalDateTime deliveryTime) {
         this.orderStatus = orderStatus;
         this.name = name;
         this.color = color;
@@ -78,7 +80,7 @@ public class OrderProduct extends BaseTimeEntity {
         this.trackingNumber = trackingNumber;
         this.cancelAmount = cancelAmount;
         this.cancelRequestAmount = cancelRequestAmount;
-        this.cartProductId = cartProductId;
+        this.cartProduct = cartProduct;
         this.deliveryTime = deliveryTime;
     }
 
@@ -106,9 +108,6 @@ public class OrderProduct extends BaseTimeEntity {
         this.cancelRequestAmount = 0L;
     }
 
-    public void updateCartProductId(Long cartProductId) {
-        this.cartProductId = cartProductId;
-    }
 
     public void updateDeliveryTime(LocalDateTime deliveryTime) {
         this.deliveryTime = deliveryTime;

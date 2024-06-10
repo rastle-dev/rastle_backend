@@ -257,7 +257,7 @@ public class OrderService {
                     .totalPrice((long) productBase.getDiscountPrice() * cartProduct.getCount())
                     .cancelAmount(0L)
                     .cancelRequestAmount(0L)
-                    .cartProductId(cartProductId)
+                    .cartProduct(cartProduct)
                     .build();
                 orderProductRepository.save(orderProduct);
                 orderPrice += orderProduct.getTotalPrice();
