@@ -571,7 +571,7 @@ public class AdminService {
 
     @Transactional
     public MemberInfoDto getMemberByEmail(String email) {
-        Optional<Member> memberOptional = memberRepository.findByEmail(email);
+        Optional<Member> memberOptional = memberRepository.findByEmailAndDeleted(email, false);
 
         if (memberOptional.isPresent()) {
             Member member = memberOptional.orElseThrow(NotFoundByIdException::new);
@@ -641,7 +641,7 @@ public class AdminService {
 
     @Transactional
     public CancelOrderResult cancelOrder(CancelOrderRequest cancelOrderRequest) {
-        OrderProduct orderProduct = orderProductRepository.findByProductOrderNumber(cancelOrderRequest.getProductOrderNumber()).orElseThrow(() -> new RuntimeException("해당 상품 주문 번호로 존재하는 상품 주문이 없다."));
+        OrderProduct orderProduct = orderProductRepository.findByProductOrderNumberWithLock(cancelOrderRequest.getProductOrderNumber()).orElseThrow(() -> new RuntimeException("해당 상품 주문 번호로 존재하는 상품 주문이 없다."));
         OrderDetail orderDetail = orderProduct.getOrderDetail();
         Long cancelAmount = orderProduct.getCancelRequestAmount();
         PaymentResponse cancelResponse;

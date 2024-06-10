@@ -55,6 +55,7 @@ public class MemberAuthDTO {
                 .authority(Authority.ROLE_USER)
                 .phoneNumber(phoneNumber)
                 .userName(username)
+                .deleted(false)
                 .build();
         }
     }

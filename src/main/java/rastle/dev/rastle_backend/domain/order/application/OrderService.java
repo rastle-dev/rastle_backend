@@ -204,7 +204,7 @@ public class OrderService {
         OrderDetail orderDetail = orderDetailRepository.findByOrderNumberAndMemberId(orderCancelRequest.getOrderNumber(), memberId).orElseThrow(() -> new RuntimeException("해당 주문 번호로 존재하는 주문이 없습니다. " + orderCancelRequest.getOrderNumber()));
 
         for (ProductOrderCancelRequest productOrderCancelRequest : orderCancelRequest.getProductOrderCancelRequests()) {
-            Optional<OrderProduct> byProductOrderNumber = orderProductRepository.findByProductOrderNumber(productOrderCancelRequest.getProductOrderNumber());
+            Optional<OrderProduct> byProductOrderNumber = orderProductRepository.findByProductOrderNumberWithLock(productOrderCancelRequest.getProductOrderNumber());
             if (byProductOrderNumber.isPresent()) {
                 OrderProduct orderProduct = byProductOrderNumber.get();
                 if (orderProduct.getCount() < orderProduct.getCancelAmount() + orderProduct.getCancelRequestAmount()+ productOrderCancelRequest.getCancelAmount() || productOrderCancelRequest.getCancelAmount() <= 0) {

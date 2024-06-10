@@ -1,6 +1,7 @@
 package rastle.dev.rastle_backend.domain.order.repository.mysql;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -8,6 +9,8 @@ import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
 
 import java.util.List;
 import java.util.Optional;
+
+import static jakarta.persistence.LockModeType.PESSIMISTIC_WRITE;
 
 public interface OrderProductRepository extends JpaRepository<OrderProduct, Long> {
 
@@ -73,9 +76,9 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
         Long getCancelRequestAmount();
         String getTrackingNumber();
     }
-
+    @Lock(PESSIMISTIC_WRITE)
     @Query("SELECT op FROM OrderProduct op JOIN FETCH op.orderDetail JOIN FETCH op.orderDetail.payment JOIN FETCH op.orderDetail.delivery WHERE op.productOrderNumber=:productOrderNumber")
-    Optional<OrderProduct> findByProductOrderNumber(@Param("productOrderNumber") Long productOrderNumber);
+    Optional<OrderProduct> findByProductOrderNumberWithLock(@Param("productOrderNumber") Long productOrderNumber);
 
     @Modifying
     @Query("UPDATE OrderProduct op SET op.trackingNumber=:trackingNumber, op.orderStatus=rastle.dev.rastle_backend.global.common.enums.OrderStatus.DELIVERY_READY WHERE op.productOrderNumber=:productOrderNumber")
