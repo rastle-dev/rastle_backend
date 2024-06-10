@@ -41,10 +41,6 @@ public class MemberService {
      */
     @Transactional
     public void changePassword(Long memberId, String newPassword) {
-        // Member member =
-        // memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
-        // String encodedPassword = passwordEncoder.encode(newPassword);
-        // member.updatePassword(encodedPassword);
         memberRepository.updatePassword(memberId, passwordEncoder.encode(newPassword));
     }
 
@@ -75,7 +71,7 @@ public class MemberService {
      * 배송지 정보 갱신
      *
      * @param memberId
-     * @param newAddress
+     * @param recipientInfo
      */
     @Transactional
     public void updateMemberRecipientInfo(Long memberId, RecipientInfo recipientInfo) {

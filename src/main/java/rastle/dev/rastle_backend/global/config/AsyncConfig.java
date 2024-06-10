@@ -15,4 +15,13 @@ public class AsyncConfig {
         threadPoolTaskExecutor.setThreadNamePrefix("AsyncThread-");
         return threadPoolTaskExecutor;
     }
+
+    @Bean(name = "asyncTaskExecutor")
+    public Executor asyncPool() {
+        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+        threadPoolTaskExecutor.setCorePoolSize(20);    // 기본 스레드 수
+        threadPoolTaskExecutor.setMaxPoolSize(30);     // 최대 스레드 수
+        threadPoolTaskExecutor.setThreadNamePrefix("AsyncThread-");
+        return threadPoolTaskExecutor;
+    }
 }

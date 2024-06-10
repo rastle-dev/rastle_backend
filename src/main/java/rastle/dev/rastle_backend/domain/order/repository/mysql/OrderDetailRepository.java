@@ -46,4 +46,12 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
     @Query("SELECT COALESCE(COUNT(od.id), 0) FROM OrderDetail od WHERE od.member.id = :memberId")
     Long countSimpleOrderInfoByMemberId(@Param("memberId") Long memberId);
 
+    @Modifying
+    @Query("UPDATE OrderDetail od SET od.orderStatus=rastle.dev.rastle_backend.global.common.enums.OrderStatus.FAILED WHERE od.orderNumber = :orderNumber")
+    void updateOrderDetailFailed(@Param("orderNumber") Long orderNumber);
+
+    @Modifying
+    @Query("UPDATE OrderDetail od SET od.orderStatus=rastle.dev.rastle_backend.global.common.enums.OrderStatus.CANCELLED WHERE od.orderNumber = :orderNumber")
+    void updateOrderDetailCancelled(@Param("orderNumber") Long orderNumber);
+
 }

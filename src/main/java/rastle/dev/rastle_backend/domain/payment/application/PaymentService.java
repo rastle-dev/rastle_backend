@@ -12,17 +12,14 @@ import rastle.dev.rastle_backend.domain.coupon.exception.AlreadyUsedCouponExcept
 import rastle.dev.rastle_backend.domain.coupon.model.Coupon;
 import rastle.dev.rastle_backend.domain.coupon.repository.mysql.CouponRepository;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
-import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderDetailRepository;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.*;
 import rastle.dev.rastle_backend.domain.payment.dto.PortOneWebHookRequest;
 import rastle.dev.rastle_backend.domain.payment.dto.PortOneWebHookResponse;
 import rastle.dev.rastle_backend.domain.payment.exception.PaymentErrorException;
 import rastle.dev.rastle_backend.domain.payment.exception.PaymentException;
-import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 import rastle.dev.rastle_backend.global.common.constants.PortOneStatusConstant;
-import rastle.dev.rastle_backend.global.common.enums.OrderStatus;
-import rastle.dev.rastle_backend.global.component.MailComponent;
+import rastle.dev.rastle_backend.global.component.AsyncComponent;
 import rastle.dev.rastle_backend.global.component.PortOneComponent;
 import rastle.dev.rastle_backend.global.component.dto.response.PaymentResponse;
 
@@ -34,8 +31,6 @@ import static rastle.dev.rastle_backend.global.common.constants.PortOneMessageCo
 import static rastle.dev.rastle_backend.global.common.constants.PortOneStatusConstant.*;
 import static rastle.dev.rastle_backend.global.common.enums.CouponStatus.NOT_USED;
 import static rastle.dev.rastle_backend.global.common.enums.CouponStatus.USED;
-import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.CANCELLED;
-import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.FAILED;
 
 @Service
 @Slf4j
@@ -46,12 +41,7 @@ public class PaymentService {
     private final OrderDetailRepository orderDetailRepository;
     private final PortOneComponent portOneComponent;
     private final ObjectMapper objectMapper;
-    private final MailComponent mailComponent;
-    /*
-     * TODO: 결제 사후 검증 로직 검토
-     * TODO: 결제 사전 검증 로직 검토
-     * TODO: 웹훅 처리 로직 검토
-     */
+    private final AsyncComponent asyncComponent;
 
     @Transactional
     public PaymentVerificationResponse verifyPayment(PaymentVerificationRequest paymentVerificationRequest) {
@@ -131,24 +121,23 @@ public class PaymentService {
 
     private void handlePayment(PaymentResponse paymentResponse, OrderDetail orderDetail) {
         orderDetail.paid(paymentResponse);
-        orderDetail.getPayment().paid(paymentResponse);
-        orderDetail.getDelivery().paid(paymentResponse);
 
-        if (paymentResponse.getCouponId() != null) {
-            Coupon referenceById = couponRepository.getReferenceById(paymentResponse.getCouponId());
-            referenceById.updateStatus(USED);
-            orderDetail.getPayment().updateCouponAmount((long) referenceById.getDiscount());
+        if (isCouponUsed(paymentResponse)) {
+            useCoupon(paymentResponse, orderDetail);
         }
-        List<OrderProduct> orderProducts = orderDetail.getOrderProduct();
-        for (OrderProduct orderProduct : orderProducts) {
-            ProductBase product = orderProduct.getProduct();
-            orderProduct.updateOrderStatus(OrderStatus.PAID);
-            product.incrementSoldCount();
-            if (orderProduct.getCartProductId() != null) {
-                cartProductRepository.updateCartProductStatus(orderProduct.getCartProductId());
-            }
-        }
+
     }
+
+    private boolean isCouponUsed(PaymentResponse paymentResponse) {
+        return paymentResponse.getCouponId() != null;
+    }
+
+    private void useCoupon(PaymentResponse paymentData, OrderDetail orderDetail) {
+        Coupon referenceById = couponRepository.getReferenceById(paymentData.getCouponId());
+        referenceById.updateStatus(USED);
+        orderDetail.getPayment().updateCouponAmount((long) referenceById.getDiscount());
+    }
+
 
     @Transactional
     public PaymentPrepareResponse preparePayment(PaymentPrepareRequest paymentPrepareRequest) {
@@ -175,35 +164,39 @@ public class PaymentService {
 
     @Transactional
     public PortOneWebHookResponse webhook(PortOneWebHookRequest webHookRequest) {
-        PaymentResponse paymentResponse = portOneComponent.getPaymentData(webHookRequest.getImp_uid());
-        String merchantUid = paymentResponse.getMerchantUID();
-        OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(Long.parseLong(merchantUid))
-                .orElseThrow(() -> new PaymentException("주문번호로 존재하는 주문이 DB에 존재하지 않는다"));
+//        PaymentResponse paymentResponse = portOneComponent.getPaymentData(webHookRequest.getImp_uid());
+//        String merchantUid = paymentResponse.getMerchantUID();
+//        OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(Long.parseLong(merchantUid))
+//                .orElseThrow(() -> new PaymentException("주문번호로 존재하는 주문이 DB에 존재하지 않는다"));
 
         switch (webHookRequest.getStatus()) {
             case PAID -> {
-                handlePayment(paymentResponse, orderDetail);
+                asyncComponent.handlePayment(webHookRequest.getImp_uid());
+//                handlePayment(paymentResponse, orderDetail);
                 return PortOneWebHookResponse.builder()
                     .status(SUCCESS)
                     .message(SUCCESS_MSG)
                     .build();
             }
             case READY -> {
-                mailComponent.sendBankIssueMessage(paymentResponse);
+                asyncComponent.sendVbankEmail(webHookRequest.getImp_uid());
+//                mailComponent.sendBankIssueMessage(paymentResponse);
                 return PortOneWebHookResponse.builder()
                     .status(VBANK_ISSUED)
                     .message(VBANK_ISSUED_MSG)
                     .build();
             }
             case PortOneStatusConstant.FAILED -> {
-                orderDetail.updateOrderStatus(FAILED);
+                asyncComponent.failedOrder(webHookRequest.getImp_uid());
+//                orderDetail.updateOrderStatus(FAILED);
                 return PortOneWebHookResponse.builder()
                     .status(PortOneStatusConstant.FAILED)
                     .message(FAILED_MSG)
                     .build();
             }
             case PortOneStatusConstant.CANCELLED -> {
-                orderDetail.updateOrderStatus(CANCELLED);
+                asyncComponent.cancelledOrder(webHookRequest.getImp_uid());
+//                orderDetail.updateOrderStatus(CANCELLED);
                 return PortOneWebHookResponse.builder()
                     .status(PortOneStatusConstant.CANCELLED)
                     .message(CANCELLED_MSG)
