@@ -651,7 +651,7 @@ public class AdminService {
 
     @Transactional
     public CancelOrderResult cancelOrder(CancelOrderRequest cancelOrderRequest) {
-        OrderProduct orderProduct = orderProductRepository.findByProductOrderNumber(cancelOrderRequest.getProductOrderNumber()).orElseThrow(() -> new RuntimeException("해당 상풍 주문 번호로 존재하는 상품 주문이 없다."));
+        OrderProduct orderProduct = orderProductRepository.findByProductOrderNumber(cancelOrderRequest.getProductOrderNumber()).orElseThrow(() -> new RuntimeException("해당 상품 주문 번호로 존재하는 상품 주문이 없다."));
         OrderDetail orderDetail = orderProduct.getOrderDetail();
         Long cancelAmount = orderProduct.getCancelRequestAmount();
         PaymentResponse cancelResponse;

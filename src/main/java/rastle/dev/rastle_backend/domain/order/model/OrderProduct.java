@@ -9,6 +9,8 @@ import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 import rastle.dev.rastle_backend.global.common.BaseTimeEntity;
 import rastle.dev.rastle_backend.global.common.enums.OrderStatus;
 
+import java.time.LocalDateTime;
+
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.InheritanceType.JOINED;
 
@@ -58,8 +60,11 @@ public class OrderProduct extends BaseTimeEntity {
     @JoinColumn(name = "order_detail_id")
     private OrderDetail orderDetail;
 
+    @Column(name = "delivery_time")
+    private LocalDateTime deliveryTime;
+
     @Builder
-    public OrderProduct(String name, String color, String size, Long count, Long price, Long totalPrice, Long productOrderNumber, ProductBase product, OrderDetail orderDetail, String trackingNumber, OrderStatus orderStatus, Long cancelAmount, Long cancelRequestAmount, Long cartProductId) {
+    public OrderProduct(String name, String color, String size, Long count, Long price, Long totalPrice, Long productOrderNumber, ProductBase product, OrderDetail orderDetail, String trackingNumber, OrderStatus orderStatus, Long cancelAmount, Long cancelRequestAmount, Long cartProductId, LocalDateTime deliveryTime) {
         this.orderStatus = orderStatus;
         this.name = name;
         this.color = color;
@@ -74,6 +79,7 @@ public class OrderProduct extends BaseTimeEntity {
         this.cancelAmount = cancelAmount;
         this.cancelRequestAmount = cancelRequestAmount;
         this.cartProductId = cartProductId;
+        this.deliveryTime = deliveryTime;
     }
 
     public void updateTrackingNumber(String trackingNumber) {
@@ -102,5 +108,9 @@ public class OrderProduct extends BaseTimeEntity {
 
     public void updateCartProductId(Long cartProductId) {
         this.cartProductId = cartProductId;
+    }
+
+    public void updateDeliveryTime(LocalDateTime deliveryTime) {
+        this.deliveryTime = deliveryTime;
     }
 }

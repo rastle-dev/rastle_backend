@@ -10,6 +10,7 @@ import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderProductRepos
 import rastle.dev.rastle_backend.global.common.enums.DeliveryTrackerStatus;
 import rastle.dev.rastle_backend.global.common.enums.OrderStatus;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -28,6 +29,7 @@ public class AsyncWebHookHandler {
         for (OrderProduct orderProduct : byTrackingNumber) {
             if (deliveryStatus.equals(DeliveryTrackerStatus.DELIVERED)) {
                 orderProduct.updateOrderStatus(OrderStatus.DELIVERED);
+                orderProduct.updateDeliveryTime(LocalDateTime.now());
             }
             if (deliveryStatus.equals(DeliveryTrackerStatus.IN_TRANSIT)
                 || deliveryStatus.equals(DeliveryTrackerStatus.OUT_FOR_DELIVERY)

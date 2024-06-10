@@ -25,8 +25,6 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
     @Modifying
     @Query("DELETE FROM OrderDetail od WHERE od.orderStatus = 'READY'")
     void deleteAllReadyOrders();
-    @Query("SELECT od FROM OrderDetail od ")
-    List<OrderDetail> findDeliveredOrders();
 
     @Query(value = "SELECT " +
         "o.order_detail_id as orderId, " +

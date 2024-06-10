@@ -10,6 +10,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OrderProductRepository extends JpaRepository<OrderProduct, Long> {
+
+    @Query("SELECT op FROM OrderProduct op WHERE op.deliveryTime != null AND op.orderStatus != rastle.dev.rastle_backend.global.common.enums.OrderStatus.COMPLETED")
+    List<OrderProduct> findDeliveredOrders();
+
     @Query(value = "SELECT " +
         "p.main_thumbnail_image as thumbnailUrl, " +
         "p.product_id as productId, " +
