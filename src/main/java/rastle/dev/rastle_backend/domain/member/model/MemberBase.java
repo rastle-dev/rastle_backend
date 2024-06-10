@@ -39,14 +39,17 @@ public class MemberBase {
     @Column(name = "created_date", updatable = false)
     private LocalDateTime createdDate;
 
-    public MemberBase(String email, String password, UserLoginType userLoginType, Authority authority) {
+    private Boolean deleted;
+
+    public MemberBase(String email, String password, UserLoginType userLoginType, Authority authority, Boolean deleted) {
         this.email = email;
         this.password = password;
         this.userLoginType = userLoginType;
         this.authority = authority;
+        this.deleted = deleted;
     }
 
-    // public void updatePassword(String newPassword) {
-    // this.password = newPassword;
-    // }
+    public void delete() {
+        this.deleted = true;
+    }
 }

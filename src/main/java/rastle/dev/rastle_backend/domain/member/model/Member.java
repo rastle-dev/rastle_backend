@@ -41,8 +41,8 @@ public class Member extends MemberBase {
 
     @Builder
     public Member(String email, String password, UserLoginType userLoginType, Authority authority, String userName,
-                  String phoneNumber) {
-        super(email, password, userLoginType, authority);
+                  String phoneNumber, Boolean deleted) {
+        super(email, password, userLoginType, authority, deleted);
         this.userName = userName;
         this.phoneNumber = phoneNumber;
     }

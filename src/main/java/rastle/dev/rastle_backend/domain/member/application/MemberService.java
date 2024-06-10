@@ -55,7 +55,6 @@ public class MemberService {
      */
     @Transactional
     public void deleteMember(HttpServletResponse response, Long memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         redisTemplate.delete(username);
@@ -69,7 +68,7 @@ public class MemberService {
             .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
-        memberRepository.delete(member);
+        memberRepository.safeDelete(memberId);
     }
 
     /**

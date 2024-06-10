@@ -3,6 +3,7 @@ package rastle.dev.rastle_backend.domain.product.repository.mysql;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import rastle.dev.rastle_backend.domain.product.dto.ProductInfo;
@@ -12,6 +13,14 @@ import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 import java.util.Optional;
 
 public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> {
+
+    @Modifying
+    @Query("UPDATE ProductBase pb SET pb.mainThumbnailImage=:mainThumbnail WHERE pb.id=:id")
+    void updateProductBaseMainThumbnail(@Param("id") Long id, @Param("mainThumbnail") String mainThumbnail);
+
+    @Modifying
+    @Query("UPDATE ProductBase pb SET pb.subThumbnailImage=:subThumbnail WHERE pb.id=:id")
+    void updateProductBaseSubThumbnail(@Param("id") Long id, @Param("subThumbnail") String subThumbnail);
 
     @Query("select new rastle.dev.rastle_backend.domain.product.dto.ProductInfo(" +
         "pb.id, " +
