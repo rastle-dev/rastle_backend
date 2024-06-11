@@ -31,7 +31,9 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
         "op.order_status as status, " +
         "op.cancel_amount as cancelAmount, " +
         "op.cancel_request_amount as cancelRequestAmount, " +
-        "op.tracking_number as trackingNumber " +
+        "op.tracking_number as trackingNumber, " +
+        "op.return_amount as returnAmount, " +
+        "op.return_request_amount as returnRequestAmount " +
         "FROM order_product op " +
         "LEFT OUTER JOIN order_detail od ON op.order_detail_id = od.order_detail_id " +
         "LEFT OUTER JOIN product_base p ON op.product_id = p.product_id " +
@@ -53,7 +55,9 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
         "op.order_status as status, " +
         "op.cancel_amount as cancelAmount, " +
         "op.cancel_request_amount as cancelRequestAmount, " +
-        "op.tracking_number as trackingNumber " +
+        "op.tracking_number as trackingNumber, " +
+        "op.return_amount as returnAmount, " +
+        "op.return_request_amount as returnRequestAmount " +
         "FROM order_product op " +
         "LEFT OUTER JOIN product_base p ON op.product_id = p.product_id " +
         "LEFT OUTER JOIN order_detail od ON op.order_detail_id = od.order_detail_id " +
@@ -75,6 +79,8 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
         Long getCancelAmount();
         Long getCancelRequestAmount();
         String getTrackingNumber();
+        Long getReturnAmount();
+        Long getReturnRequestAmount();
     }
     @Lock(PESSIMISTIC_WRITE)
     @Query("SELECT op FROM OrderProduct op JOIN FETCH op.orderDetail JOIN FETCH op.orderDetail.payment JOIN FETCH op.orderDetail.delivery WHERE op.productOrderNumber=:productOrderNumber")

@@ -41,6 +41,10 @@ public class SimpleProductOrderInfo {
     Long cancelRequestAmount;
     @Schema(description = "송장 번호", defaultValue = "23404321~")
     String trackingNumber;
+    @Schema(description = "반품 수량", defaultValue = "1")
+    Long returnAmount;
+    @Schema(description = "반품 요청 수량", defaultValue = "1")
+    Long returnRequestAmount;
 
     public static SimpleProductOrderInfo fromInterface(SimpleProductOrderInterface simpleProductOrderInterface) {
         return new SimpleProductOrderInfo(
@@ -57,7 +61,9 @@ public class SimpleProductOrderInfo {
             OrderStatus.getFromStatus(simpleProductOrderInterface.getStatus()),
             simpleProductOrderInterface.getCancelAmount(),
             simpleProductOrderInterface.getCancelRequestAmount(),
-            simpleProductOrderInterface.getTrackingNumber()
+            simpleProductOrderInterface.getTrackingNumber(),
+            simpleProductOrderInterface.getReturnAmount(),
+            simpleProductOrderInterface.getReturnRequestAmount()
         );
     }
 }
