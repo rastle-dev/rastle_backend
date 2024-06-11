@@ -54,7 +54,7 @@ public class OrderProduct extends BaseTimeEntity {
     @Column(name = "return_amount")
     private Long returnAmount;
     @ColumnDefault("0")
-    @Column(name = "return_request_amout")
+    @Column(name = "return_request_amount")
     private Long returnRequestAmount;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_product_id")
