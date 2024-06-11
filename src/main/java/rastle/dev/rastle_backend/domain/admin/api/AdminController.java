@@ -282,11 +282,10 @@ public class AdminController {
     @FailApiResponses
     @GetMapping("/event/apply/{productId}")
     public ResponseEntity<ServerResponse<?>> getProductEventApplyHistoryDTOs(
-        @PathVariable("productId") Long productId,
-        Pageable pageable) {
+        @PathVariable("productId") Long productId) {
         return ResponseEntity
             .ok(new ServerResponse<>(
-                adminService.getProductEventApplyHistoryDTOs(productId, pageable)));
+                adminService.getProductEventApplyHistoryDTOs(productId)));
     }
 
     // ==============================================================================================================
