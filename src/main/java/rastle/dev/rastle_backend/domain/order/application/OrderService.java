@@ -327,7 +327,7 @@ public class OrderService {
             if (byProductOrderNumber.isPresent()) {
                 OrderProduct orderProduct = byProductOrderNumber.get();
                 if (isValidReturnRequest(orderProduct, productReturnRequest)) {
-                    orderProduct.updateOrderStatus(RETURNED);
+                    orderProduct.updateOrderStatus(RETURN_REQUESTED);
                     orderProduct.addReturnRequestAmount(productReturnRequest.getReturnAmount());
                 } else {
                     handleInvalidReturnRequest(orderProduct, productReturnRequest);
@@ -337,7 +337,7 @@ public class OrderService {
             }
         }
 
-        orderDetail.updateOrderStatus(RETURNED);
+        orderDetail.updateOrderStatus(RETURN_REQUESTED);
 
         return new OrderReturnResponse(orderReturnRequest.getProductReturnRequests());
     }
