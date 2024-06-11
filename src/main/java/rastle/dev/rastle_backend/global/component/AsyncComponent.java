@@ -55,6 +55,12 @@ public class AsyncComponent {
     @Async("asyncTaskExecutor")
     public void sendVbankEmail(String impUid) {
         PaymentResponse paymentData = portOneComponent.getPaymentData(impUid);
+
+        OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(Long.parseLong(paymentData.getMerchantUID()))
+            .orElseThrow(() -> new PaymentException("주문번호로 존재하는 주문이 DB에 존재하지 않는다"));
+
+        orderDetail.pending(paymentData);
+
         mailComponent.sendBankIssueMessage(paymentData);
 
     }

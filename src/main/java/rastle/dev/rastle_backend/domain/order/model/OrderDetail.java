@@ -73,6 +73,15 @@ public class OrderDetail extends BaseTimeEntity {
         this.payment = payment;
     }
 
+    public void pending(PaymentResponse paymentResponse) {
+        this.orderStatus = OrderStatus.PENDING;
+        this.orderName = paymentResponse.getName();
+
+        this.getPayment().pending(paymentResponse);
+        for (OrderProduct orderProduct : this.getOrderProduct()) {
+            orderProduct.updateOrderStatus(OrderStatus.PENDING);
+        }
+    }
 
     public void paid(PaymentResponse paymentResponse) {
         this.orderStatus = OrderStatus.PAID;
