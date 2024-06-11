@@ -70,6 +70,13 @@ public class Payment extends BaseTimeEntity {
         this.paidAt = paymentResponse.getPaidAt();
     }
 
+    public void pending(PaymentResponse paymentResponse) {
+        this.impId = paymentResponse.getImpUID();
+        this.paymentMethod = paymentResponse.getPayMethod();
+        this.couponId = paymentResponse.getCouponId();
+        this.paymentPrice = paymentResponse.getAmount();
+    }
+
     public void updatePaymentPrice(Long paymentPrice) {
         this.paymentPrice = paymentPrice;
     }
