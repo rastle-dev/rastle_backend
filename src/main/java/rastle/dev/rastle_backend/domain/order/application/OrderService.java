@@ -194,6 +194,8 @@ public class OrderService {
                     .paymentMethod(paymentData.getPayMethod())
                     .build()
             )
+            .pgProvider(paymentData.getPgProvider())
+            .embPgProvider(paymentData.getEmbPgProvider())
             .build();
     }
 
