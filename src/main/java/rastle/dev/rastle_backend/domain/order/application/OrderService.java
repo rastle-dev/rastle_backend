@@ -18,8 +18,11 @@ import rastle.dev.rastle_backend.domain.order.dto.OrderDTO.*;
 import rastle.dev.rastle_backend.domain.order.dto.OrderSimpleInfo;
 import rastle.dev.rastle_backend.domain.order.dto.SimpleProductOrderInfo;
 import rastle.dev.rastle_backend.domain.order.dto.request.OrderCancelRequest;
+import rastle.dev.rastle_backend.domain.order.dto.request.OrderReturnRequest;
 import rastle.dev.rastle_backend.domain.order.dto.request.ProductOrderCancelRequest;
+import rastle.dev.rastle_backend.domain.order.dto.request.ProductReturnRequest;
 import rastle.dev.rastle_backend.domain.order.dto.response.OrderCancelResponse;
+import rastle.dev.rastle_backend.domain.order.dto.response.OrderReturnResponse;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
 import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderDetailRepository;
@@ -40,8 +43,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.CONFLICT;
-import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.CANCEL_REQUESTED;
-import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.CREATED;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -114,6 +117,8 @@ public class OrderService {
                 .totalPrice((long) productBase.getDiscountPrice() * productOrderRequest.getCount())
                 .cancelAmount(0L)
                 .cancelRequestAmount(0L)
+                .returnAmount(0L)
+                .returnRequestAmount(0L)
                 .build();
             orderProductRepository.save(orderProduct);
             orderPrice += orderProduct.getTotalPrice();
@@ -207,20 +212,44 @@ public class OrderService {
             Optional<OrderProduct> byProductOrderNumber = orderProductRepository.findByProductOrderNumberWithLock(productOrderCancelRequest.getProductOrderNumber());
             if (byProductOrderNumber.isPresent()) {
                 OrderProduct orderProduct = byProductOrderNumber.get();
-                if (orderProduct.getCount() < orderProduct.getCancelAmount() + orderProduct.getCancelRequestAmount()+ productOrderCancelRequest.getCancelAmount() || productOrderCancelRequest.getCancelAmount() <= 0) {
-                    throw new GlobalException("유효하지 않은 취소 수량으로 인한 요청 처리 실패", CONFLICT);
+                if (isValidCancelRequest(orderProduct, productOrderCancelRequest)) {
+                    orderProduct.updateOrderStatus(CANCEL_REQUESTED);
+                    orderProduct.addCancelRequestAmount(productOrderCancelRequest.getCancelAmount());
+                } else {
+                    handleInvalidCancelRequest(orderProduct, productOrderCancelRequest);
                 }
-                orderProduct.updateOrderStatus(CANCEL_REQUESTED);
-                orderProduct.addCancelRequestAmount(productOrderCancelRequest.getCancelAmount());
+            } else {
+                throw new GlobalException("해당하는 상품 주문 번호로 존재하는 상품 주문이 없기에 취소 요청 생성에 실패", NOT_FOUND);
             }
-
         }
         orderDetail.updateOrderStatus(CANCEL_REQUESTED);
-
-
         return OrderCancelResponse.builder()
             .cancelProductOrders(orderCancelRequest.getProductOrderCancelRequests())
             .build();
+    }
+
+    private boolean validateOrderProductStatusForCancel(OrderProduct orderProduct) {
+        return orderProduct.getOrderStatus().equals(PAID) || orderProduct.getOrderStatus().equals(PARTIALLY_CANCELLED) || orderProduct.getOrderStatus().equals(CANCEL_REQUESTED);
+    }
+
+    private boolean isValidCancelRequest(OrderProduct orderProduct, ProductOrderCancelRequest productOrderCancelRequest) {
+        return validateOrderProductStatusForCancel(orderProduct) && orderProduct.getCount() >= orderProduct.getCancelAmount() + orderProduct.getCancelRequestAmount() + productOrderCancelRequest.getCancelAmount() && productOrderCancelRequest.getCancelAmount() > 0;
+    }
+
+    private void handleInvalidCancelRequest(OrderProduct orderProduct, ProductOrderCancelRequest productOrderCancelRequest) {
+        if (orderProduct.getOrderStatus().equals(DELIVERY_READY) || orderProduct.getOrderStatus().equals(DELIVERY_STARTED) || orderProduct.getOrderStatus().equals(DELIVERED)) {
+            throw new GlobalException("배송이 시작된 경우 주문 취소가 아닌 반품 신청을 해야합니다.", CONFLICT);
+        }
+        if (orderProduct.getOrderStatus().equals(COMPLETED)) {
+            throw new GlobalException("주문 완료 처리가 된 주문으로 취소 신청이 불가합니다.", CONFLICT);
+        }
+        if (productOrderCancelRequest.getCancelAmount() <= 0) {
+            throw new GlobalException("유효하지 않은 취소 수량으로 인한 요청 처리 실패", CONFLICT);
+        }
+        if (orderProduct.getCount() < orderProduct.getCancelAmount() + orderProduct.getCancelRequestAmount() + productOrderCancelRequest.getCancelAmount()) {
+            throw new GlobalException("취소 가능한 수량 보다 더 많은 수량에 대한 취소 요청으로 인한 처리 실패", CONFLICT);
+        }
+
     }
 
     @Transactional
@@ -257,6 +286,8 @@ public class OrderService {
                     .totalPrice((long) productBase.getDiscountPrice() * cartProduct.getCount())
                     .cancelAmount(0L)
                     .cancelRequestAmount(0L)
+                    .returnAmount(0L)
+                    .returnRequestAmount(0L)
                     .cartProduct(cartProduct)
                     .build();
                 orderProductRepository.save(orderProduct);
@@ -283,5 +314,52 @@ public class OrderService {
             .totalPrice(orderProduct.getTotalPrice())
             .productOrderNumber(String.valueOf(orderProduct.getProductOrderNumber()))
             .build();
+    }
+
+    @Transactional
+    public OrderReturnResponse returnOrder(Long memberId, OrderReturnRequest orderReturnRequest) {
+        OrderDetail orderDetail = orderDetailRepository.findByOrderNumberAndMemberId(orderReturnRequest.getOrderNumber(), memberId).orElseThrow(() -> new GlobalException("해당 주문 번호로 존재하는 주문이 없습니다. " + orderReturnRequest.getOrderNumber(), CONFLICT));
+
+        for (ProductReturnRequest productReturnRequest : orderReturnRequest.getProductReturnRequests()) {
+            Optional<OrderProduct> byProductOrderNumber = orderProductRepository.findByProductOrderNumberWithLock(productReturnRequest.getProductOrderNumber());
+            if (byProductOrderNumber.isPresent()) {
+                OrderProduct orderProduct = byProductOrderNumber.get();
+                if (isValidReturnRequest(orderProduct, productReturnRequest)) {
+                    orderProduct.updateOrderStatus(RETURNED);
+                    orderProduct.addReturnRequestAmount(productReturnRequest.getReturnAmount());
+                } else {
+                    handleInvalidReturnRequest(orderProduct, productReturnRequest);
+                }
+            } else {
+                throw new GlobalException("해당하는 상품 주문 번호로 존재하는 상품 주문이 없기에 취소 요청 생성에 실패", NOT_FOUND);
+            }
+        }
+
+        orderDetail.updateOrderStatus(RETURNED);
+
+        return new OrderReturnResponse(orderReturnRequest.getProductReturnRequests());
+    }
+
+    private boolean isValidReturnRequest(OrderProduct orderProduct, ProductReturnRequest productReturnRequest) {
+        return validateOrderProductStatusForReturn(orderProduct) && orderProduct.getCount() >= orderProduct.getCancelAmount() + orderProduct.getCancelRequestAmount() + productReturnRequest.getReturnAmount() && productReturnRequest.getReturnAmount() > 0;
+    }
+
+    private boolean validateOrderProductStatusForReturn(OrderProduct orderProduct) {
+        return orderProduct.getOrderStatus().equals(DELIVERED) || orderProduct.getOrderStatus().equals(RETURNED);
+    }
+
+    private void handleInvalidReturnRequest(OrderProduct orderProduct, ProductReturnRequest productReturnRequest) {
+        if (orderProduct.getOrderStatus().equals(COMPLETED)) {
+            throw new GlobalException("주문 완료 처리가 된 주문으로 반품 신청이 불가합니다.", CONFLICT);
+        }
+        if (!orderProduct.getOrderStatus().equals(DELIVERED) && !orderProduct.getOrderStatus().equals(RETURNED)) {
+            throw new GlobalException("배송이 완료된 경우에만 반품 신청을 할 수 있습니다.", CONFLICT);
+        }
+        if (productReturnRequest.getReturnAmount() <= 0) {
+            throw new GlobalException("유효하지 않은 반품 수량으로 인한 요청 처리 실패", CONFLICT);
+        }
+        if (orderProduct.getCount() - orderProduct.getCancelAmount() < orderProduct.getReturnAmount() + orderProduct.getReturnRequestAmount() + productReturnRequest.getReturnAmount()) {
+            throw new GlobalException("반품 가능한 수량 보다 더 많은 수량에 대한 반품 요청으로 인한 처리 실패", CONFLICT);
+        }
     }
 }

@@ -111,6 +111,8 @@ public class OrderDTO {
         String deliveryMsg;
         Long couponAmount;
         String paymentMethod;
+        String pgProvider;
+        String embPgProvider;
 
         ReceiverInfo receiverInfo;
 

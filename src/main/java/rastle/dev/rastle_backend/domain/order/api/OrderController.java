@@ -17,7 +17,9 @@ import rastle.dev.rastle_backend.domain.order.dto.OrderDTO.OrderCreateRequest;
 import rastle.dev.rastle_backend.domain.order.dto.OrderDTO.OrderCreateResponse;
 import rastle.dev.rastle_backend.domain.order.dto.OrderDTO.OrderDetailResponse;
 import rastle.dev.rastle_backend.domain.order.dto.request.OrderCancelRequest;
+import rastle.dev.rastle_backend.domain.order.dto.request.OrderReturnRequest;
 import rastle.dev.rastle_backend.domain.order.dto.response.OrderCancelResponse;
+import rastle.dev.rastle_backend.domain.order.dto.response.OrderReturnResponse;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
 import rastle.dev.rastle_backend.global.util.SecurityUtil;
 
@@ -80,7 +82,15 @@ public class OrderController {
     ) {
         Long memberId = SecurityUtil.getCurrentMemberId();
         return ResponseEntity.ok(new ServerResponse<>(orderService.cancelOrder(memberId, orderCancelRequest)));
-
     }
 
+    @Operation(summary = "주문 반품 신청 API", description = "주문 반품 신청 API 입니다.")
+    @ApiResponse(responseCode = "200", description = "주문 반품 신청 성공시", content = @Content(schema = @Schema(implementation = OrderReturnResponse.class)))
+    @PostMapping("/return")
+    public ResponseEntity<?> returnOrderProduct(
+        @RequestBody OrderReturnRequest orderReturnRequest
+    ) {
+        Long memberId = SecurityUtil.getCurrentMemberId();
+        return ResponseEntity.ok(new ServerResponse<>(orderService.returnOrder(memberId, orderReturnRequest)));
+    }
 }
