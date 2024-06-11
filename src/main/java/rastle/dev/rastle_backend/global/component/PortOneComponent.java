@@ -124,7 +124,6 @@ public class PortOneComponent {
     }
 
     public PaymentResponse cancelPayment(String impId, Long cancelAmount, OrderProduct orderProduct) {
-
         OrderDetail orderDetail = orderProduct.getOrderDetail();
         String accessToken = getAccessToken();
         HttpHeaders headers = new HttpHeaders();
@@ -140,6 +139,38 @@ public class PortOneComponent {
         return getCancelResponse(headers, cancelRequest);
 
 
+    }
+
+    public PaymentResponse returnPayment(String impId, OrderProduct orderProduct) {
+        OrderDetail orderDetail = orderProduct.getOrderDetail();
+        String accessToken = getAccessToken();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(singletonList(APPLICATION_JSON));
+        headers.setContentType(APPLICATION_JSON);
+        headers.set(AUTHORIZATION, accessToken);
+        PortOnePaymentCancelRequest cancelRequest = PortOnePaymentCancelRequest.builder()
+            .checksum(orderDetail.getPayment().getPaymentPrice() - orderDetail.getPayment().getCancelledSum())
+            .amount(orderDetail.getPayment().getPaymentPrice() - orderDetail.getPayment().getCancelledSum() - 3000)
+            .merchant_uid(Long.toString(orderDetail.getOrderNumber()))
+            .imp_uid(impId)
+            .build();
+        return getCancelResponse(headers, cancelRequest);
+    }
+
+    public PaymentResponse returnPayment(String impId, Long returnRequestAmount, OrderProduct orderProduct) {
+        OrderDetail orderDetail = orderProduct.getOrderDetail();
+        String accessToken = getAccessToken();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(singletonList(APPLICATION_JSON));
+        headers.setContentType(APPLICATION_JSON);
+        headers.set(AUTHORIZATION, accessToken);
+        PortOnePaymentCancelRequest cancelRequest = PortOnePaymentCancelRequest.builder()
+            .checksum(orderDetail.getPayment().getPaymentPrice() - orderDetail.getPayment().getCancelledSum())
+            .amount(orderProduct.getPrice() * returnRequestAmount - 3000)
+            .merchant_uid(Long.toString(orderDetail.getOrderNumber()))
+            .imp_uid(impId)
+            .build();
+        return getCancelResponse(headers, cancelRequest);
     }
 
 

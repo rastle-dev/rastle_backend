@@ -124,6 +124,10 @@ public class OrderProduct extends BaseTimeEntity {
         this.returnRequestAmount += returnRequestAmount;
     }
 
+    public void initReturnRequestAmount() {
+        this.returnRequestAmount = 0L;
+    }
+
 
     public void updateDeliveryTime(LocalDateTime deliveryTime) {
         this.deliveryTime = deliveryTime;

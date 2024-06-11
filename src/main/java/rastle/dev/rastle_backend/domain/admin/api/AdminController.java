@@ -15,10 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import rastle.dev.rastle_backend.domain.admin.application.AdminService;
-import rastle.dev.rastle_backend.domain.admin.dto.CancelOrderRequest;
-import rastle.dev.rastle_backend.domain.admin.dto.GetMemberOrderCondition;
-import rastle.dev.rastle_backend.domain.admin.dto.GetMemberOrderInfo;
-import rastle.dev.rastle_backend.domain.admin.dto.UpdateTrackingNumberRequest;
+import rastle.dev.rastle_backend.domain.admin.dto.*;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleDTO.BundleCreateRequest;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleDTO.BundleUpdateRequest;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleInfo;
@@ -411,7 +408,23 @@ public class AdminController {
         return ResponseEntity.ok(new ServerResponse<>(adminService.cancelOrder(cancelOrderRequest)));
     }
 
+
+    // ==============================================================================================================
+    // 반품 관련 API
+    // ==============================================================================================================
+
+    @Operation(summary = "반품 요청 수락", description = "반품 요청 수락, 반품되는 API")
+    @PostMapping("/returnOrder")
+    public ResponseEntity<ServerResponse<?>> returnOrder(
+        @RequestBody
+        ReturnOrderRequest returnOrderRequest
+    ) {
+        return ResponseEntity.ok(new ServerResponse<>(adminService.returnOrder(returnOrderRequest)));
+    }
+
     // ==============================================================================================================
     // 결제 관련 API
     // ==============================================================================================================
+
+
 }

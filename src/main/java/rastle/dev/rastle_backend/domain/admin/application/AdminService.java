@@ -57,6 +57,7 @@ import rastle.dev.rastle_backend.global.component.DeliveryTracker;
 import rastle.dev.rastle_backend.global.component.PortOneComponent;
 import rastle.dev.rastle_backend.global.component.S3Component;
 import rastle.dev.rastle_backend.global.component.dto.response.PaymentResponse;
+import rastle.dev.rastle_backend.global.error.exception.GlobalException;
 import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
 import rastle.dev.rastle_backend.global.util.TimeUtil;
 
@@ -65,6 +66,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.*;
 import static rastle.dev.rastle_backend.global.common.enums.CouponStatus.NOT_USED;
 import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.CANCELLED;
@@ -641,22 +643,21 @@ public class AdminService {
 
     @Transactional
     public CancelOrderResult cancelOrder(CancelOrderRequest cancelOrderRequest) {
-        OrderProduct orderProduct = orderProductRepository.findByProductOrderNumberWithLock(cancelOrderRequest.getProductOrderNumber()).orElseThrow(() -> new RuntimeException("해당 상품 주문 번호로 존재하는 상품 주문이 없다."));
+        OrderProduct orderProduct = orderProductRepository.findByProductOrderNumberWithLock(cancelOrderRequest.getProductOrderNumber()).orElseThrow(() -> new GlobalException("해당 상품 주문 번호로 존재하는 상품 주문이 없다.", NOT_FOUND));
         OrderDetail orderDetail = orderProduct.getOrderDetail();
         Long cancelAmount = orderProduct.getCancelRequestAmount();
-        PaymentResponse cancelResponse;
 
         if (isOrderEntirelyCancelled(orderDetail, orderProduct, cancelAmount)) {
-            cancelResponse = portOneComponent.cancelPayment(cancelOrderRequest.getImpId(), orderDetail);
+            PaymentResponse cancelResponse = portOneComponent.cancelPayment(cancelOrderRequest.getImpId(), orderDetail);
             orderDetail.updateOrderStatus(CANCELLED);
+            restoreCouponStatusAndHandleCancelEvent(orderProduct, cancelAmount, cancelResponse.getCouponId());
+
         } else {
-            cancelResponse = portOneComponent.cancelPayment(cancelOrderRequest.getImpId(), cancelAmount, orderProduct);
+            portOneComponent.cancelPayment(cancelOrderRequest.getImpId(), cancelAmount, orderProduct);
             orderDetail.updateOrderStatus(PARTIALLY_CANCELLED);
+            handleCancelEvent(orderProduct, cancelAmount, null);
+
         }
-
-        handleCancelEvent(orderProduct, cancelAmount);
-        restoreCouponStatus(cancelResponse.getCouponId());
-
 
         return new CancelOrderResult(cancelOrderRequest.getImpId(), cancelOrderRequest.getProductOrderNumber(), cancelAmount);
     }
@@ -665,10 +666,13 @@ public class AdminService {
         return orderDetail.getPayment().getPaymentPrice() == orderDetail.getPayment().getCancelledSum() + orderProduct.getPrice() * cancelAmount + orderDetail.getDelivery().getDeliveryPrice() + orderDetail.getDelivery().getIslandDeliveryPrice() - orderDetail.getPayment().getCouponAmount();
     }
 
-    private void handleCancelEvent(OrderProduct orderProduct, Long cancelAmount) {
+    private void handleCancelEvent(OrderProduct orderProduct, Long cancelAmount, Long couponAmount) {
         orderProduct.addCancelAmount(cancelAmount);
         orderProduct.initCancelRequestAmount();
         orderProduct.getOrderDetail().getPayment().addCancelledSum(orderProduct.getPrice() * cancelAmount);
+        if (couponAmount != null) {
+            orderProduct.getOrderDetail().getPayment().addCancelledSum(couponAmount);
+        }
         if (orderProduct.getCount().equals(orderProduct.getCancelAmount())) {
             orderProduct.updateOrderStatus(CANCELLED);
         } else {
@@ -676,13 +680,52 @@ public class AdminService {
         }
     }
 
-    private void restoreCouponStatus(Long couponId) {
+    private void restoreCouponStatusAndHandleCancelEvent(OrderProduct orderProduct, Long cancelAmount, Long couponId) {
         if (couponId != null) {
             Optional<Coupon> couponOptional = couponRepository.findById(couponId);
             if (couponOptional.isPresent()) {
                 Coupon coupon = couponOptional.get();
                 coupon.updateStatus(NOT_USED);
+
+                handleCancelEvent(orderProduct, cancelAmount, (long) coupon.getDiscount());
             }
+        }
+    }
+
+    @Transactional
+    public ReturnOrderResponse returnOrder(ReturnOrderRequest returnOrderRequest) {
+        OrderProduct orderProduct = orderProductRepository.findByProductOrderNumberWithLock(returnOrderRequest.getProductOrderNumber()).orElseThrow(() -> new GlobalException("해당 상품 주문 번호로 존재하는 상품 주문이 없다.", NOT_FOUND));
+        OrderDetail orderDetail = orderProduct.getOrderDetail();
+        Long returnRequestAmount = orderProduct.getReturnRequestAmount();
+
+        if (isOrderEntirelyCancelled(orderDetail, orderProduct, returnRequestAmount)) {
+            PaymentResponse returnResponse = portOneComponent.returnPayment(returnOrderRequest.getImpId(), orderProduct);
+            restoreCouponStatusAndReturnEvent(orderProduct, returnRequestAmount, returnResponse.getCouponId());
+        } else {
+            portOneComponent.returnPayment(returnOrderRequest.getImpId(), returnRequestAmount, orderProduct);
+            handleReturnEvent(orderProduct, returnRequestAmount, null);
+        }
+        return new ReturnOrderResponse(returnOrderRequest.getImpId(), returnOrderRequest.getProductOrderNumber(), returnRequestAmount);
+    }
+
+    private void restoreCouponStatusAndReturnEvent(OrderProduct orderProduct, Long returnRequestAmount, Long couponId) {
+        if (couponId != null) {
+            Optional<Coupon> couponOptional = couponRepository.findById(couponId);
+            if (couponOptional.isPresent()) {
+                Coupon coupon = couponOptional.get();
+                coupon.updateStatus(NOT_USED);
+
+                handleReturnEvent(orderProduct, returnRequestAmount, (long) coupon.getDiscount());
+            }
+        }
+    }
+
+    private void handleReturnEvent(OrderProduct orderProduct, Long returnRequestAmount, Long couponAmount) {
+        orderProduct.addReturnAmount(returnRequestAmount);
+        orderProduct.initReturnRequestAmount();
+        orderProduct.getOrderDetail().getPayment().addCancelledSum(orderProduct.getPrice() * returnRequestAmount - 3000);
+        if (couponAmount != null) {
+            orderProduct.getOrderDetail().getPayment().addCancelledSum(couponAmount);
         }
     }
 }
