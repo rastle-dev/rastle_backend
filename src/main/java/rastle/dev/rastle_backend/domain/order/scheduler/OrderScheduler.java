@@ -30,7 +30,7 @@ public class OrderScheduler {
         List<OrderProduct> deliveredOrders = orderProductRepository.findDeliveredOrders();
         LocalDateTime now = LocalDateTime.now();
         for (OrderProduct orderProduct : deliveredOrders) {
-            if (orderProduct.getDeliveryTime().isBefore(now.minusDays(3))) {
+            if (orderProduct.getDeliveryTime().isBefore(now.minusDays(5))) {
                 orderProduct.updateOrderStatus(OrderStatus.COMPLETED);
             }
         }

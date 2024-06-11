@@ -10,6 +10,7 @@ import rastle.dev.rastle_backend.domain.event.dto.EventProductApplyDTO.ProductEv
 import rastle.dev.rastle_backend.domain.event.model.EventProductApply;
 import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface EventProductApplyRepository extends JpaRepository<EventProductApply, Long> {
@@ -32,8 +33,7 @@ public interface EventProductApplyRepository extends JpaRepository<EventProductA
         "FROM EventProductApply epa " +
         "JOIN epa.member m " +
         "WHERE epa.eventApplyProduct.id = :productId")
-    Page<ProductEventApplyHistoryDTO> getProductEventApplyHistoryDTOs(@Param("productId") Long productId,
-                                                                      Pageable pageable);
+    List<ProductEventApplyHistoryDTO> getProductEventApplyHistoryDTOs(@Param("productId") Long productId);
 
     Optional<EventProductApply> findByMemberIdAndEventApplyProductId(Long memberId, Long eventProductId);
 

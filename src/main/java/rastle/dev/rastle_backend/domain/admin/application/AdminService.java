@@ -556,8 +556,8 @@ public class AdminService {
      * @param productId
      */
     @Transactional(readOnly = true)
-    public Page<ProductEventApplyHistoryDTO> getProductEventApplyHistoryDTOs(Long productId, Pageable pageable) {
-        return eventProductApplyRepository.getProductEventApplyHistoryDTOs(productId, pageable);
+    public List<ProductEventApplyHistoryDTO> getProductEventApplyHistoryDTOs(Long productId) {
+        return eventProductApplyRepository.getProductEventApplyHistoryDTOs(productId);
     }
 
     // ==============================================================================================================
