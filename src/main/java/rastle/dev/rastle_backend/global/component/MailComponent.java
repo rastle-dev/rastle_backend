@@ -25,7 +25,7 @@ public class MailComponent {
             mimeMessage.setFrom(new InternetAddress("rastle.fashion@gmail.com", "rastle_admin"));
 
             Context context = new Context();
-            String emailContent = templateEngine.process(" vbank", context);
+            String emailContent = templateEngine.process("vbank", context);
             mimeMessage.setText(emailContent, "utf-8", "html");
 
             emailSender.send(mimeMessage);
