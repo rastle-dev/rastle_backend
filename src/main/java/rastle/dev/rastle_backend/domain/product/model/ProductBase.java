@@ -89,8 +89,8 @@ public class ProductBase {
         this.soldOut = soldOut;
     }
 
-    public void soldOut() {
-        this.soldOut = true;
+    public boolean soldOut() {
+        return this.soldOut;
     }
 
     @PrePersist
