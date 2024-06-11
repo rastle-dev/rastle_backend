@@ -15,6 +15,10 @@ import java.util.Optional;
 public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> {
 
     @Modifying
+    @Query("UPDATE ProductBase pb SET pb.soldOut = true WHERE pb.id=:id")
+    void soldOutProduct(@Param("id") Long id);
+
+    @Modifying
     @Query("UPDATE ProductBase pb SET pb.mainThumbnailImage=:mainThumbnail WHERE pb.id=:id")
     void updateProductBaseMainThumbnail(@Param("id") Long id, @Param("mainThumbnail") String mainThumbnail);
 

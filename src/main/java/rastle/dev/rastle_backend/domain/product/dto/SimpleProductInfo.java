@@ -13,7 +13,7 @@ import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 @NoArgsConstructor
 @Getter
 @Schema(description = "전체 상품 조회 시 리턴 데이터")
-public class SimpleProductInfo implements Comparable<SimpleProductInfo>{
+public class SimpleProductInfo {
     @Schema(description = "상품 아이디", defaultValue = "0")
     Long id;
     @Schema(description = "상품 명", defaultValue = "멋있는 청바지")
@@ -38,11 +38,9 @@ public class SimpleProductInfo implements Comparable<SimpleProductInfo>{
     Long eventId;
     @Schema(description = "상품 이벤트 참여 횟수", defaultValue = "1")
     Long eventApplyCount;
-    @Schema(description = "상품 전체 누적 판매 수", defaultValue = "1")
-    Long soldCount;
 
     @QueryProjection
-    public SimpleProductInfo( Long id, String name, int price, String mainThumbnail, String subThumbnail, int discountPrice, Long displayOrder, boolean visible, Long categoryId, Long bundleId, Long eventId, Long eventApplyCount, Long soldCount) {
+    public SimpleProductInfo( Long id, String name, int price, String mainThumbnail, String subThumbnail, int discountPrice, Long displayOrder, boolean visible, Long categoryId, Long bundleId, Long eventId, Long eventApplyCount) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -55,13 +53,8 @@ public class SimpleProductInfo implements Comparable<SimpleProductInfo>{
         this.bundleId = bundleId;
         this.eventId = eventId;
         this.eventApplyCount = eventApplyCount;
-        this.soldCount = soldCount;
     }
 
-    @Override
-    public int compareTo(SimpleProductInfo compare) {
-        return Long.compare(this.soldCount, compare.soldCount);
-    }
 
     public static SimpleProductInfo fromEntity(ProductBase productBase) {
         return SimpleProductInfo.builder()
@@ -77,7 +70,6 @@ public class SimpleProductInfo implements Comparable<SimpleProductInfo>{
             .bundleId(productBase.getBundle() == null ? null : productBase.getBundle().getId())
             .eventId(productBase.getEvent() == null ? null : productBase.getEvent().getId())
             .eventApplyCount(productBase.getEventApplyCount())
-            .soldCount(productBase.getSoldCount())
             .build();
     }
 

@@ -734,4 +734,10 @@ public class AdminService {
             orderProduct.updateOrderStatus(PARTIALLY_RETURNED);
         }
     }
+
+    @Transactional
+    public ProductSoldOutResponse soldOutProduct(ProductSoldOutRequest soldOutRequest) {
+        productBaseRepository.soldOutProduct(soldOutRequest.getProductId());
+        return new ProductSoldOutResponse(soldOutRequest.getProductId());
+    }
 }
