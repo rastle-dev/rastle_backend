@@ -1,7 +1,6 @@
 package rastle.dev.rastle_backend.domain.product.application;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,7 +24,6 @@ import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.
 @Service
 @RequiredArgsConstructor
 public class ProductService {
-    private final ObjectMapper objectMapper;
     private final ProductBaseRepository productBaseRepository;
     private final BundleProductRepository bundleProductRepository;
     private final EventProductRepository eventProductRepository;

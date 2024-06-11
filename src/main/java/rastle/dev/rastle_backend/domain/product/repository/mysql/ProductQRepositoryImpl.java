@@ -1,21 +1,16 @@
 package rastle.dev.rastle_backend.domain.product.repository.mysql;
 
-import com.querydsl.core.types.Order;
-import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import rastle.dev.rastle_backend.domain.product.dto.GetProductRequest;
 import rastle.dev.rastle_backend.domain.product.dto.QSimpleProductInfo;
 import rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo;
-import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 
 import static rastle.dev.rastle_backend.domain.product.model.QProductBase.productBase;
 import static rastle.dev.rastle_backend.global.common.enums.VisibleStatus.FALSE;
@@ -57,18 +52,9 @@ public class ProductQRepositoryImpl implements ProductQRepository {
             .offset(getProductRequest.getPageable().getOffset())
             .limit(getProductRequest.getPageable().getPageSize());
 
-        orderBy(query, getProductRequest);
         return new PageImpl<>(query.fetch(), getProductRequest.getPageable(), getSize(getProductRequest));
     }
 
-    private void orderBy(JPAQuery<SimpleProductInfo> query, GetProductRequest getProductRequest) {
-        PathBuilder entityPath = new PathBuilder(ProductBase.class, "productBase");
-        for (Sort.Order order : getProductRequest.getPageable().getSort()) {
-            query.orderBy(new OrderSpecifier<>(order.isAscending() ? Order.ASC : Order.DESC, entityPath.get(order.getProperty())));
-
-        }
-
-    }
 
     private Long getSize(GetProductRequest getProductRequest) {
 
