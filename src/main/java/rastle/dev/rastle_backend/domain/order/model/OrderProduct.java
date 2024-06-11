@@ -50,6 +50,12 @@ public class OrderProduct extends BaseTimeEntity {
     @ColumnDefault("0")
     @Column(name = "cancel_request_amount")
     private Long cancelRequestAmount;
+    @ColumnDefault("0")
+    @Column(name = "return_amount")
+    private Long returnAmount;
+    @ColumnDefault("0")
+    @Column(name = "return_request_amout")
+    private Long returnRequestAmount;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_product_id")
     private CartProduct cartProduct;
@@ -66,7 +72,7 @@ public class OrderProduct extends BaseTimeEntity {
     private LocalDateTime deliveryTime;
 
     @Builder
-    public OrderProduct(String name, String color, String size, Long count, Long price, Long totalPrice, Long productOrderNumber, ProductBase product, OrderDetail orderDetail, String trackingNumber, OrderStatus orderStatus, Long cancelAmount, Long cancelRequestAmount, CartProduct cartProduct, LocalDateTime deliveryTime) {
+    public OrderProduct(String name, String color, String size, Long count, Long price, Long totalPrice, Long productOrderNumber, ProductBase product, OrderDetail orderDetail, String trackingNumber, OrderStatus orderStatus, Long cancelAmount, Long cancelRequestAmount, CartProduct cartProduct, LocalDateTime deliveryTime, Long returnAmount, Long returnRequestAmount) {
         this.orderStatus = orderStatus;
         this.name = name;
         this.color = color;
@@ -82,6 +88,8 @@ public class OrderProduct extends BaseTimeEntity {
         this.cancelRequestAmount = cancelRequestAmount;
         this.cartProduct = cartProduct;
         this.deliveryTime = deliveryTime;
+        this.returnAmount = returnAmount;
+        this.returnRequestAmount = returnRequestAmount;
     }
 
     public void updateTrackingNumber(String trackingNumber) {
@@ -106,6 +114,18 @@ public class OrderProduct extends BaseTimeEntity {
 
     public void initCancelRequestAmount() {
         this.cancelRequestAmount = 0L;
+    }
+
+    public void addReturnAmount(Long returnAmount) {
+        this.returnAmount += returnAmount;
+    }
+
+    public void addReturnRequestAmount(Long returnRequestAmount) {
+        this.returnRequestAmount += returnRequestAmount;
+    }
+
+    public void initReturnRequestAmount() {
+        this.returnRequestAmount = 0L;
     }
 
 
