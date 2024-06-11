@@ -38,9 +38,11 @@ public class SimpleProductInfo {
     Long eventId;
     @Schema(description = "상품 이벤트 참여 횟수", defaultValue = "1")
     Long eventApplyCount;
+    @Schema(description = "상품 품절 여부", defaultValue = "false")
+    Boolean soldOut;
 
     @QueryProjection
-    public SimpleProductInfo( Long id, String name, int price, String mainThumbnail, String subThumbnail, int discountPrice, Long displayOrder, boolean visible, Long categoryId, Long bundleId, Long eventId, Long eventApplyCount) {
+    public SimpleProductInfo( Long id, String name, int price, String mainThumbnail, String subThumbnail, int discountPrice, Long displayOrder, boolean visible, Long categoryId, Long bundleId, Long eventId, Long eventApplyCount, Boolean soldOut) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -53,6 +55,7 @@ public class SimpleProductInfo {
         this.bundleId = bundleId;
         this.eventId = eventId;
         this.eventApplyCount = eventApplyCount;
+        this.soldOut = soldOut;
     }
 
 
@@ -70,6 +73,7 @@ public class SimpleProductInfo {
             .bundleId(productBase.getBundle() == null ? null : productBase.getBundle().getId())
             .eventId(productBase.getEvent() == null ? null : productBase.getEvent().getId())
             .eventApplyCount(productBase.getEventApplyCount())
+            .soldOut(productBase.getSoldOut())
             .build();
     }
 

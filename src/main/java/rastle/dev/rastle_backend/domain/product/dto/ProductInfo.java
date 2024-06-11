@@ -27,4 +27,5 @@ public class ProductInfo {
     ProductImage detailImage;
     ProductColor productColor;
     Long eventApplyCount;
+    Boolean soldOut;
 }

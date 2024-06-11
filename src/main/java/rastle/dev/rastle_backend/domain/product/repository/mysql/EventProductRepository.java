@@ -71,7 +71,8 @@ public interface EventProductRepository extends JpaRepository<ProductBase, Long>
         "ep.category.id, " +
         "ep.bundle.id, " +
         "ep.event.id," +
-        "ep.eventApplyCount) " +
+        "ep.eventApplyCount, " +
+        "ep.soldOut) " +
         "from ProductBase ep " +
         "WHERE ep.event.id = :id ORDER BY ep.displayOrder DESC")
     List<SimpleProductInfo> getEventProductInfosByEventId(@Param("id") Long id);
@@ -88,7 +89,8 @@ public interface EventProductRepository extends JpaRepository<ProductBase, Long>
         "ep.category.id, " +
         "ep.bundle.id, " +
         "ep.event.id, " +
-        "ep.eventApplyCount) " +
+        "ep.eventApplyCount," +
+        "ep.soldOut) " +
         "from ProductBase ep " +
         "WHERE ep.id = :id")
     Optional<SimpleProductInfo> getEventProductInfoById(@Param("id") Long id);
