@@ -66,8 +66,7 @@ public interface BundleProductRepository extends JpaRepository<ProductBase, Long
         "bp.category.id, " +
         "bp.bundle.id, " +
         "bp.event.id, " +
-        "bp.eventApplyCount, " +
-        "bp.soldCount) " +
+        "bp.eventApplyCount) " +
         "from ProductBase bp " +
         "WHERE bp.bundle.id = :id ORDER BY bp.displayOrder DESC")
     List<SimpleProductInfo> getBundleProductInfosByBundleId(@Param("id") Long id);
@@ -84,8 +83,7 @@ public interface BundleProductRepository extends JpaRepository<ProductBase, Long
         "bp.category.id, " +
         "bp.bundle.id, " +
         "bp.event.id, " +
-        "bp.eventApplyCount, " +
-        "bp.soldCount) " +
+        "bp.eventApplyCount) " +
         "from ProductBase bp " +
         "WHERE bp.id = :id ")
     Optional<SimpleProductInfo> getBundleProductInfoById(@Param("id") Long id);
