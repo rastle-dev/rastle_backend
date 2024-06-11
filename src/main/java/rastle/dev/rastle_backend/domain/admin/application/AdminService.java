@@ -69,8 +69,7 @@ import java.util.stream.Stream;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.*;
 import static rastle.dev.rastle_backend.global.common.enums.CouponStatus.NOT_USED;
-import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.CANCELLED;
-import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.PARTIALLY_CANCELLED;
+import static rastle.dev.rastle_backend.global.common.enums.OrderStatus.*;
 
 @Slf4j
 @Service
@@ -700,9 +699,11 @@ public class AdminService {
 
         if (isOrderEntirelyCancelled(orderDetail, orderProduct, returnRequestAmount)) {
             PaymentResponse returnResponse = portOneComponent.returnPayment(returnOrderRequest.getImpId(), orderProduct);
+            orderDetail.updateOrderStatus(RETURNED);
             restoreCouponStatusAndReturnEvent(orderProduct, returnRequestAmount, returnResponse.getCouponId());
         } else {
             portOneComponent.returnPayment(returnOrderRequest.getImpId(), returnRequestAmount, orderProduct);
+            orderProduct.updateOrderStatus(PARTIALLY_RETURNED);
             handleReturnEvent(orderProduct, returnRequestAmount, null);
         }
         return new ReturnOrderResponse(returnOrderRequest.getImpId(), returnOrderRequest.getProductOrderNumber(), returnRequestAmount);
@@ -726,6 +727,11 @@ public class AdminService {
         orderProduct.getOrderDetail().getPayment().addCancelledSum(orderProduct.getPrice() * returnRequestAmount - 3000);
         if (couponAmount != null) {
             orderProduct.getOrderDetail().getPayment().addCancelledSum(couponAmount);
+        }
+        if (orderProduct.getCount().equals(orderProduct.getCancelAmount() + orderProduct.getReturnAmount())) {
+            orderProduct.updateOrderStatus(RETURNED);
+        } else {
+            orderProduct.updateOrderStatus(PARTIALLY_RETURNED);
         }
     }
 }
