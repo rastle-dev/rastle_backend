@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
-import rastle.dev.rastle_backend.domain.cart.repository.mysql.CartProductRepository;
 import rastle.dev.rastle_backend.domain.coupon.exception.AlreadyUsedCouponException;
 import rastle.dev.rastle_backend.domain.coupon.model.Coupon;
 import rastle.dev.rastle_backend.domain.coupon.repository.mysql.CouponRepository;
@@ -37,7 +36,6 @@ import static rastle.dev.rastle_backend.global.common.enums.CouponStatus.USED;
 @RequiredArgsConstructor
 public class PaymentService {
     private final CouponRepository couponRepository;
-    private final CartProductRepository cartProductRepository;
     private final OrderDetailRepository orderDetailRepository;
     private final PortOneComponent portOneComponent;
     private final ObjectMapper objectMapper;
@@ -164,15 +162,10 @@ public class PaymentService {
 
     @Transactional
     public PortOneWebHookResponse webhook(PortOneWebHookRequest webHookRequest) {
-//        PaymentResponse paymentResponse = portOneComponent.getPaymentData(webHookRequest.getImp_uid());
-//        String merchantUid = paymentResponse.getMerchantUID();
-//        OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(Long.parseLong(merchantUid))
-//                .orElseThrow(() -> new PaymentException("주문번호로 존재하는 주문이 DB에 존재하지 않는다"));
 
         switch (webHookRequest.getStatus()) {
             case PAID -> {
                 asyncComponent.handlePayment(webHookRequest.getImp_uid());
-//                handlePayment(paymentResponse, orderDetail);
                 return PortOneWebHookResponse.builder()
                     .status(SUCCESS)
                     .message(SUCCESS_MSG)
@@ -180,7 +173,6 @@ public class PaymentService {
             }
             case READY -> {
                 asyncComponent.sendVbankEmail(webHookRequest.getImp_uid());
-//                mailComponent.sendBankIssueMessage(paymentResponse);
                 return PortOneWebHookResponse.builder()
                     .status(VBANK_ISSUED)
                     .message(VBANK_ISSUED_MSG)
@@ -188,7 +180,6 @@ public class PaymentService {
             }
             case PortOneStatusConstant.FAILED -> {
                 asyncComponent.failedOrder(webHookRequest.getImp_uid());
-//                orderDetail.updateOrderStatus(FAILED);
                 return PortOneWebHookResponse.builder()
                     .status(PortOneStatusConstant.FAILED)
                     .message(FAILED_MSG)
@@ -196,7 +187,6 @@ public class PaymentService {
             }
             case PortOneStatusConstant.CANCELLED -> {
                 asyncComponent.cancelledOrder(webHookRequest.getImp_uid());
-//                orderDetail.updateOrderStatus(CANCELLED);
                 return PortOneWebHookResponse.builder()
                     .status(PortOneStatusConstant.CANCELLED)
                     .message(CANCELLED_MSG)

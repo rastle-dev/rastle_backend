@@ -55,6 +55,13 @@ public class AdminController {
     // 상품 관련 API
     // ==============================================================================================================
 
+    @Operation(summary = "상품 품절 처리 API", description = "상품 품절 처리 API 입니다.")
+    @ApiResponse(responseCode = "200", description = "품절 처리 성공시", content = @Content(schema = @Schema(implementation = ProductSoldOutResponse.class)))
+    @PostMapping("/soldOut")
+    public ResponseEntity<ServerResponse<?>> soldOutProduct(@RequestBody ProductSoldOutRequest soldOutRequest) {
+        return ResponseEntity.ok(new ServerResponse<>(adminService.soldOutProduct(soldOutRequest)));
+    }
+
     @Operation(summary = "상품 세트에 속한 상품 조회 API", description = "상품 세트에 속한 상품 조회 API 입니다.")
     @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = SimpleProductInfo.class)))
     @FailApiResponses

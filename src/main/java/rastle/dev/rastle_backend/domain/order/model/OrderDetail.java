@@ -8,7 +8,6 @@ import lombok.Setter;
 import rastle.dev.rastle_backend.domain.delivery.model.Delivery;
 import rastle.dev.rastle_backend.domain.member.model.Member;
 import rastle.dev.rastle_backend.domain.payment.model.Payment;
-import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 import rastle.dev.rastle_backend.global.common.BaseTimeEntity;
 import rastle.dev.rastle_backend.global.common.enums.CartProductStatus;
 import rastle.dev.rastle_backend.global.common.enums.OrderStatus;
@@ -82,9 +81,7 @@ public class OrderDetail extends BaseTimeEntity {
         this.getDelivery().paid(paymentResponse);
 
         for (OrderProduct orderProduct : this.getOrderProduct()) {
-            ProductBase product = orderProduct.getProduct();
             orderProduct.updateOrderStatus(OrderStatus.PAID);
-            product.incrementSoldCount();
             if (orderProduct.getCartProduct() != null) {
                 orderProduct.getCartProduct().updateCartProductStatus(CartProductStatus.ORDERED);
             }

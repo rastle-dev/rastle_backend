@@ -126,7 +126,7 @@ public class PaymentResponse {
     }
 
     public String getPgProvider() {
-        return (String) map.getOrDefault(" pg_provider", "");
+        return (String) map.getOrDefault("pg_provider", "");
     }
 
     public String getPgId() {

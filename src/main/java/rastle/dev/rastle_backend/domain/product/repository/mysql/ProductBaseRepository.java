@@ -15,6 +15,10 @@ import java.util.Optional;
 public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> {
 
     @Modifying
+    @Query("UPDATE ProductBase pb SET pb.soldOut = true WHERE pb.id=:id")
+    void soldOutProduct(@Param("id") Long id);
+
+    @Modifying
     @Query("UPDATE ProductBase pb SET pb.mainThumbnailImage=:mainThumbnail WHERE pb.id=:id")
     void updateProductBaseMainThumbnail(@Param("id") Long id, @Param("mainThumbnail") String mainThumbnail);
 
@@ -57,8 +61,7 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
         "pb.category.id, " +
         "pb.bundle.id, " +
         "pb.event.id, " +
-        "pb.eventApplyCount," +
-        "pb.soldCount) " +
+        "pb.eventApplyCount) " +
         "from ProductBase pb WHERE pb.event.id = :id ORDER BY pb.displayOrder DESC")
     Page<SimpleProductInfo> getProductInfoByBundleId(@Param("id") Long id, Pageable pageable);
 
@@ -74,8 +77,7 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
         "pb.category.id, " +
         "pb.bundle.id, " +
         "pb.event.id, " +
-        "pb.eventApplyCount, " +
-        "pb.soldCount) " +
+        "pb.eventApplyCount) " +
         "from ProductBase pb WHERE pb.category.id = :id ORDER BY pb.displayOrder DESC")
     Page<SimpleProductInfo> getProductInfoByCategoryId(@Param("id") Long id, Pageable pageable);
 
@@ -91,8 +93,7 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
         "pb.category.id, " +
         "pb.bundle.id, " +
         "pb.event.id, " +
-        "pb.eventApplyCount, " +
-        "pb.soldCount) " +
+        "pb.eventApplyCount) " +
         "from ProductBase pb WHERE pb.event.id = :id ORDER BY pb.displayOrder DESC")
     Page<SimpleProductInfo> getProductInfoByEventId(@Param("id") Long id, Pageable pageable);
 
@@ -109,8 +110,7 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
             "pb.category.id, " +
             "pb.bundle.id, " +
             "pb.event.id, " +
-            "pb.eventApplyCount, " +
-            "pb.soldCount) " +
+            "pb.eventApplyCount) " +
             "from ProductBase pb " +
             "LEFT OUTER JOIN OrderProduct op ON pb.id = op.product.id " +
             "GROUP BY pb.id " +
@@ -131,8 +131,7 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
             "pb.category.id, " +
             "pb.bundle.id, " +
             "pb.event.id, " +
-            "pb.eventApplyCount, " +
-            "pb.soldCount) " +
+            "pb.eventApplyCount) " +
             "from ProductBase pb " +
             "LEFT OUTER JOIN OrderProduct op ON pb.id = op.product.id " +
             "WHERE pb.visible = :visible " +

@@ -101,7 +101,7 @@ public class ProductDTO {
                 .bundle(bundle)
                 .event(event)
                 .eventApplyCount(0L)
-                .soldCount(0L)
+                .soldOut(false)
                 .build();
         }
 
