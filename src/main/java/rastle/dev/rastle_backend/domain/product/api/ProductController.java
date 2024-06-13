@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rastle.dev.rastle_backend.domain.product.application.ProductService;
 import rastle.dev.rastle_backend.domain.product.dto.*;
-import rastle.dev.rastle_backend.global.common.annotation.GetExecutionTime;
 import rastle.dev.rastle_backend.global.common.enums.VisibleStatus;
 import rastle.dev.rastle_backend.global.response.FailApiResponses;
 import rastle.dev.rastle_backend.global.response.ServerResponse;
@@ -30,7 +29,6 @@ public class ProductController {
     @Operation(summary = "전체 상품 조회 API", description = "전체 상품 조회 API입니다.")
     @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = SimpleProductInfo.class)))
     @FailApiResponses
-    @GetExecutionTime
     @GetMapping("")
     public ResponseEntity<ServerResponse<?>> getProducts(
         @Parameter(name = "visible", description = "ALL - visible 여부 관계 없이 리턴, TRUE-true인 것만, FALSE - false인 것만")
