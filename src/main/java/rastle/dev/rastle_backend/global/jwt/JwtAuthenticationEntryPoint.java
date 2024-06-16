@@ -48,9 +48,12 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");
-        response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
-        // response.setHeader("Access-Control-Allow-Origin",
-        // "https://www.recordyslow.com");
+        if (request.getHeader("Origin") == null) {
+            response.setHeader("Access-Control-Allow-Origin", "https://www.recordyslow.com");
+        } else {
+            response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
+        }
+
         response.getWriter().write(result);
     }
 }
