@@ -29,7 +29,7 @@ Authorization: {{auth_token}}
 }
 
 ### 관리자 주문 조회
-GET http://localhost:8080/admin/orders?page=0&size=20
+GET https://api.recordyslow.com/admin/orders?page=0&size=20
 Content-Type: application/json
 Authorization: {{auth_token}}
 
