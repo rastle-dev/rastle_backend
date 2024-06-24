@@ -39,6 +39,9 @@ public class EventProductApplyDTO {
         private String instagramId;
         @Schema(description = "이벤트 응모 전화번호", type = "string", format = "phoneNumber", example = "01012345678")
         private String eventPhoneNumber;
+        private LocalDateTime startDate;
+        private LocalDateTime endDate;
+
     }
 
     @Getter
