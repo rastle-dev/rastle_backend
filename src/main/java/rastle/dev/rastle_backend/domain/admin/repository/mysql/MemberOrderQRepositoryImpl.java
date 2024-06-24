@@ -84,7 +84,7 @@ public class MemberOrderQRepositoryImpl implements MemberOrderQRepository {
 
     private Long getSize(GetMemberOrderCondition condition) {
         JPAQuery<Long> countQuery = jpaQueryFactory.select(
-                orderProduct.count().coalesce(0L)
+                orderProduct.count()
             ).from(orderProduct)
             .leftJoin(orderProduct.orderDetail, orderDetail)
             .leftJoin(orderDetail.delivery, delivery)
@@ -94,7 +94,10 @@ public class MemberOrderQRepositoryImpl implements MemberOrderQRepository {
                 receiverName(condition)
             )
             .groupBy(orderProduct);
-        return countQuery.fetchOne();
+        if (countQuery.fetchOne() != null) {
+            return countQuery.fetchOne();
+        }
+        return 0L;
     }
 
     private OrderSpecifier orderByOrderNumber() {

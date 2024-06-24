@@ -60,7 +60,7 @@ public class ProductQRepositoryImpl implements ProductQRepository {
     private Long getSize(GetProductRequest getProductRequest) {
 
         JPAQuery<Long> query = jpaQueryFactory.select(
-               productBase.count().coalesce(0L)
+               productBase.count()
             ).from(productBase)
             .where(
                 visible(getProductRequest),
@@ -68,7 +68,10 @@ public class ProductQRepositoryImpl implements ProductQRepository {
                 event(getProductRequest)
 
             ).groupBy(productBase.id);
-        return query.fetchOne();
+        if (query.fetchOne() != null) {
+            return query.fetchOne();
+        }
+        return 0L;
     }
 
     private BooleanExpression visible(GetProductRequest getProductRequest) {
