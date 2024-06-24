@@ -58,6 +58,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             .phoneNumber(formatPhoneNumber(memberInfo.getPhoneNumber()))
             .userLoginType(loginType)
             .authority(Authority.ROLE_USER)
+            .deleted(false)
             .build();
 
         RecipientInfo recipientInfo = new RecipientInfo();
