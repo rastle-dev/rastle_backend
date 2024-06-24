@@ -36,7 +36,7 @@ public class TestOrderProduct {
     private Long totalPrice;
     @Column(name = "tracking_number")
     private String trackingNumber;
-    @Column(name = "product_order_number", unique = true)
+    @Column(name = "product_order_number")
     private Long productOrderNumber;
     @ColumnDefault("0")
     @Column(name = "cancel_amount")

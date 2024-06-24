@@ -23,7 +23,7 @@ public class TestOrder {
     private Long id;
     @Column(name = "order_name")
     private String orderName;
-    @Column(name = "order_number", unique = true)
+    @Column(name = "order_number")
     private Long orderNumber;
     @Column(name = "order_price")
     private Long orderPrice;
