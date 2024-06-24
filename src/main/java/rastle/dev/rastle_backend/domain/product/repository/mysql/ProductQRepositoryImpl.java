@@ -68,7 +68,10 @@ public class ProductQRepositoryImpl implements ProductQRepository {
                 event(getProductRequest)
 
             ).groupBy(productBase.id);
-        return query.fetchOne();
+        if (query.fetchOne() != null) {
+            return query.fetchOne();
+        }
+        return 0L;
     }
 
     private BooleanExpression visible(GetProductRequest getProductRequest) {

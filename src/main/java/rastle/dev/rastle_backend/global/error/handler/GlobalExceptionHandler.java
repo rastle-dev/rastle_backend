@@ -19,21 +19,22 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
         private void logException(Exception exception, HttpServletRequest webRequest) {
-                log.warn("{} {} \n {} {}", webRequest.getMethod(), webRequest.getRequestURI(), exception.getClass().getName(), exception.getMessage());
+                log.warn("{} {} {} \n\t{}", webRequest.getMethod(), webRequest.getRequestURI(), exception.getClass().getName(), exception.getMessage());
         }
 
         private void logExceptionDetail(Exception exception, HttpServletRequest webRequest) {
                 StringBuilder sb = new StringBuilder();
                 for (int i = exception.getStackTrace().length-3; i < exception.getStackTrace().length; i++) {
                         StackTraceElement element = exception.getStackTrace()[i];
-                        sb.append(element.getClassName());
-                        sb.append(" ");
-                        sb.append(element.getMethodName());
-                        sb.append(" ");
-                        sb.append(element.getLineNumber());
-                        sb.append("\n");
+                        sb.append("\t")
+                            .append(element.getClassName())
+                            .append(" ")
+                            .append(element.getMethodName())
+                            .append(" ")
+                            .append(element.getLineNumber())
+                            .append("\n");
                 }
-                log.warn("{} {} \n {} {} \n {}", webRequest.getMethod(), webRequest.getRequestURI(), exception.getClass().getName(), exception.getMessage(), sb.toString());
+                log.warn("{} {} {} \n\t{} \n{}", webRequest.getMethod(), webRequest.getRequestURI(), exception.getClass().getName(), exception.getMessage(), sb.toString());
         }
 
         @ExceptionHandler(GlobalException.class)
