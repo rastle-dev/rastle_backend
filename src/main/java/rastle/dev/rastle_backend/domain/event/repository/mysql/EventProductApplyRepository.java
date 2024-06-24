@@ -19,7 +19,7 @@ public interface EventProductApplyRepository extends JpaRepository<EventProductA
     // 회원 이벤트 응모 내역 조회
     @Query("SELECT new rastle.dev.rastle_backend.domain.event.dto.EventProductApplyDTO$MemberEventApplyHistoryDTO("
         +
-        "pb.id, pb.name, pb.mainThumbnailImage, epa.applyDate, epa.instagramId, epa.phoneNumber) " +
+        "pb.id, pb.name, pb.mainThumbnailImage, epa.applyDate, epa.instagramId, epa.phoneNumber, pb.event.eventStartDate, pb.event.eventEndDate) " +
         "FROM EventProductApply epa " +
         "JOIN epa.eventApplyProduct pb " +
         "WHERE epa.member.id = :memberId")
