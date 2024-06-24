@@ -61,7 +61,9 @@ public class MemberOrderQRepositoryImpl implements MemberOrderQRepository {
                     payment.paymentMethod,
                     payment.couponAmount,
                     orderProduct.cancelAmount,
-                    orderProduct.cancelRequestAmount
+                    orderProduct.cancelRequestAmount,
+                    orderProduct.returnAmount,
+                    orderProduct.returnRequestAmount
 
                 )
             ).from(orderProduct)

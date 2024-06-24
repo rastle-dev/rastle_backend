@@ -706,7 +706,7 @@ public class AdminService {
             restoreCouponStatusAndReturnEvent(orderProduct, returnRequestAmount, returnResponse.getCouponId());
         } else {
             portOneComponent.returnPayment(returnOrderRequest.getImpId(), returnRequestAmount, orderProduct);
-            orderProduct.updateOrderStatus(PARTIALLY_RETURNED);
+            orderDetail.updateOrderStatus(PARTIALLY_RETURNED);
             handleReturnEvent(orderProduct, returnRequestAmount, null);
         }
         return new ReturnOrderResponse(returnOrderRequest.getImpId(), returnOrderRequest.getProductOrderNumber(), returnRequestAmount);
