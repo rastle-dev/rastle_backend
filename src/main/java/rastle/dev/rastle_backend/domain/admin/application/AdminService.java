@@ -248,7 +248,7 @@ public class AdminService {
             productBase.setEvent(null);
         }
         if (updateRequest.getSoldOut() != null) {
-            productBaseRepository.soldOutProduct(id);
+            productBaseRepository.soldOutProduct(id, updateRequest.getSoldOut());
         }
 
         return updateRequest;
@@ -736,11 +736,5 @@ public class AdminService {
         } else {
             orderProduct.updateOrderStatus(PARTIALLY_RETURNED);
         }
-    }
-
-    @Transactional
-    public ProductSoldOutResponse soldOutProduct(ProductSoldOutRequest soldOutRequest) {
-        productBaseRepository.soldOutProduct(soldOutRequest.getProductId());
-        return new ProductSoldOutResponse(soldOutRequest.getProductId());
     }
 }
