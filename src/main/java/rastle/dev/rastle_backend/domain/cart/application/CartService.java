@@ -15,12 +15,14 @@ import rastle.dev.rastle_backend.domain.member.model.Member;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
 import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 import rastle.dev.rastle_backend.domain.product.repository.mysql.ProductBaseRepository;
+import rastle.dev.rastle_backend.global.error.exception.GlobalException;
 import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
 import rastle.dev.rastle_backend.global.util.SecurityUtil;
 
 import java.util.List;
 import java.util.Optional;
 
+import static org.springframework.http.HttpStatus.CONFLICT;
 import static rastle.dev.rastle_backend.global.common.enums.CartProductStatus.NOT_ORDERED;
 
 @Service
@@ -53,6 +55,9 @@ public class CartService {
         for (CreateCartProductDto createCartProductDto : createCartProductDtos) {
             ProductBase product = productBaseRepository.findById(createCartProductDto.getProductId())
                 .orElseThrow(() -> new NotFoundByIdException());
+            if (product.soldOut()) {
+                throw new GlobalException("품절된 상품으로 장바구니 추가 불가합니다.", CONFLICT);
+            }
 
             // 해당 상품이 장바구니에 이미 있는지 확인
             Optional<CartProduct> existingCartProduct = cart.getCartProducts().stream()
@@ -62,6 +67,7 @@ public class CartService {
                     cp.getSize().equals(createCartProductDto.getSize()) &&
                     cp.getCartProductStatus() == NOT_ORDERED)
                 .findFirst();
+            i
 
             if (existingCartProduct.isPresent()) {
                 // 장바구니에 이미 해당 상품이 있는 경우, 수량 누적 업데이트

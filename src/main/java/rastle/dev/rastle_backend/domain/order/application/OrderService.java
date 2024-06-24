@@ -279,6 +279,9 @@ public class OrderService {
             if (cartProductOptional.isPresent()) {
                 CartProduct cartProduct = cartProductOptional.get();
                 ProductBase productBase = cartProduct.getProduct();
+                if (productBase.soldOut()) {
+                    throw new GlobalException("품절된 상품으로 구매가 불가합니다.", CONFLICT);
+                }
                 OrderProduct orderProduct = OrderProduct.builder()
                     .orderDetail(orderDetail)
                     .orderStatus(CREATED)
