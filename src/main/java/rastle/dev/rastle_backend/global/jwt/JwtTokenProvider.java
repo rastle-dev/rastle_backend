@@ -180,6 +180,9 @@ public class JwtTokenProvider {
     // 리프레시 토큰 반환
     public String getRefreshTokenFromRequest(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            throw new InvalidRequestException("empty cookie, no refresh token");
+        }
         return Arrays.stream(cookies)
             .filter(cookie -> "refreshToken".equals(cookie.getName()))
             .findFirst()
