@@ -39,6 +39,8 @@ public class ProductDTO {
         Long eventId;
         @Schema(description = "번들 아이디", defaultValue = "1")
         Long bundleId;
+        @Schema(description = "품절 여부", defaultValue = "false")
+        Boolean soldOut;
     }
 
 

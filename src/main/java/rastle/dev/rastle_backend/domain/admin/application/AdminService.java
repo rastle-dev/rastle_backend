@@ -247,6 +247,9 @@ public class AdminService {
         } else {
             productBase.setEvent(null);
         }
+        if (updateRequest.getSoldOut() != null) {
+            productBaseRepository.soldOutProduct(id);
+        }
 
         return updateRequest;
     }
