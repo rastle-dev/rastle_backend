@@ -1,4 +1,4 @@
-package rastle.dev.rastle_backend.global.jemter.model;
+package rastle.dev.rastle_backend.domain.jmeter.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -36,4 +36,16 @@ public class TestPayment {
     private Long cancelledSum;
     @Column(name = "paid_at")
     private LocalDateTime paidAt;
+
+    public static TestPayment newPayment() {
+        return TestPayment.builder()
+            .impId("12341234")
+            .paymentMethod("123412341")
+            .couponId(1L)
+            .couponAmount(300L)
+            .paymentPrice(30000L)
+            .cancelledSum(0L)
+            .paidAt(LocalDateTime.now())
+            .build();
+    }
 }

@@ -1,4 +1,4 @@
-package rastle.dev.rastle_backend.global.jemter.model;
+package rastle.dev.rastle_backend.domain.jmeter.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -52,4 +52,23 @@ public class TestOrderProduct {
     private Long returnRequestAmount;
     @Column(name = "delivery_time")
     private LocalDateTime deliveryTime;
+
+    public static TestOrderProduct newOrderProduct() {
+        return TestOrderProduct.builder()
+            .orderStatus(OrderStatus.DELIVERED)
+            .name("qwer1234")
+            .color("!2341234")
+            .size("12341234")
+            .count(2L)
+            .price(1234123L)
+            .totalPrice(1234123L)
+            .trackingNumber("12341234")
+            .productOrderNumber(12341324L)
+            .cancelAmount(12341234L)
+            .cancelRequestAmount(12341234L)
+            .returnAmount(12341234L)
+            .returnRequestAmount(12341234L)
+            .deliveryTime(LocalDateTime.now())
+            .build();
+    }
 }

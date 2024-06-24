@@ -1,4 +1,4 @@
-package rastle.dev.rastle_backend.global.jemter.model;
+package rastle.dev.rastle_backend.domain.jmeter.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -34,4 +34,17 @@ public class TestDelivery {
     private String msg;
     private String deliveryService;
 
+    public static TestDelivery newDelivery() {
+        return TestDelivery.builder()
+            .address("test address")
+            .postcode("12341234")
+            .email("12341234@12341234")
+            .tel("01010101001")
+            .userName("qwerqwerqwer")
+            .deliveryPrice(3000L)
+            .islandDeliveryPrice(5000L)
+            .msg("12341234")
+            .deliveryService("12341234123")
+            .build();
+    }
 }

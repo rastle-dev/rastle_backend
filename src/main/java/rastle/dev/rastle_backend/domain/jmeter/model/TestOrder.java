@@ -1,4 +1,4 @@
-package rastle.dev.rastle_backend.global.jemter.model;
+package rastle.dev.rastle_backend.domain.jmeter.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -30,5 +30,13 @@ public class TestOrder {
     @Enumerated(STRING)
     @Column(name = "order_status")
     private OrderStatus orderStatus;
+
+    public static TestOrder newOrder() {
+        return TestOrder.builder()
+            .orderName("12341234")
+            .orderPrice(12340123L)
+            .orderStatus(OrderStatus.DELIVERED)
+            .build();
+    }
 
 }
