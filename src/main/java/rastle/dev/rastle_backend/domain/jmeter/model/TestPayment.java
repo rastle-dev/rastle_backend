@@ -19,7 +19,7 @@ public class TestPayment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "imp_id", unique = true)
+    @Column(name = "imp_id")
     private String impId;
     @Column(name = "payment_method")
     private String paymentMethod;
