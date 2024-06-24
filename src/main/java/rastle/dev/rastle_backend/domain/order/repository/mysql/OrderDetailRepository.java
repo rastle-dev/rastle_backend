@@ -43,7 +43,7 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
         String getDeliveryStatus();
     }
 
-    @Query("SELECT COALESCE(COUNT(od.id), 0) FROM OrderDetail od WHERE od.member.id = :memberId")
+    @Query("SELECT COALESCE(COUNT(od.id), 0) FROM OrderDetail od WHERE od.member.id = :memberId AND od.orderStatus != rastle.dev.rastle_backend.global.common.enums.OrderStatus.CREATED")
     Long countSimpleOrderInfoByMemberId(@Param("memberId") Long memberId);
 
     @Modifying

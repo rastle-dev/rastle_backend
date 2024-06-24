@@ -21,6 +21,8 @@ public class GetMemberOrderInfo {
     Long count;
     Long cancelAmount;
     Long cancelRequestAmount;
+    Long returnAmount;
+    Long returnRequestAmount;
     String receiverName;
     String receiverTel;
     String receiverEmail;
@@ -39,7 +41,7 @@ public class GetMemberOrderInfo {
     String paymentMethod;
     Long couponAmount;
     @QueryProjection
-    public GetMemberOrderInfo(OrderStatus orderStatus, LocalDateTime paidAt, Long orderNumber, Long productOrderNumber, String productName, String color, String size, Long count, String receiverName, String receiverTel, String receiverEmail, String receiverAddress, String receiverPostCode, String deliveryService, String deliveryMsg, String trackingNumber, String impId, Long productPrice, Long productOrderTotalPrice,  Long orderPrice, Long paymentPrice, Long deliveryPrice, Long additionalDeliveryPrice, String paymentMethod, Long couponAmount, Long cancelAmount, Long cancelRequestAmount) {
+    public GetMemberOrderInfo(OrderStatus orderStatus, LocalDateTime paidAt, Long orderNumber, Long productOrderNumber, String productName, String color, String size, Long count, String receiverName, String receiverTel, String receiverEmail, String receiverAddress, String receiverPostCode, String deliveryService, String deliveryMsg, String trackingNumber, String impId, Long productPrice, Long productOrderTotalPrice,  Long orderPrice, Long paymentPrice, Long deliveryPrice, Long additionalDeliveryPrice, String paymentMethod, Long couponAmount, Long cancelAmount, Long cancelRequestAmount, Long returnAmount, Long returnRequestAmount) {
         this.orderStatus = orderStatus;
         this.paidAt = paidAt;
         this.orderNumber = orderNumber;
@@ -66,6 +68,8 @@ public class GetMemberOrderInfo {
         this.couponAmount = couponAmount;
         this.cancelAmount = cancelAmount;
         this.cancelRequestAmount = cancelRequestAmount;
+        this.returnAmount = returnAmount;
+        this.returnRequestAmount = returnRequestAmount;
     }
 
     private String colorSizeToOption(String color, String size) {
