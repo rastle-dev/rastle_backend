@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
                         sb.append(element.getLineNumber());
                         sb.append("\n");
                 }
-                log.warn("{} {} \n {} {} \n {}", webRequest.getMethod(), webRequest.getRequestURI(), exception.getClass().getName(), exception.getMessage(), sb.toString());
+                log.warn("{} {} \n{} {} \n{}", webRequest.getMethod(), webRequest.getRequestURI(), exception.getClass().getName(), exception.getMessage(), sb.toString());
         }
 
         @ExceptionHandler(GlobalException.class)
