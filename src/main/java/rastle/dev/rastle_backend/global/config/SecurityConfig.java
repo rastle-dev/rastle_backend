@@ -97,6 +97,7 @@ public class SecurityConfig {
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/cart/**").hasRole("USER")
                 .requestMatchers("/delivery/**").permitAll()
+                .requestMatchers("/jmeter/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/rest-docs").permitAll());
 
         http

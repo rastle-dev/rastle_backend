@@ -67,7 +67,7 @@ public class CartService {
                     cp.getSize().equals(createCartProductDto.getSize()) &&
                     cp.getCartProductStatus() == NOT_ORDERED)
                 .findFirst();
-            i
+
 
             if (existingCartProduct.isPresent()) {
                 // 장바구니에 이미 해당 상품이 있는 경우, 수량 누적 업데이트
