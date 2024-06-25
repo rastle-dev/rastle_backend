@@ -16,7 +16,7 @@ import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
-    @Query("SELECT m.id FROM Member m WHERE m.email = :email AND m.deleted = false ")
+    @Query("SELECT m.id FROM Member m WHERE m.email = :email")
     Optional<Long> findUserIdByEmail(@Param("email") String email);
 
     @Query("SELECT NEW rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO$UserPrincipalInfoDto(m.id, m.password, m.userLoginType, m.authority) FROM Member m WHERE m.email = :email AND m.deleted=false ")
