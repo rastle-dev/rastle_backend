@@ -2,6 +2,7 @@ package rastle.dev.rastle_backend.global.oauth2.application;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
@@ -15,6 +16,7 @@ import rastle.dev.rastle_backend.domain.coupon.repository.mysql.CouponRepository
 import rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO.UserPrincipalInfoDto;
 import rastle.dev.rastle_backend.domain.member.model.*;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
+import rastle.dev.rastle_backend.global.error.exception.GlobalException;
 import rastle.dev.rastle_backend.global.oauth2.OAuth2UserInfo;
 import rastle.dev.rastle_backend.global.oauth2.OAuth2UserInfoFactory;
 
@@ -52,6 +54,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     }
 
     private UserPrincipalInfoDto createUser(OAuth2UserInfo memberInfo, UserLoginType loginType) {
+        if (memberRepository.existsByEmailAndUserLoginTypeAndDeleted(memberInfo.getEmail(), loginType, true)) {
+            throw new GlobalException("이미 탈퇴한 소셜 로그인 유저의 재 로그인 요청입니다. " + memberInfo.getEmail() + " " + loginType.getType(), HttpStatus.CONFLICT);
+        }
         Member member = Member.builder()
             .email(memberInfo.getEmail())
             .userName(memberInfo.getName())
