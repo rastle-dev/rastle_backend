@@ -56,8 +56,6 @@ public class OrderDetail extends BaseTimeEntity {
     @OneToOne(mappedBy = "orderDetail", fetch = EAGER, cascade = ALL)
     private Payment payment;
 
-    @OneToMany(mappedBy = "orderDetail", fetch = FetchType.LAZY, cascade = REMOVE)
-    private final List<CancelRequest> cancelRequests = new ArrayList<>();
 
     @OneToMany(mappedBy = "orderDetail", fetch = FetchType.LAZY, cascade = REMOVE)
     private final List<OrderProduct> orderProduct = new ArrayList<>();
