@@ -18,7 +18,7 @@ import rastle.dev.rastle_backend.domain.payment.dto.PortOneWebHookResponse;
 import rastle.dev.rastle_backend.domain.payment.exception.PaymentErrorException;
 import rastle.dev.rastle_backend.domain.payment.exception.PaymentException;
 import rastle.dev.rastle_backend.global.common.constants.PortOneStatusConstant;
-import rastle.dev.rastle_backend.global.component.AsyncComponent;
+import rastle.dev.rastle_backend.global.component.AsyncPortOneComponent;
 import rastle.dev.rastle_backend.global.component.PortOneComponent;
 import rastle.dev.rastle_backend.global.component.dto.response.PaymentResponse;
 
@@ -39,7 +39,7 @@ public class PaymentService {
     private final OrderDetailRepository orderDetailRepository;
     private final PortOneComponent portOneComponent;
     private final ObjectMapper objectMapper;
-    private final AsyncComponent asyncComponent;
+    private final AsyncPortOneComponent asyncPortOneComponent;
 
     @Transactional
     public PaymentVerificationResponse verifyPayment(PaymentVerificationRequest paymentVerificationRequest) {
@@ -157,7 +157,8 @@ public class PaymentService {
         paymentPrice += islandDeliveryPrice;
         paymentPrice += paymentPrepareRequest.getDeliveryPrice();
         orderDetail.getPayment().updatePaymentPrice(paymentPrice);
-        return portOneComponent.preparePayment(orderNumber, paymentPrice);
+        asyncPortOneComponent.preparePayment(orderNumber, paymentPrice);
+        return new PaymentPrepareResponse(orderNumber, paymentPrice);
     }
 
     @Transactional
@@ -165,28 +166,28 @@ public class PaymentService {
 
         switch (webHookRequest.getStatus()) {
             case PAID -> {
-                asyncComponent.handlePayment(webHookRequest.getImp_uid());
+                asyncPortOneComponent.handlePayment(webHookRequest.getImp_uid());
                 return PortOneWebHookResponse.builder()
                     .status(SUCCESS)
                     .message(SUCCESS_MSG)
                     .build();
             }
             case READY -> {
-                asyncComponent.sendVbankEmail(webHookRequest.getImp_uid());
+                asyncPortOneComponent.sendVbankEmail(webHookRequest.getImp_uid());
                 return PortOneWebHookResponse.builder()
                     .status(VBANK_ISSUED)
                     .message(VBANK_ISSUED_MSG)
                     .build();
             }
             case PortOneStatusConstant.FAILED -> {
-                asyncComponent.failedOrder(webHookRequest.getImp_uid());
+                asyncPortOneComponent.failedOrder(webHookRequest.getImp_uid());
                 return PortOneWebHookResponse.builder()
                     .status(PortOneStatusConstant.FAILED)
                     .message(FAILED_MSG)
                     .build();
             }
             case PortOneStatusConstant.CANCELLED -> {
-                asyncComponent.cancelledOrder(webHookRequest.getImp_uid());
+                asyncPortOneComponent.cancelledOrder(webHookRequest.getImp_uid());
                 return PortOneWebHookResponse.builder()
                     .status(PortOneStatusConstant.CANCELLED)
                     .message(CANCELLED_MSG)
