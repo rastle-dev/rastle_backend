@@ -22,7 +22,7 @@ public class AsyncWebHookHandler {
     private final OrderProductRepository orderProductRepository;
 
     @Transactional
-    @Async("webhookTaskExecutor")
+    @Async("deliveryTrackerTaskExecutor")
     public void handleWebHook(WebHookRequest webHookRequest) {
         log.info("handle webhook request {}", webHookRequest.getTrackingNumber());
         DeliveryTrackerStatus deliveryStatus = deliveryTracker.getDeliveryStatus(webHookRequest.getTrackingNumber());

@@ -10,12 +10,13 @@ import rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO.UserPrincipalIn
 import rastle.dev.rastle_backend.domain.member.dto.MemberDTO.LoginMemberInfoDto;
 import rastle.dev.rastle_backend.domain.member.model.Member;
 import rastle.dev.rastle_backend.domain.member.model.RecipientInfo;
+import rastle.dev.rastle_backend.domain.member.model.UserLoginType;
 
 import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
-    @Query("SELECT m.id FROM Member m WHERE m.email = :email AND m.deleted = false ")
+    @Query("SELECT m.id FROM Member m WHERE m.email = :email")
     Optional<Long> findUserIdByEmail(@Param("email") String email);
 
     @Query("SELECT NEW rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO$UserPrincipalInfoDto(m.id, m.password, m.userLoginType, m.authority) FROM Member m WHERE m.email = :email AND m.deleted=false ")
@@ -42,4 +43,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query("SELECT m.recipientInfo FROM Member m WHERE m.id = :id AND m.deleted = false")
     Optional<RecipientInfo> findRecipientInfoById(@Param("id") Long id);
+
+    boolean existsByEmailAndUserLoginTypeAndDeleted(String email, UserLoginType userLoginType, Boolean deleted);
 }

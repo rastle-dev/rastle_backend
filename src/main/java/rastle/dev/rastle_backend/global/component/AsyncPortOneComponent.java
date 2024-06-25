@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import rastle.dev.rastle_backend.domain.cart.repository.mysql.CartProductRepository;
 import rastle.dev.rastle_backend.domain.coupon.model.Coupon;
 import rastle.dev.rastle_backend.domain.coupon.repository.mysql.CouponRepository;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
@@ -19,16 +18,15 @@ import static rastle.dev.rastle_backend.global.common.enums.CouponStatus.USED;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class AsyncComponent {
+public class AsyncPortOneComponent {
     private final OrderDetailRepository orderDetailRepository;
     private final OrderProductRepository orderProductRepository;
     private final CouponRepository couponRepository;
-    private final CartProductRepository cartProductRepository;
     private final PortOneComponent portOneComponent;
     private final MailComponent mailComponent;
 
     @Transactional
-    @Async("asyncTaskExecutor")
+    @Async("portOneTaskExecutor")
     public void handlePayment(String impUid) {
         PaymentResponse paymentData = portOneComponent.getPaymentData(impUid);
         OrderDetail orderDetail = orderDetailRepository.findByOrderNumber(Long.parseLong(paymentData.getMerchantUID()))
@@ -52,7 +50,7 @@ public class AsyncComponent {
     }
 
 
-    @Async("asyncTaskExecutor")
+    @Async("portOneTaskExecutor")
     public void sendVbankEmail(String impUid) {
         PaymentResponse paymentData = portOneComponent.getPaymentData(impUid);
 
@@ -66,7 +64,7 @@ public class AsyncComponent {
     }
 
     @Transactional
-    @Async("asyncTaskExecutor")
+    @Async("portOneTaskExecutor")
     public void failedOrder(String impUid) {
         PaymentResponse paymentData = portOneComponent.getPaymentData(impUid);
         orderDetailRepository.updateOrderDetailFailed(Long.parseLong(paymentData.getMerchantUID()));
@@ -76,10 +74,15 @@ public class AsyncComponent {
     }
 
     @Transactional
-    @Async("asyncTaskExecutor")
+    @Async("portOneTaskExecutor")
     public void cancelledOrder(String impUid) {
         PaymentResponse paymentData = portOneComponent.getPaymentData(impUid);
         orderDetailRepository.updateOrderDetailCancelled(Long.parseLong(paymentData.getMerchantUID()));
         orderProductRepository.updateOrderProductCancelled(Long.parseLong(paymentData.getMerchantUID()));
+    }
+
+    @Async("preparePaymentTaskExecutor")
+    public void preparePayment(String merchantId, Long price) {
+        portOneComponent.preparePayment(merchantId, price);
     }
 }

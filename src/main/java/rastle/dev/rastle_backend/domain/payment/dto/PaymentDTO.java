@@ -53,6 +53,6 @@ public class PaymentDTO {
     @Builder
     public static class PaymentPrepareResponse {
         String merchant_uid;
-        Integer number;
+        Long number;
     }
 }

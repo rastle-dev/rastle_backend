@@ -15,7 +15,6 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
 import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
-import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.PaymentPrepareResponse;
 import rastle.dev.rastle_backend.global.cache.RedisCache;
 import rastle.dev.rastle_backend.global.component.dto.request.PortOnePaymentCancelRequest;
 import rastle.dev.rastle_backend.global.component.dto.request.PortOnePaymentRequest;
@@ -174,7 +173,7 @@ public class PortOneComponent {
     }
 
 
-    public PaymentPrepareResponse preparePayment(String merchantId, Long price) {
+    public void preparePayment(String merchantId, Long price) {
         String accessToken = getAccessToken();
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(singletonList(APPLICATION_JSON));
@@ -190,10 +189,10 @@ public class PortOneComponent {
             });
             Integer code = (Integer) responseMap.get(CODE);
             if (code != 0) {
+                log.error("exception during payment prepare portone request - {}", responseMap.get(MESSAGE));
                 throw new PortOneException((String) responseMap.get(MESSAGE));
             }
-            Map<String, Object> resultMap = (Map<String, Object>) responseMap.get(RESPONSE);
-            return new PaymentPrepareResponse((String) resultMap.get(MERCHANT_UID), (Integer) resultMap.get(AMOUNT));
+            log.info("{} payment prepare success", merchantId);
 
         } catch (JsonProcessingException e) {
             throw new PortOneException(e.getMessage());
