@@ -627,6 +627,11 @@ public class AdminService {
     public String updateTrackingNumber(Long orderProductNumber, UpdateTrackingNumberRequest trackingNumberRequest) {
         validateTrackingNumber(trackingNumberRequest);
         orderProductRepository.updateOrderProductTrackingNumber(trackingNumberRequest.getTrackingNumber(), orderProductNumber);
+        Optional<OrderProduct> optionalOrderProduct = orderProductRepository.findByProductOrderNumber(orderProductNumber);
+        if (optionalOrderProduct.isPresent()) {
+            OrderProduct op = optionalOrderProduct.get();
+            op.getOrderDetail().updateOrderStatus(DELIVERY_READY);
+        }
         deliveryTracker.registerWebHook(trackingNumberRequest.getTrackingNumber());
         return UPDATED;
     }
