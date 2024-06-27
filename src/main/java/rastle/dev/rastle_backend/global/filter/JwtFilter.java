@@ -32,9 +32,6 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
-//        if (!request.getRequestURI().equals("/actuator/prometheus")) {
-//            log.info(request.getMethod() + " " + request.getRequestURI());
-//        }
         try {
             String jwt = resolveToken(request);
             if (jwt != null) {
@@ -51,15 +48,15 @@ public class JwtFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         } catch (ExpireAccessTokenException e) {
-            handleErrorResponse(request, response, HttpServletResponse.SC_UNAUTHORIZED, e.getMessage(), 401L);
+            handleErrorResponse(request, response, HttpServletResponse.SC_UNAUTHORIZED, 401L, e);
         } catch (Exception e) {
-            handleErrorResponse(request, response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage(), 500L);
+            handleErrorResponse(request, response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,  500L, e);
         }
     }
 
-    private void handleErrorResponse(HttpServletRequest request, HttpServletResponse response, int statusCode, String message, long errorCode)
+    private void handleErrorResponse(HttpServletRequest request, HttpServletResponse response, int statusCode,  long errorCode, Exception e)
         throws IOException {
-        log.warn("{} {}", request.getMethod(), request.getRequestURI());
+        log.warn("{} {} {} {}", request.getMethod(), request.getRequestURI(), e.getClass().getName(), e.getMessage());
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");
         response.setStatus(statusCode);
@@ -70,16 +67,15 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         try (var writer = response.getWriter()) {
-            writer.print(mapper.writeValueAsString(new ErrorResponse(errorCode, message)));
+            writer.print(mapper.writeValueAsString(new ErrorResponse(errorCode, e.getMessage())));
         }
     }
 
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
-            String actualToken = bearerToken.substring(7);
-//            log.info("Extracted Access Token: " + actualToken);
-            return actualToken;
+            //            log.info("Extracted Access Token: " + actualToken);
+            return bearerToken.substring(7);
         }
         return null;
     }
