@@ -49,12 +49,9 @@ public class AdminController {
     private final AdminService adminService;
     private final ObjectMapper objectMapper;
 
-    // TODO 주문 조회에 cancel amount 리턴 해주기
-
     // ==============================================================================================================
     // 상품 관련 API
     // ==============================================================================================================
-
 
     @Operation(summary = "상품 세트에 속한 상품 조회 API", description = "상품 세트에 속한 상품 조회 API 입니다.")
     @ApiResponse(responseCode = "200", description = "조회 성공시", content = @Content(schema = @Schema(implementation = SimpleProductInfo.class)))

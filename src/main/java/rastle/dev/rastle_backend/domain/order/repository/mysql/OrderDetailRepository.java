@@ -54,4 +54,6 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
     @Query("UPDATE OrderDetail od SET od.orderStatus=rastle.dev.rastle_backend.global.common.enums.OrderStatus.CANCELLED WHERE od.orderNumber = :orderNumber")
     void updateOrderDetailCancelled(@Param("orderNumber") Long orderNumber);
 
+
+
 }

@@ -64,7 +64,6 @@ public class S3Component {
         metadata.setContentLength(file.getSize());
         metadata.setContentType(file.getContentType());
         try {
-
             amazonS3.putObject(bucket, fileName, file.getInputStream(), metadata);
         } catch (IOException e) {
             throw new S3ImageUploadException();

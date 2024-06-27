@@ -1,9 +1,6 @@
 package rastle.dev.rastle_backend.global.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
@@ -43,18 +40,6 @@ public class JwtTokenProvider {
     private final RedisTemplate<String, String> redisTemplate;
     private final CustomUserDetailsService customUserDetailsService;
 
-    /*
-    TODO 토큰 재발급 이슈 원인 해결
-
-    원인
-    1. 노트북에서 로그인
-        리프레쉬 토큰 생성되서 브라우저 쿠키 + 레디스에 저장
-    2. 스마트폰에서 로그인
-        리프레쉬 토큰 새로 생성되서 아이폰 브라우저 쿠키 + 레디스에 저장
-    3. 노트북에서 엑세스 만료됌
-        이때 레디스 리프레쉬 토큰 값이 바껴서 토큰 재발급 X
-
-     */
 
     public JwtTokenProvider(@Value("${jwt.secret}") String jwtSecret, RedisTemplate<String, String> redisTemplate,
                             CustomUserDetailsService customUserDetailsService) {
@@ -126,10 +111,16 @@ public class JwtTokenProvider {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
+        } catch (ExpiredJwtException expiredJwtException) {
+            log.info("JWT 토큰 검증 실패 : 만료된 JWT 토큰 입니다.");
+        } catch (UnsupportedJwtException unsupportedJwtException) {
+            log.info("JWT 토큰 검증 실패 : 지원하지 않는 JWT 토큰 형식으로 온 요청입니다.");
+        } catch (MalformedJwtException malformedJwtException) {
+            log.info("JWT 토큰 검증 실패 : 위조된 JWT 토큰 형식으로 온 요청입니다.");
         } catch (Exception e) {
             log.info("JWT 토큰 검증 실패: {}", e.getMessage());
-            return false;
         }
+        return false;
     }
 
     // 토큰 파싱

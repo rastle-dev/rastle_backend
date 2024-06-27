@@ -74,7 +74,7 @@ public class OrderService {
     }
 
     private void verifyTestMember(Member member) {
-        if (!(member.getId() == 11L || member.getId() == 8L || member.getId() == 92L || member.getId() == 47L)) {
+        if (!(member.getId() == 11L || member.getId() == 8L || member.getId() == 92L || member.getId() == 47L || member.getId() == 105L)) {
             throw new NotAuthorizedException();
         }
     }

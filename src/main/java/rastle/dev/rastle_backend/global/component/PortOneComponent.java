@@ -73,8 +73,9 @@ public class PortOneComponent {
             });
             Integer code = (Integer) responseMap.get(CODE);
             if (code != 0) {
-                log.info("msg : {}", (String) responseMap.get(MESSAGE));
-                throw new RuntimeException((String) responseMap.get(MESSAGE));
+                String encoded = convertString((String) responseMap.get(MESSAGE));
+                log.error("exception during getting payment data - {}", encoded);
+                throw new RuntimeException(encoded);
             }
 
             Map<String, Object> paymentResultmap = (Map<String, Object>) responseMap.get(RESPONSE);
@@ -110,7 +111,9 @@ public class PortOneComponent {
             });
             Integer code = (Integer) responseMap.get(CODE);
             if (code != 0) {
-                throw new RuntimeException((String) responseMap.get(MESSAGE));
+                String encoded = convertString((String) responseMap.get(MESSAGE));
+                log.error("exception during cancel portone request - {}", encoded);
+                throw new RuntimeException(encoded);
             }
 
             Map<String, Object> paymentResultmap = (Map<String, Object>) responseMap.get(RESPONSE);
@@ -189,8 +192,9 @@ public class PortOneComponent {
             });
             Integer code = (Integer) responseMap.get(CODE);
             if (code != 0) {
-                log.error("exception during payment prepare portone request - {}", responseMap.get(MESSAGE));
-                throw new PortOneException((String) responseMap.get(MESSAGE));
+                String encoded = convertString((String) responseMap.get(MESSAGE));
+                log.error("exception during payment prepare portone request - {}", encoded);
+                throw new PortOneException(encoded);
             }
             log.info("{} payment prepare success", merchantId);
 

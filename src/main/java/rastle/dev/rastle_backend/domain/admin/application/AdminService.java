@@ -66,6 +66,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.*;
 import static rastle.dev.rastle_backend.global.common.enums.CouponStatus.NOT_USED;
@@ -625,7 +626,12 @@ public class AdminService {
     @Transactional
     public String updateTrackingNumber(Long orderProductNumber, UpdateTrackingNumberRequest trackingNumberRequest) {
         validateTrackingNumber(trackingNumberRequest);
-        orderProductRepository.updateOrderProductTrackingNumber(trackingNumberRequest.getTrackingNumber(), orderProductNumber);
+        Optional<OrderProduct> optionalOrderProduct = orderProductRepository.findByProductOrderNumber(orderProductNumber);
+        if (optionalOrderProduct.isPresent()) {
+            OrderProduct op = optionalOrderProduct.get();
+            op.updateOrderStatus(DELIVERY_READY);
+            op.getOrderDetail().updateOrderStatus(DELIVERY_READY);
+        }
         deliveryTracker.registerWebHook(trackingNumberRequest.getTrackingNumber());
         return UPDATED;
     }
@@ -646,6 +652,9 @@ public class AdminService {
     @Transactional
     public CancelOrderResult cancelOrder(CancelOrderRequest cancelOrderRequest) {
         OrderProduct orderProduct = orderProductRepository.findByProductOrderNumberWithLock(cancelOrderRequest.getProductOrderNumber()).orElseThrow(() -> new GlobalException("해당 상품 주문 번호로 존재하는 상품 주문이 없다.", NOT_FOUND));
+        if (!orderProduct.getOrderStatus().equals(CANCEL_REQUESTED)) {
+            throw new GlobalException("취소 요청되지 않은 주문 입니다. ", CONFLICT);
+        }
         OrderDetail orderDetail = orderProduct.getOrderDetail();
         Long cancelAmount = orderProduct.getCancelRequestAmount();
 
@@ -697,6 +706,9 @@ public class AdminService {
     @Transactional
     public ReturnOrderResponse returnOrder(ReturnOrderRequest returnOrderRequest) {
         OrderProduct orderProduct = orderProductRepository.findByProductOrderNumberWithLock(returnOrderRequest.getProductOrderNumber()).orElseThrow(() -> new GlobalException("해당 상품 주문 번호로 존재하는 상품 주문이 없다.", NOT_FOUND));
+        if (!orderProduct.getOrderStatus().equals(RETURN_REQUESTED)) {
+            throw new GlobalException("반품 요청되지 않은 주문 입니다.", CONFLICT);
+        }
         OrderDetail orderDetail = orderProduct.getOrderDetail();
         Long returnRequestAmount = orderProduct.getReturnRequestAmount();
 
