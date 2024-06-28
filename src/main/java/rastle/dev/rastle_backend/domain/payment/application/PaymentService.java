@@ -7,10 +7,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
+import rastle.dev.rastle_backend.domain.cart.repository.mysql.CartProductRepository;
 import rastle.dev.rastle_backend.domain.coupon.exception.AlreadyUsedCouponException;
 import rastle.dev.rastle_backend.domain.coupon.model.Coupon;
 import rastle.dev.rastle_backend.domain.coupon.repository.mysql.CouponRepository;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
+import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderDetailRepository;
 import rastle.dev.rastle_backend.domain.payment.dto.PaymentDTO.*;
 import rastle.dev.rastle_backend.domain.payment.dto.PortOneWebHookRequest;
@@ -40,6 +42,7 @@ public class PaymentService {
     private final PortOneComponent portOneComponent;
     private final ObjectMapper objectMapper;
     private final AsyncPortOneComponent asyncPortOneComponent;
+    private final CartProductRepository cartProductRepository;
 
     @Transactional
     public PaymentVerificationResponse verifyPayment(PaymentVerificationRequest paymentVerificationRequest) {
@@ -124,6 +127,14 @@ public class PaymentService {
             useCoupon(paymentResponse, orderDetail);
         }
 
+    }
+
+    private void orderCartProduct(OrderDetail orderDetail) {
+        for (OrderProduct orderProduct : orderDetail.getOrderProduct()) {
+            if (orderProduct.getCartProductId() != null) {
+                cartProductRepository.updateCartProductStatus(orderProduct.getCartProductId());
+            }
+        }
     }
 
     private boolean isCouponUsed(PaymentResponse paymentResponse) {
