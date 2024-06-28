@@ -1,10 +1,7 @@
 package rastle.dev.rastle_backend.domain.product.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import rastle.dev.rastle_backend.domain.bundle.model.Bundle;
 import rastle.dev.rastle_backend.domain.category.model.Category;
 import rastle.dev.rastle_backend.domain.event.model.Event;
@@ -41,6 +38,8 @@ public class ProductDTO {
         Long bundleId;
         @Schema(description = "품절 여부", defaultValue = "false")
         Boolean soldOut;
+        @Schema(description = "링크")
+        String link;
     }
 
 
@@ -90,7 +89,8 @@ public class ProductDTO {
         Long bundleId;
         @Schema(description = "이벤트아이디", defaultValue = "1")
         Long eventId;
-
+        @Schema(description = "링크", defaultValue = "!@#$!@")
+        String link;
 
         public ProductBase toProductBase(Category category, Bundle bundle, Event event) {
             return ProductBase.builder()
@@ -104,6 +104,7 @@ public class ProductDTO {
                 .event(event)
                 .eventApplyCount(0L)
                 .soldOut(false)
+                .link(link)
                 .build();
         }
 
@@ -143,18 +144,14 @@ public class ProductDTO {
         Long displayOrder;
         @Schema(description = "상품 보여질지 여부", defaultValue = "true")
         boolean visible;
+        @Setter
         @Schema(description = "번들 아이디", defaultValue = "1")
         Long bundleId;
+        @Setter
         @Schema(description = "이벤트 아이디", defaultValue = "1")
         Long eventId;
-
-        public void setBundleId(Long bundleId) {
-            this.bundleId = bundleId;
-        }
-
-        public void setEventId(Long eventId) {
-            this.eventId = eventId;
-        }
+        @Schema(description = "링크")
+        String link;
     }
 
 }

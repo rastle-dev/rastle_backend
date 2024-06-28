@@ -30,7 +30,8 @@ public interface EventProductRepository extends JpaRepository<ProductBase, Long>
         "ep.subThumbnailImage, " +
         "ep.discountPrice, " +
         "ep.displayOrder, " +
-        "ep.visible) " +
+        "ep.visible, " +
+        "ep.link) " +
         "FROM ProductBase ep " +
         "JOIN Event e ON e.id = ep.event.id " +
         "ORDER BY ep.displayOrder ASC")
@@ -51,7 +52,8 @@ public interface EventProductRepository extends JpaRepository<ProductBase, Long>
         "ep.subThumbnailImage, " +
         "ep.discountPrice, " +
         "ep.displayOrder, " +
-        "ep.visible) " +
+        "ep.visible, " +
+        "ep.link) " +
         "FROM ProductBase ep " +
         "JOIN Event e ON e.id = ep.event.id " +
         "WHERE e.visible = :visible" +

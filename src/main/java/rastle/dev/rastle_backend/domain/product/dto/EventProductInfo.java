@@ -44,4 +44,6 @@ public class EventProductInfo {
     Long displayOrder;
     @Schema(description = "상품 보여질지 여부", defaultValue = "true")
     boolean productVisible;
+    @Schema(description = "무신사 링크", defaultValue = "무신사 링크임")
+    String link;
 }
