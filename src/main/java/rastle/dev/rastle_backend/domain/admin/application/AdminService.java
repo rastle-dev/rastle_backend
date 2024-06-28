@@ -631,6 +631,7 @@ public class AdminService {
             OrderProduct op = optionalOrderProduct.get();
             op.updateOrderStatus(DELIVERY_READY);
             op.getOrderDetail().updateOrderStatus(DELIVERY_READY);
+            op.updateTrackingNumber(trackingNumberRequest.getTrackingNumber());
         }
         deliveryTracker.registerWebHook(trackingNumberRequest.getTrackingNumber());
         return UPDATED;
