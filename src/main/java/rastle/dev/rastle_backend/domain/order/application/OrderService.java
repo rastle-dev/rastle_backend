@@ -280,7 +280,7 @@ public class OrderService {
                 CartProduct cartProduct = cartProductOptional.get();
                 ProductBase productBase = cartProduct.getProduct();
                 if (productBase.soldOut()) {
-                    throw new GlobalException("품절된 상품으로 구매가 불가합니다.", CONFLICT);
+                    throw new GlobalException("품절된 상품 포함으로 주문이 불가합니다.", CONFLICT);
                 }
                 OrderProduct orderProduct = OrderProduct.builder()
                     .orderDetail(orderDetail)
