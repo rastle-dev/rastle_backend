@@ -47,5 +47,7 @@ public class CartDTO {
         private String mainThumbnailImage;
         @Schema(description = "제품 ID", type = "long", format = "id", example = "1")
         private Long productId;
+        @Schema(description = "품절 여부", type = "boolean")
+        private Boolean soldOut;
     }
 }
