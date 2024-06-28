@@ -16,6 +16,9 @@ public class DeliveryTrackerResponse {
     private final ObjectMapper objectMapper;
 
     public DeliveryTrackerStatus getLastEventStatus() {
+        if (map.containsKey("error")) {
+            return DeliveryTrackerStatus.UNKNOWN;
+        }
         Map<String, Object> trackMap = (Map<String, Object>) map.get("data");
         Map<String, Object> eventMap = (Map<String, Object>) trackMap.get("track");
         Map<String, Object> lastEventMap = (Map<String, Object>) eventMap.get("lastEvent");
