@@ -28,4 +28,5 @@ public class ProductInfo {
     ProductColor productColor;
     Long eventApplyCount;
     Boolean soldOut;
+    String link;
 }

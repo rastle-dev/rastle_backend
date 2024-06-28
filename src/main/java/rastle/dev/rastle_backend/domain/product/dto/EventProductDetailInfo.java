@@ -35,6 +35,7 @@ public class EventProductDetailInfo {
     LocalDateTime eventStartDate;
     LocalDateTime eventEndDate;
     Long eventApplyCount;
+    String link;
 
     public static EventProductDetailInfo fromProductInfo(ProductInfo productInfo, Event event) {
         return EventProductDetailInfo.builder()
@@ -58,6 +59,7 @@ public class EventProductDetailInfo {
             .eventStartDate(event.getEventStartDate())
             .eventEndDate(event.getEventEndDate())
             .eventApplyCount(productInfo.getEventApplyCount())
+            .link(productInfo.getLink())
             .build();
     }
 }

@@ -38,7 +38,8 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
         "pd.productDetailImages, " +
         "pd.productColors, " +
         "pb.eventApplyCount, " +
-        "pb.soldOut) " +
+        "pb.soldOut, " +
+        "pb.link) " +
         "FROM ProductBase pb  " +
         "JOIN ProductDetail pd ON pb.productDetail.id = pd.id " +
         "WHERE pb.id = :id")
