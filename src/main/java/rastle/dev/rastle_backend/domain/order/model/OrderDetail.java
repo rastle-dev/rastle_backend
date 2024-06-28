@@ -9,7 +9,6 @@ import rastle.dev.rastle_backend.domain.delivery.model.Delivery;
 import rastle.dev.rastle_backend.domain.member.model.Member;
 import rastle.dev.rastle_backend.domain.payment.model.Payment;
 import rastle.dev.rastle_backend.global.common.BaseTimeEntity;
-import rastle.dev.rastle_backend.global.common.enums.CartProductStatus;
 import rastle.dev.rastle_backend.global.common.enums.OrderStatus;
 import rastle.dev.rastle_backend.global.component.dto.response.PaymentResponse;
 
@@ -89,9 +88,9 @@ public class OrderDetail extends BaseTimeEntity {
 
         for (OrderProduct orderProduct : this.getOrderProduct()) {
             orderProduct.updateOrderStatus(OrderStatus.PAID);
-            if (orderProduct.getCartProduct() != null) {
-                orderProduct.getCartProduct().updateCartProductStatus(CartProductStatus.ORDERED);
-            }
+//            if (orderProduct.getCartProduct() != null) {
+//                orderProduct.getCartProduct().updateCartProductStatus(CartProductStatus.ORDERED);
+//            }
         }
     }
 

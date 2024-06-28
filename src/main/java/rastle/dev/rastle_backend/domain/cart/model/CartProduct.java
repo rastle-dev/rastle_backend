@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
 import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 import rastle.dev.rastle_backend.global.common.enums.CartProductStatus;
 
@@ -31,9 +30,6 @@ public class CartProduct {
     @Column(name = "cart_product_status")
     @Enumerated(STRING)
     private CartProductStatus cartProductStatus;
-    @OneToOne(mappedBy = "cartProduct")
-    private OrderProduct orderProduct;
-
     @Builder
     public CartProduct(Long id, int count, String color, String size, Cart cart, ProductBase product, CartProductStatus cartProductStatus) {
         this.id = id;

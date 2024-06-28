@@ -296,7 +296,7 @@ public class OrderService {
                     .cancelRequestAmount(0L)
                     .returnAmount(0L)
                     .returnRequestAmount(0L)
-                    .cartProduct(cartProduct)
+                    .cartProductId(cartProductId)
                     .build();
                 orderProductRepository.save(orderProduct);
                 orderPrice += orderProduct.getTotalPrice();
