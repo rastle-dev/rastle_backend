@@ -68,12 +68,16 @@ public class ProductBase {
     @Setter
     @Column(name = "event_apply_count")
     private Long eventApplyCount;
+    @Setter
     @Column(name = "sold_out")
     private Boolean soldOut;
+    @Setter
+    @Column(name = "musinsa_link")
+    private String link;
 
     @Builder
     public ProductBase(Long id, String name, int price, String mainThumbnailImage, String subThumbnailImage,
-                       int discountPrice, Category category, Long displayOrder, boolean visible, Bundle bundle, Event event, long eventApplyCount, Boolean soldOut) {
+                       int discountPrice, Category category, Long displayOrder, boolean visible, Bundle bundle, Event event, long eventApplyCount, Boolean soldOut, String link) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -87,6 +91,7 @@ public class ProductBase {
         this.event = event;
         this.eventApplyCount = eventApplyCount;
         this.soldOut = soldOut;
+        this.link = link;
     }
 
     public boolean soldOut() {
@@ -96,6 +101,10 @@ public class ProductBase {
     @PrePersist
     public void incrementEventApplyCount() {
         this.eventApplyCount++;
+    }
+
+    public void updateLink(String link) {
+        this.link = link;
     }
 
 

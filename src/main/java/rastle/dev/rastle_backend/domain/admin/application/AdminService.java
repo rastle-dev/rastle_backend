@@ -148,6 +148,7 @@ public class AdminService {
             .discountPrice(saved.getDiscountPrice())
             .displayOrder(saved.getDisplayOrder())
             .visible(saved.isVisible())
+            .link(saved.getLink())
             .build();
         if (event != null) {
             createResult.setEventId(event.getId());
@@ -249,9 +250,11 @@ public class AdminService {
             productBase.setEvent(null);
         }
         if (updateRequest.getSoldOut() != null) {
-            productBaseRepository.soldOutProduct(id, updateRequest.getSoldOut());
+            productBase.setSoldOut(updateRequest.getSoldOut());
         }
-
+        if (updateRequest.getLink() != null) {
+            productBase.setLink(updateRequest.getLink());
+        }
         return updateRequest;
     }
 
