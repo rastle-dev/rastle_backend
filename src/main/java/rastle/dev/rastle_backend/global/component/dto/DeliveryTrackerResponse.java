@@ -27,7 +27,12 @@ public class DeliveryTrackerResponse {
 
     private void logMap(Map<String, Object> map) {
         for (String key : map.keySet()) {
-            log.info("key : {} value : {}", key, map.get(key).toString());
+            if (map.get(key) != null) {
+
+                log.info("key : {} value : {}", key, map.get(key).toString());
+            } else {
+                log.info("key : {} value : null", key);
+            }
         }
     }
 }

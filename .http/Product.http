@@ -4,4 +4,5 @@ GET http://localhost:8080/product?page=0&size=1
 ### 상품 상세 조회
 GET https://rastledev.site/product/17/detail
 
-
+### 이벤트 상품 조회
+GET https://api.recordyslow.com/product/event?page=0&size=10
