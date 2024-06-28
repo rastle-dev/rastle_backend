@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,8 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import rastle.dev.rastle_backend.global.error.exception.GlobalException;
 import rastle.dev.rastle_backend.global.error.response.ErrorResponse;
 
-import static org.springframework.http.HttpStatus.CONFLICT;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.*;
 
 @Slf4j
 @RestControllerAdvice
@@ -45,6 +45,17 @@ public class GlobalExceptionHandler {
                                 .errorCode((long) ex.getStatus().value())
                                 .message(ex.getMessage())
                                 .build(), ex.getStatus());
+        }
+
+        @ExceptionHandler(AuthenticationException.class)
+        protected final ResponseEntity<ErrorResponse> handleAuthenticationException(
+            AuthenticationException ex, HttpServletRequest request
+        ) {
+                logException(ex, request);
+                return new ResponseEntity<>(ErrorResponse.builder()
+                    .errorCode(404L)
+                    .message(ex.getMessage())
+                    .build(), NOT_FOUND);
         }
 
         @ExceptionHandler(MethodArgumentNotValidException.class)
