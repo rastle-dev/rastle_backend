@@ -255,6 +255,9 @@ public class AdminService {
         if (updateRequest.getLink() != null) {
             productBase.setLink(updateRequest.getLink());
         }
+        if (updateRequest.getSoldCount() != null) {
+            productBase.updateSoldCount(updateRequest.getSoldCount());
+        }
         return updateRequest;
     }
 

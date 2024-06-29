@@ -40,7 +40,8 @@ public class ProductQRepositoryImpl implements ProductQRepository {
                     productBase.bundle.id,
                     productBase.event.id,
                     productBase.eventApplyCount,
-                    productBase.soldOut
+                    productBase.soldOut,
+                    productBase.soldCount
                 )
             ).from(productBase)
             .where(
