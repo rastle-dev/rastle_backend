@@ -39,13 +39,17 @@ public class ProductController {
         Long bundleId,
         @Parameter(name = "eventId", description = "이벤트 아이디")
         @RequestParam(name = "eventId", required = false)
-        Long eventId
+        Long eventId,
+        @Parameter(name="sort", description = "정렬 기준")
+        @RequestParam(name = "sort", required = false, defaultValue = "displayOrder")
+        String sort
     ) {
         GetProductRequest getProductRequest = GetProductRequest.builder()
             .bundleId(bundleId)
             .eventId(eventId)
             .visibleStatus(VisibleStatus.getById(visible))
             .pageable(pageable)
+            .sort(sort)
             .build();
         return ResponseEntity.ok(new ServerResponse<>(productService.getProductInfos(getProductRequest)));
     }
