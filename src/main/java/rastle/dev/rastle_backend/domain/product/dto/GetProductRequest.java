@@ -14,4 +14,5 @@ public class GetProductRequest {
     VisibleStatus visibleStatus;
     Long bundleId;
     Long eventId;
+    String sort;
 }

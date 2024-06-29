@@ -4,7 +4,9 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-
+### querydsl
+/src/main/generated
+### .http requests
 .http/img
 .http/PortOne.http
 .http/DeliveryTracker.http

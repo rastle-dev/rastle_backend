@@ -1,5 +1,6 @@
 package rastle.dev.rastle_backend.domain.product.repository.mysql;
 
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -57,6 +58,13 @@ public class ProductQRepositoryImpl implements ProductQRepository {
         return new PageImpl<>(query.fetch(), getProductRequest.getPageable(), getSize(getProductRequest));
     }
 
+    private OrderSpecifier<?> orderBy(GetProductRequest getProductRequest) {
+        if (getProductRequest.getSort().equals("displayOrder")) {
+            return productBase.displayOrder.desc();
+        } else {
+            return productBase.soldCount.desc();
+        }
+    }
 
     private Long getSize(GetProductRequest getProductRequest) {
 
