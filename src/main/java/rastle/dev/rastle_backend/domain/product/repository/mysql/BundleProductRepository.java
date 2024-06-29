@@ -32,7 +32,7 @@ public interface BundleProductRepository extends JpaRepository<ProductBase, Long
         "bp.soldOut, " +
         "bp.soldCount) " +
         "from ProductBase bp " +
-        "join Bundle b on b.id = bp.bundle.id WHERE :lowerBound <= b.id AND b.id <= :upperBound ORDER BY bp.displayOrder DESC")
+        "join Bundle b on b.id = bp.bundle.id WHERE :lowerBound <= b.id AND b.id <= :upperBound ORDER BY bp.displayOrder ASC")
     List<BundleProductInfo> getBundleProducts(@Param("lowerBound") Long lowerBound,
                                               @Param("upperBound") Long upperBound);
 
@@ -54,7 +54,7 @@ public interface BundleProductRepository extends JpaRepository<ProductBase, Long
         "bp.soldOut, " +
         "bp.soldCount) " +
         "from ProductBase bp " +
-        "join Bundle b on b.id = bp.bundle.id WHERE b.visible = :visible and :lowerBound <= b.id AND b.id <= :upperBound ORDER BY bp.displayOrder DESC")
+        "join Bundle b on b.id = bp.bundle.id WHERE b.visible = :visible and :lowerBound <= b.id AND b.id <= :upperBound ORDER BY bp.displayOrder ASC")
     List<BundleProductInfo> getBundleProductsByVisibility(@Param("visible") boolean visible,
                                                           @Param("lowerBound") Long lowerBound, @Param("upperBound") Long upperBound);
 
@@ -74,7 +74,7 @@ public interface BundleProductRepository extends JpaRepository<ProductBase, Long
         "bp.soldOut, " +
         "bp.soldCount) " +
         "from ProductBase bp " +
-        "WHERE bp.bundle.id = :id ORDER BY bp.displayOrder DESC")
+        "WHERE bp.bundle.id = :id ORDER BY bp.displayOrder ASC")
     List<SimpleProductInfo> getBundleProductInfosByBundleId(@Param("id") Long id);
 
     @Query("select new rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo(" +
