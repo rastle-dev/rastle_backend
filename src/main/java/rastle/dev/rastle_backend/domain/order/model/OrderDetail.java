@@ -88,9 +88,7 @@ public class OrderDetail extends BaseTimeEntity {
 
         for (OrderProduct orderProduct : this.getOrderProduct()) {
             orderProduct.updateOrderStatus(OrderStatus.PAID);
-//            if (orderProduct.getCartProduct() != null) {
-//                orderProduct.getCartProduct().updateCartProductStatus(CartProductStatus.ORDERED);
-//            }
+            orderProduct.getProduct().addSoldCount(orderProduct.getCount());
         }
     }
 
