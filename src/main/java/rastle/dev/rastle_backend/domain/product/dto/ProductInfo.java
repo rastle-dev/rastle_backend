@@ -29,4 +29,5 @@ public class ProductInfo {
     Long eventApplyCount;
     Boolean soldOut;
     String link;
+    Long soldCount;
 }

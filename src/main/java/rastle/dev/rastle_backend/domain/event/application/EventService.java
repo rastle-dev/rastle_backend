@@ -65,6 +65,7 @@ public class EventService {
             .instagramId(eventProductApplyDTO.getInstagramId())
             .eventApplyProduct(productBase)
             .build());
+        productBase.incrementEventApplyCount();
         eventApplyProduct.update(eventProductApplyDTO.getEventPhoneNumber(), eventProductApplyDTO.getInstagramId());
         eventProductApplyRepository.save(eventApplyProduct);
 

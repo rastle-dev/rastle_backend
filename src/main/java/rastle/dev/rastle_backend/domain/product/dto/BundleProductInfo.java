@@ -44,4 +44,6 @@ public class BundleProductInfo {
     boolean productVisible;
     @Schema(description = "상품 품절 여부", defaultValue = "false")
     boolean soldOut;
+    @Schema(description = "상품 판매 수", defaultValue = "1")
+    Long soldCount;
 }

@@ -39,7 +39,8 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
         "pd.productColors, " +
         "pb.eventApplyCount, " +
         "pb.soldOut, " +
-        "pb.link) " +
+        "pb.link, " +
+        "pb.soldCount) " +
         "FROM ProductBase pb  " +
         "JOIN ProductDetail pd ON pb.productDetail.id = pd.id " +
         "WHERE pb.id = :id")
@@ -60,7 +61,8 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
         "pb.bundle.id, " +
         "pb.event.id, " +
         "pb.eventApplyCount, " +
-        "pb.soldOut) " +
+        "pb.soldOut, " +
+        "pb.soldCount) " +
         "from ProductBase pb WHERE pb.event.id = :id ORDER BY pb.displayOrder DESC")
     Page<SimpleProductInfo> getProductInfoByBundleId(@Param("id") Long id, Pageable pageable);
 
@@ -77,7 +79,8 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
         "pb.bundle.id, " +
         "pb.event.id, " +
         "pb.eventApplyCount, " +
-        "pb.soldOut) " +
+        "pb.soldOut, " +
+        "pb.soldCount) " +
         "from ProductBase pb WHERE pb.category.id = :id ORDER BY pb.displayOrder DESC")
     Page<SimpleProductInfo> getProductInfoByCategoryId(@Param("id") Long id, Pageable pageable);
 
@@ -94,7 +97,8 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
         "pb.bundle.id, " +
         "pb.event.id, " +
         "pb.eventApplyCount, " +
-        "pb.soldOut) " +
+        "pb.soldOut, " +
+        "pb.soldCount) " +
         "from ProductBase pb WHERE pb.event.id = :id ORDER BY pb.displayOrder DESC")
     Page<SimpleProductInfo> getProductInfoByEventId(@Param("id") Long id, Pageable pageable);
 
@@ -112,11 +116,12 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
             "pb.bundle.id, " +
             "pb.event.id, " +
             "pb.eventApplyCount, " +
-            "pb.soldOut) " +
+            "pb.soldOut, " +
+            "pb.soldCount) " +
             "from ProductBase pb " +
             "LEFT OUTER JOIN OrderProduct op ON pb.id = op.product.id " +
             "GROUP BY pb.id " +
-            "ORDER BY COALESCE(COUNT(op.id), 0) DESC"
+            "ORDER BY pb.soldCount DESC"
     )
     Page<SimpleProductInfo> getPopularProductInfos(Pageable pageable);
 
@@ -134,12 +139,13 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
             "pb.bundle.id, " +
             "pb.event.id, " +
             "pb.eventApplyCount, " +
-            "pb.soldOut) " +
+            "pb.soldOut, " +
+            "pb.soldCount) " +
             "from ProductBase pb " +
             "LEFT OUTER JOIN OrderProduct op ON pb.id = op.product.id " +
             "WHERE pb.visible = :visible " +
             "GROUP BY pb.id " +
-            "ORDER BY COALESCE(COUNT(op.id), 0) DESC"
+            "ORDER BY pb.soldCount DESC"
     )
     Page<SimpleProductInfo> getPopularProductInfosByVisibility(@Param("visible") boolean visible, Pageable pageable);
 }

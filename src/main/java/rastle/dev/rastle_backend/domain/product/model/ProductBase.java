@@ -71,6 +71,8 @@ public class ProductBase {
     @Setter
     @Column(name = "sold_out")
     private Boolean soldOut;
+    @Column(name = "sold_count")
+    private Long soldCount;
     @Setter
     @Column(name = "musinsa_link")
     private String link;
@@ -92,13 +94,13 @@ public class ProductBase {
         this.eventApplyCount = eventApplyCount;
         this.soldOut = soldOut;
         this.link = link;
+        this.soldCount = 0L;
     }
 
     public boolean soldOut() {
         return this.soldOut;
     }
 
-    @PrePersist
     public void incrementEventApplyCount() {
         this.eventApplyCount++;
     }
@@ -107,6 +109,11 @@ public class ProductBase {
         this.link = link;
     }
 
+    public void addSoldCount(Long amount) {
+        this.soldCount += amount;
+    }
 
-
+    public void updateSoldCount(Long count) {
+        this.soldCount = count;
+    }
 }

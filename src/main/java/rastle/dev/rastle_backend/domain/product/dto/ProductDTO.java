@@ -40,6 +40,8 @@ public class ProductDTO {
         Boolean soldOut;
         @Schema(description = "링크")
         String link;
+        @Schema(description = "판매수")
+        Long soldCount;
     }
 
 

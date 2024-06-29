@@ -29,7 +29,8 @@ public interface BundleProductRepository extends JpaRepository<ProductBase, Long
         "bp.discountPrice, " +
         "bp.displayOrder, " +
         "bp.visible, " +
-        "bp.soldOut) " +
+        "bp.soldOut, " +
+        "bp.soldCount) " +
         "from ProductBase bp " +
         "join Bundle b on b.id = bp.bundle.id WHERE :lowerBound <= b.id AND b.id <= :upperBound ORDER BY bp.displayOrder DESC")
     List<BundleProductInfo> getBundleProducts(@Param("lowerBound") Long lowerBound,
@@ -50,7 +51,8 @@ public interface BundleProductRepository extends JpaRepository<ProductBase, Long
         "bp.discountPrice, " +
         "bp.displayOrder, " +
         "bp.visible, " +
-        "bp.soldOut) " +
+        "bp.soldOut, " +
+        "bp.soldCount) " +
         "from ProductBase bp " +
         "join Bundle b on b.id = bp.bundle.id WHERE b.visible = :visible and :lowerBound <= b.id AND b.id <= :upperBound ORDER BY bp.displayOrder DESC")
     List<BundleProductInfo> getBundleProductsByVisibility(@Param("visible") boolean visible,
@@ -69,7 +71,8 @@ public interface BundleProductRepository extends JpaRepository<ProductBase, Long
         "bp.bundle.id, " +
         "bp.event.id, " +
         "bp.eventApplyCount, " +
-        "bp.soldOut) " +
+        "bp.soldOut, " +
+        "bp.soldCount) " +
         "from ProductBase bp " +
         "WHERE bp.bundle.id = :id ORDER BY bp.displayOrder DESC")
     List<SimpleProductInfo> getBundleProductInfosByBundleId(@Param("id") Long id);
@@ -87,7 +90,8 @@ public interface BundleProductRepository extends JpaRepository<ProductBase, Long
         "bp.bundle.id, " +
         "bp.event.id, " +
         "bp.eventApplyCount, " +
-        "bp.soldOut) " +
+        "bp.soldOut, " +
+        "bp.soldCount) " +
         "from ProductBase bp " +
         "WHERE bp.id = :id ")
     Optional<SimpleProductInfo> getBundleProductInfoById(@Param("id") Long id);
