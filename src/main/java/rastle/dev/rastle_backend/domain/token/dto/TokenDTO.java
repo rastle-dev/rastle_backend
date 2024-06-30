@@ -1,10 +1,8 @@
 package rastle.dev.rastle_backend.domain.token.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.security.core.Authentication;
 
 public class TokenDTO {
     @Builder
@@ -51,6 +49,16 @@ public class TokenDTO {
     @Getter
     public static class ReissueRequest {
         private String token;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class TokenClaim {
+        Authentication authentication;
+        String agent;
+        String ip;
     }
 
 

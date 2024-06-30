@@ -26,9 +26,11 @@ import rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO.SignUpDto;
 import rastle.dev.rastle_backend.domain.member.model.Member;
 import rastle.dev.rastle_backend.domain.member.model.RecipientInfo;
 import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository;
+import rastle.dev.rastle_backend.domain.token.dto.TokenDTO.TokenClaim;
 import rastle.dev.rastle_backend.domain.token.dto.TokenDTO.TokenInfoDTO;
 import rastle.dev.rastle_backend.global.error.exception.InvalidRequestException;
 import rastle.dev.rastle_backend.global.jwt.JwtTokenProvider;
+import rastle.dev.rastle_backend.global.util.KeyUtil;
 
 import java.util.Collection;
 
@@ -173,12 +175,17 @@ public class MemberAuthService {
 
     public ResponseEntity<String> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = jwtTokenProvider.getRefreshTokenFromRequest(request);
-//        String storedToken = redisTemplate.opsForValue().get(KeyUtil.toRedisKey(
-//            authentication.getName(),
-//            WebUtil.getUserAgent(request),
-//            WebUtil.getClientIp(request)));
         if (refreshToken != null) {
-            Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(refreshToken);
+            TokenClaim tokenClaim = jwtTokenProvider.getTokenClaimFromRefresh(refreshToken);
+            Authentication authentication = tokenClaim.getAuthentication();
+            String storedToken = redisTemplate.opsForValue().get(KeyUtil.toRedisKey(
+                authentication.getName(),
+                tokenClaim.getAgent(),
+                tokenClaim.getIp()));
+            if (!refreshToken.equals(storedToken)) {
+                log.info("엑세스 토큰 재발급 실패 : 쿠키에 존재하는 리프레쉬 토큰은 정상적으로 발행된 리프레쉬 토큰이 아니기에 재발급 불가합니다.");
+                return new ResponseEntity<>("엑세스 토큰 재발급 실패 : 쿠키에 존재하는 리프레쉬 토큰은 정상적으로 발행된 리프레쉬 토큰이 아니기에 재발급 불가합니다.", HttpStatus.BAD_REQUEST);
+            }
             TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authentication, request, response);
 
 //            String newAccessToken = jwtTokenProvider.generateAccessToken(request, authentication);
@@ -187,7 +194,8 @@ public class MemberAuthService {
             HttpHeaders responseHeaders = createAuthorizationHeader(request, newAccessToken);
             return new ResponseEntity<>("액세스 토큰 재발급 성공", responseHeaders, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("액세스 토큰 재발급 실패: 쿠키에 유효한 리프레쉬 토큰이 없습니다.", HttpStatus.UNAUTHORIZED);
+            log.info("액세스 토큰 재발급 실패: 쿠키에 유효한 리프레쉬 토큰이 없습니다.");
+            return new ResponseEntity<>("액세스 토큰 재발급 실패: 쿠키에 유효한 리프레쉬 토큰이 없습니다.", HttpStatus.BAD_REQUEST);
         }
     }
 
