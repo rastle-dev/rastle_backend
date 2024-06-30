@@ -19,7 +19,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import rastle.dev.rastle_backend.domain.token.dto.TokenDTO.TokenInfoDTO;
-import rastle.dev.rastle_backend.global.error.exception.GlobalException;
 import rastle.dev.rastle_backend.global.security.CustomUserDetailsService;
 import rastle.dev.rastle_backend.global.util.WebUtil;
 
@@ -30,7 +29,6 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static rastle.dev.rastle_backend.global.common.constants.JwtConstants.*;
 import static rastle.dev.rastle_backend.global.util.KeyUtil.toRedisKey;
 
@@ -109,17 +107,13 @@ public class JwtTokenProvider {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
         } catch (ExpiredJwtException expiredJwtException) {
-            log.info("JWT 토큰 검증 실패 : 만료된 JWT 토큰 입니다.");
-            throw new GlobalException("JWT 토큰 검증 실패 : 만료된 JWT 토큰 입니다.", BAD_REQUEST);
+            throw new JwtException("JWT 토큰 검증 실패 : 만료된 JWT 토큰 입니다.");
         } catch (UnsupportedJwtException unsupportedJwtException) {
-            log.info("JWT 토큰 검증 실패 : 지원하지 않는 JWT 토큰 형식으로 온 요청입니다.");
-            throw new GlobalException("JWT 토큰 검증 실패 : 지원하지 않는 JWT 토큰 형식으로 온 요청입니다.", BAD_REQUEST);
+            throw new JwtException("JWT 토큰 검증 실패 : 지원하지 않는 JWT 토큰 형식으로 온 요청입니다.");
         } catch (MalformedJwtException malformedJwtException) {
-            log.info("JWT 토큰 검증 실패 : 위조된 JWT 토큰 형식으로 온 요청입니다.");
-            throw new GlobalException("JWT 토큰 검증 실패 : 위조된 JWT 토큰 형식으로 온 요청입니다.", BAD_REQUEST);
+            throw new JwtException("JWT 토큰 검증 실패 : 위조된 JWT 토큰 형식으로 온 요청입니다.");
         } catch (Exception e) {
-            log.info("JWT 토큰 검증 실패: {}", e.getMessage());
-            throw new GlobalException(e.getMessage(), BAD_REQUEST);
+            throw new JwtException("JWT 토큰 검증 실패 : "+ e.getMessage());
         }
     }
 
@@ -131,7 +125,7 @@ public class JwtTokenProvider {
     // 클레임 유효성 검사
     private void validateClaims(Claims claims) {
         if (claims.get(AUTHORITIES_KEY) == null) {
-            throw new IllegalArgumentException("권한 정보가 없는 토큰입니다.");
+            throw new JwtException("권한 정보가 없는 토큰입니다.");
         }
     }
 

@@ -1,6 +1,7 @@
 package rastle.dev.rastle_backend.global.error.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -56,6 +57,17 @@ public class GlobalExceptionHandler {
                     .errorCode(404L)
                     .message(ex.getMessage())
                     .build(), NOT_FOUND);
+        }
+
+        @ExceptionHandler(JwtException.class)
+        protected final ResponseEntity<ErrorResponse> handleJwtException(
+            JwtException ex, HttpServletRequest request
+        ) {
+                logException(ex, request);
+                return new ResponseEntity<>(ErrorResponse.builder()
+                    .errorCode(400L)
+                    .message(ex.getMessage())
+                    .build(), BAD_REQUEST);
         }
 
         @ExceptionHandler(MethodArgumentNotValidException.class)
