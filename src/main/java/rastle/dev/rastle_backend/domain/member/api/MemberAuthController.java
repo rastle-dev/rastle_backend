@@ -121,8 +121,8 @@ public class MemberAuthController {
     @ApiResponse(responseCode = "200", description = "토큰 재발급 성공")
     @FailApiResponses
     @PostMapping(value = "/refreshAccessToken")
-    public ResponseEntity<ServerResponse<String>> refreshAccessToken(HttpServletRequest request) {
-        ResponseEntity<String> result = memberAuthService.refreshAccessToken(request);
+    public ResponseEntity<ServerResponse<String>> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
+        ResponseEntity<String> result = memberAuthService.refreshAccessToken(request, response);
         ServerResponse<String> serverResponse = new ServerResponse<>(result.getBody());
         return new ResponseEntity<>(serverResponse, result.getHeaders(), result.getStatusCode());
     }

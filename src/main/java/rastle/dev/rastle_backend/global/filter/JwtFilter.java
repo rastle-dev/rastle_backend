@@ -1,6 +1,7 @@
 package rastle.dev.rastle_backend.global.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,7 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import rastle.dev.rastle_backend.domain.token.exception.ExpireAccessTokenException;
+import rastle.dev.rastle_backend.domain.token.exception.EmptyAuthorizationHeaderException;
 import rastle.dev.rastle_backend.global.error.response.ErrorResponse;
 import rastle.dev.rastle_backend.global.jwt.JwtTokenProvider;
 
@@ -35,22 +36,23 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             String jwt = resolveToken(request);
             if (jwt != null) {
-                if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
+                if (StringUtils.hasText(jwt)) {
+                    jwtTokenProvider.validateToken(jwt);
                     Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
                     User user = (User) authentication.getPrincipal();
                     if (user.getUsername() != null) {
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                     }
                 } else {
-                    throw new ExpireAccessTokenException();
+                    throw new EmptyAuthorizationHeaderException();
                 }
             }
 
             filterChain.doFilter(request, response);
-        } catch (ExpireAccessTokenException e) {
+        } catch (EmptyAuthorizationHeaderException | JwtException e) {
             handleErrorResponse(request, response, HttpServletResponse.SC_UNAUTHORIZED, 401L, e);
         } catch (Exception e) {
-            handleErrorResponse(request, response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,  500L, e);
+            handleErrorResponse(request, response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 500L, e);
         }
     }
 
