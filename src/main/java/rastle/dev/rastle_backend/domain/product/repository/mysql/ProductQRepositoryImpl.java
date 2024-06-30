@@ -53,7 +53,7 @@ public class ProductQRepositoryImpl implements ProductQRepository {
             .groupBy(productBase)
             .offset(getProductRequest.getPageable().getOffset())
             .limit(getProductRequest.getPageable().getPageSize())
-            .orderBy(productBase.displayOrder.desc());
+            .orderBy(orderBy(getProductRequest));
 
         return new PageImpl<>(query.fetch(), getProductRequest.getPageable(), getSize(getProductRequest));
     }

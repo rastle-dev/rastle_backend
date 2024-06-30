@@ -56,8 +56,8 @@ public interface EventProductRepository extends JpaRepository<ProductBase, Long>
         "ep.link) " +
         "FROM ProductBase ep " +
         "JOIN Event e ON e.id = ep.event.id " +
-        "WHERE e.visible = :visible" +
-        " ORDER BY ep.displayOrder ASC")
+        "WHERE e.visible = :visible " +
+        "ORDER BY ep.displayOrder ASC")
     List<EventProductInfo> getEventProductByVisibility(@Param("visible") boolean visible,
                                                        Pageable pageable);
 
