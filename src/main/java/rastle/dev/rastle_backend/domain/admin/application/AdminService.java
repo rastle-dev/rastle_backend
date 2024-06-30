@@ -26,6 +26,7 @@ import rastle.dev.rastle_backend.domain.category.model.Category;
 import rastle.dev.rastle_backend.domain.category.repository.mysql.CategoryRepository;
 import rastle.dev.rastle_backend.domain.coupon.model.Coupon;
 import rastle.dev.rastle_backend.domain.coupon.repository.mysql.CouponRepository;
+import rastle.dev.rastle_backend.domain.delivery.model.Delivery;
 import rastle.dev.rastle_backend.domain.event.dto.EventDTO.EventCreateRequest;
 import rastle.dev.rastle_backend.domain.event.dto.EventDTO.EventUpdateRequest;
 import rastle.dev.rastle_backend.domain.event.dto.EventInfo;
@@ -744,9 +745,10 @@ public class AdminService {
     }
 
     private void handleReturnEvent(OrderProduct orderProduct, Long returnRequestAmount, Long couponAmount) {
+        Delivery delivery = orderProduct.getOrderDetail().getDelivery();
         orderProduct.addReturnAmount(returnRequestAmount);
         orderProduct.initReturnRequestAmount();
-        orderProduct.getOrderDetail().getPayment().addCancelledSum(orderProduct.getPrice() * returnRequestAmount - 3000);
+        orderProduct.getOrderDetail().getPayment().addCancelledSum(orderProduct.getPrice() * returnRequestAmount - delivery.getDeliveryPrice());
         if (couponAmount != null) {
             orderProduct.getOrderDetail().getPayment().addCancelledSum(couponAmount);
         }
