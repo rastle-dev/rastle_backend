@@ -1,13 +1,15 @@
 package rastle.dev.rastle_backend.global.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import rastle.dev.rastle_backend.global.error.response.ErrorResponse;
 import rastle.dev.rastle_backend.global.util.HttpReqResUtil;
 
 import java.io.IOException;
@@ -15,10 +17,11 @@ import java.net.InetAddress;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class IpAuthenticationFilter implements Filter {
 
-    @Autowired
-    private DatabaseReader databaseReader;
+    private final DatabaseReader databaseReader;
+    private final ObjectMapper mapper;
 
 
     @Override
@@ -47,7 +50,7 @@ public class IpAuthenticationFilter implements Filter {
             }
             if (country == null || !(country.equals("South Korea") || country.equals("United States"))) {
                 log.warn("Access Rejected : {}, {}", ipAddress, country);
-                return;
+                blockAbroadRequest(request, response);
             }
             chain.doFilter(request, response);
         }
@@ -56,5 +59,20 @@ public class IpAuthenticationFilter implements Filter {
     @Override
     public void destroy() {
         Filter.super.destroy();
+    }
+
+    private void blockAbroadRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf-8");
+        response.setStatus(400);
+        if (request.getHeader("Origin") == null) {
+            response.setHeader("Access-Control-Allow-Origin", "https://www.recordyslow.com");
+        } else {
+            response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
+        }
+
+        try (var writer = response.getWriter()) {
+            writer.print(mapper.writeValueAsString(new ErrorResponse(400L, "Sorry, access denied - unavailable service area")));
+        }
     }
 }
