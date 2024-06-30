@@ -19,7 +19,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import rastle.dev.rastle_backend.domain.token.dto.TokenDTO.TokenInfoDTO;
-import rastle.dev.rastle_backend.global.error.exception.InvalidRequestException;
+import rastle.dev.rastle_backend.global.error.exception.GlobalException;
 import rastle.dev.rastle_backend.global.security.CustomUserDetailsService;
 import rastle.dev.rastle_backend.global.util.WebUtil;
 
@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static rastle.dev.rastle_backend.global.common.constants.JwtConstants.*;
 import static rastle.dev.rastle_backend.global.util.KeyUtil.toRedisKey;
 
@@ -58,9 +59,9 @@ public class JwtTokenProvider {
         String agent = WebUtil.getUserAgent(request);
         String ip = WebUtil.getClientIp(request);
         String accessToken = buildToken(authentication.getName(), authorities, now + ACCESS_TOKEN_EXPIRE_TIME, agent, ip);
-        String refreshToken = buildToken(authentication.getName(), null, now + REFRESH_TOKEN_EXPIRE_TIME, agent, ip);
+        String refreshToken = buildToken(authentication.getName(), authorities, now + REFRESH_TOKEN_EXPIRE_TIME, agent, ip);
 
-        storeRefreshTokenInRedis(authentication.getName(), refreshToken, agent, ip);
+//        storeRefreshTokenInRedis(authentication.getName(), refreshToken, agent, ip);
         storeRefreshTokenInCookie(response, refreshToken);
 
         return TokenInfoDTO.builder()
@@ -95,41 +96,36 @@ public class JwtTokenProvider {
 
     // 액세스 토큰으로부터 인증 객체 생성
     public Authentication getAuthentication(String accessToken) {
-        if (validateToken(accessToken)) {
-            Claims claims = parseClaims(accessToken);
-            validateClaims(claims);
-            Collection<? extends GrantedAuthority> authorities = extractAuthorities(claims);
-            UserDetails principal = new User(claims.getSubject(), "", authorities);
-            return new UsernamePasswordAuthenticationToken(principal, "", authorities);
-        } else {
-            throw new InvalidRequestException("유효하지 않은 토큰입니다.");
-        }
+        validateToken(accessToken);
+        Claims claims = parseClaims(accessToken);
+        validateClaims(claims);
+        Collection<? extends GrantedAuthority> authorities = extractAuthorities(claims);
+        UserDetails principal = new User(claims.getSubject(), "", authorities);
+        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
     // 토큰 유효성 검사
-    public boolean validateToken(String token) {
+    public void validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-            return true;
         } catch (ExpiredJwtException expiredJwtException) {
             log.info("JWT 토큰 검증 실패 : 만료된 JWT 토큰 입니다.");
+            throw new GlobalException("JWT 토큰 검증 실패 : 만료된 JWT 토큰 입니다.", BAD_REQUEST);
         } catch (UnsupportedJwtException unsupportedJwtException) {
             log.info("JWT 토큰 검증 실패 : 지원하지 않는 JWT 토큰 형식으로 온 요청입니다.");
+            throw new GlobalException("JWT 토큰 검증 실패 : 지원하지 않는 JWT 토큰 형식으로 온 요청입니다.", BAD_REQUEST);
         } catch (MalformedJwtException malformedJwtException) {
             log.info("JWT 토큰 검증 실패 : 위조된 JWT 토큰 형식으로 온 요청입니다.");
+            throw new GlobalException("JWT 토큰 검증 실패 : 위조된 JWT 토큰 형식으로 온 요청입니다.", BAD_REQUEST);
         } catch (Exception e) {
             log.info("JWT 토큰 검증 실패: {}", e.getMessage());
+            throw new GlobalException(e.getMessage(), BAD_REQUEST);
         }
-        return false;
     }
 
     // 토큰 파싱
     private Claims parseClaims(String accessToken) {
-        try {
-            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
-        } catch (ExpiredJwtException e) {
-            return e.getClaims();
-        }
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
     }
 
     // 클레임 유효성 검사
@@ -172,25 +168,22 @@ public class JwtTokenProvider {
     public String getRefreshTokenFromRequest(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
-            throw new InvalidRequestException("empty cookie, no refresh token");
+            return null;
         }
-        return Arrays.stream(cookies)
-            .filter(cookie -> "refreshToken".equals(cookie.getName()))
-            .findFirst()
-            .map(Cookie::getValue)
-            .orElseThrow(() -> new InvalidRequestException("리프레시 토큰이 없습니다."));
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("refreshToken")) {
+                return cookie.getValue();
+            }
+        }
+        return null;
     }
 
     // 리프레시 토큰으로부터 인증 객체 생성
     public Authentication getAuthenticationFromRefreshToken(String refreshToken) {
-        if (validateToken(refreshToken)) {
-            Claims claims = parseClaims(refreshToken);
-            String userId = claims.getSubject();
-            UserDetails userDetails = customUserDetailsService.loadUserById(userId);
-            return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-        } else {
-            throw new InvalidRequestException("유효하지 않은 리프레시 토큰입니다.");
-        }
+        validateToken(refreshToken);
+        String userId = parseClaims(refreshToken).getSubject();
+        UserDetails userDetails = customUserDetailsService.loadUserById(userId);
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
     // 액세스 토큰 발급

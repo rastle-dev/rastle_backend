@@ -29,8 +29,6 @@ import rastle.dev.rastle_backend.domain.member.repository.mysql.MemberRepository
 import rastle.dev.rastle_backend.domain.token.dto.TokenDTO.TokenInfoDTO;
 import rastle.dev.rastle_backend.global.error.exception.InvalidRequestException;
 import rastle.dev.rastle_backend.global.jwt.JwtTokenProvider;
-import rastle.dev.rastle_backend.global.util.KeyUtil;
-import rastle.dev.rastle_backend.global.util.WebUtil;
 
 import java.util.Collection;
 
@@ -173,22 +171,23 @@ public class MemberAuthService {
      * @return 액세스 토큰 재발급 성공 여부
      */
 
-    public ResponseEntity<String> refreshAccessToken(HttpServletRequest request) {
+    public ResponseEntity<String> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = jwtTokenProvider.getRefreshTokenFromRequest(request);
-        Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(refreshToken);
-        String storedToken = redisTemplate.opsForValue().get(KeyUtil.toRedisKey(
-            authentication.getName(),
-            WebUtil.getUserAgent(request),
-            WebUtil.getClientIp(request)));
-        if (storedToken != null && storedToken.equals(refreshToken)) {
-            String newAccessToken = jwtTokenProvider.generateAccessToken(request, authentication);
+//        String storedToken = redisTemplate.opsForValue().get(KeyUtil.toRedisKey(
+//            authentication.getName(),
+//            WebUtil.getUserAgent(request),
+//            WebUtil.getClientIp(request)));
+        if (refreshToken != null) {
+            Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(refreshToken);
+            TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authentication, request, response);
+
+//            String newAccessToken = jwtTokenProvider.generateAccessToken(request, authentication);
+            String newAccessToken = tokenInfoDTO.getAccessToken();
 
             HttpHeaders responseHeaders = createAuthorizationHeader(request, newAccessToken);
             return new ResponseEntity<>("액세스 토큰 재발급 성공", responseHeaders, HttpStatus.OK);
-        } else if (storedToken == null) {
-            return new ResponseEntity<>("액세스 토큰 재발급 실패: 저장된 토큰이 없습니다.", HttpStatus.UNAUTHORIZED);
         } else {
-            return new ResponseEntity<>("액세스 토큰 재발급 실패: 저장된 토큰과 입력한 토큰이 일치하지 않습니다.", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>("액세스 토큰 재발급 실패: 쿠키에 유효한 리프레쉬 토큰이 없습니다.", HttpStatus.UNAUTHORIZED);
         }
     }
 
