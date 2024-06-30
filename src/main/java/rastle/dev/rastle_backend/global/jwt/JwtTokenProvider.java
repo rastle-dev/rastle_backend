@@ -18,6 +18,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import rastle.dev.rastle_backend.domain.token.dto.TokenDTO.TokenClaim;
 import rastle.dev.rastle_backend.domain.token.dto.TokenDTO.TokenInfoDTO;
 import rastle.dev.rastle_backend.global.security.CustomUserDetailsService;
 import rastle.dev.rastle_backend.global.util.WebUtil;
@@ -59,7 +60,7 @@ public class JwtTokenProvider {
         String accessToken = buildToken(authentication.getName(), authorities, now + ACCESS_TOKEN_EXPIRE_TIME, agent, ip);
         String refreshToken = buildToken(authentication.getName(), authorities, now + REFRESH_TOKEN_EXPIRE_TIME, agent, ip);
 
-//        storeRefreshTokenInRedis(authentication.getName(), refreshToken, agent, ip);
+        storeRefreshTokenInRedis(authentication.getName(), refreshToken, agent, ip);
         storeRefreshTokenInCookie(response, refreshToken);
 
         return TokenInfoDTO.builder()
@@ -178,6 +179,25 @@ public class JwtTokenProvider {
         String userId = parseClaims(refreshToken).getSubject();
         UserDetails userDetails = customUserDetailsService.loadUserById(userId);
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
+
+    public String getUserAgentFromRefresh(String refresh) {
+        return parseClaims(refresh).get(AGENT_KEY, String.class);
+    }
+
+    public String getIpFromRefresh(String refresh) {
+        return parseClaims(refresh).get(IP_KEY, String.class);
+    }
+
+    public TokenClaim getTokenClaimFromRefresh(String refresh) {
+        validateToken(refresh);
+        Claims claims = parseClaims(refresh);
+        String userId = claims.getSubject();
+        String agent = claims.get(AGENT_KEY, String.class);
+        String ip = claims.get(IP_KEY, String.class);
+        UserDetails userDetails = customUserDetailsService.loadUserById(userId);
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        return new TokenClaim(authenticationToken, agent, ip);
     }
 
     // 액세스 토큰 발급
