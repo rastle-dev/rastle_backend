@@ -5,9 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import rastle.dev.rastle_backend.domain.cart.repository.mysql.CartProductRepository;
 import rastle.dev.rastle_backend.domain.coupon.model.Coupon;
 import rastle.dev.rastle_backend.domain.coupon.repository.mysql.CouponRepository;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
+import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderDetailRepository;
 import rastle.dev.rastle_backend.domain.order.repository.mysql.OrderProductRepository;
 import rastle.dev.rastle_backend.domain.payment.exception.PaymentException;
@@ -24,6 +26,7 @@ public class AsyncPortOneComponent {
     private final CouponRepository couponRepository;
     private final PortOneComponent portOneComponent;
     private final MailComponent mailComponent;
+    private final CartProductRepository cartProductRepository;
 
     @Transactional
     @Async("portOneTaskExecutor")
@@ -33,9 +36,17 @@ public class AsyncPortOneComponent {
                 .orElseThrow(() -> new PaymentException("주문번호로 존재하는 주문이 DB에 존재하지 않는다"));
 
         orderDetail.paid(paymentData);
-
+        orderCartProduct(orderDetail);
         if (isCouponUsed(paymentData)) {
             useCoupon(paymentData, orderDetail);
+        }
+    }
+
+    private void orderCartProduct(OrderDetail orderDetail) {
+        for (OrderProduct op : orderDetail.getOrderProduct()) {
+            if (op.getCartProductId() != null) {
+                cartProductRepository.updateCartProductStatus(op.getCartProductId());
+            }
         }
     }
 

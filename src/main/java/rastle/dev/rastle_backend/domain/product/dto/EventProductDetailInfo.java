@@ -1,9 +1,6 @@
 package rastle.dev.rastle_backend.domain.product.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import rastle.dev.rastle_backend.domain.event.model.Event;
 import rastle.dev.rastle_backend.domain.product.model.ProductColor;
 import rastle.dev.rastle_backend.domain.product.model.ProductImage;
@@ -61,5 +58,60 @@ public class EventProductDetailInfo {
             .eventApplyCount(productInfo.getEventApplyCount())
             .link(productInfo.getLink())
             .build();
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class EventProductDetailOutInfo {
+        Long id;
+        String name;
+        int price;
+        String mainThumbnailImage;
+        String subThumbnailImage;
+        int discountPrice;
+        Long displayOrder;
+        boolean visible;
+        Long categoryId;
+        Long bundleId;
+        Long eventId;
+        ProductImage mainImage;
+        ProductImage detailImage;
+        ProductColor productColor;
+        String eventName;
+        String eventImageUrls;
+        String eventDescription;
+        String eventStartDate;
+        String eventEndDate;
+        Long eventApplyCount;
+        String link;
+
+        public static EventProductDetailOutInfo fromProductInfo(ProductInfo productInfo, Event event) {
+            return EventProductDetailOutInfo.builder()
+                .id(productInfo.getId())
+                .name(productInfo.getName())
+                .price(productInfo.getPrice())
+                .mainThumbnailImage(productInfo.getMainThumbnailImage())
+                .subThumbnailImage(productInfo.getSubThumbnailImage())
+                .discountPrice(productInfo.getDiscountPrice())
+                .displayOrder(productInfo.getDisplayOrder())
+                .visible(productInfo.isVisible())
+                .categoryId(productInfo.getCategoryId())
+                .bundleId(productInfo.getBundleId())
+                .eventId(productInfo.getEventId())
+                .mainImage(productInfo.getMainImage())
+                .detailImage(productInfo.getDetailImage())
+                .productColor(productInfo.getProductColor())
+                .eventName(event.getName())
+                .eventImageUrls(event.getImageUrls())
+                .eventDescription(event.getDescription())
+                .eventStartDate(event.getEventStartDate().toString())
+                .eventEndDate(event.getEventEndDate().toString())
+                .eventApplyCount(productInfo.getEventApplyCount())
+                .link(productInfo.getLink())
+                .build();
+        }
+
     }
 }
