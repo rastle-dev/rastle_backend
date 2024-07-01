@@ -73,10 +73,9 @@ public class ProductController {
     @GetMapping("/event")
     public ResponseEntity<ServerResponse<?>> getEventProducts(
         @Parameter(name = "visible", description = "ALL - visible 여부 관계 없이 리턴, TRUE-true인 것만, FALSE - false인 것만, 이벤트 조회 api를 먼저 호출해야되고 그거랑 같은 값으로 넣어야함") @RequestParam(name = "visible", defaultValue = ALL) String visible,
-        @Parameter(name = "page", description = "페이지 번호", required = true) @RequestParam(name = "page") Integer page,
-        @Parameter(name = "size", description = "페이지 크기", required = true) @RequestParam(name = "size") Integer size) {
+        Pageable pageable) {
         return ResponseEntity
-            .ok(new ServerResponse<>(productService.getEventProducts(visible, page, size).getResults()));
+            .ok(new ServerResponse<>(productService.getEventProducts(visible, pageable).getResults()));
     }
 
 
