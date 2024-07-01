@@ -1,6 +1,5 @@
 package rastle.dev.rastle_backend.domain.product.application;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -41,7 +40,7 @@ public class ProductService {
 
     @Cacheable(cacheNames = GET_PRODUCT_DETAIL, cacheManager = "cacheManager")
     @Transactional(readOnly = true)
-    public Object getProductDetail(Long id) throws JsonProcessingException {
+    public Object getProductDetail(Long id) {
         ProductInfo productInfo = productBaseRepository.getProductDetailInfoById(id).orElseThrow(NotFoundByIdException::new);
         if (productInfo.getEventId() != null) {
             Event event = eventRepository.findById(productInfo.getEventId()).orElseThrow(() -> new RuntimeException("이벤트 아이디로 존재하는 이벤트가 없음"));
