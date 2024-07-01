@@ -666,7 +666,7 @@ public class AdminService {
         OrderDetail orderDetail = orderProduct.getOrderDetail();
         Long cancelAmount = orderProduct.getCancelRequestAmount();
 
-        if (isOrderEntirelyCancelled(orderDetail)) {
+        if (isOrderEntirelyCancelled(orderDetail, orderProduct)) {
             PaymentResponse cancelResponse = portOneComponent.cancelPayment(cancelOrderRequest.getImpId(), orderDetail);
             orderDetail.updateOrderStatus(CANCELLED);
             restoreCouponStatusAndHandleCancelEvent(orderProduct, cancelAmount, cancelResponse.getCouponId());
@@ -681,14 +681,16 @@ public class AdminService {
         return new CancelOrderResult(cancelOrderRequest.getImpId(), cancelOrderRequest.getProductOrderNumber(), cancelAmount);
     }
 
-    private boolean isOrderEntirelyCancelled(OrderDetail orderDetail) {
+    private boolean isOrderEntirelyCancelled(OrderDetail orderDetail, OrderProduct orderProduct) {
+
         for (OrderProduct op : orderDetail.getOrderProduct()) {
-            if (op.getCount() != op.getCancelRequestAmount() + op.getCancelAmount() + op.getReturnAmount() + op.getReturnRequestAmount()) {
+            if (op.getCount() != op.getCancelAmount() + op.getReturnAmount()) {
                 return false;
             }
         }
-        return true;
+        return orderProduct.getCount() == orderProduct.getCancelAmount() + orderProduct.getCancelRequestAmount() + orderProduct.getReturnRequestAmount() + orderProduct.getReturnAmount();
     }
+
 
 //    private boolean isOrderEntirelyCancelled(OrderDetail orderDetail, OrderProduct orderProduct, Long cancelAmount) {
 //        return orderDetail.getPayment().getPaymentPrice() == orderDetail.getPayment().getCancelledSum() + orderProduct.getPrice() * cancelAmount + orderDetail.getDelivery().getDeliveryPrice() + orderDetail.getDelivery().getIslandDeliveryPrice() - orderDetail.getPayment().getCouponAmount();
@@ -729,7 +731,7 @@ public class AdminService {
         OrderDetail orderDetail = orderProduct.getOrderDetail();
         Long returnRequestAmount = orderProduct.getReturnRequestAmount();
 
-        if (isOrderEntirelyCancelled(orderDetail)) {
+        if (isOrderEntirelyCancelled(orderDetail, orderProduct)) {
             PaymentResponse returnResponse = portOneComponent.returnPayment(returnOrderRequest.getImpId(), orderProduct);
             orderDetail.updateOrderStatus(RETURNED);
             restoreCouponStatusAndReturnEvent(orderProduct, returnRequestAmount, returnResponse.getCouponId());
