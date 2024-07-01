@@ -116,6 +116,22 @@ public class GlobalExceptionHandler {
                                 INTERNAL_SERVER_ERROR);
         }
 
+        @ExceptionHandler(IllegalStateException.class)
+        protected final ResponseEntity<ErrorResponse> handleIllegalStateException(
+            IllegalStateException ex, HttpServletRequest request
+        ) {
+                if (ex.getMessage().equals("getWriter() has already been called for this response")) {
+                        logException(ex, request);
+                } else {
+                        logExceptionDetail(ex, request);
+                }
+                return new ResponseEntity<>(ErrorResponse.builder()
+                    .errorCode(500L)
+                    .message(ex.getMessage())
+                    .build(),
+                    INTERNAL_SERVER_ERROR);
+        }
+
         @ExceptionHandler(RuntimeException.class)
         protected final ResponseEntity<ErrorResponse> handleRuntimeException(
                         RuntimeException ex, HttpServletRequest request) {
