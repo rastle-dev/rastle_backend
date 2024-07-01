@@ -141,7 +141,7 @@ public class JwtTokenProvider {
     private void storeRefreshTokenInRedis(String username, String refreshToken, String agent, String ip) {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         valueOperations.set(toRedisKey(username, agent, ip), refreshToken);
-        redisTemplate.expire(username, REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+        redisTemplate.expire(toRedisKey(username, agent, ip), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
     }
 
 
