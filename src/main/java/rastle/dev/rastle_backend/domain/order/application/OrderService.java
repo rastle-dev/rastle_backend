@@ -344,7 +344,7 @@ public class OrderService {
     }
 
     private boolean validateOrderProductStatusForReturn(OrderProduct orderProduct) {
-        return orderProduct.getOrderStatus().equals(DELIVERED) || orderProduct.getOrderStatus().equals(RETURNED) || orderProduct.getOrderStatus().equals(DELIVERY_READY);
+        return orderProduct.getOrderStatus().equals(DELIVERED) || orderProduct.getOrderStatus().equals(PARTIALLY_RETURNED) || orderProduct.getOrderStatus().equals(RETURN_REQUESTED);
     }
 
     private void handleInvalidReturnRequest(OrderProduct orderProduct, ProductReturnRequest productReturnRequest) {

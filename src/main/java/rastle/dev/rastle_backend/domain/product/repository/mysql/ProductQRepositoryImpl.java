@@ -1,13 +1,17 @@
 package rastle.dev.rastle_backend.domain.product.repository.mysql;
 
+import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.SimplePath;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import rastle.dev.rastle_backend.domain.product.dto.GetProductRequest;
 import rastle.dev.rastle_backend.domain.product.dto.QSimpleProductInfo;
@@ -52,19 +56,33 @@ public class ProductQRepositoryImpl implements ProductQRepository {
             )
             .groupBy(productBase)
             .offset(getProductRequest.getPageable().getOffset())
-            .limit(getProductRequest.getPageable().getPageSize())
-            .orderBy(orderBy(getProductRequest));
+            .limit(getProductRequest.getPageable().getPageSize());
+//            .orderBy(orderBy(getProductRequest));
 
+        orderQuery(query, getProductRequest.getPageable());
         return new PageImpl<>(query.fetch(), getProductRequest.getPageable(), getSize(getProductRequest));
     }
 
-    private OrderSpecifier<?> orderBy(GetProductRequest getProductRequest) {
-        if (getProductRequest.getSort().equals("displayOrder")) {
-            return productBase.displayOrder.desc();
-        } else {
-            return productBase.soldCount.desc();
-        }
+    private void orderQuery(JPAQuery<SimpleProductInfo> query, Pageable pageable) {
+        pageable.getSort().stream().forEach(sort -> {
+            Order order = sort.isAscending() ? Order.ASC : Order.DESC;
+            String property = sort.getProperty();
+
+            SimplePath<Object> path = Expressions.path(Object.class, productBase, property);
+            OrderSpecifier<?> orderSpecifier = new OrderSpecifier(order, path);
+            query.orderBy(orderSpecifier);
+        });
     }
+
+//    private OrderSpecifier<?> orderBy(GetProductRequest getProductRequest) {
+//        Sort sort = getProductRequest.getPageable().getSort();
+//
+//        if (getProductRequest.getSort().equals("displayOrder")) {
+//            return productBase.displayOrder.desc();
+//        } else {
+//            return productBase.soldCount.desc();
+//        }
+//    }
 
     private Long getSize(GetProductRequest getProductRequest) {
 
