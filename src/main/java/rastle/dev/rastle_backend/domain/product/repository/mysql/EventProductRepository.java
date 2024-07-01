@@ -33,8 +33,7 @@ public interface EventProductRepository extends JpaRepository<ProductBase, Long>
         "ep.visible, " +
         "ep.link) " +
         "FROM ProductBase ep " +
-        "JOIN Event e ON e.id = ep.event.id " +
-        "ORDER BY ep.displayOrder ASC")
+        "JOIN Event e ON e.id = ep.event.id ")
     List<EventProductInfo> getEventProducts(Pageable pageable);
 
     @Query("select new rastle.dev.rastle_backend.domain.product.dto.EventProductInfo(" +
@@ -56,8 +55,7 @@ public interface EventProductRepository extends JpaRepository<ProductBase, Long>
         "ep.link) " +
         "FROM ProductBase ep " +
         "JOIN Event e ON e.id = ep.event.id " +
-        "WHERE e.visible = :visible " +
-        "ORDER BY ep.displayOrder ASC")
+        "WHERE e.visible = :visible ")
     List<EventProductInfo> getEventProductByVisibility(@Param("visible") boolean visible,
                                                        Pageable pageable);
 
