@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
 
         private void logExceptionDetail(Exception exception, HttpServletRequest webRequest) {
                 StringBuilder sb = new StringBuilder();
-                for (int i = Math.max(0, exception.getStackTrace().length-10); i < exception.getStackTrace().length; i++) {
+                for (int i = 0; i < Math.min(10, exception.getStackTrace().length); i++) {
                         StackTraceElement element = exception.getStackTrace()[i];
                         sb.append("\t")
                             .append(element.getClassName())
