@@ -26,7 +26,8 @@ import rastle.dev.rastle_backend.global.error.exception.port_one.PortOneExceptio
 import java.util.Map;
 
 import static java.util.Collections.singletonList;
-import static org.springframework.http.HttpMethod.*;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static rastle.dev.rastle_backend.global.common.constants.PortOneApiConstant.*;
 import static rastle.dev.rastle_backend.global.common.constants.RedisConstant.PORT_ONE_ACCESS;
@@ -58,13 +59,19 @@ public class PortOneComponent {
     }
 
     public PaymentResponse getPaymentData(String impId) {
-        HttpHeaders headers = setHeaders();
+        String accessToken = getAccessToken();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(singletonList(APPLICATION_JSON));
+        headers.setContentType(APPLICATION_JSON);
+        headers.set(AUTHORIZATION, accessToken);
+
         HttpEntity request = new HttpEntity(headers);
 
         ResponseEntity<String> portOneResponse = getServerResponse(BASE_URL + PAYMENT_URL + impId, GET, request);
         try {
-            Map<String, Object> responseMap = objectMapper.readValue(portOneResponse.getBody(), new TypeReference<Map<String, Object>>() {
-            });
+            Map<String, Object> responseMap = objectMapper.readValue(portOneResponse.getBody(),
+                    new TypeReference<Map<String, Object>>() {
+                    });
             Integer code = (Integer) responseMap.get(CODE);
             if (code != 0) {
                 String encoded = convertString((String) responseMap.get(MESSAGE));
@@ -83,29 +90,27 @@ public class PortOneComponent {
     }
 
     public PaymentResponse cancelPayment(String impId, OrderDetail orderDetail) {
-        HttpHeaders headers = setHeaders();
+        String accessToken = getAccessToken();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(singletonList(APPLICATION_JSON));
+        headers.setContentType(APPLICATION_JSON);
+        headers.set(AUTHORIZATION, accessToken);
         PortOnePaymentCancelRequest cancelRequest = PortOnePaymentCancelRequest.builder()
-            .checksum(orderDetail.getPayment().getPaymentPrice() - orderDetail.getPayment().getCancelledSum())
-            .amount(orderDetail.getPayment().getPaymentPrice() - orderDetail.getPayment().getCancelledSum())
-            .merchant_uid(Long.toString(orderDetail.getOrderNumber()))
-            .imp_uid(impId)
-            .build();
+                .checksum(orderDetail.getPayment().getPaymentPrice() - orderDetail.getPayment().getCancelledSum())
+                .amount(orderDetail.getPayment().getPaymentPrice() - orderDetail.getPayment().getCancelledSum())
+                .merchant_uid(Long.toString(orderDetail.getOrderNumber()))
+                .imp_uid(impId)
+                .build();
         return getCancelResponse(headers, cancelRequest);
-    }
-
-    private Map<String, Object> getPreparePaymentResponseMap(HttpHeaders headers, String merchantId) throws JsonProcessingException {
-        HttpEntity request = new HttpEntity(headers);
-        ResponseEntity<String> serverResponse = getServerResponse(BASE_URL + PREPARE_URL + "/" + merchantId, GET, request);
-        return objectMapper.readValue(serverResponse.getBody(), new TypeReference<Map<String, Object>>() {
-        });
     }
 
     private PaymentResponse getCancelResponse(HttpHeaders headers, PortOnePaymentCancelRequest cancelRequest) {
         HttpEntity request = new HttpEntity(cancelRequest, headers);
         ResponseEntity<String> portOneResponse = getServerResponse(BASE_URL + CANCEL_URL, POST, request);
         try {
-            Map<String, Object> responseMap = objectMapper.readValue(portOneResponse.getBody(), new TypeReference<Map<String, Object>>() {
-            });
+            Map<String, Object> responseMap = objectMapper.readValue(portOneResponse.getBody(),
+                    new TypeReference<Map<String, Object>>() {
+                    });
             Integer code = (Integer) responseMap.get(CODE);
             if (code != 0) {
                 String encoded = convertString((String) responseMap.get(MESSAGE));
@@ -124,80 +129,68 @@ public class PortOneComponent {
 
     public PaymentResponse cancelPayment(String impId, Long cancelAmount, OrderProduct orderProduct) {
         OrderDetail orderDetail = orderProduct.getOrderDetail();
-        HttpHeaders headers = setHeaders();
-        PortOnePaymentCancelRequest cancelRequest = PortOnePaymentCancelRequest.builder()
-            .checksum(orderDetail.getPayment().getPaymentPrice() - orderDetail.getPayment().getCancelledSum())
-            .amount(orderProduct.getPrice() * cancelAmount)
-            .merchant_uid(Long.toString(orderDetail.getOrderNumber()))
-            .imp_uid(impId)
-            .build();
-        return getCancelResponse(headers, cancelRequest);
-
-
-    }
-
-    public PaymentResponse returnPayment(String impId, OrderProduct orderProduct) {
-        OrderDetail orderDetail = orderProduct.getOrderDetail();
-        HttpHeaders headers = setHeaders();
-        PortOnePaymentCancelRequest cancelRequest = PortOnePaymentCancelRequest.builder()
-            .checksum(orderDetail.getPayment().getPaymentPrice() - orderDetail.getPayment().getCancelledSum())
-            .amount(orderDetail.getPayment().getPaymentPrice() - orderDetail.getPayment().getCancelledSum() - 3000)
-            .merchant_uid(Long.toString(orderDetail.getOrderNumber()))
-            .imp_uid(impId)
-            .build();
-        return getCancelResponse(headers, cancelRequest);
-    }
-
-    public PaymentResponse returnPayment(String impId, Long returnRequestAmount, OrderProduct orderProduct) {
-        OrderDetail orderDetail = orderProduct.getOrderDetail();
-        HttpHeaders headers = setHeaders();
-        PortOnePaymentCancelRequest cancelRequest = PortOnePaymentCancelRequest.builder()
-            .checksum(orderDetail.getPayment().getPaymentPrice() - orderDetail.getPayment().getCancelledSum())
-            .amount(orderProduct.getPrice() * returnRequestAmount - 3000)
-            .merchant_uid(Long.toString(orderDetail.getOrderNumber()))
-            .imp_uid(impId)
-            .build();
-        return getCancelResponse(headers, cancelRequest);
-    }
-
-    public Integer getCode(String merchantId) {
-        HttpHeaders headers = setHeaders();
-        try {
-            Map<String, Object> responseMap = getPreparePaymentResponseMap(headers, merchantId);
-            return (Integer) responseMap.get(CODE);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private HttpHeaders setHeaders() {
         String accessToken = getAccessToken();
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(singletonList(APPLICATION_JSON));
         headers.setContentType(APPLICATION_JSON);
         headers.set(AUTHORIZATION, accessToken);
-        return headers;
+        PortOnePaymentCancelRequest cancelRequest = PortOnePaymentCancelRequest.builder()
+                .checksum(orderDetail.getPayment().getPaymentPrice() - orderDetail.getPayment().getCancelledSum())
+                .amount(orderProduct.getPrice() * cancelAmount)
+                .merchant_uid(Long.toString(orderDetail.getOrderNumber()))
+                .imp_uid(impId)
+                .build();
+        return getCancelResponse(headers, cancelRequest);
+
+    }
+
+    public PaymentResponse returnPayment(String impId, OrderProduct orderProduct) {
+        OrderDetail orderDetail = orderProduct.getOrderDetail();
+        String accessToken = getAccessToken();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(singletonList(APPLICATION_JSON));
+        headers.setContentType(APPLICATION_JSON);
+        headers.set(AUTHORIZATION, accessToken);
+        PortOnePaymentCancelRequest cancelRequest = PortOnePaymentCancelRequest.builder()
+                .checksum(orderDetail.getPayment().getPaymentPrice() - orderDetail.getPayment().getCancelledSum())
+                .amount(orderDetail.getPayment().getPaymentPrice() - orderDetail.getPayment().getCancelledSum() - 3000)
+                .merchant_uid(Long.toString(orderDetail.getOrderNumber()))
+                .imp_uid(impId)
+                .build();
+        return getCancelResponse(headers, cancelRequest);
+    }
+
+    public PaymentResponse returnPayment(String impId, Long returnRequestAmount, OrderProduct orderProduct) {
+        OrderDetail orderDetail = orderProduct.getOrderDetail();
+        String accessToken = getAccessToken();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(singletonList(APPLICATION_JSON));
+        headers.setContentType(APPLICATION_JSON);
+        headers.set(AUTHORIZATION, accessToken);
+        PortOnePaymentCancelRequest cancelRequest = PortOnePaymentCancelRequest.builder()
+                .checksum(orderDetail.getPayment().getPaymentPrice() - orderDetail.getPayment().getCancelledSum())
+                .amount(orderProduct.getPrice() * returnRequestAmount - 3000)
+                .merchant_uid(Long.toString(orderDetail.getOrderNumber()))
+                .imp_uid(impId)
+                .build();
+        return getCancelResponse(headers, cancelRequest);
     }
 
     public void preparePayment(String merchantId, Long price) {
-        Integer code = getCode(merchantId);
-        if (code == -1) {
-            preparePayment(merchantId, price, PUT);
-        } else {
-            preparePayment(merchantId, price, POST);
-        }
-    }
-
-    private void preparePayment(String merchantId, Long price, HttpMethod method) {
-        HttpHeaders headers = setHeaders();
+        String accessToken = getAccessToken();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(singletonList(APPLICATION_JSON));
+        headers.setContentType(APPLICATION_JSON);
+        headers.set(AUTHORIZATION, accessToken);
 
         PortOnePaymentRequest paymentRequest = new PortOnePaymentRequest(merchantId, price);
 
         HttpEntity request = new HttpEntity(paymentRequest, headers);
-        ResponseEntity<String> response = getServerResponse(BASE_URL + PREPARE_URL, method, request);
+        ResponseEntity<String> response = getServerResponse(BASE_URL + PREPARE_URL, POST, request);
         try {
-            Map<String, Object> responseMap = objectMapper.readValue(response.getBody(), new TypeReference<Map<String, Object>>() {
-            });
+            Map<String, Object> responseMap = objectMapper.readValue(response.getBody(),
+                    new TypeReference<Map<String, Object>>() {
+                    });
             Integer code = (Integer) responseMap.get(CODE);
             if (code != 0) {
                 String encoded = convertString((String) responseMap.get(MESSAGE));
@@ -206,9 +199,12 @@ public class PortOneComponent {
             }
             log.info("{} payment prepare success", merchantId);
 
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             throw new PortOneException(e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
         }
+
     }
 
     private String getAccessToken() {
@@ -227,7 +223,9 @@ public class PortOneComponent {
         PortOneTokenRequest portOneTokenRequest = new PortOneTokenRequest(API_KEY, API_SECRET);
 
         try {
-            ResponseEntity<PortOneTokenResponse> tokenResponse = restTemplate.postForEntity(BASE_URL + TOKEN_URL, new HttpEntity<>(objectMapper.writeValueAsString(portOneTokenRequest), headers), PortOneTokenResponse.class);
+            ResponseEntity<PortOneTokenResponse> tokenResponse = restTemplate.postForEntity(BASE_URL + TOKEN_URL,
+                    new HttpEntity<>(objectMapper.writeValueAsString(portOneTokenRequest), headers),
+                    PortOneTokenResponse.class);
             PortOneTokenResponse portOneTokenResponse = tokenResponse.getBody();
 
             String accessToken = portOneTokenResponse.getResponse().getAccess_token();
@@ -242,7 +240,6 @@ public class PortOneComponent {
 
     }
 
-
     public static String convertString(String val) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < val.length(); i++) {
@@ -256,6 +253,5 @@ public class PortOneComponent {
         }
         return sb.toString();
     }
-
 
 }
