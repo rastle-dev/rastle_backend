@@ -116,7 +116,7 @@ public class AdminService {
     public Page<SimpleProductInfo> getProductByCategoryId(Long categoryId, Pageable pageable) {
         return productBaseRepository.getProductInfoByCategoryId(categoryId, pageable);
     }
-    @CacheEvict(cacheNames = {GET_EVENT_PRODUCTS, GET_BUNDLE_PRODUCTS, GET_PRODUCTS}, allEntries = true)
+//    @CacheEvict(cacheNames = {GET_EVENT_PRODUCTS, GET_BUNDLE_PRODUCTS, GET_PRODUCTS}, allEntries = true)
     @Transactional
     public ProductCreateResult createProduct(ProductCreateRequest createRequest) throws JsonProcessingException {
         Category category = categoryRepository.findById(createRequest.getCategoryId())
@@ -161,7 +161,7 @@ public class AdminService {
         }
         return createResult;
     }
-    @CacheEvict(cacheNames = {GET_EVENT_PRODUCTS, GET_BUNDLE_PRODUCTS, GET_PRODUCTS,GET_PRODUCT_DETAIL, GET_PRODUCTS_BY_BUNDLE}, allEntries = true)
+//    @CacheEvict(cacheNames = {GET_EVENT_PRODUCTS, GET_BUNDLE_PRODUCTS, GET_PRODUCTS,GET_PRODUCT_DETAIL, GET_PRODUCTS_BY_BUNDLE}, allEntries = true)
     @Transactional
     public ProductImageInfo uploadMainThumbnail(Long id, MultipartFile mainThumbnail) {
         String mainThumbnailUrl = s3Component.uploadSingleImageToS3(MAIN_THUMBNAIL, mainThumbnail);
@@ -171,8 +171,7 @@ public class AdminService {
             .imageUrls(List.of(mainThumbnailUrl))
             .build();
     }
-    @CacheEvict(cacheNames = {GET_EVENT_PRODUCTS, GET_BUNDLE_PRODUCTS, GET_PRODUCTS,GET_PRODUCT_DETAIL, GET_PRODUCTS_BY_BUNDLE}, allEntries = true)
-
+//    @CacheEvict(cacheNames = {GET_EVENT_PRODUCTS, GET_BUNDLE_PRODUCTS, GET_PRODUCTS,GET_PRODUCT_DETAIL, GET_PRODUCTS_BY_BUNDLE}, allEntries = true)
     @Transactional
     public ProductImageInfo uploadSubThumbnail(Long id, MultipartFile subThumbnail) {
         String subThumbnailUrl = s3Component.uploadSingleImageToS3(SUB_THUMBNAIL, subThumbnail);
@@ -183,7 +182,7 @@ public class AdminService {
             .build();
     }
 
-    @CacheEvict(cacheNames = {GET_EVENT_PRODUCTS, GET_BUNDLE_PRODUCTS, GET_PRODUCTS,GET_PRODUCT_DETAIL, GET_PRODUCTS_BY_BUNDLE}, allEntries = true)
+//    @CacheEvict(cacheNames = {GET_EVENT_PRODUCTS, GET_BUNDLE_PRODUCTS, GET_PRODUCTS,GET_PRODUCT_DETAIL, GET_PRODUCTS_BY_BUNDLE}, allEntries = true)
     @Transactional
     public ProductImageInfo uploadMainImages(Long id, List<MultipartFile> mainImages) throws JsonProcessingException {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
@@ -214,7 +213,7 @@ public class AdminService {
             .build();
     }
 
-    @CacheEvict(cacheNames = {GET_EVENT_PRODUCTS, GET_BUNDLE_PRODUCTS, GET_PRODUCTS,GET_PRODUCT_DETAIL, GET_PRODUCTS_BY_BUNDLE}, allEntries = true)
+//    @CacheEvict(cacheNames = {GET_EVENT_PRODUCTS, GET_BUNDLE_PRODUCTS, GET_PRODUCTS,GET_PRODUCT_DETAIL, GET_PRODUCTS_BY_BUNDLE}, allEntries = true)
     @Transactional
     public ProductUpdateRequest updateProductInfo(Long id, ProductUpdateRequest updateRequest) {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
@@ -267,7 +266,7 @@ public class AdminService {
         return updateRequest;
     }
 
-    @CacheEvict(cacheNames = {GET_EVENT_PRODUCTS, GET_BUNDLE_PRODUCTS, GET_PRODUCTS,GET_PRODUCT_DETAIL, GET_PRODUCTS_BY_BUNDLE}, allEntries = true)
+//    @CacheEvict(cacheNames = {GET_EVENT_PRODUCTS, GET_BUNDLE_PRODUCTS, GET_PRODUCTS,GET_PRODUCT_DETAIL, GET_PRODUCTS_BY_BUNDLE}, allEntries = true)
     @Transactional
     public ProductImageInfo updateMainThumbnail(Long id, MultipartFile mainThumbnail) {
         // s3Component.deleteImageByUrl(productBase.getMainThumbnailImage());
@@ -280,7 +279,7 @@ public class AdminService {
             .build();
     }
 
-    @CacheEvict(cacheNames = {GET_EVENT_PRODUCTS, GET_BUNDLE_PRODUCTS, GET_PRODUCTS,GET_PRODUCT_DETAIL, GET_PRODUCTS_BY_BUNDLE}, allEntries = true)
+//    @CacheEvict(cacheNames = {GET_EVENT_PRODUCTS, GET_BUNDLE_PRODUCTS, GET_PRODUCTS,GET_PRODUCT_DETAIL, GET_PRODUCTS_BY_BUNDLE}, allEntries = true)
     @Transactional
     public ProductImageInfo updateSubThumbnail(Long id, MultipartFile subThumbnail) {
         // s3Component.deleteImageByUrl(productBase.getSubThumbnailImage());
@@ -293,7 +292,7 @@ public class AdminService {
             .build();
     }
 
-    @CacheEvict(cacheNames = {GET_EVENT_PRODUCTS, GET_BUNDLE_PRODUCTS, GET_PRODUCTS,GET_PRODUCT_DETAIL, GET_PRODUCTS_BY_BUNDLE}, allEntries = true)
+//    @CacheEvict(cacheNames = {GET_EVENT_PRODUCTS, GET_BUNDLE_PRODUCTS, GET_PRODUCTS,GET_PRODUCT_DETAIL, GET_PRODUCTS_BY_BUNDLE}, allEntries = true)
     @Transactional
     public ProductImageInfo updateMainImages(Long id, List<MultipartFile> mainImages) throws JsonProcessingException {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
@@ -303,7 +302,7 @@ public class AdminService {
 
     }
 
-    @CacheEvict(cacheNames = {GET_EVENT_PRODUCTS, GET_BUNDLE_PRODUCTS, GET_PRODUCTS,GET_PRODUCT_DETAIL, GET_PRODUCTS_BY_BUNDLE}, allEntries = true)
+//    @CacheEvict(cacheNames = {GET_EVENT_PRODUCTS, GET_BUNDLE_PRODUCTS, GET_PRODUCTS,GET_PRODUCT_DETAIL, GET_PRODUCTS_BY_BUNDLE}, allEntries = true)
     @Transactional
     public ProductImageInfo updateDetailImages(Long id, List<MultipartFile> detailImages)
         throws JsonProcessingException {
@@ -331,7 +330,7 @@ public class AdminService {
             .build();
     }
 
-    @CacheEvict(cacheNames = {GET_EVENT_PRODUCTS, GET_BUNDLE_PRODUCTS, GET_PRODUCTS,GET_PRODUCT_DETAIL, GET_PRODUCTS_BY_BUNDLE}, allEntries = true)
+//    @CacheEvict(cacheNames = {GET_EVENT_PRODUCTS, GET_BUNDLE_PRODUCTS, GET_PRODUCTS,GET_PRODUCT_DETAIL, GET_PRODUCTS_BY_BUNDLE}, allEntries = true)
     @Transactional
     public String deleteProduct(Long id) throws JsonProcessingException {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);

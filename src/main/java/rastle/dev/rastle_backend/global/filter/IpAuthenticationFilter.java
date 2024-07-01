@@ -46,7 +46,7 @@ public class IpAuthenticationFilter implements Filter {
             } catch (GeoIp2Exception e) {
                 log.warn(e.getMessage());
             }
-            if (country == null || !(country.equals("South Korea") || country.equals("United States"))) {
+            if (country == null || !(country.equals("South Korea") || country.equals("United States") || country.equals("Canada"))) {
                 log.warn("Access Rejected : {}, {}", ipAddress, country);
                 blockAbroadRequest(request, response);
             } else {
