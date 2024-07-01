@@ -10,6 +10,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import rastle.dev.rastle_backend.domain.product.dto.GetProductRequest;
 import rastle.dev.rastle_backend.domain.product.dto.QSimpleProductInfo;
@@ -67,14 +68,22 @@ public class ProductQRepositoryImpl implements ProductQRepository {
     }
 
     private void orderQuery(JPAQuery<SimpleProductInfo> query, Pageable pageable) {
-        pageable.getSort().stream().forEach(sort -> {
-            Order order = sort.isAscending() ? Order.ASC : Order.DESC;
-            String property = sort.getProperty();
+        Sort pageableSort = pageable.getSort();
+        if (pageableSort.isEmpty()) {
 
-            SimplePath<Object> path = Expressions.path(Object.class, productBase, property);
-            OrderSpecifier<?> orderSpecifier = new OrderSpecifier(order, path);
-            query.orderBy(orderSpecifier);
-        });
+//            OrderSpecifier<?> orderSpecifier = new OrderSpecifier(Order.ASC, Expressions.path(Object.class, productBase, "displayOrder"));
+            query.orderBy(productBase.displayOrder.asc());
+        } else {
+            pageableSort.stream().forEach(sort -> {
+                Order order = sort.isAscending() ? Order.ASC : Order.DESC;
+                String property = sort.getProperty();
+
+                SimplePath<Object> path = Expressions.path(Object.class, productBase, property);
+                OrderSpecifier<?> orderSpecifier = new OrderSpecifier(order, path);
+                query.orderBy(orderSpecifier);
+            });
+        }
+
     }
 
 //    private OrderSpecifier<?> orderBy(GetProductRequest getProductRequest) {
