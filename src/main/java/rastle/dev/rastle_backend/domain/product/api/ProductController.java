@@ -64,7 +64,7 @@ public class ProductController {
         @Parameter(name = "upperBound", description = "상품 세트 조회 api 호출해서 리턴된 최대 상품 세트 아이디", required = true)
         @RequestParam(name = "upperBound") Long upperBound) {
         return ResponseEntity
-            .ok(new ServerResponse<>(productService.getBundleProducts(visible, lowerBound, upperBound)));
+            .ok(new ServerResponse<>(productService.getBundleProducts(visible, lowerBound, upperBound).getResults()));
     }
 
     @Operation(summary = "이벤트 상품 조회 API", description = "이벤트 상품 조회 API입니다. 이벤트 조회 API를 먼저 호출하고 사용해야합니다.")
