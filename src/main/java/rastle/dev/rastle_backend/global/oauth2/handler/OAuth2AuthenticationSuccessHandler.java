@@ -33,21 +33,21 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     @Transactional
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
-        log.info("authentication success");
+//        log.info("authentication success");
         Map<String, Object> queryParams = new HashMap<>();
 
         String targetUrl = getTargetUrlFromCookie(request);
         jwtTokenProvider.generateTokenDto(authentication, request, response);
 
         if (response.isCommitted()) {
-            logger.debug("Response has already been committed. Unable to redirect to " + targetUrl);
+//            logger.debug("Response has already been committed. Unable to redirect to " + targetUrl);
             return;
         }
 
         queryParams.put("social", true);
         targetUrl = buildUriComponents(targetUrl, queryParams).toUriString();
 
-        log.info("target url : " + targetUrl);
+//        log.info("target url : " + targetUrl);
         clearAuthenticationAttributes(request, response);
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
