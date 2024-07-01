@@ -12,4 +12,8 @@ import java.util.List;
 public class SimpleProductQueryResult {
     List<SimpleProductInfo> simpleProductInfos;
     Long size;
+
+    public SimpleProductQueryResult(List<SimpleProductInfo> simpleProductInfos) {
+        this.simpleProductInfos = simpleProductInfos;
+    }
 }

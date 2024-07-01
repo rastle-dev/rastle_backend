@@ -41,6 +41,6 @@ public class BundleController {
     @FailApiResponses
     @GetMapping("/{id}/products")
     public ResponseEntity<ServerResponse<?>> getBundleProducts(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(new ServerResponse<>(bundleService.getBundleProducts(id)));
+        return ResponseEntity.ok(new ServerResponse<>(bundleService.getBundleProducts(id).getSimpleProductInfos()));
     }
 }
