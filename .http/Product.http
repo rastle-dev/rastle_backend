@@ -9,3 +9,9 @@ GET https://api.recordyslow.com/product/event?page=0&size=10
 
 ### 인기 상품 조회
 GET https://api.recordyslow.com/product/popular?page=0&size=20
+
+### 로컬 상품 조회
+GET http://localhost:8080/product?page=0&size=100&visible=TRUE&sort=soldCount,DESC
+
+### 이벤트 로컬 조회
+GET http://localhost:8080/product/event?page=0&size=100&visible=TRUE&sort=displayOrder,DESC
