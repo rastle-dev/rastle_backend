@@ -1,9 +1,8 @@
 package rastle.dev.rastle_backend.domain.product.repository.mysql;
 
-import org.springframework.data.domain.Page;
 import rastle.dev.rastle_backend.domain.product.dto.GetProductRequest;
-import rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo;
+import rastle.dev.rastle_backend.domain.product.dto.SimpleProductQueryResult;
 
 public interface ProductQRepository {
-    Page<SimpleProductInfo> getProductInfos(GetProductRequest getProductRequest);
+    SimpleProductQueryResult getProductInfos(GetProductRequest getProductRequest);
 }
