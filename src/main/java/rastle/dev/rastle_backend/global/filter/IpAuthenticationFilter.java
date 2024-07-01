@@ -49,8 +49,10 @@ public class IpAuthenticationFilter implements Filter {
             if (country == null || !(country.equals("South Korea") || country.equals("United States"))) {
                 log.warn("Access Rejected : {}, {}", ipAddress, country);
                 blockAbroadRequest(request, response);
+            } else {
+                chain.doFilter(request, response);
+
             }
-            chain.doFilter(request, response);
         }
     }
 
