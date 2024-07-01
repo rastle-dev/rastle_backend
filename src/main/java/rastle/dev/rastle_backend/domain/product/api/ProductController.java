@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,7 +48,8 @@ public class ProductController {
             .visibleStatus(VisibleStatus.getById(visible))
             .pageable(pageable)
             .build();
-        return ResponseEntity.ok(new ServerResponse<>(productService.getProductInfos(getProductRequest)));
+        SimpleProductQueryResult queryResult = productService.getProductInfos(getProductRequest);
+        return ResponseEntity.ok(new ServerResponse<>(new PageImpl(queryResult.getSimpleProductInfos(), pageable, queryResult.getSize())));
     }
 
     @Operation(summary = "상품 세트 관련 상품 조회 API", description = "상품 세트 관련 상품 조회 API입니다. 상품 세트 조회 API를 먼저 호출하고 사용해야합니다.")
@@ -74,7 +76,7 @@ public class ProductController {
         @Parameter(name = "page", description = "페이지 번호", required = true) @RequestParam(name = "page") Integer page,
         @Parameter(name = "size", description = "페이지 크기", required = true) @RequestParam(name = "size") Integer size) {
         return ResponseEntity
-            .ok(new ServerResponse<>(productService.getEventProducts(visible, page, size)));
+            .ok(new ServerResponse<>(productService.getEventProducts(visible, page, size).getResults()));
     }
 
 

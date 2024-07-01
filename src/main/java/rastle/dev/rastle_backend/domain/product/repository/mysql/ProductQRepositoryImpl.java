@@ -9,13 +9,14 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import rastle.dev.rastle_backend.domain.product.dto.GetProductRequest;
 import rastle.dev.rastle_backend.domain.product.dto.QSimpleProductInfo;
 import rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo;
+import rastle.dev.rastle_backend.domain.product.dto.SimpleProductQueryResult;
+
+import java.util.List;
 
 import static rastle.dev.rastle_backend.domain.product.model.QProductBase.productBase;
 import static rastle.dev.rastle_backend.global.common.enums.VisibleStatus.FALSE;
@@ -29,7 +30,7 @@ public class ProductQRepositoryImpl implements ProductQRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Page<SimpleProductInfo> getProductInfos(GetProductRequest getProductRequest) {
+    public SimpleProductQueryResult getProductInfos(GetProductRequest getProductRequest) {
 
         JPAQuery<SimpleProductInfo> query = jpaQueryFactory.select(
                 new QSimpleProductInfo(
@@ -60,7 +61,9 @@ public class ProductQRepositoryImpl implements ProductQRepository {
 //            .orderBy(orderBy(getProductRequest));
 
         orderQuery(query, getProductRequest.getPageable());
-        return new PageImpl<>(query.fetch(), getProductRequest.getPageable(), getSize(getProductRequest));
+        List<SimpleProductInfo> fetched = query.fetch();
+        return new SimpleProductQueryResult(fetched, getSize(getProductRequest));
+//        return new PageImpl<>(fetched, getProductRequest.getPageable(), getSize(getProductRequest));
     }
 
     private void orderQuery(JPAQuery<SimpleProductInfo> query, Pageable pageable) {
