@@ -1,7 +1,6 @@
 package rastle.dev.rastle_backend.domain.product.application;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +16,6 @@ import rastle.dev.rastle_backend.domain.product.repository.mysql.ProductBaseRepo
 import rastle.dev.rastle_backend.domain.product.repository.mysql.ProductQRepository;
 import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
 
-import static rastle.dev.rastle_backend.global.common.constants.CacheConstant.*;
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.ALL;
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.TRUE;
 
@@ -30,7 +28,7 @@ public class ProductService {
     private final EventRepository eventRepository;
     private final ProductQRepository productQRepository;
 
-    @Cacheable(cacheNames = GET_PRODUCTS, cacheManager = "cacheManager")
+//    @Cacheable(cacheNames = GET_PRODUCTS, cacheManager = "cacheManager")
     @Transactional(readOnly = true)
     public SimpleProductQueryResult getProductInfos(GetProductRequest getProductRequest) {
 
@@ -38,7 +36,7 @@ public class ProductService {
     }
 
 
-    @Cacheable(cacheNames = GET_PRODUCT_DETAIL, cacheManager = "cacheManager")
+//    @Cacheable(cacheNames = GET_PRODUCT_DETAIL, cacheManager = "cacheManager")
     @Transactional(readOnly = true)
     public Object getProductDetail(Long id) {
         ProductInfo productInfo = productBaseRepository.getProductDetailInfoById(id).orElseThrow(NotFoundByIdException::new);
@@ -49,7 +47,7 @@ public class ProductService {
         return productInfo;
     }
 
-    @Cacheable(cacheNames = GET_BUNDLE_PRODUCTS, cacheManager = "cacheManager")
+//    @Cacheable(cacheNames = GET_BUNDLE_PRODUCTS, cacheManager = "cacheManager")
     @Transactional(readOnly = true)
     public BundleProductQueryResult getBundleProducts(String visible, Long lowerBound, Long upperBound) {
         if (visible.equals(ALL)) {
@@ -61,7 +59,7 @@ public class ProductService {
         }
     }
 
-    @Cacheable(cacheNames = GET_EVENT_PRODUCTS, cacheManager = "cacheManager")
+//    @Cacheable(cacheNames = GET_EVENT_PRODUCTS, cacheManager = "cacheManager")
     @Transactional(readOnly = true)
     public EventProductQueryResult getEventProducts(String visible, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
