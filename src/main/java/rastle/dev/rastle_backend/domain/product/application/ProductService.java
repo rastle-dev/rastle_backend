@@ -2,7 +2,6 @@ package rastle.dev.rastle_backend.domain.product.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,10 +58,9 @@ public class ProductService {
         }
     }
 
-//    @Cacheable(cacheNames = GET_EVENT_PRODUCTS, cacheManager = "cacheManager")
+    //    @Cacheable(cacheNames = GET_EVENT_PRODUCTS, cacheManager = "cacheManager")
     @Transactional(readOnly = true)
-    public EventProductQueryResult getEventProducts(String visible, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public EventProductQueryResult getEventProducts(String visible, Pageable pageable) {
         if (visible.equals(ALL)) {
             return new EventProductQueryResult(eventProductRepository.getEventProducts(pageable).stream().map(EventProductInfo::toOutInfo).toList());
         } else if (visible.equals(TRUE)) {
