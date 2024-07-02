@@ -1,3 +1,0 @@
-### 마켓 조회
-GET http://localhost:8080/market
-Content-Type: application/json

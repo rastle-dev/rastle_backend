@@ -1,8 +1,0 @@
-### 결제 검증
-POST http://localhost:8080/payments/complete
-Content-Type: application/json
-
-{
-  "imp_uid": "imp_881094672901",
-  "merchant_uid": "17115634660510"
-}

@@ -7,6 +7,7 @@ build/
 ### querydsl
 /src/main/generated
 ### .http requests
+.http
 .http/img
 .http/PortOne.http
 .http/DeliveryTracker.http

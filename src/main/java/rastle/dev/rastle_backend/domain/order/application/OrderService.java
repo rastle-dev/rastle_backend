@@ -60,6 +60,9 @@ public class OrderService {
     @Transactional
     public OrderCreateResponse createOrderDetail(Long memberId, OrderCreateRequest orderCreateRequest) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+        if (orderCreateRequest.getOrderProducts().isEmpty()) {
+            throw new GlobalException("빈 상품 들로 구성된 유효하지 않은 주문입니다.", CONFLICT);
+        }
         OrderDetail orderDetail = createNewOrder(member);
         setOrderNumber(orderDetail);
 
