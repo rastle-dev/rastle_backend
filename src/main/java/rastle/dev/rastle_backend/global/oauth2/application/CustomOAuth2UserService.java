@@ -79,6 +79,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         couponRepository.save(coupon);
 
         memberRepository.save(member);
+        if (member.getEmail() == null) {
+            member.updateEmail("nullemail_" + member.getId() + "@email.com");
+        }
 
         return UserPrincipalInfoDto.builder()
             .id(member.getId())
