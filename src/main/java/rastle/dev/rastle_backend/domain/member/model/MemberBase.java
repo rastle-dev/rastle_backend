@@ -52,4 +52,8 @@ public class MemberBase {
     public void delete() {
         this.deleted = true;
     }
+
+    public void updateEmail(String email) {
+        this.email = email;
+    }
 }

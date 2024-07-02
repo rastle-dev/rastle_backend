@@ -30,7 +30,11 @@ public class NaverOAuth2UserInfo extends OAuth2UserInfo {
             return null;
         }
 
-        return (String) response.get("name");
+        Object name = response.get("name");
+        if (name == null) {
+            return "";
+        }
+        return (String) name;
     }
 
     @Override
@@ -40,8 +44,11 @@ public class NaverOAuth2UserInfo extends OAuth2UserInfo {
         if (response == null) {
             return null;
         }
-
-        return (String) response.get("email");
+        Object email = response.get("email");
+        if (email == null) {
+            return "";
+        }
+        return (String) email;
     }
 
     @Override
@@ -52,7 +59,11 @@ public class NaverOAuth2UserInfo extends OAuth2UserInfo {
             return null;
         }
 
-        return (String) response.get("mobile");
+        Object mobile = response.get("mobile");
+        if (mobile == null) {
+            return "";
+        }
+        return (String) mobile;
     }
 
     @Override
