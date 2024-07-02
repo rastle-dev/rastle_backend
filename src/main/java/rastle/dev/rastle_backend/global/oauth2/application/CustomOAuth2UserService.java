@@ -47,7 +47,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         // return UserPrincipal.create(member, oAuth2User.getAttributes());
         UserPrincipalInfoDto userPrincipalInfoDto = memberRepository
-            .findUserPrincipalInfoByEmail(userInfo.getEmail())
+            .findUserPrincipalInfoByEmailAndNameAndPhoneNumber(userInfo.getEmail(), userInfo.getName(), userInfo.getPhoneNumber())
             .orElseGet(() -> createUser(userInfo, loginType));
 
         return UserPrincipal.create(userPrincipalInfoDto); // 수정된 부분

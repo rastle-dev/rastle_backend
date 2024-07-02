@@ -24,7 +24,11 @@ public class KakaoOAuth2UserInfo extends OAuth2UserInfo {
             return null;
         }
 
-        return (String) properties.get("name");
+        Object name = properties.get("name");
+        if (name == null) {
+            return "";
+        }
+        return (String) name;
     }
 
     @Override
@@ -33,8 +37,11 @@ public class KakaoOAuth2UserInfo extends OAuth2UserInfo {
         if (properties == null) {
             return null;
         }
-
-        return (String) properties.get("email");
+        Object email = properties.get("email");
+        if (email == null) {
+            return "";
+        }
+        return (String) email;
     }
 
     @Override
@@ -43,7 +50,11 @@ public class KakaoOAuth2UserInfo extends OAuth2UserInfo {
         if (properties == null) {
             return null;
         }
-        return (String) properties.get("phone_number");
+        Object phoneNumber = properties.get("phone_number");
+        if (phoneNumber == null) {
+            return "";
+        }
+        return (String) phoneNumber;
     }
 
     @Override
