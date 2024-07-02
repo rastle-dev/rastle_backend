@@ -1,3 +1,0 @@
-### 웹훅 등록
-POST http://localhost:8080/delivery/1234
-Content-Type: application/json
