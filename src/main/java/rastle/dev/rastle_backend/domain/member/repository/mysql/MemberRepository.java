@@ -27,6 +27,12 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
         "AND m.deleted=false ")
     Optional<UserPrincipalInfoDto> findUserPrincipalInfoByEmailAndNameAndPhoneNumber(@Param("email") String email, @Param("name") String name, @Param("phoneNumber") String phoneNumber);
 
+    @Query("SELECT NEW rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO$UserPrincipalInfoDto(m.id, m.password, m.userLoginType, m.authority) " +
+        "FROM Member m " +
+        "WHERE m.email = :email " +
+        "AND m.deleted=false ")
+    Optional<UserPrincipalInfoDto> findUserPrincipalInfoByEmail(@Param("email") String email);
+
     @Query("SELECT NEW rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO$UserPrincipalInfoDto(m.id, m.password, m.userLoginType, m.authority) FROM Member m WHERE m.id = :id AND m.deleted=false ")
     Optional<UserPrincipalInfoDto> findUserPrincipalInfoById(@Param("id") Long id);
 
