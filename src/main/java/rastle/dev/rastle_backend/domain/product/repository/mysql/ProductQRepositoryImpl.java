@@ -16,6 +16,7 @@ import rastle.dev.rastle_backend.domain.product.dto.GetProductRequest;
 import rastle.dev.rastle_backend.domain.product.dto.QSimpleProductInfo;
 import rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo;
 import rastle.dev.rastle_backend.domain.product.dto.SimpleProductQueryResult;
+import rastle.dev.rastle_backend.global.util.CustomPageRequest;
 
 import java.util.List;
 
@@ -57,21 +58,18 @@ public class ProductQRepositoryImpl implements ProductQRepository {
                 event(getProductRequest)
             )
             .groupBy(productBase)
-            .offset(getProductRequest.getPageable().getOffset())
-            .limit(getProductRequest.getPageable().getPageSize());
-//            .orderBy(orderBy(getProductRequest));
+            .offset(CustomPageRequest.toPageable(getProductRequest.getCustomPageRequest()).getOffset())
+            .limit(CustomPageRequest.toPageable(getProductRequest.getCustomPageRequest()).getPageSize());
 
-        orderQuery(query, getProductRequest.getPageable());
+        orderQuery(query, CustomPageRequest.toPageable(getProductRequest.getCustomPageRequest()));
         List<SimpleProductInfo> fetched = query.fetch();
         return new SimpleProductQueryResult(fetched, getSize(getProductRequest));
-//        return new PageImpl<>(fetched, getProductRequest.getPageable(), getSize(getProductRequest));
     }
 
     private void orderQuery(JPAQuery<SimpleProductInfo> query, Pageable pageable) {
         Sort pageableSort = pageable.getSort();
         if (pageableSort.isEmpty()) {
 
-//            OrderSpecifier<?> orderSpecifier = new OrderSpecifier(Order.ASC, Expressions.path(Object.class, productBase, "displayOrder"));
             query.orderBy(productBase.displayOrder.asc());
         } else {
             pageableSort.stream().forEach(sort -> {
@@ -85,16 +83,6 @@ public class ProductQRepositoryImpl implements ProductQRepository {
         }
 
     }
-
-//    private OrderSpecifier<?> orderBy(GetProductRequest getProductRequest) {
-//        Sort sort = getProductRequest.getPageable().getSort();
-//
-//        if (getProductRequest.getSort().equals("displayOrder")) {
-//            return productBase.displayOrder.desc();
-//        } else {
-//            return productBase.soldCount.desc();
-//        }
-//    }
 
     private Long getSize(GetProductRequest getProductRequest) {
 

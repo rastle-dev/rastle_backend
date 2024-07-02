@@ -15,6 +15,7 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import rastle.dev.rastle_backend.global.cache.ObjectRedisTemplate;
 import rastle.dev.rastle_backend.global.cache.StringRedisTemplate;
+import rastle.dev.rastle_backend.global.common.constants.CacheConstant;
 
 import java.time.Duration;
 
@@ -41,13 +42,6 @@ public class RedisConfig {
     @Value("${cache_password}")
     private String cachePassword;
 
-//    @Bean(name = "redisObjectMapper")
-//    public ObjectMapper redisObjectMapper() {
-//
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        objectMapper.registerModule(new JavaTimeModule());
-//        return objectMapper;
-//    }
 
     @Bean(name = "redisConnectionFactory")
     public RedisConnectionFactory redisConnectionFactory() {
@@ -91,7 +85,8 @@ public class RedisConfig {
     public ObjectRedisTemplate cacheRedisTemplate() {
         ObjectRedisTemplate objectRedisTemplate = new ObjectRedisTemplate();
         objectRedisTemplate.setConnectionFactory(cacheRedisConnectionFactory());
-        objectRedisTemplate.setDefaultSerializer(new GenericJackson2JsonRedisSerializer());
+        objectRedisTemplate.setKeySerializer(new StringRedisSerializer());
+        objectRedisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
         return objectRedisTemplate;
     }
 
@@ -100,7 +95,7 @@ public class RedisConfig {
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
             .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
             .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
-            .entryTtl(Duration.ofMinutes(15L)); // 캐쉬 저장 시간 15분 설정
+            .entryTtl(Duration.ofMinutes(CacheConstant.EXPIRE_TIME)); // 캐쉬 저장 시간 15분 설정
 
         return RedisCacheManager
             .RedisCacheManagerBuilder
