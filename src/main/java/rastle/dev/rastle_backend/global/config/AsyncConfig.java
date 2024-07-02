@@ -10,7 +10,7 @@ public class AsyncConfig {
     @Bean(name = "deliveryTrackerTaskExecutor")
     public Executor deliveryTrackerPool() {
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
-        threadPoolTaskExecutor.setCorePoolSize(20);    // 기본 스레드 수
+        threadPoolTaskExecutor.setCorePoolSize(10);    // 기본 스레드 수
         threadPoolTaskExecutor.setMaxPoolSize(30);     // 최대 스레드 수
         threadPoolTaskExecutor.setThreadNamePrefix("DeliveryTrackerThread-");
         return threadPoolTaskExecutor;
@@ -31,6 +31,15 @@ public class AsyncConfig {
         threadPoolTaskExecutor.setCorePoolSize(10);    // 기본 스레드 수
         threadPoolTaskExecutor.setMaxPoolSize(30);     // 최대 스레드 수
         threadPoolTaskExecutor.setThreadNamePrefix("PreparePayment-");
+        return threadPoolTaskExecutor;
+    }
+
+    @Bean(name = "cacheTaskExecutor")
+    public Executor cacheTaskExecutor() {
+        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+        threadPoolTaskExecutor.setCorePoolSize(10);    // 기본 스레드 수
+        threadPoolTaskExecutor.setMaxPoolSize(30);     // 최대 스레드 수
+        threadPoolTaskExecutor.setThreadNamePrefix("CacheTask-");
         return threadPoolTaskExecutor;
     }
 }

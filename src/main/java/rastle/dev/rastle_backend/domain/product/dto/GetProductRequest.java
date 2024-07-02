@@ -1,8 +1,8 @@
 package rastle.dev.rastle_backend.domain.product.dto;
 
 import lombok.*;
-import org.springframework.data.domain.Pageable;
 import rastle.dev.rastle_backend.global.common.enums.VisibleStatus;
+import rastle.dev.rastle_backend.global.util.CustomPageRequest;
 
 import java.util.Objects;
 
@@ -12,7 +12,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetProductRequest {
-    Pageable pageable;
+    CustomPageRequest customPageRequest;
     VisibleStatus visibleStatus;
     Long bundleId;
     Long eventId;
@@ -22,18 +22,18 @@ public class GetProductRequest {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         GetProductRequest that = (GetProductRequest) o;
-        return Objects.equals(pageable, that.pageable) && visibleStatus == that.visibleStatus && Objects.equals(bundleId, that.bundleId) && Objects.equals(eventId, that.eventId);
+        return Objects.equals(customPageRequest, that.customPageRequest) && visibleStatus == that.visibleStatus && Objects.equals(bundleId, that.bundleId) && Objects.equals(eventId, that.eventId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(pageable, visibleStatus, bundleId, eventId);
+        return Objects.hash(customPageRequest, visibleStatus, bundleId, eventId);
     }
 
     @Override
     public String toString() {
         return "GetProductRequest{" +
-            "pageable=" + pageable +
+            "pageable=" + customPageRequest +
             ", visibleStatus=" + visibleStatus +
             ", bundleId=" + bundleId +
             ", eventId=" + eventId +
