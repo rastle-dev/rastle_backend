@@ -55,14 +55,14 @@ public class PortOneComponent {
         try {
             return restTemplate.exchange(url, method, request, String.class);
         } catch (HttpClientErrorException.NotFound e) {
-            throw new PortOneException("등록되지 않은 주문 번호");
+            throw new PortOneException("클라이언트로부터 유효한 응답 값을 받지 못했습니다. " + method.name()+" "+url+ request.toString());
         } catch (HttpClientErrorException.Unauthorized e) {
             HttpHeaders headers = setHeaders();
 
             HttpEntity newRequest = new HttpEntity(request.getBody(), headers);
             return restTemplate.exchange(url, method, newRequest, String.class);
         } catch (RestClientException exception) {
-            throw new PortOneException(exception.getMessage());
+            throw new PortOneException(convertString(exception.getMessage()));
 
         }
     }
@@ -88,7 +88,7 @@ public class PortOneComponent {
         } catch (JsonProcessingException e) {
             throw new PortOneException(e.getMessage());
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            throw new PortOneException(convertString(e.getMessage()));
         }
 
     }
@@ -123,7 +123,7 @@ public class PortOneComponent {
         } catch (JsonProcessingException e) {
             throw new PortOneException(e.getMessage());
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            throw new PortOneException(convertString(e.getMessage()));
         }
     }
 
@@ -215,7 +215,7 @@ public class PortOneComponent {
             });
             return (Integer) responseMap.get(CODE);
         } catch (Exception e) {
-            log.warn(e.getMessage());
+            log.warn(convertString(e.getMessage()));
             return -1;
         }
     }

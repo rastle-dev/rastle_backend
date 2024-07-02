@@ -12,4 +12,14 @@ public class PortOnePaymentCancelRequest {
     String imp_uid;
     long amount;
     long checksum;
+
+    @Override
+    public String toString() {
+        return "PortOnePaymentCancelRequest{" +
+            "merchant_uid='" + merchant_uid + '\'' +
+            ", imp_uid='" + imp_uid + '\'' +
+            ", amount=" + amount +
+            ", checksum=" + checksum +
+            '}';
+    }
 }
