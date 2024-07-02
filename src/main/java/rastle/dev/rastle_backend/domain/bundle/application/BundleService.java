@@ -2,7 +2,6 @@ package rastle.dev.rastle_backend.domain.bundle.application;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -12,7 +11,6 @@ import rastle.dev.rastle_backend.domain.bundle.repository.mysql.BundleRepository
 import rastle.dev.rastle_backend.domain.product.dto.SimpleProductQueryResult;
 import rastle.dev.rastle_backend.domain.product.repository.mysql.BundleProductRepository;
 
-import static rastle.dev.rastle_backend.global.common.constants.CacheConstant.GET_PRODUCTS_BY_BUNDLE;
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.ALL;
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.TRUE;
 
@@ -34,7 +32,7 @@ public class BundleService {
             return bundleRepository.getBundlesByVisibility(false, pageable);
         }
     }
-    @Cacheable(cacheNames = GET_PRODUCTS_BY_BUNDLE, cacheManager = "cacheManager")
+//    @Cacheable(cacheNames = GET_PRODUCTS_BY_BUNDLE, cacheManager = "cacheManager")
     @Transactional(readOnly = true)
     public SimpleProductQueryResult getBundleProducts(Long id) {
         return new SimpleProductQueryResult(bundleProductRepository.getBundleProductInfosByBundleId(id));
