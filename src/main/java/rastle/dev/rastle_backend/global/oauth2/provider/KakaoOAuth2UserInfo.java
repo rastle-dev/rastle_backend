@@ -58,6 +58,14 @@ public class KakaoOAuth2UserInfo extends OAuth2UserInfo {
     }
 
     @Override
+    public void setPhoneNumber(String phoneNumber) {
+        Map<String, Object> properties = (Map<String, Object>) attributes.get("kakao_account");
+        if (properties != null) {
+            properties.put("phone_number", phoneNumber);
+        }
+    }
+
+    @Override
     public String getProvider() {
         return UserLoginType.KAKAO.toString();
     }
