@@ -67,6 +67,14 @@ public class NaverOAuth2UserInfo extends OAuth2UserInfo {
     }
 
     @Override
+    public void setPhoneNumber(String phoneNumber) {
+        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+        if (response != null) {
+            response.put("mobile", phoneNumber);
+        }
+    }
+
+    @Override
     public String getProvider() {
         return UserLoginType.NAVER.toString();
     }
