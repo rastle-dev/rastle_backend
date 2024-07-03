@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import rastle.dev.rastle_backend.domain.token.dto.TokenDTO.TokenClaim;
 import rastle.dev.rastle_backend.domain.token.dto.TokenDTO.TokenInfoDTO;
+import rastle.dev.rastle_backend.global.cache.StringRedisTemplate;
 import rastle.dev.rastle_backend.global.security.CustomUserDetailsService;
 import rastle.dev.rastle_backend.global.util.WebUtil;
 
@@ -37,16 +37,16 @@ import static rastle.dev.rastle_backend.global.util.KeyUtil.toRedisKey;
 @Slf4j
 public class JwtTokenProvider {
     private final Key key;
-    private final RedisTemplate<String, String> redisTemplate;
+    private final StringRedisTemplate stringRedisTemplate;
     private final CustomUserDetailsService customUserDetailsService;
 
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String jwtSecret, RedisTemplate<String, String> redisTemplate,
+    public JwtTokenProvider(@Value("${jwt.secret}") String jwtSecret, StringRedisTemplate stringRedisTemplate,
                             CustomUserDetailsService customUserDetailsService) {
 
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
-        this.redisTemplate = redisTemplate;
+        this.stringRedisTemplate = stringRedisTemplate;
         this.customUserDetailsService = customUserDetailsService;
     }
 
@@ -139,9 +139,9 @@ public class JwtTokenProvider {
 
     // 리프레시 토큰을 Redis에 저장
     private void storeRefreshTokenInRedis(String username, String refreshToken, String agent, String ip) {
-        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+        ValueOperations<String, String> valueOperations = stringRedisTemplate.opsForValue();
         valueOperations.set(toRedisKey(username, agent, ip), refreshToken);
-        redisTemplate.expire(toRedisKey(username, agent, ip), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+        stringRedisTemplate.expire(toRedisKey(username, agent, ip), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
     }
 
 
