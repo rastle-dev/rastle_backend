@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,6 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import rastle.dev.rastle_backend.global.cache.StringRedisTemplate;
 import rastle.dev.rastle_backend.global.filter.IpAuthenticationFilter;
 import rastle.dev.rastle_backend.global.jwt.JwtAccessDeniedHandler;
 import rastle.dev.rastle_backend.global.jwt.JwtAuthenticationEntryPoint;
@@ -35,7 +35,7 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-    private final RedisTemplate<String, String> redisTemplate;
+    private final StringRedisTemplate stringRedisTemplate;
     private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
     private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
@@ -119,7 +119,7 @@ public class SecurityConfig {
             .failureHandler(oAuth2AuthenticationFailureHandler);
 
         http
-            .apply(new JwtSecurityConfig(jwtTokenProvider, mapper, redisTemplate, ipAuthenticationFilter))
+            .apply(new JwtSecurityConfig(jwtTokenProvider, mapper, stringRedisTemplate, ipAuthenticationFilter))
             .and()
             .logout()
             .logoutUrl("/logout")
