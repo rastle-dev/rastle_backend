@@ -54,7 +54,6 @@ import rastle.dev.rastle_backend.domain.product.repository.mysql.BundleProductRe
 import rastle.dev.rastle_backend.domain.product.repository.mysql.EventProductRepository;
 import rastle.dev.rastle_backend.domain.product.repository.mysql.ProductBaseRepository;
 import rastle.dev.rastle_backend.domain.product.repository.mysql.ProductDetailRepository;
-import rastle.dev.rastle_backend.global.common.annotation.WriteThroughCache;
 import rastle.dev.rastle_backend.global.component.DeliveryTracker;
 import rastle.dev.rastle_backend.global.component.PortOneComponent;
 import rastle.dev.rastle_backend.global.component.S3Component;
@@ -115,7 +114,7 @@ public class AdminService {
     public Page<SimpleProductInfo> getProductByCategoryId(Long categoryId, Pageable pageable) {
         return productBaseRepository.getProductInfoByCategoryId(categoryId, pageable);
     }
-    @WriteThroughCache(paramClassType = ProductCreateRequest.class)
+//    @WriteThroughCache(paramClassType = ProductCreateRequest.class)
     @Transactional
     public ProductCreateResult createProduct(ProductCreateRequest createRequest) throws JsonProcessingException {
         Category category = categoryRepository.findById(createRequest.getCategoryId())
@@ -161,7 +160,7 @@ public class AdminService {
         return createResult;
     }
 
-    @WriteThroughCache
+//    @WriteThroughCache
     @Transactional
     public ProductImageInfo uploadMainThumbnail(Long id, MultipartFile mainThumbnail) {
         String mainThumbnailUrl = s3Component.uploadSingleImageToS3(MAIN_THUMBNAIL, mainThumbnail);
@@ -172,7 +171,7 @@ public class AdminService {
             .build();
     }
 
-    @WriteThroughCache
+//    @WriteThroughCache
     @Transactional
     public ProductImageInfo uploadSubThumbnail(Long id, MultipartFile subThumbnail) {
         String subThumbnailUrl = s3Component.uploadSingleImageToS3(SUB_THUMBNAIL, subThumbnail);
@@ -183,7 +182,7 @@ public class AdminService {
             .build();
     }
 
-    @WriteThroughCache(singleUpdate = true)
+//    @WriteThroughCache(singleUpdate = true)
     @Transactional
     public ProductImageInfo uploadMainImages(Long id, List<MultipartFile> mainImages) throws JsonProcessingException {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
@@ -199,7 +198,7 @@ public class AdminService {
     }
 
 
-    @WriteThroughCache(singleUpdate = true)
+//    @WriteThroughCache(singleUpdate = true)
     @Transactional
     public ProductImageInfo uploadDetailImages(Long id, List<MultipartFile> detailImages)
         throws JsonProcessingException {
@@ -215,7 +214,7 @@ public class AdminService {
             .build();
     }
 
-    @WriteThroughCache
+//    @WriteThroughCache
     @Transactional
     public ProductUpdateRequest updateProductInfo(Long id, ProductUpdateRequest updateRequest) {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
@@ -268,7 +267,7 @@ public class AdminService {
         return updateRequest;
     }
 
-    @WriteThroughCache
+//    @WriteThroughCache
     @Transactional
     public ProductImageInfo updateMainThumbnail(Long id, MultipartFile mainThumbnail) {
         // s3Component.deleteImageByUrl(productBase.getMainThumbnailImage());
@@ -281,7 +280,7 @@ public class AdminService {
             .build();
     }
 
-    @WriteThroughCache
+//    @WriteThroughCache
     @Transactional
     public ProductImageInfo updateSubThumbnail(Long id, MultipartFile subThumbnail) {
         // s3Component.deleteImageByUrl(productBase.getSubThumbnailImage());
@@ -294,7 +293,7 @@ public class AdminService {
             .build();
     }
 
-    @WriteThroughCache(singleUpdate = true)
+//    @WriteThroughCache(singleUpdate = true)
     @Transactional
     public ProductImageInfo updateMainImages(Long id, List<MultipartFile> mainImages) throws JsonProcessingException {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
@@ -304,7 +303,7 @@ public class AdminService {
 
     }
 
-    @WriteThroughCache(singleUpdate = true)
+//    @WriteThroughCache(singleUpdate = true)
     @Transactional
     public ProductImageInfo updateDetailImages(Long id, List<MultipartFile> detailImages)
         throws JsonProcessingException {
@@ -332,7 +331,7 @@ public class AdminService {
             .build();
     }
 
-    @WriteThroughCache
+//    @WriteThroughCache
     @Transactional
     public String deleteProduct(Long id) throws JsonProcessingException {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
