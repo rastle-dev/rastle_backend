@@ -7,10 +7,12 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.SimplePath;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.QueryHint;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 import rastle.dev.rastle_backend.domain.product.dto.GetProductRequest;
 import rastle.dev.rastle_backend.domain.product.dto.QSimpleProductInfo;
@@ -31,6 +33,7 @@ public class ProductQRepositoryImpl implements ProductQRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     @Override
     public SimpleProductQueryResult getProductInfos(GetProductRequest getProductRequest) {
 

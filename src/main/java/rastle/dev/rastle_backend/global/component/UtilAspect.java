@@ -30,7 +30,6 @@ public class UtilAspect {
 
     @Around("@annotation(rastle.dev.rastle_backend.global.common.annotation.WriteThroughCache)")
     public Object writeThroughCache(ProceedingJoinPoint joinPoint) throws Throwable {
-        log.info("entering writeThroughCache");
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
         WriteThroughCache writeThroughCache = method.getAnnotation(WriteThroughCache.class);
@@ -38,7 +37,6 @@ public class UtilAspect {
         Object proceed = joinPoint.proceed(joinPoint.getArgs());
 
         asyncCacheComponent.writeThroughCache(writeThroughCache, joinPoint.getArgs(), signature.getParameterNames());
-        log.info("leaving writeThroughCache");
         return proceed;
     }
 }

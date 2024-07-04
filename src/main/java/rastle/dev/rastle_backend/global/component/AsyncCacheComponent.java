@@ -23,6 +23,7 @@ import rastle.dev.rastle_backend.global.util.CustomPageRequest;
 
 import java.util.Set;
 
+import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.ALL;
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.TRUE;
 
@@ -38,7 +39,7 @@ public class AsyncCacheComponent {
     private final ProductQRepository productQRepository;
     private final ObjectMapper objectMapper;
 
-    @Transactional
+    @Transactional(propagation = REQUIRES_NEW)
     @Async("cacheTaskExecutor")
     public void writeThroughCache(WriteThroughCache writeThroughCache, Object[] args, String[] parameterNames) {
 
@@ -91,7 +92,6 @@ public class AsyncCacheComponent {
                 log.info(e.getMessage());
                 log.info("error during parsing json object of GetProductRequest");
             }
-
 
         }
     }

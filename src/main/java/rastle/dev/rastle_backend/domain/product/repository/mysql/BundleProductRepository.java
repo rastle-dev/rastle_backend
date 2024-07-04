@@ -1,7 +1,9 @@
 package rastle.dev.rastle_backend.domain.product.repository.mysql;
 
+import jakarta.persistence.QueryHint;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 import rastle.dev.rastle_backend.domain.product.dto.BundleProductInfo;
 import rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo;
@@ -58,6 +60,7 @@ public interface BundleProductRepository extends JpaRepository<ProductBase, Long
     List<BundleProductInfo> getBundleProductsByVisibility(@Param("visible") boolean visible,
                                                           @Param("lowerBound") Long lowerBound, @Param("upperBound") Long upperBound);
 
+    @QueryHints({@QueryHint(name = "org.hibernate.cacheable", value = "true")})
     @Query("select new rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo(" +
         "bp.id, " +
         "bp.name, " +

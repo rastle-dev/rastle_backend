@@ -2,6 +2,7 @@ package rastle.dev.rastle_backend.domain.product.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Cache;
 import rastle.dev.rastle_backend.domain.bundle.model.Bundle;
 import rastle.dev.rastle_backend.domain.cart.model.CartProduct;
 import rastle.dev.rastle_backend.domain.category.model.Category;
@@ -12,6 +13,10 @@ import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE;
+
+@Cache(usage = READ_WRITE)
+@Cacheable
 @Entity
 @Getter
 @AllArgsConstructor
