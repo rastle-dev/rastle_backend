@@ -63,6 +63,7 @@ import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
 import rastle.dev.rastle_backend.global.util.TimeUtil;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -114,7 +115,8 @@ public class AdminService {
     public Page<SimpleProductInfo> getProductByCategoryId(Long categoryId, Pageable pageable) {
         return productBaseRepository.getProductInfoByCategoryId(categoryId, pageable);
     }
-//    @WriteThroughCache(paramClassType = ProductCreateRequest.class)
+
+    //    @WriteThroughCache(paramClassType = ProductCreateRequest.class)
     @Transactional
     public ProductCreateResult createProduct(ProductCreateRequest createRequest) throws JsonProcessingException {
         Category category = categoryRepository.findById(createRequest.getCategoryId())
@@ -160,7 +162,7 @@ public class AdminService {
         return createResult;
     }
 
-//    @WriteThroughCache
+    //    @WriteThroughCache
     @Transactional
     public ProductImageInfo uploadMainThumbnail(Long id, MultipartFile mainThumbnail) {
         String mainThumbnailUrl = s3Component.uploadSingleImageToS3(MAIN_THUMBNAIL, mainThumbnail);
@@ -171,7 +173,7 @@ public class AdminService {
             .build();
     }
 
-//    @WriteThroughCache
+    //    @WriteThroughCache
     @Transactional
     public ProductImageInfo uploadSubThumbnail(Long id, MultipartFile subThumbnail) {
         String subThumbnailUrl = s3Component.uploadSingleImageToS3(SUB_THUMBNAIL, subThumbnail);
@@ -182,7 +184,7 @@ public class AdminService {
             .build();
     }
 
-//    @WriteThroughCache(singleUpdate = true)
+    //    @WriteThroughCache(singleUpdate = true)
     @Transactional
     public ProductImageInfo uploadMainImages(Long id, List<MultipartFile> mainImages) throws JsonProcessingException {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
@@ -198,7 +200,7 @@ public class AdminService {
     }
 
 
-//    @WriteThroughCache(singleUpdate = true)
+    //    @WriteThroughCache(singleUpdate = true)
     @Transactional
     public ProductImageInfo uploadDetailImages(Long id, List<MultipartFile> detailImages)
         throws JsonProcessingException {
@@ -214,7 +216,7 @@ public class AdminService {
             .build();
     }
 
-//    @WriteThroughCache
+    //    @WriteThroughCache
     @Transactional
     public ProductUpdateRequest updateProductInfo(Long id, ProductUpdateRequest updateRequest) {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
@@ -267,7 +269,7 @@ public class AdminService {
         return updateRequest;
     }
 
-//    @WriteThroughCache
+    //    @WriteThroughCache
     @Transactional
     public ProductImageInfo updateMainThumbnail(Long id, MultipartFile mainThumbnail) {
         // s3Component.deleteImageByUrl(productBase.getMainThumbnailImage());
@@ -280,7 +282,7 @@ public class AdminService {
             .build();
     }
 
-//    @WriteThroughCache
+    //    @WriteThroughCache
     @Transactional
     public ProductImageInfo updateSubThumbnail(Long id, MultipartFile subThumbnail) {
         // s3Component.deleteImageByUrl(productBase.getSubThumbnailImage());
@@ -293,7 +295,7 @@ public class AdminService {
             .build();
     }
 
-//    @WriteThroughCache(singleUpdate = true)
+    //    @WriteThroughCache(singleUpdate = true)
     @Transactional
     public ProductImageInfo updateMainImages(Long id, List<MultipartFile> mainImages) throws JsonProcessingException {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
@@ -303,7 +305,7 @@ public class AdminService {
 
     }
 
-//    @WriteThroughCache(singleUpdate = true)
+    //    @WriteThroughCache(singleUpdate = true)
     @Transactional
     public ProductImageInfo updateDetailImages(Long id, List<MultipartFile> detailImages)
         throws JsonProcessingException {
@@ -331,7 +333,7 @@ public class AdminService {
             .build();
     }
 
-//    @WriteThroughCache
+    //    @WriteThroughCache
     @Transactional
     public String deleteProduct(Long id) throws JsonProcessingException {
         ProductBase productBase = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
@@ -676,7 +678,7 @@ public class AdminService {
         OrderDetail orderDetail = orderProduct.getOrderDetail();
         Long cancelAmount = orderProduct.getCancelRequestAmount();
 
-        if (isOrderEntirelyCancelled(orderDetail, orderProduct)) {
+        if (isOrderEntirelyCancelled(orderDetail, orderProduct, cancelAmount)) {
             PaymentResponse cancelResponse = portOneComponent.cancelPayment(cancelOrderRequest.getImpId(), orderDetail);
             orderDetail.updateOrderStatus(CANCELLED);
             restoreCouponStatusAndHandleCancelEvent(orderProduct, cancelAmount, cancelResponse.getCouponId());
@@ -691,9 +693,16 @@ public class AdminService {
         return new CancelOrderResult(cancelOrderRequest.getImpId(), cancelOrderRequest.getProductOrderNumber(), cancelAmount);
     }
 
+    private boolean isOrderEntirelyCancelled(OrderDetail orderDetail, OrderProduct orderProduct, Long cancelAmount) {
+        return orderDetail.getPayment().getPaymentPrice() == orderDetail.getPayment().getCancelledSum() + orderProduct.getPrice() * cancelAmount + orderDetail.getDelivery().getDeliveryPrice() + orderDetail.getDelivery().getIslandDeliveryPrice() - orderDetail.getPayment().getCouponAmount();
+    }
+
     private boolean isOrderEntirelyCancelled(OrderDetail orderDetail, OrderProduct orderProduct) {
 
         for (OrderProduct op : orderDetail.getOrderProduct()) {
+            if (Objects.equals(op.getId(), orderProduct.getId())) {
+                continue;
+            }
             if (op.getCount() != op.getCancelAmount() + op.getReturnAmount()) {
                 return false;
             }
@@ -741,7 +750,7 @@ public class AdminService {
         OrderDetail orderDetail = orderProduct.getOrderDetail();
         Long returnRequestAmount = orderProduct.getReturnRequestAmount();
 
-        if (isOrderEntirelyCancelled(orderDetail, orderProduct)) {
+        if (isOrderEntirelyCancelled(orderDetail, orderProduct, returnRequestAmount)) {
             PaymentResponse returnResponse = portOneComponent.returnPayment(returnOrderRequest.getImpId(), orderProduct);
             orderDetail.updateOrderStatus(RETURNED);
             restoreCouponStatusAndReturnEvent(orderProduct, returnRequestAmount, returnResponse.getCouponId());
