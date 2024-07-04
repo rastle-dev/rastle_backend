@@ -82,7 +82,8 @@ dependencies {
     implementation group: 'com.maxmind.geoip2', name: 'geoip2', version: '2.15.0'
     // hibernate cache
     implementation 'org.springframework.boot:spring-boot-starter-cache'
-
+    implementation 'org.redisson:redisson-hibernate-6:3.32.0'
+    implementation 'org.hibernate.orm:hibernate-jcache:6.1.6.Final'
     // MySql
     runtimeOnly 'mysql:mysql-connector-java'
 

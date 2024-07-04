@@ -63,6 +63,7 @@ import rastle.dev.rastle_backend.global.error.exception.NotFoundByIdException;
 import rastle.dev.rastle_backend.global.util.TimeUtil;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -694,6 +695,9 @@ public class AdminService {
     private boolean isOrderEntirelyCancelled(OrderDetail orderDetail, OrderProduct orderProduct) {
 
         for (OrderProduct op : orderDetail.getOrderProduct()) {
+            if (Objects.equals(op.getId(), orderProduct.getId())) {
+                continue;
+            }
             if (op.getCount() != op.getCancelAmount() + op.getReturnAmount()) {
                 return false;
             }
