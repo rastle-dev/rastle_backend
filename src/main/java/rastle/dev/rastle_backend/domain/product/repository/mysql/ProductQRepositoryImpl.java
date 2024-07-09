@@ -26,14 +26,13 @@ import static rastle.dev.rastle_backend.domain.product.model.QProductBase.produc
 import static rastle.dev.rastle_backend.global.common.enums.VisibleStatus.FALSE;
 import static rastle.dev.rastle_backend.global.common.enums.VisibleStatus.TRUE;
 
-@Slf4j
 @RequiredArgsConstructor
 @Repository
 public class ProductQRepositoryImpl implements ProductQRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
-    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
+    // @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     @Override
     public SimpleProductQueryResult getProductInfos(GetProductRequest getProductRequest) {
 
