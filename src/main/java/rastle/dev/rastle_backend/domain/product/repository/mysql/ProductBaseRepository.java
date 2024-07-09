@@ -1,6 +1,8 @@
 package rastle.dev.rastle_backend.domain.product.repository.mysql;
 
 import jakarta.persistence.QueryHint;
+
+import org.hibernate.annotations.Cache;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,7 +25,8 @@ public interface ProductBaseRepository extends JpaRepository<ProductBase, Long> 
     @Modifying
     @Query("UPDATE ProductBase pb SET pb.subThumbnailImage=:subThumbnail WHERE pb.id=:id")
     void updateProductBaseSubThumbnail(@Param("id") Long id, @Param("subThumbnail") String subThumbnail);
-
+    
+    @Cache(usage = org.hibernate.annotations.CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     @QueryHints({@QueryHint(name = "org.hibernate.cacheable", value = "true")})
     @Query("select new rastle.dev.rastle_backend.domain.product.dto.ProductInfo(" +
         "pb.id, " +

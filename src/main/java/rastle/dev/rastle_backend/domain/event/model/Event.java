@@ -13,9 +13,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE;
+import static org.hibernate.annotations.CacheConcurrencyStrategy.NONSTRICT_READ_WRITE;
 
-@Cache(usage = READ_WRITE)
+@Cache(usage = NONSTRICT_READ_WRITE)
 @Cacheable
 @Entity
 @Getter
@@ -42,6 +42,7 @@ public class Event {
     @Setter
     private boolean visible;
 
+    @Cache(usage=NONSTRICT_READ_WRITE)
     @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private final List<ProductBase> eventProducts = new ArrayList<>();
 

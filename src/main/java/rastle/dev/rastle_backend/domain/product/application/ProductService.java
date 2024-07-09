@@ -4,9 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import rastle.dev.rastle_backend.domain.bundle.model.Bundle;
 import rastle.dev.rastle_backend.domain.event.model.Event;
 import rastle.dev.rastle_backend.domain.event.repository.mysql.EventRepository;
+import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
 import rastle.dev.rastle_backend.domain.product.dto.EventProductDetailInfo.EventProductDetailOutInfo;
+import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 import rastle.dev.rastle_backend.domain.product.dto.*;
 import rastle.dev.rastle_backend.domain.product.repository.mysql.EventProductRepository;
 import rastle.dev.rastle_backend.domain.product.repository.mysql.ProductBaseRepository;
@@ -17,6 +21,8 @@ import rastle.dev.rastle_backend.global.util.CustomPageRequest;
 
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.ALL;
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.TRUE;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -59,10 +65,24 @@ public class ProductService {
 
     }
 
-    @WriteThroughCache
+    @Transactional(readOnly = true)
     public void testCache(Long id, CustomPageRequest customPageRequest) {
         log.info(String.valueOf(customPageRequest.getPage()));
         log.info(String.valueOf(customPageRequest.getSize()));
         log.info("business logic");
+        ProductBase product = productBaseRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        Bundle bundle = product.getBundle();
+        if (bundle != null) {
+            log.info(bundle.getName());
+        }
+        Event event = product.getEvent();
+        if (event != null) {
+            log.info(event.getName());
+        }
+        List<OrderProduct> orderProducts = product.getOrderProducts();
+        for (OrderProduct op : orderProducts) {
+            log.info(String.valueOf(op.getProductOrderNumber()));
+        }
+        
     }
 }
