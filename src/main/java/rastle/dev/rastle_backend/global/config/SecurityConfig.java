@@ -101,6 +101,7 @@ public class SecurityConfig {
                 .requestMatchers("/cart/**").hasRole("USER")
                 .requestMatchers("/delivery/**").permitAll()
                 .requestMatchers("/jmeter/**").permitAll()
+                .requestMatchers("/hibernate/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/rest-docs").permitAll());
 
         http

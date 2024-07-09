@@ -23,7 +23,6 @@ import rastle.dev.rastle_backend.global.util.CustomPageRequest;
 
 import java.util.Set;
 
-import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.ALL;
 import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.TRUE;
 
@@ -39,7 +38,7 @@ public class AsyncCacheComponent {
     private final ProductQRepository productQRepository;
     private final ObjectMapper objectMapper;
 
-    @Transactional(propagation = REQUIRES_NEW)
+    @Transactional
     @Async("cacheTaskExecutor")
     public void writeThroughCache(WriteThroughCache writeThroughCache, Object[] args, String[] parameterNames) {
 
