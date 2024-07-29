@@ -1,7 +1,6 @@
 package rastle.dev.rastle_backend.domain.bundle.application;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,6 @@ import static rastle.dev.rastle_backend.global.common.constants.CommonConstants.
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class BundleService {
     private final BundleRepository bundleRepository;
     private final BundleProductRepository bundleProductRepository;

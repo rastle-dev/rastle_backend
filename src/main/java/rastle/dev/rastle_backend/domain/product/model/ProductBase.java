@@ -2,6 +2,7 @@ package rastle.dev.rastle_backend.domain.product.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Cache;
 import rastle.dev.rastle_backend.domain.bundle.model.Bundle;
 import rastle.dev.rastle_backend.domain.cart.model.CartProduct;
 import rastle.dev.rastle_backend.domain.category.model.Category;
@@ -12,6 +13,10 @@ import rastle.dev.rastle_backend.domain.order.model.OrderProduct;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hibernate.annotations.CacheConcurrencyStrategy.NONSTRICT_READ_WRITE;
+
+@Cache(usage = NONSTRICT_READ_WRITE)
+@Cacheable
 @Entity
 @Getter
 @AllArgsConstructor
@@ -45,16 +50,22 @@ public class ProductBase {
     private List<CartProduct> cartProduct = new ArrayList<>();
     @Setter
     private boolean visible;
+
+    @Cache(usage = NONSTRICT_READ_WRITE)
     @Setter
     @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "product_detail_id")
     private ProductDetail productDetail;
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<CartProduct> cartProducts = new ArrayList<>();
+
+    @Cache(usage = NONSTRICT_READ_WRITE)
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bundle_id")
     private Bundle bundle;
+
+    @Cache(usage = NONSTRICT_READ_WRITE)
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")

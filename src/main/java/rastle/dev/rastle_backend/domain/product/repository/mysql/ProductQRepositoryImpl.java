@@ -8,7 +8,6 @@ import com.querydsl.core.types.dsl.SimplePath;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
@@ -24,13 +23,13 @@ import static rastle.dev.rastle_backend.domain.product.model.QProductBase.produc
 import static rastle.dev.rastle_backend.global.common.enums.VisibleStatus.FALSE;
 import static rastle.dev.rastle_backend.global.common.enums.VisibleStatus.TRUE;
 
-@Slf4j
 @RequiredArgsConstructor
 @Repository
 public class ProductQRepositoryImpl implements ProductQRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
+    // @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     @Override
     public SimpleProductQueryResult getProductInfos(GetProductRequest getProductRequest) {
 

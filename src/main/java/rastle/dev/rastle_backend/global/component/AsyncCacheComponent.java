@@ -92,7 +92,6 @@ public class AsyncCacheComponent {
                 log.info("error during parsing json object of GetProductRequest");
             }
 
-
         }
     }
 

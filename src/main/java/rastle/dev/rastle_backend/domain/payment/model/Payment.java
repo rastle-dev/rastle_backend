@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.ColumnDefault;
 import rastle.dev.rastle_backend.domain.order.model.OrderDetail;
 import rastle.dev.rastle_backend.global.common.BaseTimeEntity;
@@ -15,6 +14,7 @@ import java.time.LocalDateTime;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static jakarta.persistence.InheritanceType.JOINED;
 
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -22,7 +22,6 @@ import static jakarta.persistence.InheritanceType.JOINED;
     @Index(name = "idx_imp_id", columnList = "imp_id", unique = true)
 })
 @Inheritance(strategy = JOINED)
-@Slf4j
 public class Payment extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)

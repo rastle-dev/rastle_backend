@@ -36,8 +36,8 @@ dependencies {
     // 스프링 데이터 JPA
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     // mongodb
-    implementation 'org.mongodb:mongo-java-driver:3.12.14'
-    implementation 'org.springframework.data:spring-data-mongodb'
+    // implementation 'org.mongodb:mongo-java-driver:3.12.14'
+    // implementation 'org.springframework.data:spring-data-mongodb'
     // 스프링 레디스
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     // 이메일 모듈
@@ -82,8 +82,23 @@ dependencies {
     implementation group: 'com.maxmind.geoip2', name: 'geoip2', version: '2.15.0'
     // hibernate cache
     implementation 'org.springframework.boot:spring-boot-starter-cache'
-//    implementation 'org.redisson:redisson-hibernate-6:3.32.0'
-//    implementation 'org.hibernate.orm:hibernate-jcache:6.1.6.Final'
+    // implementation 'org.redisson:redisson-hibernate-6:3.32.0'
+    // implementation 'org.hibernate.orm:hibernate-jcache:6.1.6.Final'
+    // hazelcast
+    implementation 'com.hazelcast:hazelcast-hibernate53:5.1.0'
+    implementation 'com.hazelcast:hazelcast:5.4.0'
+    // ehcache
+    // implementation('org.ehcache:ehcache:3.10.8') {
+    //     capabilities {
+    //         requireCapability('org.ehcache:ehcache-jakarta')
+    //     }
+    // }
+    // implementation ('org.ehcache:ehcache-clustered:3.10.8') {
+    //     capabilities {
+    //         requireCapability('org.ehcache:ehcache-jakarta')
+    //     }
+    // }
+    // implementation 'org.hibernate.orm:hibernate-ehcache:6.0.0.Alpha7'
     // MySql
     runtimeOnly 'mysql:mysql-connector-java'
 

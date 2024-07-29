@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.Cache;
 import rastle.dev.rastle_backend.domain.event.dto.EventInfo;
 import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 
@@ -11,6 +13,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hibernate.annotations.CacheConcurrencyStrategy.NONSTRICT_READ_WRITE;
+
+@Cache(usage = NONSTRICT_READ_WRITE)
+@Cacheable
 @Entity
 @Getter
 @NoArgsConstructor
@@ -20,18 +26,25 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_id")
     private Long id;
+    @Setter
     private String name;
+    @Setter
     @Column(name = "image_urls")
     private String imageUrls;
+    @Setter
     @Column(name = "event_start_date")
     private LocalDateTime eventStartDate;
+    @Setter
     @Column(name = "event_end_date")
     private LocalDateTime eventEndDate;
+    @Setter
     private String description;
+    @Setter
     private boolean visible;
 
+    @Cache(usage=NONSTRICT_READ_WRITE)
     @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<ProductBase> eventProducts = new ArrayList<>();
+    private final List<ProductBase> eventProducts = new ArrayList<>();
 
     @Builder
     public Event(String name, LocalDateTime eventStartDate, LocalDateTime eventEndDate, String imageUrls,
@@ -42,10 +55,6 @@ public class Event {
         this.imageUrls = imageUrls;
         this.description = description;
         this.visible = visible;
-    }
-
-    public void setImageUrls(String imageUrls) {
-        this.imageUrls = imageUrls;
     }
 
     public EventInfo toEventInfo() {
@@ -60,23 +69,4 @@ public class Event {
             .build();
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setEventStartDate(LocalDateTime eventStartDate) {
-        this.eventStartDate = eventStartDate;
-    }
-
-    public void setEventEndDate(LocalDateTime eventEndDate) {
-        this.eventEndDate = eventEndDate;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setVisible(boolean visible) {
-        this.visible = visible;
-    }
 }

@@ -7,10 +7,15 @@ import lombok.NoArgsConstructor;
 import rastle.dev.rastle_backend.domain.bundle.dto.BundleInfo;
 import rastle.dev.rastle_backend.domain.product.model.ProductBase;
 
+import static org.hibernate.annotations.CacheConcurrencyStrategy.NONSTRICT_READ_WRITE;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.Cache;
+
+@Cache(usage = NONSTRICT_READ_WRITE)
 @Entity
 @Getter
 @NoArgsConstructor
@@ -28,6 +33,7 @@ public class Bundle {
     private LocalDateTime saleStartTime;
     boolean visible;
 
+    @Cache(usage = NONSTRICT_READ_WRITE)
     @OneToMany(mappedBy = "bundle", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<ProductBase> bundleProducts = new ArrayList<>();
 

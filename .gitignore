@@ -27,6 +27,9 @@ src/main/resources/application-local.yml
 src/main/resources/application-test.yml
 src/main/resources/application-server.yml
 src/main/resources/redisson.yaml
+src/main/resources/hazelcast-custom-config.xml
+src/main/resources/hazelcast-server.xml
+src/main/resources/ehcache.xml
 src/main/resources/server.yml
 src/main/resources/application-db.yml
 src/main/resources/application-config.yml

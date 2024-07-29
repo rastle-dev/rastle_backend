@@ -43,8 +43,8 @@ jobs:
       - name: web docker build and push
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t ${{ secrets.DOCKER_REPO }}/rastle_backend .
-          docker push ${{ secrets.DOCKER_REPO }}/rastle_backend
+          docker build -t ${{ secrets.DOCKER_REPO }}/rastle_backend:1.0.0 .
+          docker push ${{ secrets.DOCKER_REPO }}/rastle_backend:1.0.0
 
 #      - name: Save test result
 #        uses: EnricoMi/publish-unit-test-result-action@v1

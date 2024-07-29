@@ -5,7 +5,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Cache;
 
+import static org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE;
+
+@Cache(usage = READ_WRITE)
+@Cacheable
 @Entity
 @Getter
 @Setter
