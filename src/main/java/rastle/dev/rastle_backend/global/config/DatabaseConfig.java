@@ -3,7 +3,6 @@ package rastle.dev.rastle_backend.global.config;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -26,7 +25,6 @@ import java.util.Map;
 @Configuration
 @EnableJpaAuditing
 @RequiredArgsConstructor
-@Slf4j
 public class DatabaseConfig {
     static final String RDS_DOMAIN_REPO = "rastle.dev.rastle_backend.domain.*.repository.mysql";
     static final String RDS_DOMAIN_MAPPER = "rastle.dev.rastle_backend.domain.*.mapper";
