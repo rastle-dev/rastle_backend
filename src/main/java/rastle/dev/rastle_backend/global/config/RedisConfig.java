@@ -79,18 +79,4 @@ public class RedisConfig {
         return objectRedisTemplate;
     }
 
-    // @Bean
-    // public CacheManager cacheManager() {
-    //     RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
-    //         .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-    //         .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
-    //         .entryTtl(Duration.ofMinutes(CacheConstant.EXPIRE_TIME)); // 캐쉬 저장 시간 15분 설정
-
-    //     return RedisCacheManager
-    //         .RedisCacheManagerBuilder
-    //         .fromConnectionFactory(cacheRedisConnectionFactory())
-    //         .cacheDefaults(redisCacheConfiguration)
-    //         .build();
-    // }
-
 }
