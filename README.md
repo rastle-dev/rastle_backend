@@ -6,3 +6,4 @@
 
 ## Backend architecture
 
+<img width="562" alt="Screenshot 2024-10-20 at 23 32 57" src="https://github.com/user-attachments/assets/71d51f8a-2491-4291-a7cb-0627c8173dfb">
