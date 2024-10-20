@@ -101,7 +101,8 @@ dependencies {
     // implementation 'org.hibernate.orm:hibernate-ehcache:6.0.0.Alpha7'
     // MySql
     runtimeOnly 'mysql:mysql-connector-java'
-
+    // retry
+    implementation 'org.springframework.retry:spring-retry:2.0.10'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.30'
