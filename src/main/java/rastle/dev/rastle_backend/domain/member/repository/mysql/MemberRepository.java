@@ -19,6 +19,10 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("SELECT m.id FROM Member m WHERE m.email = :email")
     Optional<Long> findUserIdByEmail(@Param("email") String email);
 
+    void deleteAllByEmail(String email);
+
+    Integer countAllByEmail(String email);
+
     @Query("SELECT NEW rastle.dev.rastle_backend.domain.member.dto.MemberAuthDTO$UserPrincipalInfoDto(m.id, m.password, m.userLoginType, m.authority) " +
         "FROM Member m " +
         "WHERE m.email = :email " +
