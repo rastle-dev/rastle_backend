@@ -1,12 +1,9 @@
 package rastle.dev.rastle_backend.domain.product.repository.mysql;
 
-import jakarta.persistence.QueryHint;
-
 import org.hibernate.annotations.Cache;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 import rastle.dev.rastle_backend.domain.product.dto.EventProductInfo;
 import rastle.dev.rastle_backend.domain.product.dto.SimpleProductInfo;
@@ -20,7 +17,7 @@ public interface EventProductRepository extends JpaRepository<ProductBase, Long>
     boolean existsByEventId(Long id);
 
     @Cache(usage = org.hibernate.annotations.CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-    @QueryHints({@QueryHint(name = "org.hibernate.cacheable", value = "true")})
+//    @QueryHints({@QueryHint(name = "org.hibernate.cacheable", value = "true")})
     @Query("select new rastle.dev.rastle_backend.domain.product.dto.EventProductInfo(" +
         "e.id, " +
         "e.name, " +
@@ -43,7 +40,7 @@ public interface EventProductRepository extends JpaRepository<ProductBase, Long>
     List<EventProductInfo> getEventProducts(Pageable pageable);
 
     @Cache(usage = org.hibernate.annotations.CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-    @QueryHints({@QueryHint(name = "org.hibernate.cacheable", value = "true")})
+//    @QueryHints({@QueryHint(name = "org.hibernate.cacheable", value = "true")})
     @Query("select new rastle.dev.rastle_backend.domain.product.dto.EventProductInfo(" +
         "e.id, " +
         "e.name, " +

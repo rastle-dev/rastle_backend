@@ -31,8 +31,7 @@ public class MemberAuthController {
     @FailApiResponses
     @PostMapping(value = "/signup")
     public ResponseEntity<ServerResponse<SignUpDto>> signUp(@Valid @RequestBody SignUpDto signUpDto) {
-        memberAuthService.signUp(signUpDto);
-        ServerResponse<SignUpDto> response = new ServerResponse<>(signUpDto);
+        ServerResponse<SignUpDto> response = new ServerResponse<>(memberAuthService.signUp(signUpDto));
         return ResponseEntity.ok(response);
     }
 
