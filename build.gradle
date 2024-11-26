@@ -48,8 +48,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.security:spring-security-test'
     // MyBatis
-    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
-    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.1'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+//    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.1'
     // OAuth
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     // Swagger
@@ -101,6 +101,9 @@ dependencies {
     // implementation 'org.hibernate.orm:hibernate-ehcache:6.0.0.Alpha7'
     // MySql
     runtimeOnly 'mysql:mysql-connector-java'
+    // sqlite
+    implementation 'org.xerial:sqlite-jdbc:3.43.2.2'
+    implementation 'org.hibernate.orm:hibernate-community-dialects'
     // retry
     implementation 'org.springframework.retry:spring-retry:2.0.10'
 
